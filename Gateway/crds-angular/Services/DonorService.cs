@@ -126,19 +126,22 @@ namespace crds_angular.Services
             setupDate = setupDate ?? DateTime.Now;
 
             var contactDonorResponse = new MpContactDonor();
+            
             if (mpContactDonor == null || !mpContactDonor.ExistingContact)
             {
+                string displayName;
                 var statementMethod = _statementMethodNone;
                 var statementFrequency = _statementFrequencyNever;
                 if (mpContactDonor != null && mpContactDonor.HasDetails)
                 {
+                    displayName = mpContactDonor.Details?.DisplayName;
                     contactDonorResponse.ContactId = _mpContactService.CreateContactForNewDonor(mpContactDonor);
                     statementMethod = _statementMethodPostalMail;
                     statementFrequency = _statementFrequencyQuarterly;
                 }
                 else
                 {
-                    var displayName = _guestGiverDisplayName;
+                    displayName = _guestGiverDisplayName;
                     if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
                     {
                         displayName = firstName;
@@ -149,7 +152,7 @@ namespace crds_angular.Services
                 var donorAccount = mpContactDonor != null ? mpContactDonor.Account : null;
                 if (!string.IsNullOrWhiteSpace(paymentProcessorToken))
                 {
-                    var stripeCustomer = _paymentService.CreateCustomer(paymentProcessorToken);
+                    var stripeCustomer = _paymentService.CreateCustomer(paymentProcessorToken, string.Empty, emailAddress, displayName);
 
                     if (donorAccount != null)
                     {
@@ -181,7 +184,7 @@ namespace crds_angular.Services
                 contactDonorResponse.ContactId = mpContactDonor.ContactId;
                 if (!string.IsNullOrWhiteSpace(paymentProcessorToken))
                 {
-                    var stripeCustomer = _paymentService.CreateCustomer(paymentProcessorToken);
+                    var stripeCustomer = _paymentService.CreateCustomer(paymentProcessorToken, string.Empty, emailAddress, mpContactDonor.Details?.DisplayName);
                     contactDonorResponse.ProcessorId = stripeCustomer.id;
                     if (mpContactDonor.HasAccount)
                     {
@@ -255,7 +258,7 @@ namespace crds_angular.Services
             return (_mpDonorService.DecryptCheckValue(value));
         }
 
-        public int CreateRecurringGift(string authorizedUserToken, RecurringGiftDto recurringGiftDto, MpContactDonor mpContactDonor)
+        public int CreateRecurringGift(string authorizedUserToken, RecurringGiftDto recurringGiftDto, MpContactDonor mpContactDonor, string email, string displayName)
         {
             StripeCustomer customer = null;
             StripePlan plan = null;
@@ -266,7 +269,7 @@ namespace crds_angular.Services
             try
             {
 
-                customer = _paymentService.CreateCustomer(recurringGiftDto.StripeTokenId, string.Format("{0}, Recurring Gift Subscription", mpContactDonor.DonorId));
+                customer = _paymentService.CreateCustomer(recurringGiftDto.StripeTokenId, string.Format("{0}, Recurring Gift Subscription", mpContactDonor.DonorId),email, displayName);
 
                 var source = customer.sources.data.Find(s => s.id == customer.default_source);
 
@@ -278,9 +281,9 @@ namespace crds_angular.Services
                                                                         source.id,
                                                                         customer.id);
 
-                plan = _paymentService.CreatePlan(recurringGiftDto, mpContactDonor);
+                plan = _paymentService.CreatePlan(recurringGiftDto, mpContactDonor, email, displayName);
 
-                stripeSubscription = _paymentService.CreateSubscription(plan.Id, customer.id, recurringGiftDto.StartDate);
+                stripeSubscription = _paymentService.CreateSubscription(plan.Id, customer.id, recurringGiftDto.StartDate, email, displayName);
 
                 var contact = _mpContactService.GetContactById(mpContactDonor.ContactId);
                 var congregation = contact.Congregation_ID ?? _notSiteSpecificCongregation;
@@ -420,7 +423,7 @@ namespace crds_angular.Services
         /// </summary>
         /// <param name="authorizedUserToken">An OAuth token for the user who is logged in to cr.net/MP</param>
         /// <param name="editGift">The edited values for the Recurring Gift</param>
-        /// <param name="donor>The donor performing the edits</param>
+        /// <param name="donor">The donor performing the edits</param>
         /// <returns>A RecurringGiftDto, populated with any new/updated values after any edits</returns>
         public RecurringGiftDto EditRecurringGift(string authorizedUserToken, RecurringGiftDto editGift, MpContactDonor donor)
         {
@@ -478,7 +481,7 @@ namespace crds_angular.Services
                 if (needsNewStripePlan)
                 {
                     // Create the new Stripe Plan
-                    var plan = _paymentService.CreatePlan(editGift, donor);
+                    var plan = _paymentService.CreatePlan(editGift, donor, donor.Details.EmailAddress, donor.Details?.DisplayName);
                     StripeSubscription oldSubscription;
                     if (needsUpdatedStripeSubscription)
                     {
@@ -493,7 +496,7 @@ namespace crds_angular.Services
                     {
                         // Otherwise, we need to cancel the old Subscription and create a new one
                         oldSubscription = _paymentService.CancelSubscription(existingGift.StripeCustomerId, stripeSubscription.Id);
-                        stripeSubscription = _paymentService.CreateSubscription(plan.Id, existingGift.StripeCustomerId, editGift.StartDate);
+                        stripeSubscription = _paymentService.CreateSubscription(plan.Id, existingGift.StripeCustomerId, editGift.StartDate,donor.Details?.EmailAddress, donor.Details?.DisplayName);
                     }
 
                     // In either case, we created a new Stripe Plan above, so cancel the old one
