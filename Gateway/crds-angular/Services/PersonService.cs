@@ -23,13 +23,15 @@ namespace crds_angular.Services
         private readonly MPServices.IParticipantRepository _participantService;
         private readonly MPServices.IUserRepository _userRepository;
         private readonly IAuthenticationRepository _authenticationService;
+        private readonly IAddressService _addressService;
 
         public PersonService(MPServices.IContactRepository contactService, 
             IObjectAttributeService objectAttributeService, 
             IApiUserRepository apiUserService,
             MPServices.IParticipantRepository participantService,
             MPServices.IUserRepository userService,
-            IAuthenticationRepository authenticationService)
+            IAuthenticationRepository authenticationService,
+            IAddressService addressService)
         {
             _contactRepository = contactService;
             _objectAttributeService = objectAttributeService;
@@ -37,6 +39,7 @@ namespace crds_angular.Services
             _participantService = participantService;
             _userRepository = userService;
             _authenticationService = authenticationService;
+            _addressService = addressService;
         }
 
         public void SetProfile(string token, Person person)
@@ -45,6 +48,7 @@ namespace crds_angular.Services
             var householdDictionary = getDictionary(person.GetHousehold());
             var addressDictionary = getDictionary(person.GetAddress());
             addressDictionary.Add("State/Region", addressDictionary["State"]);
+            
 
             // Some front-end consumers require an Address (e.g., /profile/personal), and
             // some do not (e.g., /undivided/facilitator).  Don't attempt to create/update
@@ -52,6 +56,14 @@ namespace crds_angular.Services
             if (addressDictionary.Values.All(i => i == null))
             {
                 addressDictionary = null;
+            }
+            else
+            {
+                //add the lat/long to the address 
+                var address = new AddressDTO(addressDictionary["Address_Line_1"].ToString(), "", addressDictionary["City"].ToString(),  addressDictionary["State"].ToString(),  addressDictionary["Postal_Code"].ToString(),null,null);
+                var coordinates = _addressService.GetGeoLocationCascading(address);
+                addressDictionary.Add("Latitude", coordinates.Latitude);
+                addressDictionary.Add("Longitude", coordinates.Longitude);
             }
 
             _contactRepository.UpdateContact(person.ContactId, contactDictionary, householdDictionary, addressDictionary);

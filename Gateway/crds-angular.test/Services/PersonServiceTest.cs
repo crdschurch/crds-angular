@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Reactive.Linq;
+using System.Device.Location;
 using crds_angular.App_Start;
+using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Attribute;
 using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Services;
@@ -23,6 +24,7 @@ namespace crds_angular.test.Services
         private Mock<IApiUserRepository> _apiUserService;
         private Mock<MPInterfaces.IParticipantRepository> _participantService;
         private Mock<MPInterfaces.IUserRepository> _userService;
+        private Mock<IAddressService> _addressService;
 
         private PersonService _fixture;
         private MpMyContact _myContact;
@@ -50,6 +52,7 @@ namespace crds_angular.test.Services
             _participantService = new Mock<MPInterfaces.IParticipantRepository>();
             _userService = new Mock<MPInterfaces.IUserRepository>();
             _apiUserService = new Mock<IApiUserRepository>();            
+            _addressService = new Mock<IAddressService>();
             
             _myContact = new MpMyContact
             {
@@ -81,7 +84,7 @@ namespace crds_angular.test.Services
             };
             _householdMembers = new List<MpHouseholdMember>();
 
-            _fixture = new PersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object);
+            _fixture = new PersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object);
 
             //force AutoMapper to register
             AutoMapperConfig.RegisterMappings();
@@ -110,6 +113,7 @@ namespace crds_angular.test.Services
                                            It.IsAny<MpObjectAttributeConfiguration>()));
 
             _participantService.Setup(m => m.GetParticipant(person.ContactId)).Returns(participant);
+            _addressService.Setup(m => m.GetGeoLocationCascading(It.IsAny<AddressDTO>())).Returns(new GeoCoordinate(5, 6));
             _fixture.SetProfile(token, person);
 
         }
@@ -217,6 +221,9 @@ namespace crds_angular.test.Services
                 AddressId = contact.Address_ID,
                 AddressLine1 = contact.Address_Line_1,
                 AddressLine2 = contact.Address_Line_2,
+                City = contact.City,
+                State = contact.State,
+                PostalCode = contact.Postal_Code,
                 Age = contact.Age,
                 CongregationId = contact.Congregation_ID,
                 ContactId = contact.Contact_ID,

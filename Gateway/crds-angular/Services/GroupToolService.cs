@@ -679,7 +679,7 @@ namespace crds_angular.Services
             return isLeader;
         }
 
-        public void EndGroup(int groupId)
+        public void EndGroup(int groupId, int reasonEndedId)
         {
             _awsCloudsearchService.DeleteGroupFromAws(groupId);
 
@@ -687,12 +687,14 @@ namespace crds_angular.Services
             //available from this call.
             // ReSharper disable once RedundantArgumentDefaultValue
             var participants = _groupService.GetGroupParticipants(groupId, true);
-            _groupService.EndDateGroup(groupId);
+            _groupService.EndDateGroup(groupId, reasonEndedId);
+            var group = _groupService.GetGroupDetails(groupId);
             foreach (var participant in participants)
             {
                 var mergeData = new Dictionary<string, object>
                 {
                     {"Participant_Name", participant.NickName},
+                    {"Group_Name", group.GroupName },
                     {"Group_Tool_Url", @"https://" + _baseUrl + "/groups/search"}
                 };
                 SendSingleGroupParticipantEmail(participant, _groupEndedParticipantEmailTemplate, mergeData);

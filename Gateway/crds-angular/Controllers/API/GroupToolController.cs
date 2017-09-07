@@ -128,7 +128,6 @@ namespace crds_angular.Controllers.API
         /// it is over
         /// </summary>
         /// <param name="groupId">The id of a group</param>
-        /// <param name="groupReasonEndedId">The id of the reason the group was ended</param>
         /// <returns>Http Result</returns>
         [RequiresAuthorization]
         [VersionedRoute(template: "grouptool/{groupId}/endsmallgroup", minimumVersion: "1.0.0")]
@@ -141,7 +140,7 @@ namespace crds_angular.Controllers.API
                 try
                 {
                     _groupToolService.VerifyCurrentUserIsGroupLeader(token, groupId);
-                    _groupToolService.EndGroup(groupId);
+                    _groupToolService.EndGroup(groupId, 4);
                     return Ok();
                 }
                 catch (Exception e)
