@@ -21,6 +21,7 @@ namespace crds_angular.Services
 {
     public class GroupToolService : MinistryPlatformBaseService, IGroupToolService
     {
+        private readonly IAwsCloudsearchService _awsCloudsearchService;
         private readonly IGroupToolRepository _groupToolRepository;
         private readonly IGroupRepository _groupRepository;
         private readonly IGroupService _groupService;
@@ -75,6 +76,7 @@ namespace crds_angular.Services
         private readonly ILog _logger = LogManager.GetLogger(typeof(GroupToolService));
 
         public GroupToolService(
+            IAwsCloudsearchService awsCloudsearchService,
             IGroupToolRepository groupToolRepository,
             IGroupRepository groupRepository,
             IGroupService groupService,
@@ -93,6 +95,7 @@ namespace crds_angular.Services
             IFinderRepository finderRepository
             )
         {
+            _awsCloudsearchService = awsCloudsearchService;
             _groupToolRepository = groupToolRepository;
             _groupRepository = groupRepository;
             _groupService = groupService;
@@ -678,6 +681,8 @@ namespace crds_angular.Services
 
         public void EndGroup(int groupId, int reasonEndedId)
         {
+            _awsCloudsearchService.DeleteGroupFromAws(groupId);
+
             //get all participants before we end the group so they are not endDated and still
             //available from this call.
             // ReSharper disable once RedundantArgumentDefaultValue

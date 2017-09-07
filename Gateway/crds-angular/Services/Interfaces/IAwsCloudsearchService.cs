@@ -7,7 +7,8 @@ namespace crds_angular.Services.Interfaces
 {
     public interface IAwsCloudsearchService
     {
-        void UploadNewPinToAws(PinDto pin); 
+        void UploadNewPinToAws(PinDto pin);
+        UploadDocumentsResponse DeleteGroupFromAws(int groupId);
         UploadDocumentsResponse UploadAllConnectRecordsToAwsCloudsearch();
         UploadDocumentsResponse DeleteAllConnectRecordsInAwsCloudsearch();
         SearchResponse SearchConnectAwsCloudsearch(string querystring, string returnFields, int returnSize = 10000, GeoCoordinate originCoords = null, AwsBoundingBox boundingBox = null);

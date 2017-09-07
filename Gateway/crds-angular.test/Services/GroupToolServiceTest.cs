@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.CloudSearchDomain.Model;
 using AutoMapper;
 using crds_angular.App_Start;
 using crds_angular.Exceptions;
@@ -25,6 +26,7 @@ namespace crds_angular.test.Services
     public class GroupToolServiceTest
     {
         private GroupToolService _fixture;
+        private Mock<IAwsCloudsearchService> _awsCloudsearchService;
         private Mock<MPServices.IGroupToolRepository> _groupToolRepository;
         private Mock<MPServices.ICommunicationRepository> _communicationRepository;
         private Mock<IGroupService> _groupService;
@@ -66,6 +68,7 @@ namespace crds_angular.test.Services
         {
             AutoMapperConfig.RegisterMappings();
 
+            _awsCloudsearchService = new Mock<IAwsCloudsearchService>(MockBehavior.Strict);
             _communicationRepository = new Mock<MPServices.ICommunicationRepository>(MockBehavior.Strict);
             _groupToolRepository = new Mock<MPServices.IGroupToolRepository>(MockBehavior.Strict);
             _groupService = new Mock<IGroupService>(MockBehavior.Strict);
@@ -103,7 +106,8 @@ namespace crds_angular.test.Services
             configuration.Setup(mocked => mocked.GetConfigIntValue("GatheringHostAcceptTemplate")).Returns(GatheringHostAcceptTemplate);
             configuration.Setup(mocked => mocked.GetConfigIntValue("GatheringHostDenyTemplate")).Returns(GatheringHostDenyTemplate);
 
-            _fixture = new GroupToolService(_groupToolRepository.Object,
+            _fixture = new GroupToolService(_awsCloudsearchService.Object, 
+                                            _groupToolRepository.Object,
                                             _groupRepository.Object,
                                             _groupService.Object,
                                             _participantRepository.Object,
@@ -1066,6 +1070,19 @@ namespace crds_angular.test.Services
             var invitations = _fixture.GetInvitations(sourceId, invitationTypeId, token);
 
             Assert.AreEqual(4, invitations.Count);
+        }
+
+        [Test]
+        public void EndGroupCallsAws()
+        {
+            _awsCloudsearchService.Setup(aws => aws.DeleteGroupFromAws(It.IsAny<int>())).Returns(new UploadDocumentsResponse());
+            _groupService.Setup(gs => gs.GetGroupParticipants(It.IsAny<int>(), It.IsAny<bool>())).Returns(new List<GroupParticipantDTO>());
+            _groupService.Setup(gs => gs.EndDateGroup(It.IsAny<int>(), It.IsAny<int>()));
+            _groupService.Setup(gs => gs.GetGroupDetails(It.IsAny<int>())).Returns(new GroupDTO());
+
+            _fixture.EndGroup(123, 4);
+
+            _awsCloudsearchService.Verify(aws => aws.DeleteGroupFromAws(It.IsAny<int>()), Times.Once);
         }
 
         private List<MpInvitation> getMpInvations()
