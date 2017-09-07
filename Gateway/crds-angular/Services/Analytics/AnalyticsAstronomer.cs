@@ -22,7 +22,13 @@ namespace crds_angular.Services.Analytics
         public static void Track(string userId, string eventName, EventProperties props)
         {
             Properties segProps = mapProps(props);
-            Segment.Analytics.Client.Track(userId, eventName, segProps);
+            var opts = new Options()
+                .SetContext(new Segment.Model.Context()
+                {
+                    {"ip", "0.0.0.0"}
+                });
+
+            Segment.Analytics.Client.Track(userId, eventName, segProps, opts);
             Segment.Analytics.Client.Flush();
 
         }
