@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -387,6 +388,12 @@ namespace crds_angular.Controllers.API
         {
             try
             {
+                NewRelic.Api.Agent.NewRelic.AddCustomParameter("WherAmI", "executing GetPinsByAddress");
+
+
+                var eventAttributes = new Dictionary<string, object>() { { "foo", "bar" }, { "alice", "bob" } };
+                NewRelic.Api.Agent.NewRelic.RecordCustomEvent("MyCustomEvent", eventAttributes);
+
 
                 AwsBoundingBox awsBoundingBox = null;
                 Boolean areAllBoundingBoxParamsPresent = _finderService.areAllBoundingBoxParamsPresent(queryParams.BoundingBox); 
