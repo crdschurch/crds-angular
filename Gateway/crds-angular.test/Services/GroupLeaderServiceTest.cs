@@ -279,12 +279,10 @@ namespace crds_angular.test.Services
             });
 
             _analyticsMock.Setup(m => m.Track(It.IsAny<string>(), It.IsAny<string>()));
-
             _communicationRepository.Setup(m => m.GetTemplate(fakeTemplateId)).Returns(ConfirmationEmailMock());
 
             var responseId = _fixture.SaveSpiritualGrowth(growthDto).Wait();
             Assert.AreEqual(fakeResponseId, responseId);
-
         }
 
         [Test]
