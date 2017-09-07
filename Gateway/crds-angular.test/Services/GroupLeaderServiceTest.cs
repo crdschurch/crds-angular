@@ -5,6 +5,7 @@ using System.Threading;
 using crds_angular.Models.Crossroads.GroupLeader;
 using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Services;
+using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models;
@@ -24,6 +25,7 @@ namespace crds_angular.test.Services
         private Mock<IConfigurationWrapper> _configWrapper;
         private Mock<ICommunicationRepository> _communicationRepository;
         private Mock<IContactRepository> _contactMock;
+        private Mock<IAnalyticsService> _analyticsMock;
         private IGroupLeaderService _fixture;
 
         [SetUp]
@@ -36,7 +38,8 @@ namespace crds_angular.test.Services
             _configWrapper = new Mock<IConfigurationWrapper>();
             _communicationRepository = new Mock<ICommunicationRepository>();
             _contactMock = new Mock<IContactRepository>();
-            _fixture = new GroupLeaderService(_personService.Object, _userRepo.Object, _formService.Object, _participantRepository.Object, _configWrapper.Object, _communicationRepository.Object, _contactMock.Object);
+            _analyticsMock = new Mock<IAnalyticsService>();
+            _fixture = new GroupLeaderService(_personService.Object, _userRepo.Object, _formService.Object, _participantRepository.Object, _configWrapper.Object, _communicationRepository.Object, _contactMock.Object, _analyticsMock.Object);
         }
 
         [TearDown]
@@ -50,6 +53,7 @@ namespace crds_angular.test.Services
             _configWrapper.VerifyAll();
             _communicationRepository.VerifyAll();
             _contactMock.VerifyAll();
+            _analyticsMock.VerifyAll();
         }
 
         [Test]
@@ -274,10 +278,13 @@ namespace crds_angular.test.Services
                 return fakeResponseId;
             });
 
+            _analyticsMock.Setup(m => m.Track(It.IsAny<string>(), It.IsAny<string>()));
+
             _communicationRepository.Setup(m => m.GetTemplate(fakeTemplateId)).Returns(ConfirmationEmailMock());
 
             var responseId = _fixture.SaveSpiritualGrowth(growthDto).Wait();
             Assert.AreEqual(fakeResponseId, responseId);
+
         }
 
         [Test]

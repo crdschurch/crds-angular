@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using crds_angular.Models.Crossroads.GroupLeader;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;
@@ -20,8 +21,9 @@ namespace crds_angular.Services
         private readonly IParticipantRepository _participantRepository;
         private readonly ICommunicationRepository _communicationRepository;
         private readonly IContactRepository _contactRepository;
+        private readonly IAnalyticsService _analyticsService;
 
-        public GroupLeaderService(IPersonService personService, IUserRepository userRepository, IFormSubmissionRepository formSubmissionRepository, IParticipantRepository participantRepository, IConfigurationWrapper configWrapper, ICommunicationRepository communicationRepository, IContactRepository contactRepository)
+        public GroupLeaderService(IPersonService personService, IUserRepository userRepository, IFormSubmissionRepository formSubmissionRepository, IParticipantRepository participantRepository, IConfigurationWrapper configWrapper, ICommunicationRepository communicationRepository, IContactRepository contactRepository, IAnalyticsService analyticsService)
         {
             _personService = personService;
             _userRepository = userRepository;
@@ -30,6 +32,7 @@ namespace crds_angular.Services
             _configWrapper = configWrapper;
             _communicationRepository = communicationRepository;
             _contactRepository = contactRepository;
+            _analyticsService = analyticsService;
         }
 
         public IObservable<int> SaveReferences(GroupLeaderProfileDTO leader)
@@ -195,7 +198,7 @@ namespace crds_angular.Services
                 }
 
                 SendConfirmationEmail(spiritualGrowth.ContactId, spiritualGrowth.EmailAddress);
-
+                SendGroupLeaderAppliedAnalytics(form.ContactId);
                 observer.OnNext(responseId);
                 observer.OnCompleted();
                 return Disposable.Create(() => Console.WriteLine("Observable Destroyed"));
@@ -340,6 +343,11 @@ namespace crds_angular.Services
                 { "Last_Name", applicant.Last_Name },
                 { "Email_Address", applicant.Email_Address }
             };
+        }
+
+        private void SendGroupLeaderAppliedAnalytics(int contactId)
+        {
+            _analyticsService.Track(contactId.ToString(), "AppliedAsGroupLeader");
         }
 
         private void SendConfirmationEmail(int toContactId, string toEmailAddress)
