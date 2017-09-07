@@ -272,7 +272,7 @@ namespace crds_angular.test.controllers
             var groupReasonEndedId = 1;
             string token = "abc 123";
          
-            _groupToolService.Setup(mocked => mocked.EndGroup(It.IsAny<int>())).Verifiable();
+            _groupToolService.Setup(mocked => mocked.EndGroup(It.IsAny<int>(), It.IsAny<int>())).Verifiable();
             _groupToolService.Setup(mocked => mocked.VerifyCurrentUserIsGroupLeader(token, groupId)).Returns(new MyGroup());
 
             IHttpActionResult result = _fixture.EndSmallGroup(groupId);
@@ -291,7 +291,7 @@ namespace crds_angular.test.controllers
             string token = "1234frd32";
             Exception ex = new Exception();
 
-            _groupToolService.Setup(mocked => mocked.EndGroup(It.IsAny<int>())).Throws(ex);
+            _groupToolService.Setup(mocked => mocked.EndGroup(It.IsAny<int>(), It.IsAny<int>())).Throws(ex);
             _groupToolService.Setup(mocked => mocked.VerifyCurrentUserIsGroupLeader(It.IsAny<string>(), It.IsAny<int>())).Returns(new MyGroup());
             IHttpActionResult result = _fixture.EndSmallGroup(groupId);
 

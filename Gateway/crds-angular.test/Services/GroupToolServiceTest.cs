@@ -1077,9 +1077,10 @@ namespace crds_angular.test.Services
         {
             _awsCloudsearchService.Setup(aws => aws.DeleteGroupFromAws(It.IsAny<int>())).Returns(new UploadDocumentsResponse());
             _groupService.Setup(gs => gs.GetGroupParticipants(It.IsAny<int>(), It.IsAny<bool>())).Returns(new List<GroupParticipantDTO>());
-            _groupService.Setup(gs => gs.EndDateGroup(It.IsAny<int>(), null));
+            _groupService.Setup(gs => gs.EndDateGroup(It.IsAny<int>(), It.IsAny<int>()));
+            _groupService.Setup(gs => gs.GetGroupDetails(It.IsAny<int>())).Returns(new GroupDTO());
 
-            _fixture.EndGroup(123);
+            _fixture.EndGroup(123, 4);
 
             _awsCloudsearchService.Verify(aws => aws.DeleteGroupFromAws(It.IsAny<int>()), Times.Once);
         }
