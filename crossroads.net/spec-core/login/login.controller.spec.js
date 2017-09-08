@@ -1,5 +1,7 @@
-describe('Login Controller', function () {
+require('../app/common/common.module');
 
+describe('Login Controller', function () {
+  var CONSTANTS = require('crds-constants');
   var $controller, $q, LoginController, $rootScope, MESSAGES, $state, $log, AuthService, Session, $timeout, AnalyticsService;
 
   beforeEach(function () {
@@ -19,6 +21,8 @@ describe('Login Controller', function () {
       return null;
     });
   });
+
+  beforeEach(angular.mock.module(CONSTANTS.MODULES.COMMON));
 
   beforeEach(inject(function (_$controller_, _$rootScope_, _MESSAGES_, _$state_, _$log_, _AuthService_, _$timeout_, _Session_, _AnalyticsService_) {
     $controller = _$controller_;
