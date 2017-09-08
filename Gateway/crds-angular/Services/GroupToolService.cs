@@ -383,12 +383,16 @@ namespace crds_angular.Services
                 if (approve)
                 {
                     ApproveInquiry(groupId, group, inquiry, participant, message, roleId, sendEmail);
+                    var leader = ((List<GroupParticipantDTO>)group.Participants).FirstOrDefault(p => p.GroupRoleId == _groupRoleLeaderId);
+
+
                     var props = new EventProperties
                     {
+                        {"GroupLeaderName", leader?.DisplayName },
                         {"GroupName", group.GroupName},
-                        {"City", group?.Address?.City},
-                        {"State", group?.Address?.State},
-                        {"Zip", group?.Address?.PostalCode}
+                        {"GroupCity", group?.Address?.City},
+                        {"GroupState", group?.Address?.State},
+                        {"GroupZip", group?.Address?.PostalCode}
                     };
                     _analyticsService.Track(inquiry.ContactId.ToString(), "AcceptedIntoGroup", props);
                 }
@@ -853,7 +857,14 @@ namespace crds_angular.Services
                 Where(groupParticipant => groupParticipant.GroupRoleId == _groupRoleLeaderId).ToList();
 
             // Call Analytics
-            var props = new EventProperties {{"Name", group.GroupName}, {"City", group?.Address?.City}, {"State", group?.Address?.State}, {"Zip", group?.Address?.PostalCode}};
+            var props = new EventProperties
+            {
+                {"GroupLeaderName", leaders?.FirstOrDefault()?.DisplayName },
+                {"GroupName", group.GroupName},
+                {"GroupCity", group?.Address?.City},
+                {"GroupState", group?.Address?.State},
+                {"GroupZip", group?.Address?.PostalCode}
+            };
             _analyticsService.Track(contact.Contact_ID.ToString(), "RequestedToJoinGroup", props);
 
             if (doSendEmail)
