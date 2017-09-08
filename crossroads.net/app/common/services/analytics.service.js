@@ -7,4 +7,12 @@ export default class AnalyticsService {
   trackForgotPassword() {
     this.analytics.eventTrack('ForgotPassword');
   }
+
+  alias(userId) {
+    this.analytics.setAlias(userId);
+  }
+
+  identify(userId) {
+    this.analytics.setUserProperties(userId);
+  }
 }

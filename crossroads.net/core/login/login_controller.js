@@ -14,7 +14,8 @@
     'Session',
     '$timeout',
     'User',
-    'ImageService'
+    'ImageService',
+    'AnalyticsService'
   ];
 
   function LoginController(
@@ -28,7 +29,8 @@
     Session,
     $timeout,
     User,
-    ImageService) {
+    ImageService,
+    AnalyticsService) {
 
     var vm = this;
     vm.path = ImageService.ProfileImageBaseURL + vm.contactId;
@@ -93,7 +95,7 @@
             }
 
             clearCredentials();
-
+            AnalyticsService.identify($rootScope.userid);
             // If the state name ends with login or register (like 'login' or 'give.one_time_login'),
             // either redirect to specified URL, or redirect to profile if URL is not specified.
             if (_.endsWith($state.current.name, 'login') || _.endsWith($state.current.name, 'register')) {

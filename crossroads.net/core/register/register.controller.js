@@ -11,7 +11,8 @@
     '$log',
     '$timeout',
     '$state',
-    'Validation'
+    'Validation',
+    'AnalyticsService'
   ];
 
   function RegisterController(
@@ -22,7 +23,8 @@
     $log,
     $timeout,
     $state,
-    Validation) {
+    Validation,
+    AnalyticsService) {
 
     var vm = this;
     vm.newuser = User;
@@ -84,6 +86,8 @@
       if (vm.registerForm) {
         vm.registerForm.$setPristine();
       }
+
+      AnalyticsService.alias($rootScope.userid);
 
       vm.newuser = {};
       $timeout(function() {
