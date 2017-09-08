@@ -1,4 +1,4 @@
-require('../app/common/common.module');
+require('../../app/common/common.module');
 
 describe('Login Controller', function () {
   var CONSTANTS = require('crds-constants');
