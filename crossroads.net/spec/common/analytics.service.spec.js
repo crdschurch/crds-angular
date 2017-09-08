@@ -3,7 +3,6 @@ require('../../app/app');
 
 describe('Common Analytics Service', () => {
   let fixture;
-
   let analytics;
 
   beforeEach(() => {
