@@ -8,7 +8,7 @@ describe('Common Analytics Service', () => {
   beforeEach(() => {
     angular.mock.module('crossroads.common', ($provide) => {
       analytics = jasmine.createSpyObj('$analytics',
-        ['eventTrack']);
+        ['eventTrack', 'setUserProperties', 'setAlias']);
       $provide.value('$analytics', analytics);
     });
   });
@@ -25,13 +25,11 @@ describe('Common Analytics Service', () => {
   });
 
   it('should call identify', () => {
-    spyOn(analytics, 'setUserProperties');
     fixture.identify(1234);
     expect(analytics.setUserProperties).toHaveBeenCalledWith(1234);
   });
 
   it('should call alias', () => {
-    spyOn(analytics, 'setAlias');
     fixture.alias(1234);
     expect(analytics.setAlias).toHaveBeenCalledWith(1234);
   });
