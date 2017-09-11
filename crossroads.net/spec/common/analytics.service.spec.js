@@ -26,7 +26,7 @@ describe('Common Analytics Service', () => {
 
   it('should call identify', () => {
     fixture.identifyLoggedInUser(1234, 'email@email.com', 'first', 'last');
-    expect(analytics.setUserProperties).toHaveBeenCalledWith(1234, 'email@email.com', 'first', 'last');
+    expect(analytics.setUserProperties).toHaveBeenCalledWith({userId: 1234, Email: 'email@email.com', FirstName: 'first', LastName: 'last'});
   });
 
   it('should call alias', () => {
