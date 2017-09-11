@@ -249,29 +249,34 @@ namespace crds_angular.test.Services
 
             _participantRepository.Setup(mocked => mocked.GetParticipantRecord("abc")).Returns(myParticipant);
 
+            var groupParticipants = new List<GroupParticipantDTO>
+            {
+                new GroupParticipantDTO
+                {
+                    ParticipantId = myParticipantId,
+                    GroupRoleId = GroupRoleLeader
+                },
+                new GroupParticipantDTO
+                {
+                    ParticipantId = 9090,
+                    GroupParticipantId = 19090,
+                    GroupRoleId = GroupRoleLeader
+                }
+            };
+
             var groups = new List<GroupDTO>
             {
                 new GroupDTO
                 {
-                    Participants = new List<GroupParticipantDTO>
-                    {
-                        new GroupParticipantDTO
-                        {
-                            ParticipantId = myParticipantId,
-                            GroupRoleId = GroupRoleLeader
-                        },
-                        new GroupParticipantDTO
-                        {
-                            ParticipantId = 9090,
-                            GroupParticipantId = 19090,
-                            GroupRoleId = GroupRoleLeader
-                        }
-                    },
+                    Participants = groupParticipants,
                     Address = new AddressDTO() {City = "cityname", State = "CA" }
                 }
             };
 
-            var mygroup = new GroupDTO {GroupTypeId = 5, Address = new AddressDTO() { City = "cityname", State = "CA" } };
+            var mygroup = new GroupDTO {GroupTypeId = 5,
+                                        Address = new AddressDTO() { City = "cityname", State = "CA" },
+                                        Participants = groupParticipants
+            };
             
             var inquiry = new Inquiry
             {
@@ -319,7 +324,7 @@ namespace crds_angular.test.Services
                 Nickname = "Nick"
             };
             _contactRepository.Setup(mocked => mocked.GetContactById(It.IsAny<int>())).Returns(leader);
-            
+           
 
             _fixture.ApproveDenyInquiryFromMyGroup("abc", 2, true, inquiry, message, _memberRoleId);
 
@@ -1702,10 +1707,10 @@ namespace crds_angular.test.Services
 
             _fixture.SubmitInquiry(token, group.GroupId, true);
             _mockAnalyticService.Verify(x => x.Track(It.IsAny<string>(), "RequestedToJoinGroup", It.Is<EventProperties>(props => 
-                                    props["Name"].Equals(group.GroupName) 
-                                    && props["State"].Equals(group.Address.State)
-                                    && props["City"].Equals(group.Address.City)
-                                    && props["Zip"].Equals(group.Address.PostalCode))), Times.Once);
+                                    props["GroupName"].Equals(group.GroupName) 
+                                    && props["GroupState"].Equals(group.Address.State)
+                                    && props["GroupCity"].Equals(group.Address.City)
+                                    && props["GroupZip"].Equals(group.Address.PostalCode))), Times.Once);
 
             _groupRepository.VerifyAll();
             _groupToolRepository.VerifyAll();
