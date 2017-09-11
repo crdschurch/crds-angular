@@ -28,15 +28,17 @@ namespace MinistryPlatform.Translation.Test.Services
             var config = new ConfigurationWrapper();
             var authenticationRepository = new AuthenticationRepository(new RestClient(config.GetEnvironmentVarAsString("MP_OAUTH_BASE_URL")),
                                                                         new RestClient(config.GetEnvironmentVarAsString("MP_REST_API_ENDPOINT")));
-            var apiUserRepository = new ApiUserRepository(config, authenticationRepository);
-            _authToken = apiUserRepository.GetToken();
+            var ministryPlatformRestClient = new RestClient(config.GetEnvironmentVarAsString("MP_REST_API_ENDPOINT"));
+            var apiUserRepository = new ApiUserRepository(config, authenticationRepository, ministryPlatformRestClient);
+            _authToken = apiUserRepository.GetDefaultApiUserToken();
         }
 
         [SetUp]
         public void SetUp()
         {
-            var restClient = new RestClient(Environment.GetEnvironmentVariable("MP_REST_API_ENDPOINT"));
-            _fixture = new MinistryPlatformRestRepository(restClient);
+            var ministryPlatformRestClient = new RestClient(Environment.GetEnvironmentVariable("MP_REST_API_ENDPOINT"));
+            var authenticationRestClient = new RestClient(Environment.GetEnvironmentVariable("MP_OAUTH_BASE_URL"));
+            _fixture = new MinistryPlatformRestRepository(ministryPlatformRestClient, authenticationRestClient);
         }       
 
         [Test]

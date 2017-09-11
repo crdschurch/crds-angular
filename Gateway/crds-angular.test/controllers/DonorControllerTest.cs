@@ -572,7 +572,12 @@ namespace crds_angular.test.controllers
             };
             var contactDonorUpdated = new MpContactDonor
             {
-                Email = "me@here.com"
+                Email = "me@here.com",
+                Details = new MpContactDetails
+                {
+                    EmailAddress = "me@here.com",
+                    DisplayName = "Bart Simpson"
+                }
             };
             var recurringGiftDto = new RecurringGiftDto
             {
@@ -581,7 +586,7 @@ namespace crds_angular.test.controllers
 
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(_authType + " " + _authToken)).Returns(contactDonor);
             _donorService.Setup(mocked => mocked.CreateOrUpdateContactDonor(contactDonor, string.Empty, string.Empty, string.Empty, string.Empty, null, null)).Returns(contactDonorUpdated);
-            _donorService.Setup(mocked => mocked.CreateRecurringGift(_authType + " " + _authToken, recurringGiftDto, contactDonorUpdated)).Returns(123);
+            _donorService.Setup(mocked => mocked.CreateRecurringGift(_authType + " " + _authToken, recurringGiftDto, contactDonorUpdated, "me@here.com", "Bart Simpson")).Returns(123);
 
             var response = _fixture.CreateRecurringGift(recurringGiftDto);
             _donorService.VerifyAll();
@@ -598,8 +603,19 @@ namespace crds_angular.test.controllers
         public void TestCreateRecurringGiftStripeError()
         {
             const string stripeToken = "tok_123";
-            var contactDonor = new MpContactDonor();
-            var contactDonorUpdated = new MpContactDonor();
+            var contactDonor = new MpContactDonor
+            {
+                Email = "you@here.com"
+            };
+            var contactDonorUpdated = new MpContactDonor
+            {
+                Email = "me@here.com",
+                Details = new MpContactDetails
+                {
+                    EmailAddress = "me@here.com",
+                    DisplayName = "Bart Simpson"
+                }
+            };
             var recurringGiftDto = new RecurringGiftDto
             {
                 StripeTokenId = stripeToken
@@ -615,7 +631,7 @@ namespace crds_angular.test.controllers
 
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(_authType + " " + _authToken)).Returns(contactDonor);
             _donorService.Setup(mocked => mocked.CreateOrUpdateContactDonor(contactDonor, string.Empty, string.Empty, string.Empty, string.Empty, null, null)).Returns(contactDonorUpdated);
-            _donorService.Setup(mocked => mocked.CreateRecurringGift(_authType + " " + _authToken, recurringGiftDto, contactDonorUpdated)).Throws(stripeException);
+            _donorService.Setup(mocked => mocked.CreateRecurringGift(_authType + " " + _authToken, recurringGiftDto, contactDonorUpdated, "me@here.com", "Bart Simpson")).Throws(stripeException);
 
             var response = _fixture.CreateRecurringGift(recurringGiftDto);
             _donorService.VerifyAll();
