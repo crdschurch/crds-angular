@@ -8,11 +8,18 @@ export default class AnalyticsService {
     this.analytics.eventTrack('ForgotPassword');
   }
 
-  alias(userId) {
+  newUserRegistered(userId) {
     this.analytics.setAlias(userId);
   }
 
-  identify(userId) {
-    this.analytics.setUserProperties(userId);
+  identifyLoggedInUser(userId, email, firstName, lastName) {
+    const props = {
+      userId,
+      Email: email,
+      FirstName: firstName,
+      LastName: lastName
+    };
+
+    this.analytics.setUserProperties(props);
   }
 }

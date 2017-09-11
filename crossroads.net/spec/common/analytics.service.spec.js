@@ -25,12 +25,12 @@ describe('Common Analytics Service', () => {
   });
 
   it('should call identify', () => {
-    fixture.identify(1234);
-    expect(analytics.setUserProperties).toHaveBeenCalledWith(1234);
+    fixture.identifyLoggedInUser(1234, 'email@email.com', 'first', 'last');
+    expect(analytics.setUserProperties).toHaveBeenCalledWith(1234, 'email@email.com', 'first', 'last');
   });
 
   it('should call alias', () => {
-    fixture.alias(1234);
+    fixture.newUserRegistered(1234);
     expect(analytics.setAlias).toHaveBeenCalledWith(1234);
   });
 });
