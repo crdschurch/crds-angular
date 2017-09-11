@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Device.Location;
 using System.IO;
 using System.Linq;
@@ -21,7 +20,6 @@ namespace crds_angular.Services
     {
         private readonly IAddressGeocodingService _addressGeocodingService;
         private readonly IFinderRepository _finderRepository;
-        private readonly IConfigurationWrapper _configurationWrapper;
         protected string AmazonSearchUrl;
         protected string AwsAccessKeyId;
         protected string AwsSecretAccessKey;
@@ -32,31 +30,19 @@ namespace crds_angular.Services
         {
             _addressGeocodingService = addressGeocodingService;
             _finderRepository = finderRepository;
-            _configurationWrapper = configurationWrapper;
+            var configurationWrapper1 = configurationWrapper;
 
-            AmazonSearchUrl    = _configurationWrapper.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ENDPOINT");
-            AwsAccessKeyId     = _configurationWrapper.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ACCESSKEYID");
-            AwsSecretAccessKey = _configurationWrapper.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_SECRETACCESSKEY");
+            AmazonSearchUrl    = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ENDPOINT");
+            AwsAccessKeyId     = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ACCESSKEYID");
+            AwsSecretAccessKey = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_SECRETACCESSKEY");
 
 
         }
 
         public UploadDocumentsResponse UploadAllConnectRecordsToAwsCloudsearch()
         {
-            var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
-
             var pinList = GetDataForCloudsearch();
-
-            //serialize
-            var json = JsonConvert.SerializeObject(pinList, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            var upload = new UploadDocumentsRequest()
-            {
-                ContentType = ContentType.ApplicationJson,
-                Documents = ms
-            };
-
-            return(cloudSearch.UploadDocuments(upload));
+            return SendAwsDocs(pinList);
         }
 
         public UploadDocumentsResponse UploadSingleGroupToAwsFromMp(int groupId)
@@ -73,7 +59,7 @@ namespace crds_angular.Services
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
             var upload = new UploadDocumentsRequest()
             {
-                ContentType = ContentType.ApplicationJson,  
+                ContentType = ContentType.ApplicationJson,
                 Documents = ms
             };
 
@@ -82,8 +68,6 @@ namespace crds_angular.Services
 
         public UploadDocumentsResponse DeleteAllConnectRecordsInAwsCloudsearch()
         {
-            var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
-
             var results = SearchConnectAwsCloudsearch("matchall", "_no_fields");
             var deletelist = new List<AwsCloudsearchDto>();
             foreach (var hit in results.Hits.Hit)
@@ -95,8 +79,16 @@ namespace crds_angular.Services
                 };
                 deletelist.Add(deleterec);
             }
+
+            return SendAwsDocs(deletelist);
+        }
+
+        private UploadDocumentsResponse SendAwsDocs(List<AwsCloudsearchDto> awsDocs)
+        {
+            var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
+
             // serialize
-            var json = JsonConvert.SerializeObject(deletelist, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var json = JsonConvert.SerializeObject(awsDocs, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
             var upload = new UploadDocumentsRequest()
             {
@@ -109,8 +101,6 @@ namespace crds_angular.Services
 
         public UploadDocumentsResponse DeleteGroupFromAws(int groupId)
         {
-            var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
-
             var results = SearchConnectAwsCloudsearch($"groupid: {groupId}", "_no_fields");
             var deletelist = new List<AwsCloudsearchDto>();
             foreach (var hit in results.Hits.Hit)
@@ -123,23 +113,42 @@ namespace crds_angular.Services
                 deletelist.Add(deleterec);
             }
 
-            // serialize
-            var json = JsonConvert.SerializeObject(deletelist, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            var upload = new UploadDocumentsRequest()
-            {
-                ContentType = ContentType.ApplicationJson,
-                Documents = ms
-            };
-
-            return (cloudSearch.UploadDocuments(upload));
+            return SendAwsDocs(deletelist);
         }
 
-
-        public UploadDocumentsResponse DeleteSingleConnectRecordInAwsCloudsearch(int participantId, int pinType)
+        public UploadDocumentsResponse UpdateGroupInAws(FinderGroupDto groupDto)
         {
             var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
 
+            var results = SearchConnectAwsCloudsearch($"groupid: {groupDto.GroupId}", "_no_fields");
+
+            switch (results.Hits.Hit.Count)
+            {
+                case 0:
+                    // not found, so lets add it to aws
+                    // call add here
+                    break;
+                case 1:
+                    // found the exact match, let's update
+                    break;
+                default:
+                    // we found multiple matches. This seems to be an issue. Let's delete all mathing groups and just add the one we want
+                    DeleteGroupFromAws(groupDto.GroupId);
+                    // call add here
+                    break;
+            }
+
+                var idToUpdate = results.Hits.Hit.FirstOrDefault().Id;
+            // get the id for the cloudsearch record we want to upload
+            // add the id to the record and call upload
+
+
+            var upload = new UploadDocumentsRequest();
+            return(cloudSearch.UploadDocuments(upload));
+        }
+
+        public UploadDocumentsResponse DeleteSingleConnectRecordInAwsCloudsearch(int participantId, int pinType)
+        {
             var results = SearchConnectAwsCloudsearch($"(and participantid:{participantId} pintype:{pinType})", "_no_fields");
             var deletelist = new List<AwsCloudsearchDto>();
             foreach (var hit in results.Hits.Hit)
@@ -151,16 +160,7 @@ namespace crds_angular.Services
                 };
                 deletelist.Add(deleterec);
             }
-            // serialize
-            var json = JsonConvert.SerializeObject(deletelist, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            var upload = new UploadDocumentsRequest()
-            {
-                ContentType = ContentType.ApplicationJson,
-                Documents = ms
-            };
-
-            return (cloudSearch.UploadDocuments(upload));
+            return SendAwsDocs(deletelist);
         }
 
         private AwsCloudsearchDto CreateCloudSearchUploadDto(AwsConnectDto groupDto)
@@ -177,7 +177,7 @@ namespace crds_angular.Services
 
         private List<AwsCloudsearchDto> GetDataForCloudsearch()
         {
-            var pins = _finderRepository.GetAllPinsForAws().Select(Mapper.Map<AwsConnectDto>).ToList();
+            var pins= _finderRepository.GetAllPinsForAws().Select(Mapper.Map<AwsConnectDto>).ToList();
             var pinlist = new List<AwsCloudsearchDto>();
             foreach (var pin in pins)
             {
