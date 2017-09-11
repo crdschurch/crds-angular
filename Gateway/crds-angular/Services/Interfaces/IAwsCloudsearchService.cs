@@ -8,6 +8,7 @@ namespace crds_angular.Services.Interfaces
     public interface IAwsCloudsearchService
     {
         void UploadNewPinToAws(PinDto pin);
+        UploadDocumentsResponse UploadSingleGroupToAwsFromMp(int groupId);
         UploadDocumentsResponse DeleteGroupFromAws(int groupId);
         UploadDocumentsResponse UploadAllConnectRecordsToAwsCloudsearch();
         UploadDocumentsResponse DeleteAllConnectRecordsInAwsCloudsearch();

@@ -146,7 +146,31 @@ namespace MinistryPlatform.Translation.Repositories
                 return new List<MpConnectAws>();
             }
         }
-       
+
+        public MpConnectAws GetSingleGroupRecordFromMpInAwsPinFormat(int groupId)
+        {
+            var apiToken = _apiUserRepository.GetToken();
+            const string spName = "api_crds_Get_Finder_AWS_Data_For_Single_Group";
+            Dictionary <string, object> spParams = new Dictionary<string, object>()
+            {
+                {"@GroupId", groupId}
+            };
+
+            try
+            {
+                var storedProcReturn = _ministryPlatformRest.UsingAuthenticationToken(apiToken).GetFromStoredProc<MpConnectAws>(spName, spParams);
+                var pinsFromSp = storedProcReturn.FirstOrDefault();
+                MpConnectAws groupPin = pinsFromSp.FirstOrDefault();
+
+                return groupPin;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("GetSingleGroupRecordFromMpInAwsPinFormat error" + ex);
+                return new MpConnectAws();
+            }
+        }
+
         public void RecordConnection(MpConnectCommunication connection)
         {
             var apiToken = _apiUserRepository.GetToken();

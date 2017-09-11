@@ -11,6 +11,7 @@ using Amazon.CloudSearchDomain.Model;
 using AutoMapper;
 using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Finder;
+using MinistryPlatform.Translation.Models.Finder;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Newtonsoft.Json;
 
@@ -56,6 +57,27 @@ namespace crds_angular.Services
             };
 
             return(cloudSearch.UploadDocuments(upload));
+        }
+
+        public UploadDocumentsResponse UploadSingleGroupToAwsFromMp(int groupId)
+        {
+            MpConnectAws groupFromAws = _finderRepository.GetSingleGroupRecordFromMpInAwsPinFormat(groupId);
+            AwsConnectDto groupInAwsUploadFormat = Mapper.Map<AwsConnectDto>(groupFromAws);
+
+            var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
+
+            AwsCloudsearchDto awsDto = CreateCloudSearchUploadDto(groupInAwsUploadFormat);
+            List<AwsCloudsearchDto> awsDtoList = new List<AwsCloudsearchDto>() { awsDto };
+
+            var json = JsonConvert.SerializeObject(awsDtoList, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
+            var upload = new UploadDocumentsRequest()
+            {
+                ContentType = ContentType.ApplicationJson,  
+                Documents = ms
+            };
+
+            return (cloudSearch.UploadDocuments(upload));
         }
 
         public UploadDocumentsResponse DeleteAllConnectRecordsInAwsCloudsearch()
@@ -141,11 +163,21 @@ namespace crds_angular.Services
             return (cloudSearch.UploadDocuments(upload));
         }
 
+        private AwsCloudsearchDto CreateCloudSearchUploadDto(AwsConnectDto groupDto)
+        {
+            AwsCloudsearchDto awsDto = new AwsCloudsearchDto()
+            {
+                type = "add",
+                id = groupDto.AddressId + "-" + groupDto.PinType + "-" + groupDto.ParticipantId + "-" + groupDto.GroupId,
+                fields = groupDto
+            };
 
+            return awsDto;
+        }
 
         private List<AwsCloudsearchDto> GetDataForCloudsearch()
         {
-            var pins= _finderRepository.GetAllPinsForAws().Select(Mapper.Map<AwsConnectDto>).ToList();
+            var pins = _finderRepository.GetAllPinsForAws().Select(Mapper.Map<AwsConnectDto>).ToList();
             var pinlist = new List<AwsCloudsearchDto>();
             foreach (var pin in pins)
             {
