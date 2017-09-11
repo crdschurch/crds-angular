@@ -56,7 +56,7 @@ export default class StreamingController {
           feature.image = `https://crds-cms-uploads.imgix.net/${filename}?ixjsv=2.2.3&w=225`;
         } else {
           feature.image = 'https://crds-cms-uploads.imgix.net/content/images/register-bg.jpg';
-        }        
+        }
       }
     });
     return section.features;

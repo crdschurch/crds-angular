@@ -14,7 +14,7 @@
     vm.url = `${__CMS_CLIENT_ENDPOINT__}api`;
 
     vm.todaysDate = moment().format('YYYY-MM-DD');
-    
+
     vm.getCurrentSeries = function() {
 
       let currentSeriesAPIAddress = `${this.url}/series?endDate__GreaterThanOrEqual=${vm.todaysDate}&endDate__sort=ASC`
@@ -35,7 +35,7 @@
             allActiveSeries.sort(this.dateSortMethod);
             currentSeries = allActiveSeries[0];
           }
-          
+
           return currentSeries;
 
       });
