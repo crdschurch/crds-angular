@@ -21,7 +21,7 @@ namespace crds_angular.Services.Analytics
 
         public static void Track(string userId, string eventName, EventProperties props)
         {
-            Properties segProps = mapProps(props);
+            Properties segProps = mapEventProps(props);
             var opts = new Options()
                 .SetContext(new Segment.Model.Context()
                 {
@@ -29,11 +29,21 @@ namespace crds_angular.Services.Analytics
                 });
 
             Segment.Analytics.Client.Track(userId, eventName, segProps, opts);
+            Segment.Analytics.Client.Identify(userId, mapProps(segProps));
             Segment.Analytics.Client.Flush();
-
         }
 
-        private  static Properties mapProps(EventProperties eventProps)
+        private static Traits mapProps(Properties props)
+        {
+            Traits t = new Traits();
+            foreach (KeyValuePair<string, object> p in props)
+            {
+                t.Add(p.Key, p.Value);
+            }
+            return t;
+        }
+
+        private  static Properties mapEventProps(EventProperties eventProps)
         {
             var props = new Properties();
             foreach (KeyValuePair<string, object> p in eventProps)
