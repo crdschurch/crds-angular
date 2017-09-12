@@ -3,13 +3,12 @@ require('../../app/app');
 
 describe('Common Analytics Service', () => {
   let fixture;
-
   let analytics;
 
   beforeEach(() => {
     angular.mock.module('crossroads.common', ($provide) => {
       analytics = jasmine.createSpyObj('$analytics',
-        ['eventTrack']);
+        ['eventTrack', 'setUserProperties', 'setAlias']);
       $provide.value('$analytics', analytics);
     });
   });
@@ -23,5 +22,15 @@ describe('Common Analytics Service', () => {
   it('should call eventTrack with "Forgot Password"', () => {
     fixture.trackForgotPassword();
     expect(analytics.eventTrack).toHaveBeenCalledWith('ForgotPassword');
+  });
+
+  it('should call identify', () => {
+    fixture.identifyLoggedInUser(1234, 'email@email.com', 'first', 'last');
+    expect(analytics.setUserProperties).toHaveBeenCalledWith({userId: 1234, Email: 'email@email.com', FirstName: 'first', LastName: 'last'});
+  });
+
+  it('should call alias', () => {
+    fixture.newUserRegistered(1234);
+    expect(analytics.setAlias).toHaveBeenCalledWith(1234);
   });
 });

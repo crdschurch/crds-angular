@@ -11,7 +11,8 @@
     '$log',
     '$timeout',
     '$state',
-    'Validation'
+    'Validation',
+    'AnalyticsService'
   ];
 
   function RegisterController(
@@ -22,7 +23,8 @@
     $log,
     $timeout,
     $state,
-    Validation) {
+    Validation,
+    AnalyticsService) {
 
     var vm = this;
     vm.newuser = User;
@@ -70,13 +72,15 @@
     }
 
     function successfulRegistration() {
-      AuthService.login(vm.credentials).then(successfulLogin,failedLogin ).then(function() {
+      AuthService.login(vm.credentials).then(successfulLogin, failedLogin).then(function() {
         vm.processing = false;
         vm.showRegisterButton = true;
       });
     }
 
     function successfulLogin(user) {
+      AnalyticsService.newUserRegistered($rootScope.userid);
+      AnalyticsService.identifyLoggedInUser($rootScope.userid, vm.credentials.username, vm.registerForm.firstname.$modelValue, vm.registerForm.lastname.$modelValue);
       // TODO Refactor this to a shared location for use here and in login_controller
       vm.registerShow = !vm.registerShow;
       $rootScope.showLoginButton = false; //TODO use a service here, avoid using rootscope
