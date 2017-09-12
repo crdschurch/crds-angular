@@ -113,7 +113,7 @@ namespace crds_angular.Services
             Dictionary<string, object> userUpdateValues = new Dictionary<string, object>();
             userUpdateValues["User_ID"] = user_ID;
             userUpdateValues["ResetToken"] = null; // swap out for real implementation
-            _userService.UpdateUser(userUpdateValues);
+            _userService.UpdateUserRest(userUpdateValues,user_ID);
             
             return true;
         }

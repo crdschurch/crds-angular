@@ -5,7 +5,6 @@ using System.Linq;
 using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using RoleDTO = MinistryPlatform.Translation.Models.DTO.MpRoleDto;
@@ -24,7 +23,6 @@ namespace MinistryPlatform.Translation.Repositories
         {
             var pageId = Convert.ToInt32(ConfigurationManager.AppSettings["MyRoles"]);
             var pageRecords = MinistryPlatformService.GetRecordsDict(pageId, token);
-   
             return pageRecords.Select(record => new RoleDTO
             {
                 Id = (int) record["Role_ID"], Name = (string) record["Role_Name"]
