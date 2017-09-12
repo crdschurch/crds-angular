@@ -125,8 +125,16 @@ namespace crds_angular.Services
         {
             setupDate = setupDate ?? DateTime.Now;
 
-            var contactDonorResponse = new MpContactDonor();
-            
+            var contactDonorResponse = new MpContactDonor
+            {
+                Email = mpContactDonor?.Email,
+                Details = new MpContactDetails
+                {
+                    DisplayName = mpContactDonor?.Details?.DisplayName,
+                    EmailAddress = mpContactDonor?.Details?.EmailAddress
+                }
+            };
+
             if (mpContactDonor == null || !mpContactDonor.ExistingContact)
             {
                 string displayName;
