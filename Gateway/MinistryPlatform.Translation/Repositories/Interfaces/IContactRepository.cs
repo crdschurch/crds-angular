@@ -33,6 +33,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         MpMyContact GetContactByUserRecordId(int userRecordId);
         IObservable<MpHousehold> UpdateHousehold(MpHousehold household);
         void SetHouseholdAddress(int contactId, int householdId, int addressId);
-        void UpdateUsertoActive(int contactId);
+        void UpdateContactToActive(int contactId);
     }
 }

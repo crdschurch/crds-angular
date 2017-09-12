@@ -213,7 +213,7 @@ namespace MinistryPlatform.Translation.Repositories
 
 
         #region changes inactive users to active and records in the audit log
-        public void UpdateUsertoActive(int contactId)
+        public void UpdateContactToActive(int contactId)
         {
             try
             {

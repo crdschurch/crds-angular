@@ -62,6 +62,14 @@ namespace MinistryPlatform.Translation.Repositories
             return user;
         }
 
+        public MpUser GetByUserName(string userName)
+        {
+            string searchUser = $"dp_Users.User_Name='{userName}'";
+            string columns = "User_Name,User_GUID, Can_Impersonate,User_Email,User_ID";
+            var users = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Search<MpUser>(searchUser, columns, null, true);
+            return users.FirstOrDefault();
+        }
+
         public MpUser GetUserByResetToken(string resetToken)
         {
             var searchString = string.Format(",,,,,\"{0}\"", resetToken);
@@ -103,9 +111,24 @@ namespace MinistryPlatform.Translation.Repositories
             }).ToList();
         }
 
+
+        public List<MpRoleDto> GetUserRolesRest(int userId)
+        {
+            string searchStr = $"User_ID={userId}";
+            string columns = "dp_User_Roles.Role_ID, Role_ID_Table.Role_Name";
+            var records = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Search<MpRoleDto>(searchStr, columns);
+            return records; 
+
+        }
+
         public void UpdateUser(Dictionary<string, object> userUpdateValues)
         {
             MinistryPlatformService.UpdateRecord(Convert.ToInt32(ConfigurationManager.AppSettings["Users"]), userUpdateValues, ApiLogin());
+        }
+
+        public void UpdateUserRest(Dictionary<string, object> userUpdateValues, int user_id)
+        {
+            _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).UpdateRecord("dp_Users", user_id, userUpdateValues);
         }
 
         public void UpdateUser(MpUser user)
