@@ -10,7 +10,7 @@ export default class AnalyticsService {
 
   newUserRegistered(userId, email, firstName, lastName) {
     this.analytics.setAlias(userId);
-    this.analytics.identifyLoggedInUser(userId, email, firstName, lastName);
+    this.identifyLoggedInUser(userId, email, firstName, lastName);
   }
 
   identifyLoggedInUser(userId, email, firstName, lastName) {
