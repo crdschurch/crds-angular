@@ -833,7 +833,7 @@ namespace crds_angular.Services
                 var mpGroup = Mapper.Map<MpGroup>(group);
                 _mpGroupRepository.UpdateGroup(mpGroup);
 
-                List<MpGroupParticipant> groupParticipants = _mpGroupRepository.GetGroupParticipants(group.GroupId, true);
+                var groupParticipants = _mpGroupRepository.GetGroupParticipants(group.GroupId, true);
 
                 if (groupParticipants.Count(participant => participant.StartDate < group.StartDate) > 0)
                 {
@@ -856,10 +856,12 @@ namespace crds_angular.Services
                     var leaders =groupParticipants.Where(p => p.GroupRoleId == _groupRoleLeader).ToList();
                     _mpGroupRepository.SendNewStudentMinistryGroupAlertEmail(leaders);
                 }
+
+                _awsCloudsearchService.UpdateGroupInAws(group.GroupId);
             }
             catch (Exception e)
             {
-                var message = String.Format("Could not update group {0}", group.GroupName);
+                var message = $"Could not update group {@group.GroupName}";
                 _logger.Error(message, e);
                 throw (new ApplicationException(message, e));
             }
