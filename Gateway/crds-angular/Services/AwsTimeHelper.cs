@@ -28,9 +28,34 @@ namespace crds_angular.Services
             hourString = Convert24To00(hourString); 
             minuteString = time.Substring(3, 2);
 
-            string dateAsUtcString = date.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'" + hourString + "':'" + minuteString + "':'ss'.'fff'Z'");
+            string dateAsUtcString;
+
+            if (isTimeStringAlreadyInMilitaryTime(time))
+            {
+                dateAsUtcString = buildAwsFriendlyDateTimeFromMilitaryTime(time);
+            }
+            else
+            {
+                dateAsUtcString = date.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'" + hourString + "':'" + minuteString + "':'ss'.'fff'Z'");
+            }
 
             return dateAsUtcString;
+        }
+
+        public string buildAwsFriendlyDateTimeFromMilitaryTime(string time)
+        {
+            DateTime date = new DateTime();
+            string[] timeComponents = time.Split(':');
+            string hours = timeComponents[0];
+            string minutes = timeComponents[1];
+            string dateAsUtcString = date.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'" + hours + "':'" + minutes + "':'ss'.'fff'Z'");
+            return dateAsUtcString;
+        }
+
+        public bool isTimeStringAlreadyInMilitaryTime(string time)
+        {
+            bool doesContainPmOrAmFlag = time.Contains("AM") || time.Contains("PM");
+            return !doesContainPmOrAmFlag;
         }
 
         //The UTC standard specifies a leading zero, e.g. "05:55PM" instead of "5:55PM" - add it if missing

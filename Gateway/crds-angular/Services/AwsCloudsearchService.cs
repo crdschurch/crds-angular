@@ -47,8 +47,8 @@ namespace crds_angular.Services
 
         public UploadDocumentsResponse UploadSingleGroupToAwsFromMp(int groupId)
         {
-            MpConnectAws groupFromAws = _finderRepository.GetSingleGroupRecordFromMpInAwsPinFormat(groupId);
-            AwsConnectDto groupInAwsUploadFormat = Mapper.Map<AwsConnectDto>(groupFromAws);
+            MpConnectAws groupFromMp = _finderRepository.GetSingleGroupRecordFromMpInAwsPinFormat(groupId);
+            AwsConnectDto groupInAwsUploadFormat = Mapper.Map<AwsConnectDto>(groupFromMp);
 
             var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
 
