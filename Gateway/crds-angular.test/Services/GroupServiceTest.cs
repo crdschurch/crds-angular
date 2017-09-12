@@ -799,7 +799,7 @@ namespace crds_angular.test.Services
             };
 
             groupRepository.Setup(mocked => mocked.CreateGroup(newGroup)).Returns(14);
-            //.Setup(mocked => mocked.UploadSingleGroupToAwsFromMp(123)).Returns(new UploadDocumentsResponse());
+            _awsCloudsearchService.Setup(mocked => mocked.UploadSingleGroupToAwsFromMp(It.IsAny<int>())).Returns(new UploadDocumentsResponse());
             var groupResp = fixture.CreateGroup(group);
 
             _groupRepository.VerifyAll();

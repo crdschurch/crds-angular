@@ -30,9 +30,9 @@ namespace crds_angular.Services
 
             string dateAsUtcString;
 
-            if (isTimeStringAlreadyInMilitaryTime(time))
+            if (IsTimeStringAlreadyInMilitaryTime(time))
             {
-                dateAsUtcString = buildAwsFriendlyDateTimeFromMilitaryTime(time);
+                dateAsUtcString = BuildAwsFriendlyDateTimeFromMilitaryTime(time);
             }
             else
             {
@@ -42,7 +42,7 @@ namespace crds_angular.Services
             return dateAsUtcString;
         }
 
-        public string buildAwsFriendlyDateTimeFromMilitaryTime(string time)
+        public string BuildAwsFriendlyDateTimeFromMilitaryTime(string time)
         {
             DateTime date = new DateTime();
             string[] timeComponents = time.Split(':');
@@ -52,7 +52,7 @@ namespace crds_angular.Services
             return dateAsUtcString;
         }
 
-        public bool isTimeStringAlreadyInMilitaryTime(string time)
+        public bool IsTimeStringAlreadyInMilitaryTime(string time)
         {
             bool doesContainPmOrAmFlag = time.Contains("AM") || time.Contains("PM");
             return !doesContainPmOrAmFlag;
