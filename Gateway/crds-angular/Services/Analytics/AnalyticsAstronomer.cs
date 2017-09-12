@@ -33,6 +33,12 @@ namespace crds_angular.Services.Analytics
             Segment.Analytics.Client.Flush();
         }
 
+        public static void Identify(string userId, EventProperties props)
+        {
+            Properties segProps = mapEventProps(props);
+            Segment.Analytics.Client.Identify(userId, mapProps(segProps));
+        }
+
         private static Traits mapProps(Properties props)
         {
             Traits t = new Traits();

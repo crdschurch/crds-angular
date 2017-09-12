@@ -4,12 +4,15 @@ using System.Linq;
 using AutoMapper;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Profile;
+using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.Repositories;
+using RestSharp.Extensions;
+using Segment.Model;
 using MPServices = MinistryPlatform.Translation.Repositories.Interfaces;
 
 
@@ -24,6 +27,7 @@ namespace crds_angular.Services
         private readonly MPServices.IUserRepository _userRepository;
         private readonly IAuthenticationRepository _authenticationService;
         private readonly IAddressService _addressService;
+        private readonly IAnalyticsService _analyticsService;
 
         public PersonService(MPServices.IContactRepository contactService, 
             IObjectAttributeService objectAttributeService, 
@@ -31,7 +35,8 @@ namespace crds_angular.Services
             MPServices.IParticipantRepository participantService,
             MPServices.IUserRepository userService,
             IAuthenticationRepository authenticationService,
-            IAddressService addressService)
+            IAddressService addressService,
+            IAnalyticsService analyticsService)
         {
             _contactRepository = contactService;
             _objectAttributeService = objectAttributeService;
@@ -40,6 +45,7 @@ namespace crds_angular.Services
             _userRepository = userService;
             _authenticationService = authenticationService;
             _addressService = addressService;
+            _analyticsService = analyticsService;
         }
 
         public void SetProfile(string token, Person person)
@@ -97,6 +103,29 @@ namespace crds_angular.Services
                     _userRepository.UpdateUser(userUpdateValues);
                 }
             }
+            CaptureProfileAnalytics(person);
+        }
+
+        public void CaptureProfileAnalytics(Person person)
+        {
+            var props = new EventProperties
+            {
+                { "FirstName", person.NickName },
+                { "LastName", person.LastName },
+                { "Email", person.EmailAddress },
+                { "Country", person.ForeignCountry },
+                { "Zip", person.PostalCode },
+                { "State", person.State },
+                { "City", person.City },
+                { "Employer", person.EmployerName },
+                { "FirstAttendanceDate", person.AnniversaryDate },
+                { "Congregation", person.CongregationId },
+                { "DateOfBirth", person.DateOfBirth },
+                { "Age", person.Age },
+                { "Gender", person.GenderId },
+                { "MaritalStatus", person.MaritalStatusId }
+            };
+            _analyticsService.IdentifyLoggedInUser(person.ContactId.ToString(), props);
         }
 
         public Person GetPerson(int contactId)
