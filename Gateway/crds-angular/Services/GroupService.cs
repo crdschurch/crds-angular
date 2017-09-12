@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using crds_angular.Exceptions;
+using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Attribute;
 using crds_angular.Models.Crossroads.Groups;
@@ -20,6 +21,8 @@ using IEventRepository = MinistryPlatform.Translation.Repositories.Interfaces.IE
 using IGroupRepository = MinistryPlatform.Translation.Repositories.Interfaces.IGroupRepository;
 using IObjectAttributeService = crds_angular.Services.Interfaces.IObjectAttributeService;
 using crds_angular.Util.Interfaces;
+using MinistryPlatform.Translation.Models.Finder;
+using MinistryPlatform.Translation.Repositories;
 using Segment.Model;
 
 namespace crds_angular.Services
@@ -27,7 +30,7 @@ namespace crds_angular.Services
     public class GroupService : IGroupService
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof (GroupService));
-
+        private readonly IAwsCloudsearchService _awsCloudsearchService;
         private readonly IGroupRepository _mpGroupRepository;
         private readonly IConfigurationWrapper _configurationWrapper;
         private readonly IEventRepository _eventService;
@@ -63,7 +66,8 @@ namespace crds_angular.Services
         private readonly int _domainId;
         private readonly int _removeSelfFromGroupTemplateId;
 
-        public GroupService(IGroupRepository mpGroupRepository,
+        public GroupService(IAwsCloudsearchService awsCloudsearchService,
+                            IGroupRepository mpGroupRepository,
                             IConfigurationWrapper configurationWrapper,
                             IEventRepository eventService,
                             IContactRelationshipRepository contactRelationshipService,
@@ -81,6 +85,7 @@ namespace crds_angular.Services
                             IDateTime dateTimeWrapper)
 
         {
+            _awsCloudsearchService = awsCloudsearchService;
             _mpGroupRepository = mpGroupRepository;
             _configurationWrapper = configurationWrapper;
             _eventService = eventService;
@@ -137,6 +142,9 @@ namespace crds_angular.Services
                 {
                     _mpGroupRepository.SendNewStudentMinistryGroupAlertEmail((List<MpGroupParticipant>) mpGroup.Participants);
                 }
+
+                _awsCloudsearchService.UploadSingleGroupToAwsFromMp(group.GroupId);
+
             }
             catch (Exception e)
             {

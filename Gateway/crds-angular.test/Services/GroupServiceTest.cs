@@ -23,12 +23,14 @@ using MPServices = MinistryPlatform.Translation.Repositories.Interfaces;
 using IGroupRepository = MinistryPlatform.Translation.Repositories.Interfaces.IGroupRepository;
 using Participant = MinistryPlatform.Translation.Models.MpParticipant;
 using crds_angular.Util.Interfaces;
+using Amazon.CloudSearchDomain.Model;
 
 namespace crds_angular.test.Services
 {
     public class GroupServiceTest
     {
         private GroupService fixture;
+        private Mock<IAwsCloudsearchService> _awsCloudsearchService;
         private Mock<IAuthenticationRepository> authenticationService;
         private Mock<MPServices.IGroupRepository> groupRepository;
         private Mock<MPServices.IEventRepository> eventService;
@@ -82,6 +84,7 @@ namespace crds_angular.test.Services
             Mapper.Initialize(cfg => cfg.AddProfile<EventProfile>());
             AutoMapperConfig.RegisterMappings();
 
+            _awsCloudsearchService = new Mock<IAwsCloudsearchService>();
             authenticationService = new Mock<IAuthenticationRepository>();
             groupRepository = new Mock<IGroupRepository>();
             eventService = new Mock<MPServices.IEventRepository>(MockBehavior.Strict);
@@ -115,7 +118,8 @@ namespace crds_angular.test.Services
             config.Setup(mocked => mocked.GetConfigIntValue("DefaultAuthorUser")).Returns(DefaultAuthorUser);
             config.Setup(mocked => mocked.GetConfigIntValue("RemoveSelfFromGroupTemplateId")).Returns(RemoveSelfFromGroupTemplateId);
 
-            fixture = new GroupService(groupRepository.Object,
+            fixture = new GroupService(_awsCloudsearchService.Object, 
+                                        groupRepository.Object,
                                        config.Object,
                                        eventService.Object,
                                        contactRelationshipService.Object,
@@ -795,6 +799,7 @@ namespace crds_angular.test.Services
             };
 
             groupRepository.Setup(mocked => mocked.CreateGroup(newGroup)).Returns(14);
+            //.Setup(mocked => mocked.UploadSingleGroupToAwsFromMp(123)).Returns(new UploadDocumentsResponse());
             var groupResp = fixture.CreateGroup(group);
 
             _groupRepository.VerifyAll();
@@ -1205,6 +1210,7 @@ namespace crds_angular.test.Services
                         false)).Returns(77);
 
             groupRepository.Setup(mocked => mocked.CreateGroup(It.IsAny<MpGroup>())).Returns(14);
+            _awsCloudsearchService.Setup(mocked => mocked.UploadSingleGroupToAwsFromMp(It.IsAny<int>())).Returns(new UploadDocumentsResponse());
             this._objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>()))
                 .Returns(new ObjectAllAttributesDTO());
 
