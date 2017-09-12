@@ -32,7 +32,7 @@ describe('Common Analytics Service', () => {
   it('should call alias', () => {
     fixture.newUserRegistered(1234);
     expect(analytics.setAlias).toHaveBeenCalledWith(1234);
-    expect(analytics.setUserProperties).toHaveBeenCalledWith({userId: 1234, Email: null, FirstName: null, LastName: null });
+    expect(analytics.setUserProperties).toHaveBeenCalledWith({userId: 1234, Email: undefined, FirstName: undefined, LastName: undefined });
   });
 
   it('should call alias with properties', () => {
