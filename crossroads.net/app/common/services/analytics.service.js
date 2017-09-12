@@ -8,8 +8,9 @@ export default class AnalyticsService {
     this.analytics.eventTrack('ForgotPassword');
   }
 
-  newUserRegistered(userId) {
+  newUserRegistered(userId, email, firstName, lastName) {
     this.analytics.setAlias(userId);
+    this.analytics.identifyLoggedInUser(userId, email, firstName, lastName);
   }
 
   identifyLoggedInUser(userId, email, firstName, lastName) {

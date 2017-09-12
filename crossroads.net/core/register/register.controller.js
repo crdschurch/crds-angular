@@ -79,8 +79,7 @@
     }
 
     function successfulLogin(user) {
-      AnalyticsService.newUserRegistered($rootScope.userid);
-      AnalyticsService.identifyLoggedInUser($rootScope.userid, vm.credentials.username, vm.registerForm.firstname.$modelValue, vm.registerForm.lastname.$modelValue);
+      AnalyticsService.newUserRegistered($rootScope.userid, vm.credentials.username, vm.registerForm.firstname.$modelValue, vm.registerForm.lastname.$modelValue);
       // TODO Refactor this to a shared location for use here and in login_controller
       vm.registerShow = !vm.registerShow;
       $rootScope.showLoginButton = false; //TODO use a service here, avoid using rootscope
