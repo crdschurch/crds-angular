@@ -18,25 +18,20 @@ namespace crds_angular.Services
 {
     public class AwsCloudsearchService : MinistryPlatformBaseService, IAwsCloudsearchService
     {
-        private readonly IAddressGeocodingService _addressGeocodingService;
         private readonly IFinderRepository _finderRepository;
         protected string AmazonSearchUrl;
         protected string AwsAccessKeyId;
         protected string AwsSecretAccessKey;
 
-        public AwsCloudsearchService(IAddressGeocodingService addressGeocodingService, 
-                                     IFinderRepository finderRepository,                          
+        public AwsCloudsearchService(IFinderRepository finderRepository,                          
                                      IConfigurationWrapper configurationWrapper)
         {
-            _addressGeocodingService = addressGeocodingService;
             _finderRepository = finderRepository;
             var configurationWrapper1 = configurationWrapper;
 
             AmazonSearchUrl    = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ENDPOINT");
             AwsAccessKeyId     = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ACCESSKEYID");
             AwsSecretAccessKey = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_SECRETACCESSKEY");
-
-
         }
 
         public UploadDocumentsResponse UploadAllConnectRecordsToAwsCloudsearch()
@@ -50,20 +45,10 @@ namespace crds_angular.Services
             MpConnectAws groupFromAws = _finderRepository.GetSingleGroupRecordFromMpInAwsPinFormat(groupId);
             AwsConnectDto groupInAwsUploadFormat = Mapper.Map<AwsConnectDto>(groupFromAws);
 
-            var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
-
             AwsCloudsearchDto awsDto = CreateCloudSearchUploadDto(groupInAwsUploadFormat);
             List<AwsCloudsearchDto> awsDtoList = new List<AwsCloudsearchDto>() { awsDto };
 
-            var json = JsonConvert.SerializeObject(awsDtoList, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            var upload = new UploadDocumentsRequest()
-            {
-                ContentType = ContentType.ApplicationJson,
-                Documents = ms
-            };
-
-            return (cloudSearch.UploadDocuments(upload));
+            return SendAwsDocs(awsDtoList);
         }
 
         public UploadDocumentsResponse DeleteAllConnectRecordsInAwsCloudsearch()
@@ -104,35 +89,30 @@ namespace crds_angular.Services
             return SendAwsDocs(deletelist);
         }
 
-        public UploadDocumentsResponse UpdateGroupInAws(FinderGroupDto groupDto)
+        public UploadDocumentsResponse UpdateGroupInAws(int groupId)
         {
-            var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
-
-            var results = SearchConnectAwsCloudsearch($"groupid: {groupDto.GroupId}", "_no_fields");
+            var results = SearchConnectAwsCloudsearch($"groupid: {groupId}", "_no_fields");
 
             switch (results.Hits.Hit.Count)
             {
                 case 0:
                     // not found, so lets add it to aws
-                    // call add here
-                    break;
+                    return UploadSingleGroupToAwsFromMp(groupId);
                 case 1:
                     // found the exact match, let's update
-                    break;
+                    var idToUpdate = results.Hits.Hit.FirstOrDefault()?.Id;
+                    MpConnectAws groupFromAws = _finderRepository.GetSingleGroupRecordFromMpInAwsPinFormat(groupId);
+                    AwsConnectDto groupInAwsUploadFormat = Mapper.Map<AwsConnectDto>(groupFromAws);
+
+                    AwsCloudsearchDto awsDto = CreateCloudSearchUploadDto(groupInAwsUploadFormat);
+                    awsDto.id = idToUpdate;
+                    List<AwsCloudsearchDto> awsDtoList = new List<AwsCloudsearchDto> { awsDto };
+                    return SendAwsDocs((awsDtoList));
                 default:
                     // we found multiple matches. This seems to be an issue. Let's delete all mathing groups and just add the one we want
-                    DeleteGroupFromAws(groupDto.GroupId);
-                    // call add here
-                    break;
+                    DeleteGroupFromAws(groupId);
+                    return UploadSingleGroupToAwsFromMp(groupId);
             }
-
-              var idToUpdate = results.Hits.Hit.FirstOrDefault().Id;
-            // get the id for the cloudsearch record we want to upload
-            // add the id to the record and call upload
-
-
-            var upload = new UploadDocumentsRequest();
-            return(cloudSearch.UploadDocuments(upload));
         }
 
         public UploadDocumentsResponse DeleteSingleConnectRecordInAwsCloudsearch(int participantId, int pinType)
