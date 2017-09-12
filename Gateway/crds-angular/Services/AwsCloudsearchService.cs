@@ -47,16 +47,10 @@ namespace crds_angular.Services
         public UploadDocumentsResponse DeleteAllConnectRecordsInAwsCloudsearch()
         {
             var results = SearchConnectAwsCloudsearch("matchall", "_no_fields");
-            var deletelist = new List<AwsCloudsearchDto>();
-            foreach (var hit in results.Hits.Hit)
+            var deletelist = results.Hits.Hit.Select(hit => new AwsCloudsearchDto
             {
-                var deleterec = new AwsCloudsearchDto
-                {
-                    id = hit.Id,
-                    type = "delete"
-                };
-                deletelist.Add(deleterec);
-            }
+                id = hit.Id, type = "delete"
+            }).ToList();
 
             return SendAwsDocs(deletelist);
         }
@@ -80,16 +74,10 @@ namespace crds_angular.Services
         public UploadDocumentsResponse DeleteGroupFromAws(int groupId)
         {
             var results = SearchConnectAwsCloudsearch($"groupid: {groupId}", "_no_fields");
-            var deletelist = new List<AwsCloudsearchDto>();
-            foreach (var hit in results.Hits.Hit)
+            var deletelist = results.Hits.Hit.Select(hit => new AwsCloudsearchDto
             {
-                var deleterec = new AwsCloudsearchDto
-                {
-                    id = hit.Id,
-                    type = "delete"
-                };
-                deletelist.Add(deleterec);
-            }
+                id = hit.Id, type = "delete"
+            }).ToList();
 
             return SendAwsDocs(deletelist);
         }
@@ -116,7 +104,7 @@ namespace crds_angular.Services
                     break;
             }
 
-                var idToUpdate = results.Hits.Hit.FirstOrDefault().Id;
+              var idToUpdate = results.Hits.Hit.FirstOrDefault().Id;
             // get the id for the cloudsearch record we want to upload
             // add the id to the record and call upload
 
