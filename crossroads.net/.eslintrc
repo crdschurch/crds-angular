@@ -23,6 +23,7 @@
     "_$location_": false,
     "__GATEWAY_CLIENT_ENDPOINT__": false,
     "__CROSSROADS_API_TOKEN__": false,
+    "__CMS_CLIENT_ENDPOINT__": false,
     "moment": false
   }
 }
