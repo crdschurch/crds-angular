@@ -5,7 +5,7 @@ export default class AnalyticsService {
   }
 
   trackForgotPassword() {
-    this.analytics.eventTrack('ForgotPassword');
+    this.analytics.eventTrack('ForgotPassword', { Source: 'CrossroadsNet' });
   }
 
   newUserRegistered(userId, email, firstName, lastName) {
