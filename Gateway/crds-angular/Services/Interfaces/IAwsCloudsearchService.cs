@@ -8,6 +8,7 @@ namespace crds_angular.Services.Interfaces
     public interface IAwsCloudsearchService
     {
         void UploadNewPinToAws(PinDto pin);
+        UploadDocumentsResponse UploadSingleGroupToAwsFromMp(int groupId);
         UploadDocumentsResponse DeleteGroupFromAws(int groupId);
         UploadDocumentsResponse UploadAllConnectRecordsToAwsCloudsearch();
         UploadDocumentsResponse DeleteAllConnectRecordsInAwsCloudsearch();
@@ -15,5 +16,6 @@ namespace crds_angular.Services.Interfaces
         SearchResponse SearchByGroupId(string groupId);
         AwsBoundingBox BuildBoundingBox(MapBoundingBox mapBoundingBox);
         UploadDocumentsResponse DeleteSingleConnectRecordInAwsCloudsearch(int participantId, int pinType);
+        UploadDocumentsResponse UpdateGroupInAws(int groupId);
     }
 }
