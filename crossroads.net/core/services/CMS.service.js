@@ -9,11 +9,11 @@ export default class CMSService {
   }
 
   getCurrentSeries() {
-    const currentSeriesAPIAddress = `${this.url}/series?endDate__GreaterThanOrEqual=${this.todaysDate}&endDate__sort=ASC`;
-    return this.http.get(encodeURI(currentSeriesAPIAddress))
-      .then((resp) => {
+    const currentSeriesUrl = `${this.url}/series?endDate__GreaterThanOrEqual=${this.todaysDate}&endDate__sort=ASC`;
+    return this.http.get(encodeURI(currentSeriesUrl))
+      .then(({ data }) => {
         let currentSeries;
-        let allActiveSeries = resp.data.series;
+        let allActiveSeries = data.series;
 
         allActiveSeries.some((series) => {
           const seriesStart = moment(series.startDate, 'YYYY-MM-DD');
@@ -32,6 +32,23 @@ export default class CMSService {
 
         return currentSeries;
       });
+  }
+
+  getNearestSeries() {
+    const nearestSeriesUrl = `${this.url}/series?startDate__GreaterThanOrEqual=${this.todaysDate}&startDate__sort=ASC&__limit=1`;
+    return this.http.get(nearestSeriesUrl)
+      .then(({ data }) => _.first(data.series));
+  }
+
+  getLastSeries() {
+    const lastSeriesUrl = `${this.url}/series?endDate__LessThanOrEqual=${this.todaysDate}&endDate__sort=DESC&__limit=1`;
+    return this.http.get(lastSeriesUrl)
+      .then(({ data }) => _.first(data.series));
+  }
+
+  getSeries(query) {
+    return this.http.get(`${this.url}/series?${query}`)
+      .then(({ data }) => data.series);
   }
 
   // eslint-disable-next-line class-methods-use-this
