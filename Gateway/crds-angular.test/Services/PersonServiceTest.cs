@@ -25,6 +25,7 @@ namespace crds_angular.test.Services
         private Mock<MPInterfaces.IParticipantRepository> _participantService;
         private Mock<MPInterfaces.IUserRepository> _userService;
         private Mock<IAddressService> _addressService;
+        private Mock<IAnalyticsService> _analyticsService;
 
         private PersonService _fixture;
         private MpMyContact _myContact;
@@ -53,6 +54,7 @@ namespace crds_angular.test.Services
             _userService = new Mock<MPInterfaces.IUserRepository>();
             _apiUserService = new Mock<IApiUserRepository>();            
             _addressService = new Mock<IAddressService>();
+            _analyticsService = new Mock<IAnalyticsService>();
             
             _myContact = new MpMyContact
             {
@@ -84,7 +86,7 @@ namespace crds_angular.test.Services
             };
             _householdMembers = new List<MpHouseholdMember>();
 
-            _fixture = new PersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object);
+            _fixture = new PersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object, _analyticsService.Object);
 
             //force AutoMapper to register
             AutoMapperConfig.RegisterMappings();
