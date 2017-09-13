@@ -51,6 +51,31 @@ export default class CMSService {
       .then(({ data }) => data.series);
   }
 
+  getRecentMessages(limit) {
+    return this.http.get(`${this.url}/messages?date__LessThanOrEqual=${this.todaysDate}&date__sort=DESC&ID__sort=DESC&SeriesID__GreaterThan=0&__limit=${limit}`)
+      .then(({ data }) => data.messages.slice(0, limit));
+  }
+
+  getMessages(query) {
+    return this.http.get(`${this.url}/messages?${query}`)
+      .then(({ data }) => data.messages);
+  }
+
+  getDigitalProgram() {
+    return this.http.get(`${this.url}/features`)
+      .then(({ data }) => data.features);
+  }
+
+  getSections() {
+    return this.http.get(`${this.url}/sections`)
+      .then(({ data }) => data.sections);
+  }
+
+  getContentBlock(query) {
+    return this.http.get(`${this.url}/contentblock?${query}`)
+      .then(({ data }) => _.first(data.contentblocks));
+  }
+
   // eslint-disable-next-line class-methods-use-this
   dateSortMethod(a, b) {
     if (moment(a.startDate, 'YYYY-MM-DD').isBefore(moment(b.startDate, 'YYYY-MM-DD'))) {
