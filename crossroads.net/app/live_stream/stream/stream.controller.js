@@ -31,10 +31,10 @@ export default class StreamingController {
   }
 
   sortDigitalProgram(data) {
-    const dontMissSection = data.find(section => section.id == this.dontMissID);
+    const dontMissSection = data.find(section => section.id === this.dontMissID);
     this.dontMiss = this.getFeaturesForSection(dontMissSection);
 
-    const beTheChurchSection = data.find(section => section.id == this.beTheChurchID);
+    const beTheChurchSection = data.find(section => section.id === this.beTheChurchID);
     this.beTheChurch = this.getFeaturesForSection(beTheChurchSection);
   }
 
