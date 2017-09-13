@@ -21,7 +21,7 @@ describe('Common Analytics Service', () => {
 
   it('should call eventTrack with "Forgot Password"', () => {
     fixture.trackForgotPassword();
-    expect(analytics.eventTrack).toHaveBeenCalledWith('ForgotPassword');
+    expect(analytics.eventTrack).toHaveBeenCalledWith('ForgotPassword', { Source: 'CrossroadsNet' });
   });
 
   it('should call identify', () => {
