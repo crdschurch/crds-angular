@@ -6,6 +6,7 @@ using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Attribute;
 using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Services;
+using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -67,7 +68,7 @@ namespace crds_angular.test.Services
                 Maiden_Name = "maiden-name",
                 Mobile_Phone = "mobile-phone",
                 Mobile_Carrier = 999,
-                Date_Of_Birth = "date-of-birth",
+                Date_Of_Birth = "12/20/1983",
                 Marital_Status_ID = 5,
                 Gender_ID = 2,
                 Employer_Name = "employer-name",
@@ -116,6 +117,7 @@ namespace crds_angular.test.Services
 
             _participantService.Setup(m => m.GetParticipant(person.ContactId)).Returns(participant);
             _addressService.Setup(m => m.GetGeoLocationCascading(It.IsAny<AddressDTO>())).Returns(new GeoCoordinate(5, 6));
+            _analyticsService.Setup(m => m.Track(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<EventProperties>()));
             _fixture.SetProfile(token, person);
 
         }
@@ -144,7 +146,7 @@ namespace crds_angular.test.Services
             Assert.AreEqual("maiden-name", person.MaidenName);
             Assert.AreEqual("mobile-phone", person.MobilePhone);
             Assert.AreEqual(999, person.MobileCarrierId);
-            Assert.AreEqual("date-of-birth", person.DateOfBirth);
+            Assert.AreEqual("12/20/1983", person.DateOfBirth);
             Assert.AreEqual(5, person.MaritalStatusId);
             Assert.AreEqual(2, person.GenderId);
             Assert.AreEqual("employer-name", person.EmployerName);
@@ -183,7 +185,7 @@ namespace crds_angular.test.Services
             Assert.AreEqual("maiden-name", person.MaidenName);
             Assert.AreEqual("mobile-phone", person.MobilePhone);
             Assert.AreEqual(999, person.MobileCarrierId);
-            Assert.AreEqual("date-of-birth", person.DateOfBirth);
+            Assert.AreEqual("12/20/1983", person.DateOfBirth);
             Assert.AreEqual(5, person.MaritalStatusId);
             Assert.AreEqual(2, person.GenderId);
             Assert.AreEqual("employer-name", person.EmployerName);
