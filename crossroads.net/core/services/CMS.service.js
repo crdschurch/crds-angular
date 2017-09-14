@@ -1,7 +1,7 @@
 import moment from 'moment';
 
-/* @ngInject */
 export default class CMSService {
+  /* @ngInject */
   constructor($http) {
     this.http = $http;
     this.url = `${__CMS_CLIENT_ENDPOINT__}api`;
@@ -68,6 +68,13 @@ export default class CMSService {
 
   getSections() {
     return this.http.get(`${this.url}/sections`)
+      .then(({ data }) => data.sections);
+  }
+
+  getSectionsById(idArr) {
+    const query = _.reduce(idArr, (acc, id) => (acc === '' ? `id[]=${id}` : `&id[]=${id}`), '');
+
+    return this.http.get(`${this.url}/sections?${query}`)
       .then(({ data }) => data.sections);
   }
 

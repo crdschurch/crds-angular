@@ -12,13 +12,12 @@ describe('CMSService', () => {
   let todaysDate = moment(baseTime).format('YYYY-MM-DD');
 
   beforeEach(inject(function($injector) {
-    http        = $injector.get('$http');
+    http = $injector.get('$http');
     httpBackend = $injector.get('$httpBackend');
     fixture = new CMSService(http);
     fixture.todaysDate = todaysDate;
     jasmine.clock().mockDate(baseTime);
-
-  }))
+  }));
 
   afterEach(() => {
     httpBackend.verifyNoOutstandingExpectation();
@@ -163,7 +162,20 @@ describe('CMSService', () => {
       httpBackend.expectGET(`${endpoint}/sections`).respond(200, sections);
       httpBackend.flush();
     });
-  })
+
+    it('should use HTTP to obtain specific sections', () => {
+      const sections = {"sections": [{"id": 5, "title": "Events", "created": "2017-05-25T15:33:04+02:00", "className": "Section"}]}
+      const idArr = [5];
+
+      fixture.getSectionsById(idArr).then(resp => {
+        console.log(resp);
+        expect(resp.length).toEqual(1);
+      });
+
+      httpBackend.expectGET(`${endpoint}/sections?id[]=5`).respond(200, sections);
+      httpBackend.flush();
+    });
+  });
 
   describe('Content Blocks', () => {
     it('should use HTTP to obtain a content block', () => {
@@ -202,4 +214,4 @@ describe('CMSService', () => {
     })
   })
 
-})
+});
