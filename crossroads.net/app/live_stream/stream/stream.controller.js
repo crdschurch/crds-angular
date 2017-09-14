@@ -21,7 +21,7 @@ export default class StreamingController {
     this.beTheChurchID = 2;
 
     this.cmsService
-      .getSections()
+      .getSectionsById([this.dontMissID, this.beTheChurchID])
       .then((data) => {
         this.sortDigitalProgram(data);
       }
