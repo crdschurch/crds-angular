@@ -108,7 +108,7 @@ namespace crds_angular.Services
 
         public void CaptureProfileAnalytics(Person person)
         {
-            var dateOfBirth = Convert.ToDateTime(person.DateOfBirth + "-04:00");
+            var dateOfBirth = (person.DateOfBirth == null) ? null : Convert.ToDateTime(person.DateOfBirth + "-04:00").ToString("o");
             var props = new EventProperties
             {
                 { "FirstName", person.NickName },
@@ -121,7 +121,7 @@ namespace crds_angular.Services
                 { "Employer", person.EmployerName },
                 { "FirstAttendanceDate", person.AnniversaryDate },
                 { "Congregation", person.CongregationId },
-                { "DateOfBirth", dateOfBirth.ToString("o") },
+                { "DateOfBirth", dateOfBirth },
                 { "Age", person.Age },
                 { "Gender", person.GenderId },
                 { "MaritalStatus", person.MaritalStatusId }

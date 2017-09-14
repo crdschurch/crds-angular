@@ -6,6 +6,7 @@ using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Attribute;
 using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Services;
+using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -116,6 +117,7 @@ namespace crds_angular.test.Services
 
             _participantService.Setup(m => m.GetParticipant(person.ContactId)).Returns(participant);
             _addressService.Setup(m => m.GetGeoLocationCascading(It.IsAny<AddressDTO>())).Returns(new GeoCoordinate(5, 6));
+            _analyticsService.Setup(m => m.Track(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<EventProperties>()));
             _fixture.SetProfile(token, person);
 
         }
