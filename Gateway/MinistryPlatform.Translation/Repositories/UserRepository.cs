@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
@@ -64,8 +65,9 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpUser GetByUserName(string userName)
         {
-            string searchUser = $"dp_Users.User_Name='{userName}'";
-            string columns = "User_Name,User_GUID, Can_Impersonate,User_Email,User_ID";
+            string userNameClean = Regex.Replace(userName, @"[\r\n\x00\x1a\\'""]", @"\$0"); //prevent SQL injection
+            string searchUser = $"dp_Users.User_Name='{userNameClean}'";
+            string columns = "User_Name,User_GUID, ISNULL(Can_Impersonate, 0), User_Email,User_ID";
             var users = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Search<MpUser>(searchUser, columns, null, true);
             return users.FirstOrDefault();
         }
@@ -126,9 +128,9 @@ namespace MinistryPlatform.Translation.Repositories
             MinistryPlatformService.UpdateRecord(Convert.ToInt32(ConfigurationManager.AppSettings["Users"]), userUpdateValues, ApiLogin());
         }
 
-        public void UpdateUserRest(Dictionary<string, object> userUpdateValues, int user_id)
+        public void UpdateUserRest(Dictionary<string, object> userUpdateValues)
         {
-            _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).UpdateRecord("dp_Users", user_id, userUpdateValues);
+            _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).UpdateRecord("dp_Users", -1 , userUpdateValues); //The second parameter is not used, you must include the PK in the dictionary
         }
 
         public void UpdateUser(MpUser user)
