@@ -68,7 +68,7 @@ namespace crds_angular.test.Services
                 Maiden_Name = "maiden-name",
                 Mobile_Phone = "mobile-phone",
                 Mobile_Carrier = 999,
-                Date_Of_Birth = "date-of-birth",
+                Date_Of_Birth = "12/20/1983",
                 Marital_Status_ID = 5,
                 Gender_ID = 2,
                 Employer_Name = "employer-name",
