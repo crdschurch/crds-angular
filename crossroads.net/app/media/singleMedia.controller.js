@@ -130,12 +130,12 @@
     function setAudioPlayer(player, track) {
       vm.audioPlayer = player;
       vm.audioPlayer.play(track.src);
-      this.AnalyticsService.trackAudio('Play', _.get(vm.audio, 'serviceId'));
+      AnalyticsService.trackAudio('Play', _.get(vm.audio, 'serviceId'));
     }
 
     function pauseAudioPlayer() {
       vm.audioPlayer.pause();
-      this.AnalyticsService.trackAudio('Pause', _.get(vm.audio, 'serviceId'));
+      AnalyticsService.trackAudio('Pause', _.get(vm.audio, 'serviceId'));
     }
 
     function sendControlEvent(ctrlEvent) {
