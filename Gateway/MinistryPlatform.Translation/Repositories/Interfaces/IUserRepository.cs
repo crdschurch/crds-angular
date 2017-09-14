@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.SqlServer.Server;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 
@@ -8,7 +9,7 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
     {
         MpUser GetByUserId(string userId);
         MpUser GetByAuthenticationToken(string authToken);
-        MpUser GetByUserName(string userName);
+        MpUser GetByUserName(string userName, string apiToken=null);
         void UpdateUser(Dictionary<string, object> userUpdateValues);
         void UpdateUserRest(Dictionary<string, object> userUpdateValues);
         void UpdateUser(MpUser user);
@@ -16,8 +17,9 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         int GetContactIdByUserId(int userId);
         MpUser GetUserByResetToken(string resetToken);
         List<MpRoleDto> GetUserRoles(int userId);
-        List<MpRoleDto> GetUserRolesRest(int userId);
+        List<MpRoleDto> GetUserRolesRest(int userId, string apiToken=null);
 
         MpUser GetUserByRecordId(int recordId);
+        string HelperApiLogin(); 
     }
 }

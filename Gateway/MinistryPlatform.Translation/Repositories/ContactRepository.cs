@@ -507,14 +507,15 @@ namespace MinistryPlatform.Translation.Repositories
             return contactIdList;
         }
 
-        public MpMyContact GetContactByUserRecordId(int userRecordId)
+        public MpMyContact GetContactByUserRecordId(int userRecordId, string apiToken=null)
         {
-            var token = ApiLogin();
+            if (String.IsNullOrEmpty(apiToken))
+                apiToken = ApiLogin();
             Dictionary<string, object> filter = new Dictionary<string, object>()
             {
                 {"User_Account", userRecordId}
             };
-            var records = _ministryPlatformRest.UsingAuthenticationToken(token).Get<MpMyContact>("Contacts",filter);
+            var records = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Get<MpMyContact>("Contacts",filter);
             if (records.Count > 1)
             {
                 throw new ApplicationException("GetContactByUserRecordId returned multiple records");

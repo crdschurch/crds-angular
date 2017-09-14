@@ -146,9 +146,11 @@ namespace crds_angular.Controllers.API
                 {
                     return this.Unauthorized();
                 }
-                var user = _userService.GetByUserName(cred.username); //235 ms _userService.GetByAuthenticationToken(token) was 1.5 seconds 
-                var userRoles = _userService.GetUserRolesRest(user.UserRecordId);
-                var c = _contactRepository.GetContactByUserRecordId(user.UserRecordId);//use a rest call and use the id directly
+
+                var apiToken = _userService.HelperApiLogin();
+                var user = _userService.GetByUserName(cred.username,apiToken); //235 ms _userService.GetByAuthenticationToken(token) was 1.5 seconds 
+                var userRoles = _userService.GetUserRolesRest(user.UserRecordId, apiToken);
+                var c = _contactRepository.GetContactByUserRecordId(user.UserRecordId, apiToken);//use a rest call and use the id directly
                 var r = new LoginReturn
                 {
                     userToken = token,
