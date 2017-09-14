@@ -146,7 +146,7 @@ namespace crds_angular.test.Services
             Assert.AreEqual("maiden-name", person.MaidenName);
             Assert.AreEqual("mobile-phone", person.MobilePhone);
             Assert.AreEqual(999, person.MobileCarrierId);
-            Assert.AreEqual("date-of-birth", person.DateOfBirth);
+            Assert.AreEqual("12/20/1983", person.DateOfBirth);
             Assert.AreEqual(5, person.MaritalStatusId);
             Assert.AreEqual(2, person.GenderId);
             Assert.AreEqual("employer-name", person.EmployerName);
@@ -185,7 +185,7 @@ namespace crds_angular.test.Services
             Assert.AreEqual("maiden-name", person.MaidenName);
             Assert.AreEqual("mobile-phone", person.MobilePhone);
             Assert.AreEqual(999, person.MobileCarrierId);
-            Assert.AreEqual("date-of-birth", person.DateOfBirth);
+            Assert.AreEqual("12/20/1983", person.DateOfBirth);
             Assert.AreEqual(5, person.MaritalStatusId);
             Assert.AreEqual(2, person.GenderId);
             Assert.AreEqual("employer-name", person.EmployerName);
