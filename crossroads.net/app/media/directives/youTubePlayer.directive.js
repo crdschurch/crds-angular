@@ -70,7 +70,7 @@
                     break;
                   case YT.PlayerState.PAUSED:
                     message.data = 'PAUSED';
-                    AnalyticsService.trackYouTube('Paused', scope.videoid);
+                    AnalyticsService.trackYouTube('Pause', scope.videoid);
                     break;
                 }
 

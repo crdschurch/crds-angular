@@ -37,11 +37,11 @@ describe('Common Analytics Service', () => {
     expect(analytics.eventTrack).toHaveBeenCalledWith('Ended', { category: 'video', label: videoId });
   });
 
-  it('trackAudio should call eventTrack with "Paused"', () => {
-    const event = 'Paused';
+  it('trackAudio should call eventTrack with "Pause"', () => {
+    const event = 'Pause';
     const serviceId = 123123;
     fixture.trackAudio(event, serviceId);
-    expect(analytics.eventTrack).toHaveBeenCalledWith('Paused', { category: 'audio', label: serviceId });
+    expect(analytics.eventTrack).toHaveBeenCalledWith('Pause', { category: 'audio', label: serviceId });
   });
 
   it('should call identify', () => {

@@ -74,7 +74,7 @@ export default class VideojsPlayerController {
             window.SSTracker = null;
           }
           if (this.angulartics !== undefined) {
-            this.analyticsService.trackStream('Pause');
+            this.analyticsService.trackStreamS('Pause');
           }
         });
 
