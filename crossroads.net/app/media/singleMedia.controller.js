@@ -16,7 +16,7 @@
     'ResponsiveImageService',
     'SiteConfig',
     'ContentSiteConfigService',
-    '$analytics'
+    'AnalyticsService'
   ];
 
   function SingleMediaController($rootScope,
@@ -32,7 +32,7 @@
                                  ResponsiveImageService,
                                  SiteConfig,
                                  ContentSiteConfigService,
-                                 $analytics) {
+                                 AnalyticsService) {
     var vm = this;
     vm.imageUrl = ImageURL;
     vm.isMessage = (ItemProperty === 'message');
@@ -130,12 +130,12 @@
     function setAudioPlayer(player, track) {
       vm.audioPlayer = player;
       vm.audioPlayer.play(track.src);
-      $analytics.eventTrack('Play', {  category: 'audio', label: _.get(vm.audio, 'serviceId') });
+      this.AnalyticsService.trackAudio('Play', _.get(vm.audio, 'serviceId'));
     }
 
     function pauseAudioPlayer() {
       vm.audioPlayer.pause();
-      $analytics.eventTrack('Pause', {  category: 'audio', label: _.get(vm.audio, 'serviceId') });
+      this.AnalyticsService.trackAudio('Pause', _.get(vm.audio, 'serviceId'));
     }
 
     function sendControlEvent(ctrlEvent) {

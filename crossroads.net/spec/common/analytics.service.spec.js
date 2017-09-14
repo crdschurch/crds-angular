@@ -24,6 +24,26 @@ describe('Common Analytics Service', () => {
     expect(analytics.eventTrack).toHaveBeenCalledWith('ForgotPassword', { Source: 'CrossroadsNet' });
   });
 
+  it('trackStream should call eventTrack with "Play"', () => {
+    const event = 'Play';
+    fixture.trackStream(event);
+    expect(analytics.eventTrack).toHaveBeenCalledWith('Play', { category: 'Streaming', label: 'Live Streaming Play' });
+  });
+
+  it('trackYouTube should call eventTrack with "Ended"', () => {
+    const event = 'Ended';
+    const videoId = 123123;
+    fixture.trackYouTube(event, videoId);
+    expect(analytics.eventTrack).toHaveBeenCalledWith('Ended', { category: 'video', label: videoId });
+  });
+
+  it('trackAudio should call eventTrack with "Paused"', () => {
+    const event = 'Paused';
+    const serviceId = 123123;
+    fixture.trackAudio(event, serviceId);
+    expect(analytics.eventTrack).toHaveBeenCalledWith('Paused', { category: 'audio', label: serviceId });
+  });
+
   it('should call identify', () => {
     fixture.identifyLoggedInUser(1234, 'email@email.com', 'first', 'last');
     expect(analytics.setUserProperties).toHaveBeenCalledWith({userId: 1234, Email: 'email@email.com', FirstName: 'first', LastName: 'last' });
