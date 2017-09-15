@@ -30,9 +30,9 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         List<Dictionary<string, object>> PrimaryContacts(bool staffOnly = false);
         MpContact CreateSimpleContact(string firstName, string lastName, string email, string dob, string mobile);
         List<MpRecordID> CreateContact(MpContact minorContact);
-        MpMyContact GetContactByUserRecordId(int userRecordId);
+        MpMyContact GetContactByUserRecordId(int userRecordId, string apiToken=null);
         IObservable<MpHousehold> UpdateHousehold(MpHousehold household);
         void SetHouseholdAddress(int contactId, int householdId, int addressId);
-        void UpdateUsertoActive(int contactId);
+        void UpdateContactToActive(int contactId);
     }
 }

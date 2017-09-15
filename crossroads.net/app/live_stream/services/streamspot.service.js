@@ -11,7 +11,7 @@ export default class StreamspotService {
       'Content-Type': 'application/json',
       'x-API-Key': __STREAMSPOT_API_KEY__
     };
-    this.url  = __STREAMSPOT_ENDPOINT__;
+    this.url = __STREAMSPOT_ENDPOINT__;
     this.ssid = __STREAMSPOT_SSID__;
     this.events = this.getEvents();
     this.state = $state;

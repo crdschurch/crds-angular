@@ -390,11 +390,6 @@ namespace crds_angular.Controllers.API
             {
                 NewRelic.Api.Agent.NewRelic.AddCustomParameter("WherAmI", "executing GetPinsByAddress");
 
-
-                var eventAttributes = new Dictionary<string, object>() { { "foo", "bar" }, { "alice", "bob" } };
-                NewRelic.Api.Agent.NewRelic.RecordCustomEvent("MyCustomEvent", eventAttributes);
-
-
                 AwsBoundingBox awsBoundingBox = null;
                 Boolean areAllBoundingBoxParamsPresent = _finderService.areAllBoundingBoxParamsPresent(queryParams.BoundingBox); 
 
@@ -410,6 +405,14 @@ namespace crds_angular.Controllers.API
                 pinsInRadius = _finderService.RandomizeLatLongForNonSitePins(pinsInRadius); 
 
                 var result = new PinSearchResultsDto(new GeoCoordinates(originCoords.Latitude, originCoords.Longitude), pinsInRadius);
+
+                var eventName = (queryParams.FinderType == "CONNECT") ? "ConnectSearch" : "GroupsSearch";
+                var props = new EventProperties
+                {
+                    {"Location", queryParams.UserLocationSearchString},
+                    {"Keywords", queryParams.UserKeywordSearchString}
+                };
+                _analyticsService.Track("Anonymous", eventName, props);
 
                 return Ok(result);
             }
