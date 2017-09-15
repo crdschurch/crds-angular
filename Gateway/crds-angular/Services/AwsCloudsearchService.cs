@@ -40,15 +40,18 @@ namespace crds_angular.Services
             return SendAwsDocs(pinList);
         }
 
-        public UploadDocumentsResponse UploadSingleGroupToAwsFromMp(int groupId)
+        public void UploadSingleGroupToAwsFromMp(int groupId)
         {
             MpConnectAws groupFromMp = _finderRepository.GetSingleGroupRecordFromMpInAwsPinFormat(groupId);
-            AwsConnectDto groupInAwsUploadFormat = Mapper.Map<AwsConnectDto>(groupFromMp);
+            if (groupFromMp != null) // new unauthorized gatherings will not get sent
+            {
+                AwsConnectDto groupInAwsUploadFormat = Mapper.Map<AwsConnectDto>(groupFromMp);
 
-            AwsCloudsearchDto awsDto = CreateCloudSearchUploadDto(groupInAwsUploadFormat);
-            List<AwsCloudsearchDto> awsDtoList = new List<AwsCloudsearchDto>() { awsDto };
+                AwsCloudsearchDto awsDto = CreateCloudSearchUploadDto(groupInAwsUploadFormat);
+                List<AwsCloudsearchDto> awsDtoList = new List<AwsCloudsearchDto>() { awsDto };
 
-            return SendAwsDocs(awsDtoList);
+                SendAwsDocs(awsDtoList);
+            } 
         }
 
         public UploadDocumentsResponse DeleteAllConnectRecordsInAwsCloudsearch()
@@ -89,7 +92,7 @@ namespace crds_angular.Services
             return SendAwsDocs(deletelist);
         }
 
-        public UploadDocumentsResponse UpdateGroupInAws(int groupId)
+        public void UpdateGroupInAws(int groupId)
         {
             var results = SearchConnectAwsCloudsearch($"groupid: {groupId}", "_no_fields");
 
@@ -97,7 +100,8 @@ namespace crds_angular.Services
             {
                 case 0:
                     // not found, so lets add it to aws
-                    return UploadSingleGroupToAwsFromMp(groupId);
+                    UploadSingleGroupToAwsFromMp(groupId);
+                    return;
                 case 1:
                     // found the exact match, let's update
                     var idToUpdate = results.Hits.Hit.FirstOrDefault()?.Id;
@@ -107,11 +111,13 @@ namespace crds_angular.Services
                     AwsCloudsearchDto awsDto = CreateCloudSearchUploadDto(groupInAwsUploadFormat);
                     awsDto.id = idToUpdate;
                     List<AwsCloudsearchDto> awsDtoList = new List<AwsCloudsearchDto> { awsDto };
-                    return SendAwsDocs((awsDtoList));
+                    SendAwsDocs((awsDtoList));
+                    return; 
                 default:
                     // we found multiple matches. This seems to be an issue. Let's delete all mathing groups and just add the one we want
                     DeleteGroupFromAws(groupId);
-                    return UploadSingleGroupToAwsFromMp(groupId);
+                    UploadSingleGroupToAwsFromMp(groupId);
+                    return;
             }
         }
 
