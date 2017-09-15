@@ -799,7 +799,7 @@ namespace crds_angular.test.Services
             };
 
             groupRepository.Setup(mocked => mocked.CreateGroup(newGroup)).Returns(14);
-            _awsCloudsearchService.Setup(mocked => mocked.UploadSingleGroupToAwsFromMp(It.IsAny<int>())).Returns(new UploadDocumentsResponse());
+            _awsCloudsearchService.Setup(mocked => mocked.UploadSingleGroupToAwsFromMp(It.IsAny<int>()));
             var groupResp = fixture.CreateGroup(group);
 
             _groupRepository.VerifyAll();
@@ -1210,7 +1210,7 @@ namespace crds_angular.test.Services
                         false)).Returns(77);
 
             groupRepository.Setup(mocked => mocked.CreateGroup(It.IsAny<MpGroup>())).Returns(14);
-            _awsCloudsearchService.Setup(mocked => mocked.UploadSingleGroupToAwsFromMp(It.IsAny<int>())).Returns(new UploadDocumentsResponse());
+            _awsCloudsearchService.Setup(mocked => mocked.UploadSingleGroupToAwsFromMp(It.IsAny<int>()));
             this._objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>()))
                 .Returns(new ObjectAllAttributesDTO());
 
