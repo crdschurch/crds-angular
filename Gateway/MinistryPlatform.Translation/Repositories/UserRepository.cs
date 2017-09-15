@@ -72,7 +72,7 @@ namespace MinistryPlatform.Translation.Repositories
         {
             if (String.IsNullOrEmpty(apiToken))
                 apiToken = ApiLogin();
-            string userNameClean = Regex.Replace(userName, @"[\r\n\x00\x1a\\'""]", @"\$0"); //prevent SQL injection
+            string userNameClean = userName.Replace("'", "''");
             string searchUser = $"dp_Users.User_Name='{userNameClean}'";
             string columns = "User_Name,User_GUID, ISNULL(Can_Impersonate, 0), User_Email,User_ID";
             var users = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpUser>(searchUser, columns, null, true);
