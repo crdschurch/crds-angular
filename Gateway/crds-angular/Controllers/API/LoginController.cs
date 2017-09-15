@@ -137,36 +137,37 @@ namespace crds_angular.Controllers.API
             try
             {
                 // try to login
-                var authData = AuthenticationRepository.Authenticate(cred.username, cred.password);
+                var authData = AuthenticationRepository.Authenticate(cred.username, cred.password); //nothing we can do to speed this up
                 var token = authData.AccessToken;
                 var exp = authData.ExpiresIn+"";
                 var refreshToken = authData.RefreshToken;
-
+                
                 if (token == "")
                 {
                     return this.Unauthorized();
                 }
 
-                var userRoles = _personService.GetLoggedInUserRoles(token);
-                var user = _userService.GetByAuthenticationToken(token);
-                var p = _personService.GetLoggedInUserProfile(token);
+                var apiToken = _userService.HelperApiLogin();
+                var user = _userService.GetByUserName(cred.username,apiToken); //235 ms _userService.GetByAuthenticationToken(token) was 1.5 seconds 
+                var userRoles = _userService.GetUserRolesRest(user.UserRecordId, apiToken);
+                var c = _contactRepository.GetContactByUserRecordId(user.UserRecordId, apiToken);//use a rest call and use the id directly
                 var r = new LoginReturn
                 {
                     userToken = token,
                     userTokenExp = exp,
-                    refreshToken = refreshToken,
-                    userId = p.ContactId,
-                    username = p.FirstName,
-                    userEmail = p.EmailAddress,
+                    refreshToken = refreshToken, 
+                    userId = c.Contact_ID,
+                    username = c.First_Name,
+                    userEmail = c.Email_Address,
                     roles = userRoles,
-                    age = p.Age,
-                    userPhone = p.MobilePhone,
+                    age = c.Age,
+                    userPhone = c.Mobile_Phone,
                     canImpersonate = user.CanImpersonate 
                 };
 
 
-                _loginService.ClearResetToken(cred.username);
-                _contactRepository.UpdateUsertoActive(p.ContactId);
+                _loginService.ClearResetToken(user.UserRecordId); //no need to lookup the userid if we already have it
+                _contactRepository.UpdateContactToActive(c.Contact_ID); //205
                 _analyticsService.Track(cred.username, "SignedIn"); 
 
 

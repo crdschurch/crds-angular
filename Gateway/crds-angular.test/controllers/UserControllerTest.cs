@@ -124,7 +124,7 @@ namespace crds_angular.test.controllers
             _userRepository.Setup(mocked => mocked.GetUserIdByUsername(username)).Returns(mpUser.UserRecordId);
             _userRepository.Setup(mocked => mocked.GetUserByRecordId(mpUser.UserRecordId)).Returns(mpUser);
             _userRepository.Setup(mocked => mocked.GetUserRoles(mpUser.UserRecordId)).Returns(roles);
-            _contactRepository.Setup(mocked => mocked.GetContactByUserRecordId(mpUser.UserRecordId)).Returns(mpMyContact);
+            _contactRepository.Setup(mocked => mocked.GetContactByUserRecordId(mpUser.UserRecordId,null)).Returns(mpMyContact);
 
             var response = _fixture.Get(username);
               
