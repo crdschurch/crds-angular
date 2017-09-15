@@ -72,7 +72,7 @@ export default class CMSService {
   }
 
   getSectionsById(idArr) {
-    const query = _.reduce(idArr, (acc, id) => (acc === '' ? `id[]=${id}` : `&id[]=${id}`), '');
+    const query = _.reduce(idArr, (acc, id) => (acc === '' ? `id[]=${id}` : `${acc}&id[]=${id}`), '');
 
     return this.http.get(`${this.url}/sections?${query}`)
       .then(({ data }) => data.sections);
