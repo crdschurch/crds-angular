@@ -167,7 +167,7 @@ namespace crds_angular.Controllers.API
 
                 _loginService.ClearResetToken(cred.username);
                 _contactRepository.UpdateUsertoActive(p.ContactId);
-                _analyticsService.Track(cred.username, "SignedIn"); 
+                _analyticsService.Track(p.ContactId.ToString(), "SignedIn"); 
 
 
                 return this.Ok(r);

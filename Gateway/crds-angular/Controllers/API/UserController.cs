@@ -21,6 +21,7 @@ namespace crds_angular.Controllers.API
         private readonly IContactRepository _contactRepository;
         private readonly IUserRepository _userRepository;
         private readonly IAnalyticsService _analyticsService;
+
         // Do not change this string without also changing the same in the corejs register_controller
         private const string DUPLICATE_USER_MESSAGE = "Duplicate User";
 
@@ -46,7 +47,9 @@ namespace crds_angular.Controllers.API
             try
             {
                 var userRecord = _accountService.RegisterPerson(user);
-                _analyticsService.Track(userRecord.email, "SignedUp");
+                var user_ID = _userRepository.GetUserIdByUsername(user.email);
+                var contact_Id = _userRepository.GetContactIdByUserId(user_ID);
+                _analyticsService.Track(contact_Id.ToString(), "SignedUp");
                 return Ok(userRecord);
             }
             catch (DuplicateUserException e)
