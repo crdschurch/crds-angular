@@ -141,7 +141,7 @@ namespace crds_angular.Controllers.API
                 var token = authData.AccessToken;
                 var exp = authData.ExpiresIn+"";
                 var refreshToken = authData.RefreshToken;
-                
+
                 if (token == "")
                 {
                     return this.Unauthorized();
@@ -155,7 +155,7 @@ namespace crds_angular.Controllers.API
                 {
                     userToken = token,
                     userTokenExp = exp,
-                    refreshToken = refreshToken, 
+                    refreshToken = refreshToken,
                     userId = c.Contact_ID,
                     username = c.First_Name,
                     userEmail = c.Email_Address,
@@ -168,7 +168,7 @@ namespace crds_angular.Controllers.API
 
                 _loginService.ClearResetToken(user.UserRecordId); //no need to lookup the userid if we already have it
                 _contactRepository.UpdateContactToActive(c.Contact_ID); //205
-                _analyticsService.Track(cred.username, "SignedIn"); 
+                _analyticsService.Track(c.Contact_ID.ToString(), "SignedIn"); 
 
 
                 return this.Ok(r);
