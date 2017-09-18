@@ -23,7 +23,6 @@ namespace MinistryPlatform.Translation.Repositories
         {
             var pageId = Convert.ToInt32(ConfigurationManager.AppSettings["MyRoles"]);
             var pageRecords = MinistryPlatformService.GetRecordsDict(pageId, token);
-
             return pageRecords.Select(record => new RoleDTO
             {
                 Id = (int) record["Role_ID"], Name = (string) record["Role_Name"]

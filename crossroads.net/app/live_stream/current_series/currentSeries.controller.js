@@ -1,5 +1,6 @@
 
 export default class CurrentSeriesController {
+  /* @ngInject */
   constructor(CMSService, $modal, ResponsiveImageService) {
     this.title        = '';
     this.picture      = undefined;

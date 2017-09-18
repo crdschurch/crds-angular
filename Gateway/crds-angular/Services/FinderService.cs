@@ -146,6 +146,8 @@ namespace crds_angular.Services
             _smallGroupType = _configurationWrapper.GetConfigIntValue("SmallGroupTypeId");
             _connectCommunicationTypeInviteToGathering = _configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeInviteToGathering");
             _connectCommunicationTypeInviteToSmallGroup = _configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeInviteToSmallGroup");
+            _connectCommunicationTypeRequestToJoinSmallGroup = _configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeRequestToJoinSmallGroup");
+            _connectCommunicationTypeRequestToJoinGathering = _configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeRequestToJoinGathering");
         }
 
         public PinDto GetPinDetailsForGroup(int groupId, GeoCoordinate originCoords)
@@ -1031,7 +1033,7 @@ namespace crds_angular.Services
                 {"Group_Meeting_Day",  formatedMeetingDay},
                 {"Group_Meeting_Time", formatedMeetingTime},
                 {"Group_Meeting_Frequency", formatedMeetingFrequency},
-                {"Group_Meeting_Location", groupLocation.AddressLine1 == null ? "Online" : $"{groupLocation.AddressLine1}\n{groupLocation.AddressLine2}\n{groupLocation.City}\n{groupLocation.State}\n{groupLocation.PostalCode}" },
+                {"Group_Meeting_Location", groupLocation == null || groupLocation.AddressLine1 == null ? "Online" : $"{groupLocation.AddressLine1}\n{groupLocation.AddressLine2}\n{groupLocation.City}\n{groupLocation.State}\n{groupLocation.PostalCode}" },
                 {"Leader_Phone", $"{leaderContact.Home_Phone}\n{leaderContact.Mobile_Phone}" }
             };
             return mergeData;
@@ -1164,7 +1166,7 @@ namespace crds_angular.Services
                 {"Group_Meeting_Day",  formatedMeetingDay},
                 {"Group_Meeting_Time", formatedMeetingTime},
                 {"Group_Meeting_Frequency", formatedMeetingFrequency},
-                {"Group_Meeting_Location", groupLocation.AddressLine1 == null ? "Online" : $"{groupLocation.AddressLine1}\n{groupLocation.AddressLine2}\n{groupLocation.City}\n{groupLocation.State}\n{groupLocation.PostalCode}" },
+                {"Group_Meeting_Location", groupLocation == null || groupLocation.AddressLine1 == null ? "Online" : $"{groupLocation.AddressLine1}\n{groupLocation.AddressLine2}\n{groupLocation.City}\n{groupLocation.State}\n{groupLocation.PostalCode}" },
                 {"Leader_Phone", $"{leaderContact.Home_Phone}\n{leaderContact.Mobile_Phone}" }
             };
 

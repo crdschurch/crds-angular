@@ -1,12 +1,14 @@
 <div class="row media-index">
-  <div class="col-sm-7 push-bottom">
-    <h1 class="flush-top push-bottom">Music
+  <div class="col-sm-7">
+    <h1 class="flush-top">Music
       <ng-include src="'templates/subscribeButtonMusic.html'"> </ng-include>
     </h1>
   </div><!--/col-sm-8-->
 
 </div> <!--/row-->
 
-<div class="row">
+<div dynamic-content="$root.MESSAGES.musicJumbotron.content | html"></div>
+
+<div class="row push-top">
   <media-list-card items="media.musics" type="media"></media-list-card>
 </div>
