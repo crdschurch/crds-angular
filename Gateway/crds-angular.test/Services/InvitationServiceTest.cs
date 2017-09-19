@@ -55,6 +55,7 @@ namespace crds_angular.test.Services
             config.Setup(mocked => mocked.GetConfigIntValue("AnywhereGatheringInvitationType")).Returns(AnywhereGatheringInvitationTypeID);
             config.Setup(mocked => mocked.GetConfigIntValue("DomainId")).Returns(DomainId);
             config.Setup(mocked => mocked.GetConfigIntValue("GroupRoleLeader")).Returns(GroupRoleLeader);
+            config.Setup(mocked => mocked.GetConfigValue("BaseUrl")).Returns("www.bob.com/");
 
             _fixture = new InvitationService(_invitationRepository.Object, _communicationService.Object, config.Object, _groupRepository.Object, _participantRepository.Object, _contactRespository.Object);
         }
@@ -178,6 +179,8 @@ namespace crds_angular.test.Services
             string leaderFName = "xavier";
             string leaderLName = "johnson";
             string formattedLeaderName = "Xavier J.";
+            string acceptURL  = "www.bob.com/connect/accept-invite/33/guid123";
+            string declineURL = "www.bob.com/connect/decline-invite/33/guid123";
 
             string city = "Lima";
             string state = "Ohio";
@@ -263,6 +266,8 @@ namespace crds_angular.test.Services
                     && (string)confirmation.MergeData["Invitation_GUID"] == mpInvitation.InvitationGuid
                     && (string)confirmation.MergeData["Recipient_Name"] == formattedRecipientName
                     && (string)confirmation.MergeData["Leader_Name"] == formattedLeaderName
+                    && (string)confirmation.MergeData["YesURL"] == acceptURL
+                    && (string)confirmation.MergeData["NoURL"] == declineURL
                 ),
                 false));
 
