@@ -26,13 +26,13 @@ export default class StreamStatusService {
   presetStreamStatus() {
     const deferred = this.q.defer();
 
-    const url = `${this.url}broadcaster/${this.ssid}/events`;
+    const url = `${this.url}broadcaster/${this.ssid}/broadcasts/upcoming`;
 
     return this.resource(url, {}, { get: { method: 'GET', headers: this.headers } })
         .get()
         .$promise
         .then((response) => {
-          const events = response.data.events;
+          const events = response.data.broadcasts;
           const formattedEvents = this.formatEvents(events);
           const isBroadcasting = this.isBroadcasting(formattedEvents);
           this.streamStatus = this.determineStreamStatus(formattedEvents, isBroadcasting);
