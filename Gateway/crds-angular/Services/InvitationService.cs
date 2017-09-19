@@ -39,7 +39,6 @@ namespace crds_angular.Services
         private readonly ILog _logger = LogManager.GetLogger(typeof(GroupToolService));
 
         private readonly string _baseUrl;
-        private readonly string _groupToolPath;
 
         public InvitationService(
                            IInvitationRepository invitationRepository,
@@ -73,7 +72,6 @@ namespace crds_angular.Services
 
             //URL
             _baseUrl = configuration.GetConfigValue("BaseUrl");
-            _groupToolPath = configuration.GetConfigValue("GroupsTryAGroupPathFragment");
         }
 
         public Invitation CreateInvitation(Invitation dto, string token)
