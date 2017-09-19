@@ -38,6 +38,9 @@ namespace crds_angular.Services
 
         private readonly ILog _logger = LogManager.GetLogger(typeof(GroupToolService));
 
+        private readonly string _baseUrl;
+        private readonly string _groupToolPath;
+
         public InvitationService(
                            IInvitationRepository invitationRepository,
                            ICommunicationRepository communicationService, 
@@ -67,6 +70,10 @@ namespace crds_angular.Services
             _domainId = configuration.GetConfigIntValue("DomainId");
 
             _groupRoleLeader = configuration.GetConfigIntValue("GroupRoleLeader");
+
+            //URL
+            _baseUrl = configuration.GetConfigValue("BaseUrl");
+            _groupToolPath = configuration.GetConfigValue("GroupsTryAGroupPathFragment");
         }
 
         public Invitation CreateInvitation(Invitation dto, string token)
@@ -169,6 +176,9 @@ namespace crds_angular.Services
             } else if (invitation.InvitationType == _tripInvitationType) {
                 emailTemplateId = _tripInvitationEmailTemplate;
             } else if (invitation.InvitationType == _anywhereGatheringInvitationTypeId) {
+                mergeData["YesURL"] = $"{_baseUrl}connect/accept-invite/{group.GroupId}/{invitation.InvitationGuid}";
+                mergeData["NoURL"]  = $"{_baseUrl}connect/decline-invite/{group.GroupId}/{invitation.InvitationGuid}";
+
                 mergeData["Recipient_Name"] = invitation.RecipientName.Substring(0, 1).ToUpper() + invitation.RecipientName.Substring(1).ToLower();
                 mergeData.Add("Leader_Name", leaderContact.Nickname.Substring(0,1).ToUpper() + leaderContact.Nickname.Substring(1).ToLower() + " " + leaderContact.Last_Name.Substring(0,1).ToUpper() + ".");
                 mergeData.Add("City", group.Address.City);
