@@ -74,18 +74,5 @@ describe('Live Streaming Streamspot Service', () => {
       expect(_.first(service.parseEvents()).title).toBe('Saturday Rehearsal Broadcasting');
       
     });
-
-    it('should return events, grouped by DOY', () => {
-      httpBackend.expectGET(eventsEndpoint).respond(200, events);
-      httpBackend.flush();
-      let results = service.getEventsByDate();
-
-      let idx = parseInt(Object.keys(results)[0]);
-      let event = _.first(results[idx]);
-
-      expect(event instanceof Object).toBeTruthy();
-      expect(idx).toEqual(jasmine.any(Number));
-      expect(event.title).toBe('Saturday Rehearsal Broadcasting');
-    });
   })
 });
