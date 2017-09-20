@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -30,7 +29,7 @@ namespace crds_angular.Controllers.API
         private readonly IAuthenticationRepository _authenticationRepo;
         private readonly IAnalyticsService _analyticsService;
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private const int _trialMemberRoleId = 67;
+        private const int TrialMemberRoleId = 67;
 
         public FinderController(IFinderService finderService,
                                 IGroupToolService groupToolService,
@@ -526,10 +525,10 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _finderService.AddUserDirectlyToGroup(token, person, groupId, _trialMemberRoleId);
-                    return (Ok());
+                    _finderService.AddUserDirectlyToGroup(token, person, groupId, TrialMemberRoleId);
+                    return Ok();
                 }
-                catch (DuplicateGroupParticipantException dup)
+                catch (DuplicateGroupParticipantException)
                 {
                     throw new HttpResponseException(HttpStatusCode.Conflict);
                 }
