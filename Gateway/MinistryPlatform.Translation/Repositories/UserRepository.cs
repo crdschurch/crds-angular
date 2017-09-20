@@ -121,6 +121,7 @@ namespace MinistryPlatform.Translation.Repositories
         }
 
 
+#if false // TODO: This needs more work
         public List<MpRoleDto> GetUserRolesRest(int userId, string apiToken=null)
         {
             if (string.IsNullOrEmpty(apiToken))
@@ -131,6 +132,7 @@ namespace MinistryPlatform.Translation.Repositories
             return records; 
 
         }
+#endif
 
         public void UpdateUser(Dictionary<string, object> userUpdateValues)
         {

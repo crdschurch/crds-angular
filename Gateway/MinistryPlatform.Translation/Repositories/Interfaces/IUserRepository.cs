@@ -17,7 +17,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         int GetContactIdByUserId(int userId);
         MpUser GetUserByResetToken(string resetToken);
         List<MpRoleDto> GetUserRoles(int userId);
-        List<MpRoleDto> GetUserRolesRest(int userId, string apiToken=null);
 
         MpUser GetUserByRecordId(int recordId);
         string HelperApiLogin(); 
