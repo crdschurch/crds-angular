@@ -24,7 +24,7 @@ namespace crds_angular.test.Services
             _mpFinderRepository = new Mock<IFinderRepository>();
             _mpConfigurationWrapper = new Mock<IConfigurationWrapper>();
 
-            _fixture = new AwsCloudsearchService(_addressGeocodingService.Object, _mpFinderRepository.Object, _mpConfigurationWrapper.Object);
+            _fixture = new AwsCloudsearchService(_mpFinderRepository.Object, _mpConfigurationWrapper.Object);
 
             //force AutoMapper to register
             AutoMapperConfig.RegisterMappings();

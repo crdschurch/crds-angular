@@ -21,6 +21,7 @@ namespace crds_angular.Services
 {
     public class GroupToolService : MinistryPlatformBaseService, IGroupToolService
     {
+        private readonly IAwsCloudsearchService _awsCloudsearchService;
         private readonly IGroupToolRepository _groupToolRepository;
         private readonly IGroupRepository _groupRepository;
         private readonly IGroupService _groupService;
@@ -75,6 +76,7 @@ namespace crds_angular.Services
         private readonly ILog _logger = LogManager.GetLogger(typeof(GroupToolService));
 
         public GroupToolService(
+            IAwsCloudsearchService awsCloudsearchService,
             IGroupToolRepository groupToolRepository,
             IGroupRepository groupRepository,
             IGroupService groupService,
@@ -93,6 +95,7 @@ namespace crds_angular.Services
             IFinderRepository finderRepository
             )
         {
+            _awsCloudsearchService = awsCloudsearchService;
             _groupToolRepository = groupToolRepository;
             _groupRepository = groupRepository;
             _groupService = groupService;
@@ -380,12 +383,16 @@ namespace crds_angular.Services
                 if (approve)
                 {
                     ApproveInquiry(groupId, group, inquiry, participant, message, roleId, sendEmail);
+                    var leader = ((List<GroupParticipantDTO>)group.Participants).FirstOrDefault(p => p.GroupRoleId == _groupRoleLeaderId);
+
+
                     var props = new EventProperties
                     {
+                        {"GroupLeaderName", leader?.DisplayName },
                         {"GroupName", group.GroupName},
-                        {"City", group?.Address?.City},
-                        {"State", group?.Address?.State},
-                        {"Zip", group?.Address?.PostalCode}
+                        {"GroupCity", group?.Address?.City},
+                        {"GroupState", group?.Address?.State},
+                        {"GroupZip", group?.Address?.PostalCode}
                     };
                     _analyticsService.Track(inquiry.ContactId.ToString(), "AcceptedIntoGroup", props);
                 }
@@ -678,6 +685,8 @@ namespace crds_angular.Services
 
         public void EndGroup(int groupId, int reasonEndedId)
         {
+            _awsCloudsearchService.DeleteGroupFromAws(groupId);
+
             //get all participants before we end the group so they are not endDated and still
             //available from this call.
             // ReSharper disable once RedundantArgumentDefaultValue
@@ -848,7 +857,14 @@ namespace crds_angular.Services
                 Where(groupParticipant => groupParticipant.GroupRoleId == _groupRoleLeaderId).ToList();
 
             // Call Analytics
-            var props = new EventProperties {{"Name", group.GroupName}, {"City", group?.Address?.City}, {"State", group?.Address?.State}, {"Zip", group?.Address?.PostalCode}};
+            var props = new EventProperties
+            {
+                {"GroupLeaderName", leaders?.FirstOrDefault()?.DisplayName },
+                {"GroupName", group.GroupName},
+                {"GroupCity", group?.Address?.City},
+                {"GroupState", group?.Address?.State},
+                {"GroupZip", group?.Address?.PostalCode}
+            };
             _analyticsService.Track(contact.Contact_ID.ToString(), "RequestedToJoinGroup", props);
 
             if (doSendEmail)

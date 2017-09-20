@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.CloudSearchDomain.Model;
 using AutoMapper;
 using crds_angular.App_Start;
 using crds_angular.Exceptions;
@@ -25,6 +26,7 @@ namespace crds_angular.test.Services
     public class GroupToolServiceTest
     {
         private GroupToolService _fixture;
+        private Mock<IAwsCloudsearchService> _awsCloudsearchService;
         private Mock<MPServices.IGroupToolRepository> _groupToolRepository;
         private Mock<MPServices.ICommunicationRepository> _communicationRepository;
         private Mock<IGroupService> _groupService;
@@ -66,6 +68,7 @@ namespace crds_angular.test.Services
         {
             AutoMapperConfig.RegisterMappings();
 
+            _awsCloudsearchService = new Mock<IAwsCloudsearchService>(MockBehavior.Strict);
             _communicationRepository = new Mock<MPServices.ICommunicationRepository>(MockBehavior.Strict);
             _groupToolRepository = new Mock<MPServices.IGroupToolRepository>(MockBehavior.Strict);
             _groupService = new Mock<IGroupService>(MockBehavior.Strict);
@@ -103,7 +106,8 @@ namespace crds_angular.test.Services
             configuration.Setup(mocked => mocked.GetConfigIntValue("GatheringHostAcceptTemplate")).Returns(GatheringHostAcceptTemplate);
             configuration.Setup(mocked => mocked.GetConfigIntValue("GatheringHostDenyTemplate")).Returns(GatheringHostDenyTemplate);
 
-            _fixture = new GroupToolService(_groupToolRepository.Object,
+            _fixture = new GroupToolService(_awsCloudsearchService.Object, 
+                                            _groupToolRepository.Object,
                                             _groupRepository.Object,
                                             _groupService.Object,
                                             _participantRepository.Object,
@@ -245,29 +249,34 @@ namespace crds_angular.test.Services
 
             _participantRepository.Setup(mocked => mocked.GetParticipantRecord("abc")).Returns(myParticipant);
 
+            var groupParticipants = new List<GroupParticipantDTO>
+            {
+                new GroupParticipantDTO
+                {
+                    ParticipantId = myParticipantId,
+                    GroupRoleId = GroupRoleLeader
+                },
+                new GroupParticipantDTO
+                {
+                    ParticipantId = 9090,
+                    GroupParticipantId = 19090,
+                    GroupRoleId = GroupRoleLeader
+                }
+            };
+
             var groups = new List<GroupDTO>
             {
                 new GroupDTO
                 {
-                    Participants = new List<GroupParticipantDTO>
-                    {
-                        new GroupParticipantDTO
-                        {
-                            ParticipantId = myParticipantId,
-                            GroupRoleId = GroupRoleLeader
-                        },
-                        new GroupParticipantDTO
-                        {
-                            ParticipantId = 9090,
-                            GroupParticipantId = 19090,
-                            GroupRoleId = GroupRoleLeader
-                        }
-                    },
+                    Participants = groupParticipants,
                     Address = new AddressDTO() {City = "cityname", State = "CA" }
                 }
             };
 
-            var mygroup = new GroupDTO {GroupTypeId = 5, Address = new AddressDTO() { City = "cityname", State = "CA" } };
+            var mygroup = new GroupDTO {GroupTypeId = 5,
+                                        Address = new AddressDTO() { City = "cityname", State = "CA" },
+                                        Participants = groupParticipants
+            };
             
             var inquiry = new Inquiry
             {
@@ -315,7 +324,7 @@ namespace crds_angular.test.Services
                 Nickname = "Nick"
             };
             _contactRepository.Setup(mocked => mocked.GetContactById(It.IsAny<int>())).Returns(leader);
-            
+           
 
             _fixture.ApproveDenyInquiryFromMyGroup("abc", 2, true, inquiry, message, _memberRoleId);
 
@@ -1068,6 +1077,19 @@ namespace crds_angular.test.Services
             Assert.AreEqual(4, invitations.Count);
         }
 
+        [Test]
+        public void EndGroupCallsAws()
+        {
+            _awsCloudsearchService.Setup(aws => aws.DeleteGroupFromAws(It.IsAny<int>())).Returns(new UploadDocumentsResponse());
+            _groupService.Setup(gs => gs.GetGroupParticipants(It.IsAny<int>(), It.IsAny<bool>())).Returns(new List<GroupParticipantDTO>());
+            _groupService.Setup(gs => gs.EndDateGroup(It.IsAny<int>(), It.IsAny<int>()));
+            _groupService.Setup(gs => gs.GetGroupDetails(It.IsAny<int>())).Returns(new GroupDTO());
+
+            _fixture.EndGroup(123, 4);
+
+            _awsCloudsearchService.Verify(aws => aws.DeleteGroupFromAws(It.IsAny<int>()), Times.Once);
+        }
+
         private List<MpInvitation> getMpInvations()
         {
             var invitations = new List<MpInvitation>();
@@ -1685,10 +1707,10 @@ namespace crds_angular.test.Services
 
             _fixture.SubmitInquiry(token, group.GroupId, true);
             _mockAnalyticService.Verify(x => x.Track(It.IsAny<string>(), "RequestedToJoinGroup", It.Is<EventProperties>(props => 
-                                    props["Name"].Equals(group.GroupName) 
-                                    && props["State"].Equals(group.Address.State)
-                                    && props["City"].Equals(group.Address.City)
-                                    && props["Zip"].Equals(group.Address.PostalCode))), Times.Once);
+                                    props["GroupName"].Equals(group.GroupName) 
+                                    && props["GroupState"].Equals(group.Address.State)
+                                    && props["GroupCity"].Equals(group.Address.City)
+                                    && props["GroupZip"].Equals(group.Address.PostalCode))), Times.Once);
 
             _groupRepository.VerifyAll();
             _groupToolRepository.VerifyAll();

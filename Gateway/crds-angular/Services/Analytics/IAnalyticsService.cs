@@ -10,5 +10,6 @@ namespace crds_angular.Services.Interfaces
     {
         void Track(string userId, string eventName);
         void Track(string userId, string eventName, EventProperties props);
+        void IdentifyLoggedInUser(string userId, EventProperties traits);
     }
 }
