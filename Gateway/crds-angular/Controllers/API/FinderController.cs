@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using crds_angular.Exceptions.Models;
@@ -301,7 +302,7 @@ namespace crds_angular.Controllers.API
 
                     //Call  analytics
                     var props = new EventProperties {{"City", pin?.Address?.City}, {"State", pin?.Address?.State}, {"Zip", pin?.Address?.PostalCode}};
-                    _analyticsService.Track(pin.Contact_ID.ToString(), "AddedtoMap", props);
+                    Task.Run(() => _analyticsService.Track(pin.Contact_ID.ToString(), "AddedtoMap", props));
 
                     _awsCloudsearchService.UploadNewPinToAws(personPin); 
 
@@ -333,7 +334,7 @@ namespace crds_angular.Controllers.API
                     _awsCloudsearchService.DeleteSingleConnectRecordInAwsCloudsearch(participantId, 1);
 
                     // Call  analytics
-                    _analyticsService.Track(AuthenticationRepository.GetContactId(token).ToString(), "RemovedFromMap");
+                    Task.Run(() => _analyticsService.Track(AuthenticationRepository.GetContactId(token).ToString(), "RemovedFromMap"));
 
                     return Ok();
 
@@ -388,8 +389,8 @@ namespace crds_angular.Controllers.API
         {
             try
             {
-                NewRelic.Api.Agent.NewRelic.AddCustomParameter("WherAmI", "executing GetPinsByAddress");
-
+                // 9/20/2017 Bounding box is NOT being used. This code being left in because there is 
+                //           discussion around limiting the number of pins returned.  kdb
                 AwsBoundingBox awsBoundingBox = null;
                 Boolean areAllBoundingBoxParamsPresent = _finderService.areAllBoundingBoxParamsPresent(queryParams.BoundingBox); 
 
@@ -412,7 +413,7 @@ namespace crds_angular.Controllers.API
                     {"Location", queryParams.UserLocationSearchString},
                     {"Keywords", queryParams.UserKeywordSearchString}
                 };
-                _analyticsService.Track("Anonymous", eventName, props);
+                Task.Run(() => _analyticsService.Track("Anonymous", eventName, props));
 
                 return Ok(result);
             }
@@ -488,7 +489,7 @@ namespace crds_angular.Controllers.API
 
                     // Call Analytics
                     var props = new EventProperties {{"InvitationToEmail", person.email}};
-                    _analyticsService.Track(AuthenticationRepository.GetContactId(token).ToString(), "HostInvitationSent", props);
+                    Task.Run(() => _analyticsService.Track(AuthenticationRepository.GetContactId(token).ToString(), "HostInvitationSent", props));
 
                     return (Ok());
                 }
@@ -713,7 +714,7 @@ namespace crds_angular.Controllers.API
 
                     // Call Analytics
                     var props = new EventProperties {{"City", hostRequest.Address.City}, {"State", hostRequest.Address.State}, {"Zip", hostRequest.Address.PostalCode}};
-                    _analyticsService.Track(hostRequest.ContactId.ToString(), "RegisteredAsHost", props);
+                    Task.Run(() => _analyticsService.Track(hostRequest.ContactId.ToString(), "RegisteredAsHost", props));
 
                     return Ok();
                 }
