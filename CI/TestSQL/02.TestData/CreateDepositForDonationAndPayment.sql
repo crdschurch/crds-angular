@@ -89,15 +89,75 @@ SET @wilmaContactID  = (SELECT Contact_ID FROM Contacts WHERE First_Name = "Wilm
 DECLARE @richardContactID as int
 SET @richardContactID  = (SELECT Contact_ID FROM Contacts WHERE First_Name = "Richard" AND Last_Name = "Tremplay")
 
+-- Create a invoices
+DECLARE @benInvoiceID as int
+DECLARE @wilmaInvoiceID as int
+DECLARE @richardInvoiceID as int 
+
+INSERT INTO [dbo].[Invoices]
+(Purchaser_Contact_ID,Invoice_Status_ID,Invoice_Total,Invoice_Date                                  ,Domain_ID,Notes,Currency) values
+(@benContactID       ,2                ,360.00       ,(convert(datetime, '2016-12-19 10:15:00.000')),1        ,NULL ,NULL)
+SET @benInvoiceID = SCOPE_IDENTITY()
+
+INSERT INTO [dbo].[Invoices]
+(Purchaser_Contact_ID,Invoice_Status_ID,Invoice_Total,Invoice_Date                                  ,Domain_ID,Notes,Currency) values
+(@wilmaContactID       ,2                ,365.00       ,(convert(datetime, '2016-12-29 10:15:00.000')),1        ,NULL ,NULL)
+SET @wilmaInvoiceID = SCOPE_IDENTITY()
+
+INSERT INTO [dbo].[Invoices]
+(Purchaser_Contact_ID,Invoice_Status_ID,Invoice_Total,Invoice_Date                                  ,Domain_ID,Notes,Currency) values
+(@richardContactID       ,2                ,460.00       ,(convert(datetime, '2017-01-19 10:15:00.000')),1        ,NULL ,NULL)
+SET @wilmaInvoiceID = SCOPE_IDENTITY()
+
 -- Create some payments
+DECLARE @benPaymentID as int
+DECLARE @wilmaPaymentID as int
+DECLARE @richardPaymentID as int 
+
 INSERT INTO [dbo].[Payments]
-(Payment_Total,Contact_ID      ,Domain_ID,Payment_Date                                   ,Gateway_Response,Transaction_Code             ,Notes,Merchant_Batch,Payment_Type_ID,Item_Number,Processed,Currency,Invoice_Number,Batch_ID,Payment_Status_ID,Processor_Fee_Amount) VALUES
-(100          ,@wilmaContactId ,1        ,(convert(datetime, '2017-08-20 13:36:00.00',1)),NULL            ,'ch_1B4C7iDpgPmDp9CAaiNOF6VN',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL    ,3085          ,@batchID,1                 ,0)
+(Payment_Total,Contact_ID      ,Domain_ID,Payment_Date                                   ,Gateway_Response,Transaction_Code             ,Notes,Merchant_Batch,Payment_Type_ID,Item_Number,Processed,Currency,Invoice_Number ,Batch_ID,Payment_Status_ID,Processor_Fee_Amount) VALUES
+(100          ,@wilmaContactId ,1        ,(convert(datetime, '2017-08-20 13:36:00.00',1)),NULL            ,'ch_1B4C7iDpgPmDp9CAaiNOF6VN',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL    ,@wilmaInvoiceID,1                         ,0)
+SET @benPaymentID = SCOPE_IDENTITY()
 
 INSERT INTO [dbo].[Payments]
 (Payment_Total,Contact_ID,Domain_ID,Payment_Date                                   ,Gateway_Response,Transaction_Code             ,Notes,Merchant_Batch,Payment_Type_ID,Item_Number,Processed,Currency,Invoice_Number,Batch_ID,Payment_Status_ID,Processor_Fee_Amount) VALUES
-(100          ,@benContactID ,1    ,(convert(datetime, '2017-08-20 13:36:00.00',1)),NULL            ,'ch_1B4C89DpgPmDp9CAOylVOf0F',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL    ,3086          ,@batchID,1                 ,0)
+(100          ,@benContactID ,1    ,(convert(datetime, '2017-08-20 13:36:00.00',1)),NULL            ,'ch_1B4C89DpgPmDp9CAOylVOf0F',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL    ,@benInvoiceId ,@batchID,1                 ,0)
+SET @benPaymentID = SCOPE_IDENTITY()
 
 INSERT INTO [dbo].[Payments]
 (Payment_Total,Contact_ID       ,Domain_ID,Payment_Date                                   ,Gateway_Response,Transaction_Code             ,Notes,Merchant_Batch,Payment_Type_ID,Item_Number,Processed,Currency,Invoice_Number,Batch_ID,Payment_Status_ID,Processor_Fee_Amount) VALUES
-(100          ,@richardContactID,1        ,(convert(datetime, '2017-08-20 13:36:00.00',1)),NULL            ,'ch_1B4CAMDpgPmDp9CAC8AgHQ0r',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL    ,3087          ,@batchID,1                 ,0)
+(100          ,@richardContactID,1        ,(convert(datetime, '2017-08-20 13:36:00.00',1)),NULL            ,'ch_1B4CAMDpgPmDp9CAC8AgHQ0r',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL    ,richardInvoiceID       ,@batchID,1                 ,0)
+SET @benPaymentID = SCOPE_IDENTITY()
+
+-- Create a invoice details
+DECLARE @benInvoiceDetailID as int
+DECLARE @wilmaInvoiceDetailID as int
+DECLARE @richardInvoiceDetailID as int 
+
+INSERT INTO [dbo].[Invoice_Detail]
+(Invoice_ID   ,Recipient_Contact_ID,Event_Participant_ID,Item_Quantity,Line_Total,Product_ID,Product_Option_Price_ID,Domain_ID,Item_Note,Recipient_Name,Recipient_Address,Recipient_Email,Recipient_Phone) VALUES
+(@benInvoiceID,@benContactID       ,NULL                ,1            ,360       ,9         ,NULL                   ,1        ,NULL     ,NULL          ,NULL             ,NULL           ,NULL)
+SET @benInvoiceDetailID = SCOPE_IDENTITY()
+
+INSERT INTO [dbo].[Invoice_Detail]
+(Invoice_ID   ,Recipient_Contact_ID,Event_Participant_ID,Item_Quantity,Line_Total,Product_ID,Product_Option_Price_ID,Domain_ID,Item_Note,Recipient_Name,Recipient_Address,Recipient_Email,Recipient_Phone) VALUES
+(@wilmaInvoiceID,@wilmaContactID   ,NULL                ,1            ,365       ,9         ,NULL                   ,1        ,NULL     ,NULL          ,NULL             ,NULL           ,NULL)
+SET @benInvoiceDetailID = SCOPE_IDENTITY()
+
+INSERT INTO [dbo].[Invoice_Detail]
+(Invoice_ID       ,Recipient_Contact_ID,Event_Participant_ID,Item_Quantity,Line_Total,Product_ID,Product_Option_Price_ID,Domain_ID,Item_Note,Recipient_Name,Recipient_Address,Recipient_Email,Recipient_Phone) VALUES
+(@richardInvoiceID,@richardContactID       ,NULL                ,1            ,460       ,9         ,NULL                   ,1        ,NULL     ,NULL          ,NULL             ,NULL           ,NULL)
+SET @benInvoiceDetailID = SCOPE_IDENTITY()
+
+-- Create you some payment details
+INSERT INTO [dbo].[Payment_Detail]
+(Payment_ID   ,Payment_Amount,Invoice_Detail_ID  ,Domain_ID,Congregation_ID) VALUES
+(@benPaymentID,100.00        ,@benInvoiceDetailID,1        ,5)
+
+INSERT INTO [dbo].[Payment_Detail]
+(Payment_ID     ,Payment_Amount,Invoice_Detail_ID    ,Domain_ID,Congregation_ID) VALUES
+(@wilmaPaymentID,100.00        ,@wilmaInvoiceDetailID,1        ,5)
+
+INSERT INTO [dbo].[Payment_Detail]
+(Payment_ID       ,Payment_Amount,Invoice_Detail_ID      ,Domain_ID,Congregation_ID) VALUES
+(@richardPaymentID,100.00        ,@richardInvoiceDetailID,1        ,5)
