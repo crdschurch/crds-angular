@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Device.Location;
-using System.Linq;
 using crds_angular.App_Start;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Finder;
@@ -16,7 +15,6 @@ using AutoMapper;
 using crds_angular.Models.Crossroads.Groups;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
-using Rhino.Mocks;
 using Amazon.CloudSearchDomain.Model;
 using crds_angular.Exceptions;
 using crds_angular.Models.AwsCloudsearch;
@@ -889,7 +887,7 @@ namespace crds_angular.test.Services
         }
 
         [Test]
-        public void ShouldSendEmailToAddedUser()
+        public void TestAddUserToGroup()
         {
         var person = new User()
             {
@@ -930,15 +928,45 @@ namespace crds_angular.test.Services
             group.MeetingTime = "0001-01-01T05:25:00.000Z";
             group.Address = groupAddress;
 
-            var mpParticpant = new MpParticipant();
-            mpParticpant.ContactId = 1;
-            mpParticpant.ParticipantId = 3;
+            var mpParticpant = new MpParticipant
+            {
+                ContactId = 1,
+                ParticipantId = 3
+            };
 
             var groupList = new List<GroupDTO>();
             groupList.Add(group);
 
+            var gplist = new List<GroupParticipantDTO>();
+
+            
+            var gpl1 = new GroupParticipantDTO
+            {
+                ContactId = 111,
+                Email = "111@leader.com",
+                GroupRoleId = 22,
+                NickName = "John_111"
+            };
+
+            var gpl2 = new GroupParticipantDTO
+            {
+                ContactId = 222,
+                Email = "222@leader.com",
+                GroupRoleId = 22,
+                NickName = "John_222"
+            };
+
+            var gpl3 = new GroupParticipantDTO
+            {
+                ContactId = 333,
+                Email = "333@leader.com",
+                GroupRoleId = 22,
+                NickName = "John_333"
+            };
+            var gpleaderlist = new List<GroupParticipantDTO> {gpl1, gpl2, gpl3};
+
             _mpConfigurationWrapper.Setup(x => x.GetConfigIntValue("GroupsAddParticipantEmailNotificationTemplateId")).Returns(1);
-            _communicationRepository.Setup(x => x.GetTemplate(1)).Returns(emailTemplate);
+            _communicationRepository.Setup(x => x.GetTemplate(It.IsAny<int>())).Returns(emailTemplate);
             _mpContactRepository.Setup(x => x.GetContactId(It.IsAny<string>())).Returns(3);
             _mpContactRepository.Setup(x => x.GetContactById(3)).Returns(leaderContact);
             _mpContactRepository.Setup(x => x.GetContactIdByEmail(It.IsAny<string>())).Returns(2);
@@ -946,8 +974,14 @@ namespace crds_angular.test.Services
             _lookupService.Setup(x => x.GetMeetingDayFromId(It.IsAny<int>())).Returns("Friday");
             _mpParticipantRepository.Setup(x => x.GetParticipantRecord(It.IsAny<string>())).Returns(mpParticpant);
             _groupService.Setup(x => x.GetGroupsByTypeOrId(It.IsAny<string>(), It.IsAny<int>(), null, It.IsAny<int>(),true, false)).Returns(groupList);
-            _fixture.SendEmailToAddedUser( token, person, gatheringId );
-            _communicationRepository.Verify(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false), Times.Once);
+
+            _mpContactRepository.Setup(x => x.GetActiveContactIdByEmail("ae@g.com")).Returns(123987);
+            _groupService.Setup(x => x.GetGroupParticipants(12345, false)).Returns(gplist);
+
+            _groupService.Setup(x => x.GetGroupParticipantsWithoutAttributes(It.IsAny<int>())).Returns(gpleaderlist);
+
+            _fixture.AddUserDirectlyToGroup( token, person, gatheringId, _memberRoleId);
+            _communicationRepository.Verify(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false),Times.Exactly(4));
             
         }
     }

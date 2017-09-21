@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -18,6 +17,7 @@ using crds_angular.Exceptions;
 using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Crossroads.Groups;
 using crds_angular.Services.Analytics;
+using Crossroads.Web.Common.Configuration;
 using log4net;
 
 namespace crds_angular.Controllers.API
@@ -30,14 +30,15 @@ namespace crds_angular.Controllers.API
         private readonly IAuthenticationRepository _authenticationRepo;
         private readonly IAnalyticsService _analyticsService;
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private const int _trialMemberRoleId = 67;
+        private readonly int _trialMemberRoleId;
 
         public FinderController(IFinderService finderService,
                                 IGroupToolService groupToolService,
                                 IUserImpersonationService userImpersonationService,
                                 IAuthenticationRepository authenticationRepository,
                                 IAwsCloudsearchService awsCloudsearchService,
-                                IAnalyticsService analyticsService)
+                                IAnalyticsService analyticsService,
+                                 IConfigurationWrapper configurationWrapper)
             : base(userImpersonationService, authenticationRepository)
         {
             _finderService = finderService;
@@ -45,6 +46,7 @@ namespace crds_angular.Controllers.API
             _awsCloudsearchService = awsCloudsearchService;
             _authenticationRepo = authenticationRepository;
             _analyticsService = analyticsService;
+            _trialMemberRoleId = configurationWrapper.GetConfigIntValue("GroupsTrialMemberRoleId");
         }
 
         [ResponseType(typeof(PinDto))]
@@ -239,7 +241,7 @@ namespace crds_angular.Controllers.API
                 }
                 catch (Exception ex)
                 {
-                    var apiError = new ApiErrorDto(string.Format("Error removing group participant {0} from group {1}", groupInformation.GroupParticipantId, groupInformation.GroupId), ex);
+                    var apiError = new ApiErrorDto($"Error removing group participant {groupInformation.GroupParticipantId} from group {groupInformation.GroupId}", ex);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
             });
@@ -288,7 +290,7 @@ namespace crds_angular.Controllers.API
                         _finderService.UpdateHouseholdAddress(pin);
                     }
 
-                    if (pin.Participant_ID == 0 || String.IsNullOrEmpty(pin.Participant_ID.ToString()))
+                    if (pin.Participant_ID == 0 || string.IsNullOrEmpty(pin.Participant_ID.ToString()))
                     {
                         pin.Participant_ID =_finderService.GetParticipantIdFromContact((int)pin.Contact_ID);
                     }
@@ -527,9 +529,9 @@ namespace crds_angular.Controllers.API
                 try
                 {
                     _finderService.AddUserDirectlyToGroup(token, person, groupId, _trialMemberRoleId);
-                    return (Ok());
+                    return Ok();
                 }
-                catch (DuplicateGroupParticipantException dup)
+                catch (DuplicateGroupParticipantException)
                 {
                     throw new HttpResponseException(HttpStatusCode.Conflict);
                 }

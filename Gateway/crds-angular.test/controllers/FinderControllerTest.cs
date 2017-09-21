@@ -11,6 +11,7 @@ using crds_angular.Models.Crossroads;
 using crds_angular.Models.Finder;
 using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
+using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
 using Moq;
 using NUnit.Framework;
@@ -29,6 +30,7 @@ namespace crds_angular.test.controllers
         private Mock<IAuthenticationRepository> _authenticationRepository;
         private Mock<IAwsCloudsearchService> _awsCloudsearchService;
         private Mock<IAnalyticsService> _analyticsService;
+        private Mock<IConfigurationWrapper> _configurationWrapper;
         private string _authToken;
         private string _authType;
 
@@ -41,6 +43,7 @@ namespace crds_angular.test.controllers
             _awsCloudsearchService = new Mock<IAwsCloudsearchService>();
             _groupToolService = new Mock<IGroupToolService>();
             _analyticsService = new Mock<IAnalyticsService>();
+            _configurationWrapper = new Mock<IConfigurationWrapper>();
 
             _authType = "authType";
             _authToken = "authToken";
@@ -50,7 +53,8 @@ namespace crds_angular.test.controllers
                                             _userImpersonationService.Object,
                                             _authenticationRepository.Object,
                                             _awsCloudsearchService.Object,
-                                            _analyticsService.Object)
+                                            _analyticsService.Object,
+                                            _configurationWrapper.Object)
             {
                 Request = new HttpRequestMessage(),
                 RequestContext = new HttpRequestContext()
