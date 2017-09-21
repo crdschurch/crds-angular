@@ -1200,13 +1200,13 @@ namespace crds_angular.Services
                 };
                 _communicationRepository.SendMessage(confirmation);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return;
             }
         }
 
-        public void SendEmailToAddedUser(string token, User user, int groupid)
+        private void SendEmailToAddedUser(string token, User user, int groupid)
         {
             var emailTemplateId = _configurationWrapper.GetConfigIntValue("GroupsAddParticipantEmailNotificationTemplateId");
             var emailTemplate = _communicationRepository.GetTemplate(emailTemplateId);
