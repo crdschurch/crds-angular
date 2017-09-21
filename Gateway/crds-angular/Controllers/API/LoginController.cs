@@ -114,8 +114,9 @@ namespace crds_angular.Controllers.API
                     }
                     else
                     {
-                        var roles = _personService.GetLoggedInUserRoles(token);
-                        var user = _userService.GetByAuthenticationToken(token);
+                        var apiToken = _userService.HelperApiLogin();
+                        var user = _userService.GetByUserName(person.EmailAddress, apiToken); //235 ms _userService.GetByAuthenticationToken(token) was 1.5 seconds 
+                        var roles = _userService.GetUserRolesRest(user.UserRecordId, apiToken);
                         var l = new LoginReturn(token, person.ContactId, person.FirstName, person.EmailAddress, person.MobilePhone, roles, user.CanImpersonate);
                         return this.Ok(l);
                     }
@@ -149,7 +150,7 @@ namespace crds_angular.Controllers.API
 
                 var apiToken = _userService.HelperApiLogin();
                 var user = _userService.GetByUserName(cred.username,apiToken); //235 ms _userService.GetByAuthenticationToken(token) was 1.5 seconds 
-                var userRoles = _personService.GetLoggedInUserRoles(token);
+                var userRoles = _userService.GetUserRolesRest(user.UserRecordId, apiToken);
                 var c = _contactRepository.GetContactByUserRecordId(user.UserRecordId, apiToken);//use a rest call and use the id directly
                 var r = new LoginReturn
                 {
@@ -168,7 +169,7 @@ namespace crds_angular.Controllers.API
 
                 _loginService.ClearResetToken(user.UserRecordId); //no need to lookup the userid if we already have it
                 _contactRepository.UpdateContactToActive(c.Contact_ID); //205
-                _analyticsService.Track(c.Contact_ID.ToString(), "SignedIn"); 
+                //_analyticsService.Track(c.Contact_ID.ToString(), "SignedIn"); 
 
 
                 return this.Ok(r);
