@@ -2,9 +2,6 @@
 using System.Device.Location;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.Remoting.Services;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Results;
@@ -110,7 +107,7 @@ namespace crds_angular.test.controllers
             _finderService.Setup(m => m.RandomizeLatLongForNonSitePins(It.IsAny<List<PinDto>>())).Returns(new List<PinDto>());
             _analyticsService.Setup(
                 m =>
-                   m.Track(It.Is<string>(userId => userId == "Anonymous"),
+                    m.Track(It.Is<string>(userId => userId == "Anonymous"),
                             It.Is<string>(eventName => eventName == "GroupsSearch"),
                             It.Is<EventProperties>(props => props["Location"] == "45039" && props["Keywords"] == "BEER")));
 
