@@ -108,7 +108,8 @@ namespace crds_angular.Services
 
         public void CaptureProfileAnalytics(Person person)
         {
-            var dateOfBirth = (person.DateOfBirth == null) ? null : Convert.ToDateTime(person.DateOfBirth + "-04:00").ToString("o");
+            var offset = GetEstOffset();
+            var dateOfBirth = (person.DateOfBirth == null) ? null : Convert.ToDateTime(person.DateOfBirth + offset).ToString("o");
             var props = new EventProperties
             {
                 { "FirstName", person.NickName },
@@ -127,6 +128,14 @@ namespace crds_angular.Services
                 { "MaritalStatus", person.MaritalStatusId }
             };
             _analyticsService.IdentifyLoggedInUser(person.ContactId.ToString(), props);
+        }
+
+        private string GetEstOffset()
+        {
+            var tz = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            var dt = DateTime.UtcNow;
+            var utcOffset = new DateTimeOffset(dt, TimeSpan.Zero);
+            return utcOffset.ToOffset(tz.GetUtcOffset(utcOffset)).ToString("zzz");
         }
 
         public Person GetPerson(int contactId)
