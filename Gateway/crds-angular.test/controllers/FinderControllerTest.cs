@@ -69,7 +69,7 @@ namespace crds_angular.test.controllers
         }
 
         [Test]
-        public async void GetPinsByAddressShouldCallAnalyticsForConnect()
+        public void GetPinsByAddressShouldCallAnalyticsForConnect()
         {
             var fakeQueryParams = new PinSearchQueryParams();
             fakeQueryParams.CenterGeoCoords = new GeoCoordinates(39.123, -84.456);
