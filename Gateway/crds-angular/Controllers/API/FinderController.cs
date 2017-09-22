@@ -302,7 +302,7 @@ namespace crds_angular.Controllers.API
 
                     //Call  analytics
                     var props = new EventProperties {{"City", pin?.Address?.City}, {"State", pin?.Address?.State}, {"Zip", pin?.Address?.PostalCode}};
-                    Task.Run(() => _analyticsService.Track(pin.Contact_ID.ToString(), "AddedtoMap", props));
+                    _analyticsService.Track(pin.Contact_ID.ToString(), "AddedtoMap", props);
 
                     _awsCloudsearchService.UploadNewPinToAws(personPin); 
 
@@ -334,7 +334,7 @@ namespace crds_angular.Controllers.API
                     _awsCloudsearchService.DeleteSingleConnectRecordInAwsCloudsearch(participantId, 1);
 
                     // Call  analytics
-                    Task.Run(() => _analyticsService.Track(AuthenticationRepository.GetContactId(token).ToString(), "RemovedFromMap"));
+                    _analyticsService.Track(AuthenticationRepository.GetContactId(token).ToString(), "RemovedFromMap");
 
                     return Ok();
 
@@ -385,7 +385,7 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "finder/findpinsbyaddress", minimumVersion: "1.0.0")]
         [Route("finder/findpinsbyaddress/")]
         [HttpPost]
-        public IHttpActionResult GetPinsByAddress(PinSearchQueryParams queryParams)
+        public  IHttpActionResult GetPinsByAddress(PinSearchQueryParams queryParams)
         {
             try
             {
@@ -413,7 +413,7 @@ namespace crds_angular.Controllers.API
                     {"Location", queryParams.UserLocationSearchString},
                     {"Keywords", queryParams.UserKeywordSearchString}
                 };
-                Task.Run(() => _analyticsService.Track("Anonymous", eventName, props));
+                _analyticsService.Track("Anonymous", eventName, props);
 
                 return Ok(result);
             }
@@ -489,7 +489,7 @@ namespace crds_angular.Controllers.API
 
                     // Call Analytics
                     var props = new EventProperties {{"InvitationToEmail", person.email}};
-                    Task.Run(() => _analyticsService.Track(AuthenticationRepository.GetContactId(token).ToString(), "HostInvitationSent", props));
+                    _analyticsService.Track(AuthenticationRepository.GetContactId(token).ToString(), "HostInvitationSent", props);
 
                     return (Ok());
                 }
@@ -714,7 +714,7 @@ namespace crds_angular.Controllers.API
 
                     // Call Analytics
                     var props = new EventProperties {{"City", hostRequest.Address.City}, {"State", hostRequest.Address.State}, {"Zip", hostRequest.Address.PostalCode}};
-                    Task.Run(() => _analyticsService.Track(hostRequest.ContactId.ToString(), "RegisteredAsHost", props));
+                    _analyticsService.Track(hostRequest.ContactId.ToString(), "RegisteredAsHost", props);
 
                     return Ok();
                 }
