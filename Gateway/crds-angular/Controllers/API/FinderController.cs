@@ -386,12 +386,12 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "finder/findpinsbyaddress", minimumVersion: "1.0.0")]
         [Route("finder/findpinsbyaddress/")]
         [HttpPost]
-        public IHttpActionResult GetPinsByAddress(PinSearchQueryParams queryParams)
+        public  IHttpActionResult GetPinsByAddress(PinSearchQueryParams queryParams)
         {
             try
             {
-                NewRelic.Api.Agent.NewRelic.AddCustomParameter("WherAmI", "executing GetPinsByAddress");
-
+                // 9/20/2017 Bounding box is NOT being used. This code being left in because there is 
+                //           discussion around limiting the number of pins returned.  kdb
                 AwsBoundingBox awsBoundingBox = null;
                 Boolean areAllBoundingBoxParamsPresent = _finderService.areAllBoundingBoxParamsPresent(queryParams.BoundingBox); 
 
