@@ -5,8 +5,8 @@ GO
 DECLARE @benDonorID as int
 SET @benDonorID = (SELECT Donor_ID FROM Donors WHERE Contact_ID = (SELECT Contact_ID FROM Contacts WHERE First_Name = 'Ben' AND Last_Name = 'Kenobi'))
 
-DECLARE @wilmaDonorID as int
-SET @wilmaDonorID = (SELECT Donor_ID FROM Donors WHERE Contact_ID = (SELECT Contact_ID FROM Contacts WHERE First_Name = 'Wilma' AND Last_Name = 'Flintstone'))
+DECLARE @andersonDonorID as int
+SET @andersonDonorID = (SELECT Donor_ID FROM Donors WHERE Contact_ID = (SELECT Contact_ID FROM Contacts WHERE First_Name = 'Anderson' AND Last_Name = 'Cooper'))
 
 DECLARE @richardDonorID as int
 SET @richardDonorID = (SELECT Donor_ID FROM Donors WHERE Contact_ID = (SELECT Contact_ID FROM Contacts WHERE First_Name = 'Richard' AND Last_Name = 'Tremplay'))
@@ -33,7 +33,7 @@ DBCC CHECKIDENT (Deposits, reseed, @currentDepositId);
 -- Setup batch
 DECLARE @batchId as int
 
-INSERT INTO [dbo].Batches
+INSERT INTO [dbo].[Batches]
 (Batch_Name             ,Setup_Date                                     ,Batch_Total,Item_Count,Batch_Entry_Type_ID,Batch_Type_ID,Default_Program,Source_Event,Deposit_ID,Finalize_Date                                  ,Domain_ID,Congregation_ID,_Import_Counter,_Source_File,Default_Payment_Type,Currency,Operator_User,__ExternalBatchID,Default_Program_ID_List,Processor_Transfer_ID) VALUES
 ('(auto) General Giving',(convert(datetime,'2017-08-30 11:00:00.000',21)),200.00     ,3         ,12                 ,NULL         ,NULL           ,NULL        ,@depositId,(convert(datetime, '2017-09-01 16:00:00.000',21)),1        ,1              ,NULL           ,NULL       ,4                   ,'USD'   ,4445333      ,NULL             ,3                      ,NULL);
 
@@ -41,41 +41,41 @@ SET @batchId = SCOPE_IDENTITY()
 
 -- Create Some Donations
 DECLARE @benDonationID as int
-DECLARE @wilmaDonationID as int
+DECLARE @andersonDonationID as int
 DECLARE @richardDonationID as int 
 
-INSERT INTO [dbo].Donations 
+INSERT INTO [dbo].[Donations] 
 (Donor_ID      ,Donation_Amount,Donation_Date                             ,Payment_Type_ID,Non_Cash_Asset_Type_ID,Item_Number,Batch_ID,Notes,Donor_Account_ID,[Anonymous],Check_Scanner_Batch,Donation_Status_Information,Donation_Status_ID,Donation_Status_Date            ,Donation_Status_Notes,Online_Donation_Information,Transaction_Code,Subscription_Code,Gateway_Response,Processed,Domain_ID,Currency,Receipted,Invoice_Number,Receipt_Number,__ExternalContributionID,__ExternalPaymentID,__ExternalGiverID,__ExternalDonorID,__ExteralMasterID1,__ExternalMasterID2,Registered_Donor,Processor_ID,Processor_Fee_Amount,Reconcile_Change_Needed,Reconcile_Change_Complete,Position) VALUES
-(@benDonorID   ,50.0000        ,(convert(datetime,'8/30/2017 11:00 AM',1)),4              ,null                  ,null       ,@batchId,null ,null            ,null       ,null               ,null                       ,2                 ,(convert(datetime,'9-1-2017',110)),null                 ,null                       ,null            ,null             ,null            ,null     ,1        ,'USD'    ,0        ,null          ,null          ,null                    ,null               ,null             ,null             ,null              ,null               ,null            ,null        ,null                ,null                   ,null                    ,1 );
+(@benDonorID   ,50.0000        ,(convert(datetime,'8/30/2017 11:00 AM',101)),4              ,null                  ,null       ,@batchId,null ,null            ,null       ,null               ,null                       ,2                 ,(convert(datetime,'9-1-2017',110)),null                 ,null                       ,null            ,null             ,null            ,null     ,1        ,'USD'    ,0        ,null          ,null          ,null                    ,null               ,null             ,null             ,null              ,null               ,null            ,null        ,null                ,null                   ,null                    ,1 );
 SET @benDonationID = SCOPE_IDENTITY()
 
-INSERT INTO [dbo].Donations 
-(Donor_ID      ,Donation_Amount,Donation_Date                               ,Payment_Type_ID,Non_Cash_Asset_Type_ID,Item_Number,Batch_ID,Notes,Donor_Account_ID,[Anonymous],Check_Scanner_Batch,Donation_Status_Information,Donation_Status_ID,Donation_Status_Date ,Donation_Status_Notes,Online_Donation_Information,Transaction_Code,Subscription_Code,Gateway_Response,Processed,Domain_ID,Currency,Receipted,Invoice_Number,Receipt_Number,__ExternalContributionID,__ExternalPaymentID,__ExternalGiverID,__ExternalDonorID,__ExteralMasterID1,__ExternalMasterID2,Registered_Donor,Processor_ID,Processor_Fee_Amount,Reconcile_Change_Needed,Reconcile_Change_Complete,Position) VALUES
-(@wilmaDonorID ,50.0000        ,(convert(datetime, '8/30/2017 11:00 AM', 1)),4              ,null                  ,null       ,@batchId,null ,null            ,null       ,null               ,null                       ,2                 ,(convert(datetime, '9-1-2017',110))          ,null                 ,null                       ,null            ,null             ,null            ,null     ,1        ,'USD'    ,0        ,null          ,null          ,null                    ,null               ,null             ,null             ,null              ,null               ,null            ,null        ,null                ,null                   ,null                    ,1 );
-SET @wilmaDonationID = SCOPE_IDENTITY()
+INSERT INTO [dbo].[Donations] 
+(Donor_ID      ,Donation_Amount,Donation_Date                                    ,Payment_Type_ID,Non_Cash_Asset_Type_ID,Item_Number,Batch_ID,Notes,Donor_Account_ID,[Anonymous],Check_Scanner_Batch,Donation_Status_Information,Donation_Status_ID,Donation_Status_Date               ,Donation_Status_Notes,Online_Donation_Information,Transaction_Code,Subscription_Code,Gateway_Response,Processed,Domain_ID,Currency,Receipted,Invoice_Number,Receipt_Number,__ExternalContributionID,__ExternalPaymentID,__ExternalGiverID,__ExternalDonorID,__ExteralMasterID1,__ExternalMasterID2,Registered_Donor,Processor_ID,Processor_Fee_Amount,Reconcile_Change_Needed,Reconcile_Change_Complete,Position) VALUES
+(@andersonDonorID ,50.0000        ,(convert(datetime, '8/30/2017 11:00 AM', 101)),4              ,null                  ,null       ,@batchId,null ,null            ,null       ,null               ,null                       ,2                 ,(convert(datetime, '9-1-2017',110)),null                 ,null                       ,null            ,null             ,null            ,null     ,1        ,'USD'    ,0       ,null          ,null          ,null                    ,null               ,null             ,null             ,null              ,null               ,null            ,null        ,null                ,null                   ,null                     ,1 );
+SET @andersonDonationID = SCOPE_IDENTITY()
 
-INSERT INTO [dbo].Donations 
-(Donor_ID        ,Donation_Amount,Donation_Date                              ,Payment_Type_ID,Non_Cash_Asset_Type_ID,Item_Number,Batch_ID,Notes,Donor_Account_ID,[Anonymous],Check_Scanner_Batch,Donation_Status_Information,Donation_Status_ID,Donation_Status_Date                    ,Donation_Status_Notes,Online_Donation_Information,Transaction_Code,Subscription_Code,Gateway_Response,Processed,Domain_ID,Currency,Receipted,Invoice_Number,Receipt_Number,__ExternalContributionID,__ExternalPaymentID,__ExternalGiverID,__ExternalDonorID,__ExteralMasterID1,__ExternalMasterID2,Registered_Donor,Processor_ID,Processor_Fee_Amount,Reconcile_Change_Needed,Reconcile_Change_Complete,Position) VALUES
-(@richardDonorID ,100.0000       ,(convert(datetime, '8/30/2017 11:00 AM',1)),4              ,null                  ,null       ,@batchId,null ,null            ,null       ,null               ,null                       ,2                 ,(convert(datetime, '9-1-2017',110))       ,null                 ,null                       ,null            ,null             ,null            ,null     ,1        ,'USD'    ,0        ,null          ,null          ,null                    ,null               ,null             ,null             ,null              ,null               ,null            ,null        ,null                ,null                   ,null                    ,1 );
+INSERT INTO [dbo].[Donations] 
+(Donor_ID        ,Donation_Amount,Donation_Date                                ,Payment_Type_ID,Non_Cash_Asset_Type_ID,Item_Number,Batch_ID,Notes,Donor_Account_ID,[Anonymous],Check_Scanner_Batch,Donation_Status_Information,Donation_Status_ID,Donation_Status_Date                    ,Donation_Status_Notes,Online_Donation_Information,Transaction_Code,Subscription_Code,Gateway_Response,Processed,Domain_ID,Currency,Receipted,Invoice_Number,Receipt_Number,__ExternalContributionID,__ExternalPaymentID,__ExternalGiverID,__ExternalDonorID,__ExteralMasterID1,__ExternalMasterID2,Registered_Donor,Processor_ID,Processor_Fee_Amount,Reconcile_Change_Needed,Reconcile_Change_Complete,Position) VALUES
+(@richardDonorID ,100.0000       ,(convert(datetime, '8/30/2017 11:00 AM',101)),4              ,null                  ,null       ,@batchId,null ,null            ,null       ,null               ,null                       ,2                 ,(convert(datetime, '9-1-2017',110))     ,null                 ,null                       ,null            ,null             ,null            ,null     ,1        ,'USD'    ,0       ,null          ,null          ,null                    ,null               ,null             ,null             ,null              ,null               ,null            ,null        ,null                ,null                   ,null                     ,1 );
 SET @richardDonationID = SCOPE_IDENTITY()
 
 -- Setup distrubtions
-INSERT INTO [dbo].[Donation_Distribution_ID]
-(Donation_ID   ,Amount,Program_ID,Pledge_ID,Target_Event,Soft_Credit_Donor,Notes,Domain_ID,__ExternalContributionID,__ExternalCommitmentID,Congregation_ID,Message_Sent,HC_Donor_Congregation_ID) VALUES
-(@benDonationID,50.000           ,3        ,NULL        ,NULL             ,NULL ,1        ,NULL                    ,NULL                  ,1              ,NULL        ,NULL);
+INSERT INTO [dbo].[Donation_Distributions]
+(Donation_ID   ,Amount ,Program_ID,Pledge_ID,Target_Event,Soft_Credit_Donor,Notes,Domain_ID,__ExternalContributionID,__ExternalCommitmentID,Congregation_ID,Message_Sent,HC_Donor_Congregation_ID) VALUES
+(@benDonationID,50.000 ,3         ,NULL     ,NULL        ,NULL             ,NULL ,1        ,NULL                    ,NULL                  ,1              ,NULL        ,NULL);
 
-INSERT INTO [dbo].[Donation_Distribution_ID]
-(Donation_ID     ,Amount,Program_ID,Pledge_ID,Target_Event,Soft_Credit_Donor,Notes,Domain_ID,__ExternalContributionID,__ExternalCommitmentID,Congregation_ID,Message_Sent,HC_Donor_Congregation_ID) VALUES
-(@wilmaDonationID,50.000           ,3        ,NULL        ,NULL             ,NULL ,1        ,NULL                    ,NULL                  ,1              ,NULL        ,NULL);
+INSERT INTO [dbo].[Donation_Distributions]
+(Donation_ID        ,Amount,Program_ID,Pledge_ID,Target_Event,Soft_Credit_Donor,Notes,Domain_ID,__ExternalContributionID,__ExternalCommitmentID,Congregation_ID,Message_Sent,HC_Donor_Congregation_ID) VALUES
+(@andersonDonationID,50.000,3         ,NULL     ,NULL        ,NULL             ,NULL ,1        ,NULL                    ,NULL                  ,1              ,NULL        ,NULL);
 
-INSERT INTO [dbo].[Donation_Distribution_ID]
-(Donation_ID       ,Amount,Program_ID,Pledge_ID,Target_Event,Soft_Credit_Donor,Notes,Domain_ID,__ExternalContributionID,__ExternalCommitmentID,Congregation_ID,Message_Sent,HC_Donor_Congregation_ID) VALUES
-(@richardDonationID,150.000          ,3        ,NULL        ,NULL             ,NULL ,1        ,NULL                    ,NULL                  ,1              ,NULL        ,NULL);
+INSERT INTO [dbo].[Donation_Distributions]
+(Donation_ID       ,Amount ,Program_ID,Pledge_ID,Target_Event,Soft_Credit_Donor,Notes,Domain_ID,__ExternalContributionID,__ExternalCommitmentID,Congregation_ID,Message_Sent,HC_Donor_Congregation_ID) VALUES
+(@richardDonationID,150.000,3         ,NULL     ,NULL        ,NULL             ,NULL ,1        ,NULL                    ,NULL                  ,1              ,NULL        ,NULL);
 
 -- Setup a payment batch
-INSERT INTO [dbo].Batches
-(Batch_Name             ,Setup_Date                                     ,Batch_Total,Item_Count,Batch_Entry_Type_ID,Batch_Type_ID,Default_Program,Source_Event,Deposit_ID,Finalize_Date                                  ,Domain_ID,Congregation_ID,_Import_Counter,Source_File,Default_Payment_Type,Currency,Operator_User,__ExternalBatchID,Default_Program_ID_List,Processor_Transfer_ID) VALUES
-('(auto) Payment batch',(convert(datetime,'2017-08-31 11:00:00.000',1)),300.00     ,3         ,12                 ,NULL         ,NULL           ,NULL        ,@depositId,(convert(datetime, '2017-09-01 16:00:00.000',1)),1        ,1              ,NULL           ,NULL       ,4                   ,'USD'   ,4445333      ,NULL             ,3                      ,NULL);
+INSERT INTO [dbo].[Batches]
+(Batch_Name             ,Setup_Date                                     ,Batch_Total,Item_Count,Batch_Entry_Type_ID,Batch_Type_ID,Default_Program,Source_Event,Deposit_ID,Finalize_Date                                  ,Domain_ID,Congregation_ID,_Import_Counter,_Source_File,Default_Payment_Type,Currency,Operator_User,__ExternalBatchID,Default_Program_ID_List,Processor_Transfer_ID) VALUES
+('(auto) Payment batch',(convert(datetime,'2017-08-31 11:00:00.000',21)),300.00     ,3         ,12                 ,NULL         ,NULL           ,NULL        ,@depositId,(convert(datetime, '2017-09-01 16:00:00.000',21)),1        ,1              ,NULL           ,NULL       ,4                   ,'USD'   ,4445333      ,NULL             ,3                      ,NULL);
 
 SET @batchId = SCOPE_IDENTITY()
 
@@ -83,55 +83,55 @@ SET @batchId = SCOPE_IDENTITY()
 DECLARE @benContactID as int
 SET @benContactID  = (SELECT Contact_ID FROM Contacts WHERE First_Name = 'Ben' AND Last_Name = 'Kenobi')
 
-DECLARE @wilmaContactID as int
-SET @wilmaContactID  = (SELECT Contact_ID FROM Contacts WHERE First_Name = 'Wilma' AND Last_Name = 'Flintstone')
+DECLARE @andersonContactID as int
+SET @andersonContactID  = (SELECT Contact_ID FROM Contacts WHERE First_Name = 'Anderson' AND Last_Name = 'Cooper')
 
 DECLARE @richardContactID as int
 SET @richardContactID  = (SELECT Contact_ID FROM Contacts WHERE First_Name = 'Richard' AND Last_Name = 'Tremplay')
 
 -- Create a invoices
 DECLARE @benInvoiceID as int
-DECLARE @wilmaInvoiceID as int
+DECLARE @andersonInvoiceID as int
 DECLARE @richardInvoiceID as int 
 
 INSERT INTO [dbo].[Invoices]
 (Purchaser_Contact_ID,Invoice_Status_ID,Invoice_Total,Invoice_Date                                  ,Domain_ID,Notes,Currency) values
-(@benContactID       ,2                ,360.00       ,(convert(datetime, '2016-12-19 10:15:00.000')),1        ,NULL ,NULL)
+(@benContactID       ,2                ,360.00       ,(convert(datetime, '2016-12-19 10:15:00.000', 21)),1        ,NULL ,NULL)
 SET @benInvoiceID = SCOPE_IDENTITY()
 
 INSERT INTO [dbo].[Invoices]
 (Purchaser_Contact_ID,Invoice_Status_ID,Invoice_Total,Invoice_Date                                  ,Domain_ID,Notes,Currency) values
-(@wilmaContactID       ,2                ,365.00       ,(convert(datetime, '2016-12-29 10:15:00.000')),1        ,NULL ,NULL)
-SET @wilmaInvoiceID = SCOPE_IDENTITY()
+(@andersonContactID       ,2                ,365.00       ,(convert(datetime, '2016-12-29 10:15:00.000',21)),1        ,NULL ,NULL)
+SET @andersonInvoiceID = SCOPE_IDENTITY()
 
 INSERT INTO [dbo].[Invoices]
 (Purchaser_Contact_ID,Invoice_Status_ID,Invoice_Total,Invoice_Date                                  ,Domain_ID,Notes,Currency) values
-(@richardContactID       ,2                ,460.00       ,(convert(datetime, '2017-01-19 10:15:00.000')),1        ,NULL ,NULL)
-SET @wilmaInvoiceID = SCOPE_IDENTITY()
+(@richardContactID       ,2                ,460.00       ,(convert(datetime, '2017-01-19 10:15:00.000',21)),1        ,NULL ,NULL)
+SET @richardInvoiceID = SCOPE_IDENTITY()
 
 -- Create some payments
 DECLARE @benPaymentID as int
-DECLARE @wilmaPaymentID as int
+DECLARE @andersonPaymentID as int
 DECLARE @richardPaymentID as int 
 
 INSERT INTO [dbo].[Payments]
-(Payment_Total,Contact_ID      ,Domain_ID,Payment_Date                                   ,Gateway_Response,Transaction_Code             ,Notes,Merchant_Batch,Payment_Type_ID,Item_Number,Processed,Currency,Invoice_Number ,Batch_ID,Payment_Status_ID,Processor_Fee_Amount) VALUES
-(100          ,@wilmaContactId ,1        ,(convert(datetime, '2017-08-20 13:36:00.00',21)),NULL            ,'ch_1B4C7iDpgPmDp9CAaiNOF6VN',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL    ,@wilmaInvoiceID,1                         ,0)
-SET @benPaymentID = SCOPE_IDENTITY()
+(Payment_Total,Contact_ID      ,Domain_ID,Payment_Date                                    ,Gateway_Response,Transaction_Code             ,Notes,Merchant_Batch,Payment_Type_ID,Item_Number,Processed,Currency,Invoice_Number ,Batch_ID,Payment_Status_ID,Processor_Fee_Amount) VALUES
+(100          ,@andersonContactId ,1        ,(convert(datetime, '2017-08-20 13:36:00.00',21)),NULL            ,'ch_1B4C7iDpgPmDp9CAaiNOF6VN',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL    ,@andersonInvoiceID,@batchId,1                      ,0)
+SET @andersonPaymentID = SCOPE_IDENTITY()
 
 INSERT INTO [dbo].[Payments]
 (Payment_Total,Contact_ID,Domain_ID,Payment_Date                                   ,Gateway_Response,Transaction_Code             ,Notes,Merchant_Batch,Payment_Type_ID,Item_Number,Processed,Currency,Invoice_Number,Batch_ID,Payment_Status_ID,Processor_Fee_Amount) VALUES
-(100          ,@benContactID ,1    ,(convert(datetime, '2017-08-20 13:36:00.00',21)),NULL            ,'ch_1B4C89DpgPmDp9CAOylVOf0F',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL    ,@benInvoiceId ,@batchID,1                 ,0)
+(100          ,@benContactID ,1    ,(convert(datetime, '2017-08-20 13:36:00.00',21)),NULL           ,'ch_1B4C89DpgPmDp9CAOylVOf0F',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL    ,@benInvoiceId ,@batchID,1                 ,0)
 SET @benPaymentID = SCOPE_IDENTITY()
 
 INSERT INTO [dbo].[Payments]
-(Payment_Total,Contact_ID       ,Domain_ID,Payment_Date                                   ,Gateway_Response,Transaction_Code             ,Notes,Merchant_Batch,Payment_Type_ID,Item_Number,Processed,Currency,Invoice_Number,Batch_ID,Payment_Status_ID,Processor_Fee_Amount) VALUES
-(100          ,@richardContactID,1        ,(convert(datetime, '2017-08-20 13:36:00.00',21)),NULL            ,'ch_1B4CAMDpgPmDp9CAC8AgHQ0r',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL    ,richardInvoiceID       ,@batchID,1                 ,0)
-SET @benPaymentID = SCOPE_IDENTITY()
+(Payment_Total,Contact_ID       ,Domain_ID,Payment_Date                                   ,Gateway_Response,Transaction_Code             ,Notes,Merchant_Batch,Payment_Type_ID,Item_Number,Processed,Currency,Invoice_Number   ,Batch_ID,Payment_Status_ID,Processor_Fee_Amount) VALUES
+(100          ,@richardContactID,1        ,(convert(datetime, '2017-08-20 13:36:00.00',21)),NULL            ,'ch_1B4CAMDpgPmDp9CAC8AgHQ0r',NULL ,NULL          ,4              ,NULL       ,NULL     ,NULL   ,@richardInvoiceID,@batchID,1                 ,0)
+SET @richardPaymentID = SCOPE_IDENTITY()
 
 -- Create a invoice details
 DECLARE @benInvoiceDetailID as int
-DECLARE @wilmaInvoiceDetailID as int
+DECLARE @andersonInvoiceDetailID as int
 DECLARE @richardInvoiceDetailID as int 
 
 INSERT INTO [dbo].[Invoice_Detail]
@@ -141,13 +141,13 @@ SET @benInvoiceDetailID = SCOPE_IDENTITY()
 
 INSERT INTO [dbo].[Invoice_Detail]
 (Invoice_ID   ,Recipient_Contact_ID,Event_Participant_ID,Item_Quantity,Line_Total,Product_ID,Product_Option_Price_ID,Domain_ID,Item_Note,Recipient_Name,Recipient_Address,Recipient_Email,Recipient_Phone) VALUES
-(@wilmaInvoiceID,@wilmaContactID   ,NULL                ,1            ,365       ,9         ,NULL                   ,1        ,NULL     ,NULL          ,NULL             ,NULL           ,NULL)
-SET @benInvoiceDetailID = SCOPE_IDENTITY()
+(@andersonInvoiceID,@andersonContactID   ,NULL                ,1            ,365       ,9         ,NULL                   ,1        ,NULL     ,NULL          ,NULL             ,NULL           ,NULL)
+SET @andersonInvoiceDetailID = SCOPE_IDENTITY()
 
 INSERT INTO [dbo].[Invoice_Detail]
 (Invoice_ID       ,Recipient_Contact_ID,Event_Participant_ID,Item_Quantity,Line_Total,Product_ID,Product_Option_Price_ID,Domain_ID,Item_Note,Recipient_Name,Recipient_Address,Recipient_Email,Recipient_Phone) VALUES
 (@richardInvoiceID,@richardContactID       ,NULL                ,1            ,460       ,9         ,NULL                   ,1        ,NULL     ,NULL          ,NULL             ,NULL           ,NULL)
-SET @benInvoiceDetailID = SCOPE_IDENTITY()
+SET @richardInvoiceDetailID = SCOPE_IDENTITY()
 
 -- Create you some payment details
 INSERT INTO [dbo].[Payment_Detail]
@@ -156,7 +156,7 @@ INSERT INTO [dbo].[Payment_Detail]
 
 INSERT INTO [dbo].[Payment_Detail]
 (Payment_ID     ,Payment_Amount,Invoice_Detail_ID    ,Domain_ID,Congregation_ID) VALUES
-(@wilmaPaymentID,100.00        ,@wilmaInvoiceDetailID,1        ,5)
+(@andersonPaymentID,100.00        ,@andersonInvoiceDetailID,1        ,5)
 
 INSERT INTO [dbo].[Payment_Detail]
 (Payment_ID       ,Payment_Amount,Invoice_Detail_ID      ,Domain_ID,Congregation_ID) VALUES
