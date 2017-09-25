@@ -2,7 +2,7 @@ USE [MinistryPlatform]
 GO
 
 --Retrieve name of trip in case create occurred in a year prior to teardown
-DECLARE @tripName AS VARCHAR(24)
+DECLARE @tripName AS VARCHAR(50)
 set @tripName = (select top 1 program_name from programs where program_name like '(t) GO Midgar%');
 
 DECLARE @pledgeCampaignId as int
