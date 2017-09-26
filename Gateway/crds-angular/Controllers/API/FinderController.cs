@@ -30,7 +30,6 @@ namespace crds_angular.Controllers.API
         private readonly IAuthenticationRepository _authenticationRepo;
         private readonly IAnalyticsService _analyticsService;
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly int _trialMemberRoleId;
 
         public FinderController(IFinderService finderService,
                                 IGroupToolService groupToolService,
@@ -46,7 +45,6 @@ namespace crds_angular.Controllers.API
             _awsCloudsearchService = awsCloudsearchService;
             _authenticationRepo = authenticationRepository;
             _analyticsService = analyticsService;
-            _trialMemberRoleId = configurationWrapper.GetConfigIntValue("GroupsTrialMemberRoleId");
         }
 
         [ResponseType(typeof(PinDto))]
@@ -512,10 +510,10 @@ namespace crds_angular.Controllers.API
         /// Leader adds a user to their group
         /// </summary>
         [RequiresAuthorization]
-        [VersionedRoute(template: "finder/pin/addtogroup/{groupId}", minimumVersion: "1.0.0")]
+        [VersionedRoute(template: "finder/pin/addtogroup/{groupId}/{roleId}", minimumVersion: "1.0.0")]
         [Route("finder/pin/addtogroup/{groupId}")]
         [HttpPost]
-        public IHttpActionResult AddToGroup([FromUri] int groupId,  [FromBody] User person)
+        public IHttpActionResult AddToGroup([FromUri] int groupId,  [FromBody] User person, [FromUri] int roleId)
         {
             if (!ModelState.IsValid)
             {
@@ -528,7 +526,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _finderService.AddUserDirectlyToGroup(token, person, groupId, _trialMemberRoleId);
+                    _finderService.AddUserDirectlyToGroup(token, person, groupId, roleId);
                     return Ok();
                 }
                 catch (DuplicateGroupParticipantException)
