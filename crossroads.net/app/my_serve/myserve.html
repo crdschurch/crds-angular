@@ -2,7 +2,7 @@
   <h1 class="page-header">Sign Up To Serve </h1>
 
   <div class="clearfix" data-ng-show="!serve.showNoOpportunitiesMsg() || !serve.showNoOpportunitiesMsg()">
-    <button type="button" ng-if="serve.isLeader" class="btn btn-primary btn-block-mobile  mobile-flush-bottom sm-pull-right" ui-sref="serve-signup.message">Send Message </button>
+    <button type="button" ng-if="serve.isLeader" class="btn btn-primary btn-block-mobile  mobile-flush-bottom sm-pull-right" ng-click="serve.showMessageModal()">Send Message </button>
     <div ng-include="'my_serve/myserve_icon_key.html'" class="hidden-xs"></div>
   </div>
 

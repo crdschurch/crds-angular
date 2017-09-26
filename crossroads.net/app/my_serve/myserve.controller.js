@@ -14,7 +14,8 @@
     'Groups',
     'leader',
     'AUTH_EVENTS',
-    'ServeTeamService'
+    'ServeTeamService',
+    '$modal'
   ];
 
   function MyServeController(
@@ -28,7 +29,8 @@
     Groups,
     leader,
     AUTH_EVENTS,
-    ServeTeamService
+    ServeTeamService,
+    $modal
     ) {
 
     var vm = this;
@@ -44,6 +46,7 @@
     vm.showButton = showButton;
     vm.showNoOpportunitiesMsg = showNoOpportunitiesMsg;
     vm.isLeader = leader.isLeader;
+    vm.showMessageModal = showMessageModal;
 
     activate();
 
@@ -261,6 +264,15 @@
             }
           });
         });
+      });
+    }
+
+    function showMessageModal() {
+      vm.modalInstance = $modal.open({
+        parent: 'noSideBar',
+        templateUrl: 'communication_modal',
+        controller: 'CommunicationModals as communication',
+        openedClass: 'crds-legacy-styles',
       });
     }
 
