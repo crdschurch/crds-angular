@@ -28,12 +28,12 @@ export default class StreamspotService {
   }
 
   getEvents() {
-    const url = `${this.url}broadcaster/${this.ssid}/events`;
+    const url = `${this.url}broadcaster/${this.ssid}/broadcasts/upcoming`;
     return this.resource(url, {}, { get: { method: 'GET', headers: this.headers } })
       .get()
       .$promise
       .then((response) => {
-        this.eventResponse = response.data.events;
+        this.eventResponse = response.data.broadcasts;
         const events = this.parseEvents();
         if (events.length > 0) {
           this.broadcast();
@@ -57,12 +57,6 @@ export default class StreamspotService {
         }
       })
       .compact()
-      .value();
-  }
-
-  getEventsByDate() {
-    return _.chain(this.parseEvents())
-      .groupBy('dayOfYear')
       .value();
   }
 
