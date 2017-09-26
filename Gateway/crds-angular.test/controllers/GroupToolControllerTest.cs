@@ -275,7 +275,7 @@ namespace crds_angular.test.controllers
             _groupToolService.Setup(mocked => mocked.EndGroup(It.IsAny<int>(), It.IsAny<int>())).Verifiable();
             _groupToolService.Setup(mocked => mocked.VerifyCurrentUserIsGroupLeader(token, groupId)).Returns(new MyGroup());
 
-            IHttpActionResult result = _fixture.EndSmallGroup(groupId, groupReasonEndedId);
+            IHttpActionResult result = _fixture.EndSmallGroup(groupId);
 
             _groupToolService.VerifyAll();
             Assert.IsNotNull(result);
@@ -293,7 +293,7 @@ namespace crds_angular.test.controllers
 
             _groupToolService.Setup(mocked => mocked.EndGroup(It.IsAny<int>(), It.IsAny<int>())).Throws(ex);
             _groupToolService.Setup(mocked => mocked.VerifyCurrentUserIsGroupLeader(It.IsAny<string>(), It.IsAny<int>())).Returns(new MyGroup());
-            IHttpActionResult result = _fixture.EndSmallGroup(groupId, groupReasonEndedId);
+            IHttpActionResult result = _fixture.EndSmallGroup(groupId);
 
             _groupToolService.VerifyAll();
             Assert.IsNotNull(result);
@@ -309,7 +309,7 @@ namespace crds_angular.test.controllers
 
             _groupToolService.Setup(mocked => mocked.VerifyCurrentUserIsGroupLeader(It.IsAny<string>(), It.IsAny<int>())).Throws(new NotGroupLeaderException("User is not a leader"));
 
-            IHttpActionResult result = _fixture.EndSmallGroup(groupId, groupReasonEndedId);
+            IHttpActionResult result = _fixture.EndSmallGroup(groupId);
 
             _groupToolService.VerifyAll();
             Assert.IsNotNull(result);

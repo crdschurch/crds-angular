@@ -1,6 +1,8 @@
-describe('Login Controller', function () {
+require('../../app/common/common.module');
 
-  var $controller, $q, LoginController, $rootScope, MESSAGES, $state, $log, AuthService, Session, $timeout;
+describe('Login Controller', function () {
+  var CONSTANTS = require('crds-constants');
+  var $controller, $q, LoginController, $rootScope, MESSAGES, $state, $log, AuthService, Session, $timeout, AnalyticsService;
 
   beforeEach(function () {
     angular.mock.module('crossroads.core', function ($provide) {
@@ -20,7 +22,9 @@ describe('Login Controller', function () {
     });
   });
 
-  beforeEach(inject(function (_$controller_, _$rootScope_, _MESSAGES_, _$state_, _$log_, _AuthService_, _$timeout_, _Session_) {
+  beforeEach(angular.mock.module(CONSTANTS.MODULES.COMMON));
+
+  beforeEach(inject(function (_$controller_, _$rootScope_, _MESSAGES_, _$state_, _$log_, _AuthService_, _$timeout_, _Session_, _AnalyticsService_) {
     $controller = _$controller_;
     $rootScope = _$rootScope_;
     MESSAGES = _MESSAGES_;
@@ -30,12 +34,14 @@ describe('Login Controller', function () {
     AuthService = _AuthService_;
     $timeout = _$timeout_;
     Session = _Session_;
+    AnalyticsService = _AnalyticsService_;
     LoginController = $controller('LoginController', {
       $scope: $scope,
       $rootScope: $rootScope,
       MESSAGES: MESSAGES,
       AuthService: AuthService,
-      Session: Session
+      Session: Session,
+      AnalyticsService: AnalyticsService
     });
 
   }));

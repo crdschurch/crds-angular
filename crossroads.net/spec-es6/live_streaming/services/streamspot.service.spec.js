@@ -14,8 +14,7 @@ describe('Live Streaming Streamspot Service', () => {
   let events = {
     "success": true,
     "data": {
-      "count": 3,
-      "events": [
+      "broadcasts": [
         {
           "start": moment(baseTime).add(1, 'hour').format('YYYY-MM-DD H:mm:ss'),
           "end": moment(baseTime).add(2, 'hours').format('YYYY-MM-DD H:mm:ss'),
@@ -31,11 +30,16 @@ describe('Live Streaming Streamspot Service', () => {
           "end": moment(baseTime).subtract(1, 'hour').format('YYYY-MM-DD H:mm:ss'),
           "title": "Saturday Rehearsal Done"
         }
-      ]
+      ],
+      "next": {
+        "start": moment(baseTime).add(1, 'hour').format('YYYY-MM-DD H:mm:ss'),
+        "end": moment(baseTime).add(2, 'hours').format('YYYY-MM-DD H:mm:ss'),
+        "title": "Saturday Rehearsal Upcoming"
+      }
     }
   };
 
-  const eventsEndpoint = `${__STREAMSPOT_ENDPOINT__}broadcaster/${__STREAMSPOT_SSID__}/events`
+  const eventsEndpoint = `${__STREAMSPOT_ENDPOINT__}broadcaster/${__STREAMSPOT_SSID__}/broadcasts/upcoming`
 
   beforeEach(angular.mock.module(CONSTANTS.MODULES.LIVE_STREAM));
 
@@ -73,19 +77,6 @@ describe('Live Streaming Streamspot Service', () => {
 
       expect(_.first(service.parseEvents()).title).toBe('Saturday Rehearsal Broadcasting');
       
-    });
-
-    it('should return events, grouped by DOY', () => {
-      httpBackend.expectGET(eventsEndpoint).respond(200, events);
-      httpBackend.flush();
-      let results = service.getEventsByDate();
-
-      let idx = parseInt(Object.keys(results)[0]);
-      let event = _.first(results[idx]);
-
-      expect(event instanceof Object).toBeTruthy();
-      expect(idx).toEqual(jasmine.any(Number));
-      expect(event.title).toBe('Saturday Rehearsal Broadcasting');
     });
   })
 });

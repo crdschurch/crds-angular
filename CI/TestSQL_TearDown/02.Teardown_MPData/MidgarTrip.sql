@@ -2,7 +2,7 @@ USE [MinistryPlatform]
 GO
 
 --Retrieve name of trip in case create occurred in a year prior to teardown
-DECLARE @tripName AS VARCHAR(18)
+DECLARE @tripName AS VARCHAR(50)
 set @tripName = (select top 1 program_name from programs where program_name like '(t) GO Midgar%');
 
 DECLARE @pledgeCampaignId as int
@@ -75,9 +75,13 @@ delete from event_groups where event_id in (select event_id from events where pr
 
 delete from event_equipment where event_id in (select event_id from events where program_id in (select program_id from programs where program_name = @tripName));
 
+delete from event_participants where event_id in (select event_id from events where program_id in (select program_id from programs where program_name = @tripName)); --delete any participants manually added to a related event
+
 delete from events where program_id in (select program_id from programs where program_name = @tripName);
 
 delete from Opportunities where Program_ID in (select Program_ID from Programs where Program_Name = @tripName);
+
+delete from Events where program_id in (select program_id from programs where program_name = @tripName); --delete any events manually added to the program
 
 delete from programs where program_name = @tripName;
 

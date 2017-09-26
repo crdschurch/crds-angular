@@ -21,7 +21,7 @@ export default class StreamingController {
     this.beTheChurchID = 2;
 
     this.cmsService
-      .getSections()
+      .getSectionsById([this.dontMissID, this.beTheChurchID])
       .then((data) => {
         this.sortDigitalProgram(data);
       }
@@ -31,10 +31,10 @@ export default class StreamingController {
   }
 
   sortDigitalProgram(data) {
-    const dontMissSection = data.find(section => section.id == this.dontMissID);
+    const dontMissSection = data.find(section => section.id === this.dontMissID);
     this.dontMiss = this.getFeaturesForSection(dontMissSection);
 
-    const beTheChurchSection = data.find(section => section.id == this.beTheChurchID);
+    const beTheChurchSection = data.find(section => section.id === this.beTheChurchID);
     this.beTheChurch = this.getFeaturesForSection(beTheChurchSection);
   }
 
@@ -56,7 +56,7 @@ export default class StreamingController {
           feature.image = `https://crds-cms-uploads.imgix.net/${filename}?ixjsv=2.2.3&w=225`;
         } else {
           feature.image = 'https://crds-cms-uploads.imgix.net/content/images/register-bg.jpg';
-        }        
+        }
       }
     });
     return section.features;

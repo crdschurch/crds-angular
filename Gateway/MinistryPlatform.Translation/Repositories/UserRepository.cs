@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
@@ -62,6 +63,22 @@ namespace MinistryPlatform.Translation.Repositories
             return user;
         }
 
+        public string HelperApiLogin()
+        {
+            return ApiLogin();
+        }
+
+        public MpUser GetByUserName(string userName, string apiToken=null)
+        {
+            if (String.IsNullOrEmpty(apiToken))
+                apiToken = ApiLogin();
+            string userNameClean = userName.Replace("'", "''");
+            string searchUser = $"dp_Users.User_Name='{userNameClean}'";
+            string columns = "User_Name,User_GUID, ISNULL(Can_Impersonate, 0), User_Email,User_ID";
+            var users = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpUser>(searchUser, columns, null, true);
+            return users.FirstOrDefault();
+        }
+
         public MpUser GetUserByResetToken(string resetToken)
         {
             var searchString = string.Format(",,,,,\"{0}\"", resetToken);
@@ -103,9 +120,37 @@ namespace MinistryPlatform.Translation.Repositories
             }).ToList();
         }
 
+
+
+        public List<MpRoleDto> GetUserRolesRest(int userId, string apiToken=null)
+        {
+            if (string.IsNullOrEmpty(apiToken))
+                apiToken = ApiLogin();
+            string searchStr = $"User_ID={userId}";
+            string columns = "dp_User_Roles.Role_ID, Role_ID_Table.Role_Name";
+            var records = _ministryPlatformRest.UsingAuthenticationToken(apiToken).SearchTable<Dictionary<string,object>>("dp_User_Roles",searchStr, columns);
+            if (records == null || !records.Any())
+            {
+                return (null);
+            }
+
+            return records.Select(record => new MpRoleDto
+            {
+                Id = record.ToInt("Role_ID"),
+                Name = record.ToString("Role_Name")
+            }).ToList();
+
+        }
+
+
         public void UpdateUser(Dictionary<string, object> userUpdateValues)
         {
             MinistryPlatformService.UpdateRecord(Convert.ToInt32(ConfigurationManager.AppSettings["Users"]), userUpdateValues, ApiLogin());
+        }
+
+        public void UpdateUserRest(Dictionary<string, object> userUpdateValues)
+        {
+            _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).UpdateRecord("dp_Users", -1 , userUpdateValues); //The second parameter is not used, you must include the PK in the dictionary
         }
 
         public void UpdateUser(MpUser user)

@@ -391,7 +391,7 @@ namespace crds_angular.test.Services
 
             _restClient.Setup(mocked => mocked.Execute<StripeCharge>(It.IsAny<IRestRequest>())).Returns(stripeResponse.Object);
 
-            var response = _fixture.ChargeCustomer("cust_token", 9090, 98765, false);
+            var response = _fixture.ChargeCustomer("cust_token", 9090, 98765, false,"bart_simpson@crossroads.net", "Bart Simpson");
 
             _restClient.Verify(mocked => mocked.Execute<StripeCharge>(
                 It.Is<IRestRequest>(o =>
@@ -437,7 +437,7 @@ namespace crds_angular.test.Services
             _restClient.Setup(mocked => mocked.Execute<StripeCharge>(It.IsAny<IRestRequest>())).Returns(chargeResponse.Object);
             try
             {
-                _fixture.ChargeCustomer("token", -900, 98765, false);
+                _fixture.ChargeCustomer("token", -900, 98765, false, "bart_simpson@crossroads.net", "Bart Simpson");
                 Assert.Fail("Should have thrown exception");
             }
             catch (PaymentProcessorException e)

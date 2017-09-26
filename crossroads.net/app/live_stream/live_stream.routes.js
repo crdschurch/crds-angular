@@ -16,7 +16,8 @@ export default function LiveStreamRouter($httpProvider, $stateProvider) {
         }
       },
       resolve: {
-        preloadStreamStatus: StreamStatusService => StreamStatusService.presetStreamStatus()
+        preloadStreamStatus: (StreamStatusService, StreamspotService) => 
+            StreamStatusService.presetStreamStatus(StreamspotService.events)
       }
     })
     .state('livestream', {

@@ -176,7 +176,7 @@
         </Field>
         <Field Name="medicalconditions">
           <DataField>medicalconditions</DataField>
-          <rd:TypeName>System.string</rd:TypeName>
+          <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="WhyGoOnTrip">
           <DataField>whygoontrip</DataField>
@@ -286,6 +286,10 @@
           <DataField>ff_americanair</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="ff_southwest">
+          <DataField>ff_southwest</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
         <Field Name="SignUpDate">
           <DataField>signupdate</DataField>
           <rd:TypeName>System.String</rd:TypeName>
@@ -374,6 +378,10 @@
           <DataField>waiver</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="backgroundcheck">
+          <DataField>backgroundcheck</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
         <Field Name="ProofOfGuardianship">
           <DataField>proofofguardianship</DataField>
           <rd:TypeName>System.String</rd:TypeName>
@@ -429,6 +437,9 @@
           <Tablix Name="Tablix2">
             <TablixBody>
               <TablixColumns>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
                 <TablixColumn>
                   <Width>1in</Width>
                 </TablixColumn>
@@ -3223,6 +3234,36 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox142</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox31">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Background Check</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox31</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -6063,6 +6104,36 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
+                        <Textbox Name="backgroundcheck">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!backgroundcheck.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>backgroundcheck</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
                         <Textbox Name="CopyOfPassport">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
@@ -6461,6 +6532,7 @@
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
+                <TablixMember />
               </TablixMembers>
             </TablixColumnHierarchy>
             <TablixRowHierarchy>
@@ -6477,7 +6549,7 @@
             <Top>0.83958in</Top>
             <Left>0.1in</Left>
             <Height>0.5in</Height>
-            <Width>94in</Width>
+            <Width>95in</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -6524,7 +6596,7 @@
           </Border>
         </Style>
       </Body>
-      <Width>94.1in</Width>
+      <Width>95.1in</Width>
       <Page>
         <PageFooter>
           <Height>0.45in</Height>
@@ -6623,6 +6695,6 @@
     </ReportParameter>
   </ReportParameters>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://localhost/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>https://adminint.crossroads.net/reportserver</rd:ReportServerUrl>
   <rd:ReportID>44f9c7b7-40b4-436a-9c0d-f5f72a9fd403</rd:ReportID>
 </Report>

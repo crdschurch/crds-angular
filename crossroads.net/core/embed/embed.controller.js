@@ -48,6 +48,9 @@ export default class EmbedController {
       case 'demo':
         this.baseUrl = 'https://embeddemo.crossroads.net';
         break;
+      case 'local':
+        this.baseUrl = 'http://localhost:8080';
+        break;
       default:
         this.baseUrl = 'https://embed.crossroads.net';
         break;

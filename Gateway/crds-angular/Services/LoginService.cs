@@ -118,6 +118,19 @@ namespace crds_angular.Services
             return true;
         }
 
+        public bool ClearResetToken(int userId) //KD use if we already have the id to save time
+        {
+            Dictionary<string, object> userUpdateValues = new Dictionary<string, object>()
+            {
+                {"User_ID",userId},
+                {"ResetToken",null }
+            };
+
+            _userService.UpdateUserRest(userUpdateValues);
+
+            return true;
+        }
+
         public bool VerifyResetToken(string token)
         {
             var user = _userService.GetUserByResetToken(token);

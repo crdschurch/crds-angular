@@ -57,6 +57,7 @@ namespace MinistryPlatform.Translation.Models
             Details.FirstName = unmappedData.GetUnmappedDataField<string>("FirstName");
             Details.LastName = unmappedData.GetUnmappedDataField<string>("LastName");
             Details.HouseholdId = unmappedData.GetUnmappedDataField<int>("HouseholdId");
+            Details.DisplayName = unmappedData.GetUnmappedDataField<string>("DisplayName");
         }
     }
 

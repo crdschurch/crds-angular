@@ -21,6 +21,7 @@ namespace crds_angular.Services
 {
     public class GroupToolService : MinistryPlatformBaseService, IGroupToolService
     {
+        private readonly IAwsCloudsearchService _awsCloudsearchService;
         private readonly IGroupToolRepository _groupToolRepository;
         private readonly IGroupRepository _groupRepository;
         private readonly IGroupService _groupService;
@@ -75,6 +76,7 @@ namespace crds_angular.Services
         private readonly ILog _logger = LogManager.GetLogger(typeof(GroupToolService));
 
         public GroupToolService(
+            IAwsCloudsearchService awsCloudsearchService,
             IGroupToolRepository groupToolRepository,
             IGroupRepository groupRepository,
             IGroupService groupService,
@@ -93,6 +95,7 @@ namespace crds_angular.Services
             IFinderRepository finderRepository
             )
         {
+            _awsCloudsearchService = awsCloudsearchService;
             _groupToolRepository = groupToolRepository;
             _groupRepository = groupRepository;
             _groupService = groupService;
@@ -270,6 +273,8 @@ namespace crds_angular.Services
                 EmailAddress = fromParticipant == null ? emailTemplate.ReplyToEmailAddress : fromParticipant.EmailAddress
             };
 
+            var leader = _contactRepository.GetContactById(replyTo.ContactId);
+
             var to = new List<MpContact>
             {
                 new MpContact
@@ -289,6 +294,9 @@ namespace crds_angular.Services
             mergeData["Email_Custom_Message"] = string.IsNullOrWhiteSpace(message) ? string.Empty : message;
             mergeData["Group_Name"] = group.GroupName;
             mergeData["Group_Description"] = group.GroupDescription;
+            mergeData["Leader_Name"] = leader.Nickname != null && leader.Last_Name != null ? leader.Nickname + " " + leader.Last_Name : replyTo.EmailAddress;
+            mergeData["City"] = group.Address.City;
+            mergeData["State"] = group.Address.State;
             if (fromParticipant != null)
             {
                 mergeData["From_Display_Name"] = fromParticipant.DisplayName;
@@ -375,12 +383,16 @@ namespace crds_angular.Services
                 if (approve)
                 {
                     ApproveInquiry(groupId, group, inquiry, participant, message, roleId, sendEmail);
+                    var leader = ((List<GroupParticipantDTO>)group.Participants).FirstOrDefault(p => p.GroupRoleId == _groupRoleLeaderId);
+
+
                     var props = new EventProperties
                     {
+                        {"GroupLeaderName", leader?.DisplayName },
                         {"GroupName", group.GroupName},
-                        {"City", group?.Address?.City},
-                        {"State", group?.Address?.State},
-                        {"Zip", group?.Address?.PostalCode}
+                        {"GroupCity", group?.Address?.City},
+                        {"GroupState", group?.Address?.State},
+                        {"GroupZip", group?.Address?.PostalCode}
                     };
                     _analyticsService.Track(inquiry.ContactId.ToString(), "AcceptedIntoGroup", props);
                 }
@@ -673,16 +685,20 @@ namespace crds_angular.Services
 
         public void EndGroup(int groupId, int reasonEndedId)
         {
+            _awsCloudsearchService.DeleteGroupFromAws(groupId);
+
             //get all participants before we end the group so they are not endDated and still
             //available from this call.
             // ReSharper disable once RedundantArgumentDefaultValue
             var participants = _groupService.GetGroupParticipants(groupId, true);
             _groupService.EndDateGroup(groupId, reasonEndedId);
+            var group = _groupService.GetGroupDetails(groupId);
             foreach (var participant in participants)
             {
                 var mergeData = new Dictionary<string, object>
                 {
                     {"Participant_Name", participant.NickName},
+                    {"Group_Name", group.GroupName },
                     {"Group_Tool_Url", @"https://" + _baseUrl + "/groups/search"}
                 };
                 SendSingleGroupParticipantEmail(participant, _groupEndedParticipantEmailTemplate, mergeData);
@@ -841,7 +857,14 @@ namespace crds_angular.Services
                 Where(groupParticipant => groupParticipant.GroupRoleId == _groupRoleLeaderId).ToList();
 
             // Call Analytics
-            var props = new EventProperties {{"Name", group.GroupName}, {"City", group?.Address?.City}, {"State", group?.Address?.State}, {"Zip", group?.Address?.PostalCode}};
+            var props = new EventProperties
+            {
+                {"GroupLeaderName", leaders?.FirstOrDefault()?.DisplayName },
+                {"GroupName", group.GroupName},
+                {"GroupCity", group?.Address?.City},
+                {"GroupState", group?.Address?.State},
+                {"GroupZip", group?.Address?.PostalCode}
+            };
             _analyticsService.Track(contact.Contact_ID.ToString(), "RequestedToJoinGroup", props);
 
             if (doSendEmail)

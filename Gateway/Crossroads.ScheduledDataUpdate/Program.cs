@@ -118,7 +118,7 @@ namespace Crossroads.ScheduledDataUpdate
                 {
                     Log.Info("Starting Connect AWS Refresh");
                     AutoMapperConfig.RegisterMappings();
-                    _awsService.DeleteAllConnectRecordsInAwsCloudsearch();
+                    //_awsService.DeleteAllConnectRecordsInAwsCloudsearch();
                     _awsService.UploadAllConnectRecordsToAwsCloudsearch();
 
                     Log.Info("Finished Connect AWS Refresh successfully");

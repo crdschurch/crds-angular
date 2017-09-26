@@ -1,4 +1,3 @@
-
 window.videojs = require('video.js/dist/video');
 
 // require('./vendor/streamspotAnalytics');
@@ -7,10 +6,10 @@ require('videojs-chromecast/dist/videojs-chromecast');
 
 export default class VideojsPlayerController {
 
-  constructor(StreamspotService, $rootScope, $analytics) {
+  constructor(StreamspotService, $rootScope, AnalyticsService) {
     this.streamspotService = StreamspotService;
-    this.rootScope         = $rootScope;
-    this.angulartics       = $analytics;
+    this.rootScope = $rootScope;
+    this.analyticsService = AnalyticsService;
 
     this.id = 'videojs-player';
     this.visibile = false;
@@ -64,24 +63,18 @@ export default class VideojsPlayerController {
             window.SSTracker.start(broadcaster.live_src.cdn_hls, true, this.streamspot.ssid);
           }
           if (this.angulartics !== undefined) {
-            this.angulartics.eventTrack('Play', {
-              category: 'Streaming',
-              label: 'Live Streaming Play'
-            });
+            this.analyticsService.trackStream('Play');
           }
         });
 
         // create stop handler (analytics)
         this.player.on('pause', () => {
-          if(window.SSTracker) {
+          if (window.SSTracker) {
             window.SSTracker.stop();
             window.SSTracker = null;
           }
           if (this.angulartics !== undefined) {
-            this.angulartics.eventTrack('Pause', {
-              category: 'Streaming',
-              label: 'Live Streaming Pause'
-            });
+            this.analyticsService.trackStreamS('Pause');
           }
         });
 
@@ -96,12 +89,10 @@ export default class VideojsPlayerController {
     const videoType = this.debug ? 'video/mp4' : 'application/x-mpegURL';
     const videoSrc = this.debug ? 'http://vjs.zencdn.net/v/oceans.mp4' : broadcaster.live_src.cdn_hls;
 
-    this.player.src([
-      {
-        type: videoType,
-        src: videoSrc
-      }
-    ]);
+    this.player.src([{
+      type: videoType,
+      src: videoSrc
+    }]);
     this.player.qualityPickerPlugin();
     this.visible = true;
     this.player.ready(() => {
