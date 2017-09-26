@@ -31,9 +31,9 @@ SET IDENTITY_INSERT [dbo].[Addresses] ON;
 DECLARE @addressID AS INT
 SET @addressId = IDENT_CURRENT('Addresses')+1
 INSERT INTO [dbo].Addresses 
-(Address_ID, Address_Line_1  , City        ,[State/Region],Postal_Code,Foreign_Country,Country_Code,Domain_ID ) 
+(Address_ID, Address_Line_1  , City        ,[State/Region],Postal_Code,Foreign_Country,Country_Code,Domain_ID,Latitude    ,Longitude  ) 
 VALUES
-(@addressID, '5155 Rybolt Rd', 'Cincinnati','OH'          ,'45248'    ,'United States','USA'       ,1         );
+(@addressID, '5144 Rybolt Rd', 'Cincinnati','OH'          ,'45248'    ,'United States','USA'       ,1        ,'39.185298' ,'-84.665607' );
  
  SET IDENTITY_INSERT [dbo].[Addresses] OFF;
  
@@ -100,9 +100,9 @@ SET IDENTITY_INSERT [dbo].[Addresses] ON;
 DECLARE @addressID AS INT
 SET @addressId = IDENT_CURRENT('Addresses')+1
 INSERT INTO [dbo].Addresses 
-(Address_ID, Address_Line_1  , City        ,[State/Region],Postal_Code,Foreign_Country,Country_Code,Domain_ID ) 
+(Address_ID, Address_Line_1  , City        ,[State/Region],Postal_Code,Foreign_Country,Country_Code,Domain_ID,Latitude   ,Longitude  ) 
 VALUES
-(@addressID, '5156 Rybolt Rd', 'Cincinnati','OH'          ,'45248'    ,'United States','USA'       ,1         );
+(@addressID, '5117 Rybolt Rd', 'Cincinnati','OH'          ,'45248'    ,'United States','USA'       ,1        ,'39.184134','-84.666421' );
  
  SET IDENTITY_INSERT [dbo].[Addresses] OFF;
  
