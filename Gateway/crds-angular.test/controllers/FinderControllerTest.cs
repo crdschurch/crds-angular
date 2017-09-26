@@ -228,6 +228,27 @@ namespace crds_angular.test.controllers
         }
 
         [Test]
+        public void AddToGroupShouldUseRoleId()
+        {
+            var token = "good ABC";
+            _fixture.SetupAuthorization("good", "ABC");
+            var fakePerson = new User()
+            {
+               email = "fake@person.com",
+               firstName = "fake",
+               lastName = "person",
+               password = "pass"
+            };
+            var groupId = 1;
+            var roleId = 2;
+
+            _finderService.Setup(m => m.AddUserDirectlyToGroup(It.Is<string>(toke => toke.Equals(token)),It.Is<User>(u => u.Equals(fakePerson)), 1, 2));
+
+            _fixture.AddToGroup(groupId, fakePerson, roleId);
+            _finderService.VerifyAll();
+        }
+
+        [Test]
         [ExpectedException(typeof(HttpResponseException))]
         public void TestNotAuthorized()
         {
