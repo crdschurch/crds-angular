@@ -55,6 +55,7 @@ namespace crds_angular.test.Services
         private const int RequestToJoinEmailTemplateId = 954;
         private const int RequestToJoinAnywhereEmailTemplateId = 956;
         private const int GroupRequestPendingReminderEmailTemplateId = 5150;
+        private const int GatheringRequestPendingReminderEmailTemplateId = 6171;
         private const int GatheringHostDenyTemplate = 2010;
         private const int GatheringHostAcceptTemplate = 2009;
         private const int AttributeCategoryGroupCategory = 90;
@@ -99,6 +100,7 @@ namespace crds_angular.test.Services
             configuration.Setup(mocked => mocked.GetConfigIntValue("GroupRequestToJoinEmailTemplate")).Returns(RequestToJoinEmailTemplateId);
             configuration.Setup(mocked => mocked.GetConfigIntValue("AnywhereGroupRequestToJoinEmailTemplate")).Returns(RequestToJoinAnywhereEmailTemplateId);
             configuration.Setup(mocked => mocked.GetConfigIntValue("GroupRequestPendingReminderEmailTemplateId")).Returns(GroupRequestPendingReminderEmailTemplateId);
+            configuration.Setup(mocked => mocked.GetConfigIntValue("GatheringRequestPendingReminderEmailTemplateId")).Returns(GatheringRequestPendingReminderEmailTemplateId);
             configuration.Setup(mocked => mocked.GetConfigIntValue("GroupCategoryAttributeTypeId")).Returns(AttributeCategoryGroupCategory);
             configuration.Setup(mocked => mocked.GetConfigIntValue("SmallGroupTypeId")).Returns(smallGroupTypeId);
             configuration.Setup(mocked => mocked.GetConfigIntValue("OnsiteGroupTypeId")).Returns(onsiteGroupTypeId);
@@ -1918,6 +1920,138 @@ namespace crds_angular.test.Services
             _emailCommunicationService.Setup(mocked => mocked.SendEmail(It.Is<EmailCommunicationDTO>(e =>
                                                                                                          e.groupId == 456 &&
                                                                                                          e.TemplateId == GroupRequestPendingReminderEmailTemplateId &&
+                                                                                                         e.ToContactId == 4563
+                                                                            ),
+                                                                        null));
+
+            _fixture.SendSmallGroupPendingInquiryReminderEmails();
+            _groupToolRepository.VerifyAll();
+            _groupRepository.VerifyAll();
+            _emailCommunicationService.VerifyAll();
+        }
+
+        [Test]
+        public void TestSendSmallGroupPendingInquiryReminderEmailsForAnywhereGathering()
+        {
+            var inquiries = new List<MpInquiry>
+            {
+                new MpInquiry
+                {
+                    GroupId = 123,
+                    FirstName = "first #1 123",
+                    LastName = "last #1 123",
+                    EmailAddress = "email #1 123"
+                },
+                new MpInquiry
+                {
+                    GroupId = 456,
+                    FirstName = "first #1 456",
+                    LastName = "last #1 456",
+                    EmailAddress = "email #1 456"
+                },
+                new MpInquiry
+                {
+                    GroupId = 123,
+                    FirstName = "first #2 123",
+                    LastName = "last #2 123",
+                    EmailAddress = "email #2 123"
+                },
+            };
+            _groupToolRepository.Setup(mocked => mocked.GetInquiries(null)).Returns(inquiries);
+           
+            var group123 = new MpGroup
+            {
+                GroupId = 123,
+                GroupType = anywhereGroupTypeId,
+                Name = "group 123",
+                GroupDescription = "description 123",
+                Participants = new List<MpGroupParticipant>
+                {
+                    new MpGroupParticipant
+                    {
+                        ContactId = 1231,
+                        Email = "email 1231",
+                        NickName = "nick 1231",
+                        LastName = "last 1231",
+                        GroupRoleId = GroupRoleLeader
+                    },
+                    new MpGroupParticipant
+                    {
+                        ContactId = 1232,
+                        Email = "email 1232",
+                        NickName = "nick 1232",
+                        LastName = "last 1232",
+                        GroupRoleId = GroupRoleLeader + 1
+                    },
+                    new MpGroupParticipant
+                    {
+                        ContactId = 1233,
+                        Email = "email 1233",
+                        NickName = "nick 1233",
+                        LastName = "last 1233",
+                        GroupRoleId = GroupRoleLeader
+                    },
+                }
+            };
+            _groupRepository.Setup(mocked => mocked.getGroupDetails(123)).Returns(group123);
+
+            var group456 = new MpGroup
+            {
+                GroupId = 456,
+                GroupType = anywhereGroupTypeId,
+                Name = "group 456",
+                GroupDescription = "description 456",
+                Participants = new List<MpGroupParticipant>
+                {
+                    new MpGroupParticipant
+                    {
+                        ContactId = 4561,
+                        Email = "email 4561",
+                        NickName = "nick 4561",
+                        LastName = "last 4561",
+                        GroupRoleId = GroupRoleLeader
+                    },
+                    new MpGroupParticipant
+                    {
+                        ContactId = 4562,
+                        Email = "email 4562",
+                        NickName = "nick 4562",
+                        LastName = "last 4562",
+                        GroupRoleId = GroupRoleLeader + 1
+                    },
+                    new MpGroupParticipant
+                    {
+                        ContactId = 4563,
+                        Email = "email 4563",
+                        NickName = "nick 4563",
+                        LastName = "last 4563",
+                        GroupRoleId = GroupRoleLeader
+                    },
+                }
+            };
+            _groupRepository.Setup(mocked => mocked.getGroupDetails(456)).Returns(group456);
+
+            _emailCommunicationService.Setup(mocked => mocked.SendEmail(It.Is<EmailCommunicationDTO>(e =>
+                                                                                                         e.groupId == 123 &&
+                                                                                                         e.TemplateId == GatheringRequestPendingReminderEmailTemplateId &&
+                                                                                                         e.ToContactId == 1231
+                                                                            ),
+                                                                        null));
+            _emailCommunicationService.Setup(mocked => mocked.SendEmail(It.Is<EmailCommunicationDTO>(e =>
+                                                                                                         e.groupId == 123 &&
+                                                                                                         e.TemplateId == GatheringRequestPendingReminderEmailTemplateId &&
+                                                                                                         e.ToContactId == 1233
+                                                                            ),
+                                                                        null));
+            _emailCommunicationService.Setup(mocked => mocked.SendEmail(It.Is<EmailCommunicationDTO>(e =>
+                                                                                                         e.groupId == 456 &&
+                                                                                                         e.TemplateId == GatheringRequestPendingReminderEmailTemplateId &&
+                                                                                                         e.ToContactId == 4561
+                                                                            ),
+                                                                        null));
+            _emailCommunicationService.Setup(mocked => mocked.SendEmail(It.Is<EmailCommunicationDTO>(e =>
+                                                                                                         e.groupId == 456 &&
+                                                                                                         e.TemplateId == GatheringRequestPendingReminderEmailTemplateId &&
                                                                                                          e.ToContactId == 4563
                                                                             ),
                                                                         null));
