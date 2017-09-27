@@ -14,24 +14,24 @@ describe('Live Streaming Streamspot Service', () => {
   let events = {
     "success": true,
     "data": {
-      "broadcasts": [
+      "broadcasts": [       // all future events
         {
           "start": moment(baseTime).add(1, 'hour').format('YYYY-MM-DD H:mm:ss'),
           "end": moment(baseTime).add(2, 'hours').format('YYYY-MM-DD H:mm:ss'),
           "title": "Saturday Rehearsal Upcoming"
         },
         {
-          "start": moment(baseTime).subtract(1, 'hour').format('YYYY-MM-DD H:mm:ss'),
-          "end": moment(baseTime).add(1, 'hour').format('YYYY-MM-DD H:mm:ss'),
-          "title": "Saturday Rehearsal Broadcasting"
+          "start": moment(baseTime).add(3, 'hour').format('YYYY-MM-DD H:mm:ss'),
+          "end": moment(baseTime).add(4, 'hours').format('YYYY-MM-DD H:mm:ss'),
+          "title": "Saturday Rehearsal Upcoming 2"
         },
-        {
-          "start": moment(baseTime).subtract(2, 'hours').format('YYYY-MM-DD H:mm:ss'),
-          "end": moment(baseTime).subtract(1, 'hour').format('YYYY-MM-DD H:mm:ss'),
-          "title": "Saturday Rehearsal Done"
-        }
       ],
-      "next": {
+      "current": {          // current event in progress (null if nothing in progress)
+        "start": moment(baseTime).subtract(1, 'hour').format('YYYY-MM-DD H:mm:ss'),
+        "end": moment(baseTime).add(1, 'hour').format('YYYY-MM-DD H:mm:ss'),
+        "title": "Saturday Rehearsal Broadcasting"
+      },
+      "next": {             // next event not yet started
         "start": moment(baseTime).add(1, 'hour').format('YYYY-MM-DD H:mm:ss'),
         "end": moment(baseTime).add(2, 'hours').format('YYYY-MM-DD H:mm:ss'),
         "title": "Saturday Rehearsal Upcoming"
@@ -39,7 +39,7 @@ describe('Live Streaming Streamspot Service', () => {
     }
   };
 
-  const eventsEndpoint = `${__STREAMSPOT_ENDPOINT__}broadcaster/${__STREAMSPOT_SSID__}/broadcasts/upcoming`
+  const eventsEndpoint = `${__STREAMSPOT_ENDPOINT__}broadcaster/${__STREAMSPOT_SSID__}/broadcasts/upcomingPlusCurrent`
 
   beforeEach(angular.mock.module(CONSTANTS.MODULES.LIVE_STREAM));
 
