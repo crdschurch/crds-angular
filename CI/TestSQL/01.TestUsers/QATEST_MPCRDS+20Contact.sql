@@ -21,7 +21,7 @@ SET @contactID = (select top 1 contact_id from contacts where email_address = 'm
 --Donor RECORD
 INSERT INTO [dbo].Donors 
 (Contact_ID,Statement_Frequency_ID,Statement_Type_ID,Statement_Method_ID,Setup_Date                ,Envelope_No,Cancel_Envelopes,Notes,First_Contact_Made,Domain_ID,__ExternalPersonID,_First_Donation_Date,_Last_Donation_Date,Processor_ID) VALUES
-(@contactID,3                     ,1                ,4                  ,{ts '2015-07-06 12:03:37'},null       ,0               ,null ,null              ,1        ,null              ,null                ,null               ,@processorID);
+(@contactID,3                     ,1                ,4                  ,{ts '2015-07-06 12:03:37'},null       ,0               ,'Scripted Donor' ,null              ,1        ,null              ,null                ,null               ,@processorID);
 
 --Update Contact Record
 UPDATE [dbo].Contacts set Donor_Record = (select donor_id from donors where contact_id = @contactID) where contact_id = @contactID;
