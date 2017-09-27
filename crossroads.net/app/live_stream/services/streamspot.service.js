@@ -28,12 +28,16 @@ export default class StreamspotService {
   }
 
   getEvents() {
-    const url = `${this.url}broadcaster/${this.ssid}/broadcasts/upcoming`;
+    const url = `${this.url}broadcaster/${this.ssid}/broadcasts/upcomingPlusCurrent`;
     return this.resource(url, {}, { get: { method: 'GET', headers: this.headers } })
       .get()
       .$promise
       .then((response) => {
-        this.eventResponse = response.data.broadcasts;
+        this.eventResponse = response.data.broadcasts || [];
+
+        if (response.data.current)      // current event in progress?
+          this.eventResponse.unshift(response.data.current);
+
         const events = this.parseEvents();
         if (events.length > 0) {
           this.broadcast();
