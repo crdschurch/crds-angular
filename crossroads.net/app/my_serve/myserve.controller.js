@@ -87,7 +87,6 @@
       }
 
       vm.serveTeamService.getTeamDetailsByLeader().then((data) => {
-        debugger;
         vm.teams = data;
       }).catch((err) => {
         $log.debug("unable to retrieve teams")
@@ -281,12 +280,17 @@
       });
     }
 
-    function showMessageModal() {
+    function showMessageModal(team) {
       vm.modalInstance = $modal.open({
         parent: 'noSideBar',
         templateUrl: 'communication_modal',
         controller: 'CommunicationModals as communication',
         openedClass: 'crds-legacy-styles',
+        resolve: {
+          team: function () {
+            return team;
+          }
+        }
       });
     }
 

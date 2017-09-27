@@ -4,16 +4,20 @@
   module.exports = CommunicationModals;
 
   CommunicationModals.$inject = ['$modalInstance',
-      '$rootScope'];
+      '$rootScope', 'team'];
 
-  function CommunicationModals($modalInstance, $rootScope) {
+  function CommunicationModals($modalInstance, $rootScope, team) {
     var vm = this;
     vm.cancel = cancel;
     vm.successful = successful;
     vm.failure = failure;
+    vm.team = team;
     activate();
 
-    function activate() { }
+    function activate() {
+      debugger;
+      console.log('hi');
+    }
 
     function cancel() {
       $modalInstance.dismiss('cancel');
