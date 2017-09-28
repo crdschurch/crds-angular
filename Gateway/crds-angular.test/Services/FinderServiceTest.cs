@@ -483,12 +483,14 @@ namespace crds_angular.test.Services
             };
             hit.Fields = fields;
             searchresults.Hits.Hit.Add(hit);
-            const string userSearch = "baseball";
-            const string filterString = "filter";
-            string expectedSearchString = $"(and pintype:4 groupavailableonline:1 (or (prefix field=groupdescription '{userSearch}') (prefix field=groupname '{userSearch}') groupname:'{userSearch}' groupdescription:'{userSearch}' groupprimarycontactfirstname:'{userSearch}' groupprimarycontactlastname:'{userSearch}') {filterString})";
-
+            const string userKeywordSearchString = "baseball";
+            const string filterSearchString = "filter";
+            
+            string queryString = $"(and pintype:4 groupavailableonline:1 (or (prefix field=groupdescription '{userKeywordSearchString}') (prefix field=groupname '{userKeywordSearchString}') (prefix field=groupprimarycontactfirstname '{userKeywordSearchString}') (prefix field=groupprimarycontactlastname '{userKeywordSearchString}') groupname:'{userKeywordSearchString}' groupdescription:'{userKeywordSearchString}' groupprimarycontactfirstname:'{userKeywordSearchString}' groupprimarycontactlastname:'{userKeywordSearchString}') {filterSearchString})";
+            
+            
             _awsCloudsearchService.Setup(
-                    mocked => mocked.SearchConnectAwsCloudsearch(expectedSearchString, "_all_fields", It.IsAny<int>(), It.IsAny<GeoCoordinate>(), It.IsAny<AwsBoundingBox>()))
+                    mocked => mocked.SearchConnectAwsCloudsearch(queryString, "_all_fields", It.IsAny<int>(), It.IsAny<GeoCoordinate>(), It.IsAny<AwsBoundingBox>()))
                 .Returns(searchresults);
 
             _mpGroupToolService.Setup(m => m.SearchGroups(It.IsAny<int[]>(), null, It.IsAny<string>(), null, originCoords)).Returns(new List<GroupDTO>());
@@ -504,7 +506,7 @@ namespace crds_angular.test.Services
                 BottomRightCoordinates = new GeoCoordinates(21.52, -77.78)
             };
 
-            var pins = _fixture.GetPinsInBoundingBox(originCoords, userSearch, boundingBox, "SMALL_GROUPS", 0, filterString);
+            var pins = _fixture.GetPinsInBoundingBox(originCoords, userKeywordSearchString, boundingBox, "SMALL_GROUPS", 0, filterSearchString);
 
             Assert.IsInstanceOf<List<PinDto>>(pins);
         }
