@@ -23,7 +23,7 @@ set @depositId = 100000001;
 
 INSERT INTO [dbo].[Deposits]
 (Deposit_ID,Deposit_Name           ,Deposit_Total,Deposit_Amount,Processor_Fee_Total,Deposit_Date                        ,Account_Number  ,Batch_Count,Domain_ID,Exported,Notes,__ExternalBatchID,Processor_Transfer_ID) VALUES
-(@depositId,'(auto) General Giving',200.00       ,200.00        ,0.00               ,(convert(datetime, '09/01/2017', 101)),'474893274983'  ,1          ,1        ,0       ,null,null              ,null);
+(@depositId,'(auto) Two Batches'  ,500.00       ,500.00        ,0.00               ,(convert(datetime, '09/01/2017', 101)),'474893274983'  ,1          ,1        ,0       ,null,null              ,null);
 
 SET IDENTITY_INSERT [dbo].[Deposits] OFF;
 
