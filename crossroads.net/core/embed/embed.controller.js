@@ -39,9 +39,6 @@ export default class EmbedController {
     this.defaultPath = '/give/?type=donation';
 
     switch (__CRDS_ENV__) { // eslint-disable-line no-undef
-      case 'local':
-        this.baseUrl = 'http://local.crossroads.net:8080';
-        break;
       case 'int':
         this.baseUrl = 'https://embedint.crossroads.net';
         break;
@@ -49,7 +46,7 @@ export default class EmbedController {
         this.baseUrl = 'https://embeddemo.crossroads.net';
         break;
       case 'local':
-        this.baseUrl = 'http://localhost:8080';
+        this.baseUrl = 'http://local.crossroads.net:8080/give';
         break;
       default:
         this.baseUrl = 'https://embed.crossroads.net';
