@@ -412,12 +412,9 @@ namespace crds_angular.Services
 
         public List<PinDto> GetPinsInBoundingBox(GeoCoordinate originCoords, string userKeywordSearchString, AwsBoundingBox boundingBox, string finderType, int contactId, string filterSearchString)
         {
-            if(userKeywordSearchString != null)
-            {
-                userKeywordSearchString = userKeywordSearchString.Replace("%27", "\\'");
-            }
-            List<PinDto> pins = null;
-            var queryString = "matchall";
+            userKeywordSearchString = userKeywordSearchString?.Replace("%27", "\\'");
+            var queryString = "";
+            var returnSize = _configurationWrapper.GetConfigIntValue("ConnectDefaultNumberOfPins");
 
             // new search string for AWS call based on the findertype, use pintype
 
@@ -427,22 +424,17 @@ namespace crds_angular.Services
             }
             else if (finderType.Equals(_finderGroupTool))
             {
-                queryString =
-                    $"(and pintype:4 groupavailableonline:1 (or groupname:'{userKeywordSearchString}' groupdescription:'{userKeywordSearchString}' groupprimarycontactfirstname:'{userKeywordSearchString}' groupprimarycontactlastname:'{userKeywordSearchString}') {filterSearchString})";
+                queryString = $"(and pintype:4 groupavailableonline:1 (or (prefix field=groupdescription '{userKeywordSearchString}') (prefix field=groupname '{userKeywordSearchString}') (prefix field=groupprimarycontactfirstname '{userKeywordSearchString}') (prefix field=groupprimarycontactlastname '{userKeywordSearchString}') groupname:'{userKeywordSearchString}' groupdescription:'{userKeywordSearchString}' groupprimarycontactfirstname:'{userKeywordSearchString}' groupprimarycontactlastname:'{userKeywordSearchString}') {filterSearchString})";
             }
             else
             {     
                 throw new Exception("No pin search performed - finder type not found");
             }
 
-            var cloudReturn = _awsCloudsearchService.SearchConnectAwsCloudsearch(queryString,
-                                                                                    "_all_fields",
-                                                                                    _configurationWrapper.GetConfigIntValue("ConnectDefaultNumberOfPins"),
-                                                                                    originCoords/*,
-                                                                                    boundingBox*/);
-            pins = ConvertFromAwsSearchResponse(cloudReturn);
+            var cloudReturn = _awsCloudsearchService.SearchConnectAwsCloudsearch(queryString, "_all_fields",returnSize, originCoords);
+            var pins = ConvertFromAwsSearchResponse(cloudReturn);
 
-            this.AddPinMetaData(pins, originCoords, contactId);
+            AddPinMetaData(pins, originCoords, contactId);
 
             return pins;
         }
