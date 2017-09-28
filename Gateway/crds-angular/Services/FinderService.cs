@@ -413,7 +413,8 @@ namespace crds_angular.Services
         public List<PinDto> GetPinsInBoundingBox(GeoCoordinate originCoords, string userKeywordSearchString, AwsBoundingBox boundingBox, string finderType, int contactId, string filterSearchString)
         {
             userKeywordSearchString = userKeywordSearchString?.Replace("%27", "\\'");
-            var queryString = "matchall";
+            var queryString = "";
+            var returnSize = _configurationWrapper.GetConfigIntValue("ConnectDefaultNumberOfPins");
 
             // new search string for AWS call based on the findertype, use pintype
 
@@ -431,10 +432,7 @@ namespace crds_angular.Services
                 throw new Exception("No pin search performed - finder type not found");
             }
 
-            var cloudReturn = _awsCloudsearchService.SearchConnectAwsCloudsearch(queryString, "_all_fields",
-                                                                                    _configurationWrapper.GetConfigIntValue("ConnectDefaultNumberOfPins"),
-                                                                                    originCoords/*,
-                                                                                    boundingBox*/);
+            var cloudReturn = _awsCloudsearchService.SearchConnectAwsCloudsearch(queryString, "_all_fields",returnSize, originCoords);
             var pins = ConvertFromAwsSearchResponse(cloudReturn);
 
             AddPinMetaData(pins, originCoords, contactId);
