@@ -210,9 +210,15 @@ UPDATE s
 DROP TABLE #NewConfigSettings
 
 -- Delete the processor id for all donors
+DISABLE TRIGGER Donors.tr_DisallowDefaultDonorUpdate ON dbo.Donors
+GO
+
 UPDATE Donors
     SET Processor_ID = ''
- 
+
+ENABLE TRIGGER Donors.tr_DisallowDefaultDonorUpdate ON dbo.Donors
+GO
+
 -- Update dp_Tools Launch_Page value
 UPDATE dp_Tools
     SET Launch_Page = REPLACE(Launch_Page, '$DpToolUriToBeReplaced', '$DpToolNewUri')
