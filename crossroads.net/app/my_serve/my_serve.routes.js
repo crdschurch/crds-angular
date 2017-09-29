@@ -31,7 +31,7 @@ export default function MyServeRouter($httpProvider, $stateProvider) {
     })
     .state('serve-signup.message', {
       parent: 'noSideBar',
-      url: '/serve-signup/message',
+      url: '/serve-signup/message/:groupId',
       template: '<serve-team-message></serve-team-message>',
       resolve: {
         /*@ngInject*/
