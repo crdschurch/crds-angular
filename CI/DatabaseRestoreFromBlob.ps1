@@ -215,6 +215,7 @@ GO
 
 UPDATE Donors
     SET Processor_ID = ''
+GO
 
 ENABLE TRIGGER Donors.tr_DisallowDefaultDonorUpdate ON dbo.Donors
 GO
