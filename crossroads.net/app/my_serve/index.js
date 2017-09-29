@@ -9,7 +9,6 @@ import './serveTabs.html';
 import './serveTeam.html';
 import './refine/refineList.html';
 import './refine/serveModalContent.html';
-import './communication/communication.html';
 
 import OpportunityCapacityService from './capacity.service';
 import FilterStateService from  './filterState.service.js';
@@ -23,8 +22,6 @@ import ServeTeamDirective from './serveTeam.directive';
 import RefineListDirective from './refine/refineList.directive';
 
 import myServeRouter from './my_serve.routes';
-
-import CommunicationModalController from './communication/communication_modals.controller';
 
 
 export default angular
@@ -45,7 +42,6 @@ export default angular
 
   .controller('MyServeController', MyServeController)
   .controller('ServeModalController', ServeModalController)
-  .controller('CommunicationModals', CommunicationModalController)
 
   .directive('serveTabs', ServeTabsDirective)
   .directive('serveTeam', ServeTeamDirective)
