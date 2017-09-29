@@ -15,7 +15,7 @@
     activate();
 
     function activate() {
-      debugger;
+      // debugger;
       console.log('hi');
     }
 
