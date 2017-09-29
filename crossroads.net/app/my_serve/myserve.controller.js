@@ -46,7 +46,6 @@
     vm.showButton = showButton;
     vm.showNoOpportunitiesMsg = showNoOpportunitiesMsg;
     vm.isLeader = leader.isLeader;
-    vm.showMessageModal = showMessageModal;
     vm.serveTeamService = ServeTeamService;
 
     vm.teams = [];
@@ -277,20 +276,6 @@
             }
           });
         });
-      });
-    }
-
-    function showMessageModal(team) {
-      vm.modalInstance = $modal.open({
-        parent: 'noSideBar',
-        templateUrl: 'communication_modal',
-        controller: 'CommunicationModals as communication',
-        openedClass: 'crds-legacy-styles',
-        resolve: {
-          team: function () {
-            return team;
-          }
-        }
       });
     }
 

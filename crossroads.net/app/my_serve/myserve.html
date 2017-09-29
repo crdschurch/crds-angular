@@ -8,7 +8,7 @@
       </button>
       <ul class="dropdown-menu">
         <li ng-repeat="team in serve.teams">
-          <a href="#" ng-click="serve.showMessageModal(team)">{{team.groupName}}</a>
+          <a href="#" ui-sref="serve-signup.message({groupId: team.groupId})">{{team.groupName}}</a>
         </li>
       </ul>
     </div>
