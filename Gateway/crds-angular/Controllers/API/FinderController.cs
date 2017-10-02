@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -18,6 +17,7 @@ using crds_angular.Exceptions;
 using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Crossroads.Groups;
 using crds_angular.Services.Analytics;
+using Crossroads.Web.Common.Configuration;
 using log4net;
 
 namespace crds_angular.Controllers.API
@@ -30,14 +30,14 @@ namespace crds_angular.Controllers.API
         private readonly IAuthenticationRepository _authenticationRepo;
         private readonly IAnalyticsService _analyticsService;
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private const int _trialMemberRoleId = 67;
 
         public FinderController(IFinderService finderService,
                                 IGroupToolService groupToolService,
                                 IUserImpersonationService userImpersonationService,
                                 IAuthenticationRepository authenticationRepository,
                                 IAwsCloudsearchService awsCloudsearchService,
-                                IAnalyticsService analyticsService)
+                                IAnalyticsService analyticsService,
+                                 IConfigurationWrapper configurationWrapper)
             : base(userImpersonationService, authenticationRepository)
         {
             _finderService = finderService;
@@ -239,7 +239,7 @@ namespace crds_angular.Controllers.API
                 }
                 catch (Exception ex)
                 {
-                    var apiError = new ApiErrorDto(string.Format("Error removing group participant {0} from group {1}", groupInformation.GroupParticipantId, groupInformation.GroupId), ex);
+                    var apiError = new ApiErrorDto($"Error removing group participant {groupInformation.GroupParticipantId} from group {groupInformation.GroupId}", ex);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
             });
@@ -288,7 +288,7 @@ namespace crds_angular.Controllers.API
                         _finderService.UpdateHouseholdAddress(pin);
                     }
 
-                    if (pin.Participant_ID == 0 || String.IsNullOrEmpty(pin.Participant_ID.ToString()))
+                    if (pin.Participant_ID == 0 || string.IsNullOrEmpty(pin.Participant_ID.ToString()))
                     {
                         pin.Participant_ID =_finderService.GetParticipantIdFromContact((int)pin.Contact_ID);
                     }
@@ -384,12 +384,12 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "finder/findpinsbyaddress", minimumVersion: "1.0.0")]
         [Route("finder/findpinsbyaddress/")]
         [HttpPost]
-        public IHttpActionResult GetPinsByAddress(PinSearchQueryParams queryParams)
+        public  IHttpActionResult GetPinsByAddress(PinSearchQueryParams queryParams)
         {
             try
             {
-                NewRelic.Api.Agent.NewRelic.AddCustomParameter("WherAmI", "executing GetPinsByAddress");
-
+                // 9/20/2017 Bounding box is NOT being used. This code being left in because there is 
+                //           discussion around limiting the number of pins returned.  kdb
                 AwsBoundingBox awsBoundingBox = null;
                 Boolean areAllBoundingBoxParamsPresent = _finderService.areAllBoundingBoxParamsPresent(queryParams.BoundingBox); 
 
@@ -510,10 +510,10 @@ namespace crds_angular.Controllers.API
         /// Leader adds a user to their group
         /// </summary>
         [RequiresAuthorization]
-        [VersionedRoute(template: "finder/pin/addtogroup/{groupId}", minimumVersion: "1.0.0")]
+        [VersionedRoute(template: "finder/pin/addtogroup/{groupId}/{roleId}", minimumVersion: "1.0.0")]
         [Route("finder/pin/addtogroup/{groupId}")]
         [HttpPost]
-        public IHttpActionResult AddToGroup([FromUri] int groupId,  [FromBody] User person)
+        public IHttpActionResult AddToGroup([FromUri] int groupId,  [FromBody] User person, [FromUri] int roleId)
         {
             if (!ModelState.IsValid)
             {
@@ -526,10 +526,10 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _finderService.AddUserDirectlyToGroup(token, person, groupId, _trialMemberRoleId);
-                    return (Ok());
+                    _finderService.AddUserDirectlyToGroup(token, person, groupId, roleId);
+                    return Ok();
                 }
-                catch (DuplicateGroupParticipantException dup)
+                catch (DuplicateGroupParticipantException)
                 {
                     throw new HttpResponseException(HttpStatusCode.Conflict);
                 }

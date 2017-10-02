@@ -56,6 +56,7 @@ namespace crds_angular.Services
         private readonly int _groupRequestToJoinEmailTemplate;
         private readonly int _anywhereGroupRequestToJoinEmailTemplate;
         private readonly int _groupRequestPendingReminderEmailTemplateId;
+        private readonly int _gatheringRequestPendingReminderEmailTemplateId;
         private readonly int _attributeTypeGroupCategory;
         private readonly int _smallGroupTypeId;
         private readonly int _onsiteGroupTypeId;
@@ -117,6 +118,7 @@ namespace crds_angular.Services
             _groupRoleLeaderId = configurationWrapper.GetConfigIntValue("GroupRoleLeader");
             _defaultGroupRoleId = configurationWrapper.GetConfigIntValue("Group_Role_Default_ID");
             _groupRequestPendingReminderEmailTemplateId = configurationWrapper.GetConfigIntValue("GroupRequestPendingReminderEmailTemplateId");
+            _gatheringRequestPendingReminderEmailTemplateId = configurationWrapper.GetConfigIntValue("GatheringRequestPendingReminderEmailTemplateId");
             _attributeTypeGroupCategory = configurationWrapper.GetConfigIntValue("GroupCategoryAttributeTypeId");
 
             _genericGroupForCMSMergeEmailTemplateId = configurationWrapper.GetConfigIntValue("GenericGroupForCMSMergeEmailTemplateId");
@@ -964,7 +966,7 @@ namespace crds_angular.Services
                 var email = new EmailCommunicationDTO
                 {
                     groupId = group.GroupId,
-                    TemplateId = _groupRequestPendingReminderEmailTemplateId,
+                    TemplateId = group.GroupType == _anywhereGroupType ? _gatheringRequestPendingReminderEmailTemplateId : _groupRequestPendingReminderEmailTemplateId,
                     ToContactId = leader.ContactId,
                     MergeData = mergeData
                 };

@@ -142,7 +142,7 @@ SET @householdId = 100000030;
 
 INSERT INTO Households 
 (Household_ID,Household_Name,Address_ID  ,Home_Phone      ,Domain_ID,Congregation_ID  ,Care_Person, Household_Source_ID ,Family_Call_Number, Household_Preferences     ,Home_Phone_Unlisted   , Home_Address_Unlisted, Bulk_Mail_Opt_Out, _Last_Donation, _Last_Activity, __ExternalHouseholdID, __ExternalBusinessID) VALUES
-(@householdId,'Smith'    ,@addressId  	 ,'555-963-5090'  ,1        ,6                ,null       , null                ,null              , null                      ,null                  , null                 , 0                ,null           ,null           ,null                  , null);
+(@householdId,'Smith'    ,@addressId  	 ,'555-963-5090'  ,1        ,6                ,null       , 48                ,null              , null                      ,null                  , null                 , 0                ,null           ,null           ,null                  , null);
 
 DBCC CHECKIDENT (Households, reseed, @currentHouseholdId);
 SET IDENTITY_INSERT [dbo].[Households] OFF;
