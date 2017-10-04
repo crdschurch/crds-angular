@@ -389,25 +389,25 @@ namespace crds_angular.Controllers.API
         {
             try
             {
-                DoCustomEvent("START", DateTime.Now);
+                DoCustomEvent("START", DateTime.Now.ToString("ffff"));
                 // 9/20/2017 Bounding box is NOT being used. This code being left in because there is 
                 //           discussion around limiting the number of pins returned.  kdb
                 AwsBoundingBox awsBoundingBox = null;
                 var areAllBoundingBoxParamsPresent = _finderService.areAllBoundingBoxParamsPresent(queryParams.BoundingBox);
-                DoCustomEvent("areAllBoundingBoxParamsPresent", DateTime.Now);
+                DoCustomEvent("areAllBoundingBoxParamsPresent", DateTime.Now.ToString("fff"));
                 if (areAllBoundingBoxParamsPresent)
                 {
                     awsBoundingBox = _awsCloudsearchService.BuildBoundingBox(queryParams.BoundingBox);
                 }
-                DoCustomEvent("BuildBoundingBox", DateTime.Now);
+                DoCustomEvent("BuildBoundingBox", DateTime.Now.ToString("ffff"));
                 var originCoords = _finderService.GetMapCenterForResults(queryParams.UserLocationSearchString, queryParams.CenterGeoCoords, queryParams.FinderType);
-                DoCustomEvent("GetMapCenterForResults", DateTime.Now);
+                DoCustomEvent("GetMapCenterForResults", DateTime.Now.ToString("ffff"));
                 var pinsInRadius = _finderService.GetPinsInBoundingBox(originCoords, queryParams.UserKeywordSearchString, awsBoundingBox, queryParams.FinderType, queryParams.ContactId, queryParams.UserFilterString);
-                DoCustomEvent("GetPinsInBoundingBox", DateTime.Now);
+                DoCustomEvent("GetPinsInBoundingBox", DateTime.Now.ToString("ffff"));
                 pinsInRadius = _finderService.RandomizeLatLongForNonSitePins(pinsInRadius);
-                DoCustomEvent("RandomizeLatLongForNonSitePins", DateTime.Now);
+                DoCustomEvent("RandomizeLatLongForNonSitePins", DateTime.Now.ToString("ffff"));
                 var result = new PinSearchResultsDto(new GeoCoordinates(originCoords.Latitude, originCoords.Longitude), pinsInRadius);
-                DoCustomEvent("PinSearchResultsDto", DateTime.Now);
+                DoCustomEvent("PinSearchResultsDto", DateTime.Now.ToString("ffff"));
                 var eventName = (queryParams.FinderType == "CONNECT") ? "ConnectSearch" : "GroupsSearch";
                 var props = new EventProperties
                 {
@@ -415,8 +415,8 @@ namespace crds_angular.Controllers.API
                     {"Keywords", queryParams.UserKeywordSearchString}
                 };
                 _analyticsService.Track("Anonymous", eventName, props);
-                DoCustomEvent("_analyticsService", DateTime.Now);
-                DoCustomEvent("DONE", DateTime.Now);
+                DoCustomEvent("_analyticsService", DateTime.Now.ToString("ffff"));
+                DoCustomEvent("DONE", DateTime.Now.ToString("ffff"));
                 return Ok(result);
             }
             catch (InvalidAddressException ex)
@@ -431,9 +431,9 @@ namespace crds_angular.Controllers.API
             }
         }
 
-        private static void DoCustomEvent(string methodName, DateTime dt)
+        private static void DoCustomEvent(string methodName,string otherData)
         {
-            var eventAttributes = new Dictionary<String, Object> { { "MethodName", methodName }, { "TimeStamp", dt.ToString("ffff") } };
+            var eventAttributes = new Dictionary<String, Object> { { "MethodName", methodName }, { "TimeStamp", otherData } };
 
             NewRelic.Api.Agent.NewRelic.RecordCustomEvent("Ape", eventAttributes);
         }
