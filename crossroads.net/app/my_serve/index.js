@@ -23,7 +23,6 @@ import RefineListDirective from './refine/refineList.directive';
 
 import myServeRouter from './my_serve.routes';
 
-
 export default angular
   .module(CONSTANTS.MODULES.MY_SERVE, [
     'ngTagsInput',
