@@ -21,6 +21,7 @@ using crds_angular.Models.Crossroads.Groups;
 using crds_angular.Services.Analytics;
 using Crossroads.Web.Common.Configuration;
 using log4net;
+using static NewRelic.Api.Agent.NewRelic;
 
 namespace crds_angular.Controllers.API
 {
@@ -136,17 +137,11 @@ namespace crds_angular.Controllers.API
         {
             try
             {
-                var stopWatch = Stopwatch.StartNew();
                 var participantId = _finderService.GetParticipantIdFromContact(contactId);
-                stopWatch.Stop();
-                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/GetParticipantIdFromContact_Execute", stopWatch.ElapsedMilliseconds);
-
+                
                 //refactor this to JUST get location;
-                var stopWatch2 = Stopwatch.StartNew();
                 var pin = _finderService.GetPinDetailsForPerson(participantId);
-                stopWatch2.Stop();
-                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/GetPinDetailsForPerson_Execute", stopWatch2.ElapsedMilliseconds);
-                bool pinHasInvalidGeoCoords = ( (pin.Address == null) || (pin.Address.Latitude == null || pin.Address.Longitude == null)
+                var pinHasInvalidGeoCoords = ( (pin.Address == null) || (pin.Address.Latitude == null || pin.Address.Longitude == null)
                                                || (pin.Address.Latitude == 0 && pin.Address.Longitude == 0));
 
                 if (pinHasInvalidGeoCoords && throwOnEmptyCoordinates)
@@ -397,30 +392,24 @@ namespace crds_angular.Controllers.API
         {
             try
             {
-                DoCustomEvent("START", DateTime.Now.ToString("HH:MM:ss.fffff"));
                 // 9/20/2017 Bounding box is NOT being used. This code being left in because there is 
                 //           discussion around limiting the number of pins returned.  kdb
                 AwsBoundingBox awsBoundingBox = null;
                 var areAllBoundingBoxParamsPresent = _finderService.areAllBoundingBoxParamsPresent(queryParams.BoundingBox);
-                DoCustomEvent("areAllBoundingBoxParamsPresent", DateTime.Now.ToString("HH:MM:ss.fffff"));
                 if (areAllBoundingBoxParamsPresent)
                 {
                     awsBoundingBox = _awsCloudsearchService.BuildBoundingBox(queryParams.BoundingBox);
                 }
-                DoCustomEvent("BuildBoundingBox", DateTime.Now.ToString("HH:MM:ss.fffff"));
 
                 var stopWatch = Stopwatch.StartNew();
                 var originCoords = _finderService.GetMapCenterForResults(queryParams.UserLocationSearchString, queryParams.CenterGeoCoords, queryParams.FinderType);
                 stopWatch.Stop();
-                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/Time_For_GetMapCenterForResults_Execution", stopWatch.ElapsedMilliseconds);
-
-                DoCustomEvent("GetMapCenterForResults", DateTime.Now.ToString("HH:MM:ss.fffff"));
+                RecordMetric("Custom/Time_For_GetMapCenterForResults_Execution", stopWatch.ElapsedMilliseconds);
+                RecordCustomNewRelicEvent(" _finderService.GetMapCenterForResults", stopWatch.ElapsedMilliseconds.ToString());
+                
                 var pinsInRadius = _finderService.GetPinsInBoundingBox(originCoords, queryParams.UserKeywordSearchString, awsBoundingBox, queryParams.FinderType, queryParams.ContactId, queryParams.UserFilterString);
-                DoCustomEvent("GetPinsInBoundingBox", DateTime.Now.ToString("HH:MM:ss.fffff"));
                 pinsInRadius = _finderService.RandomizeLatLongForNonSitePins(pinsInRadius);
-                DoCustomEvent("RandomizeLatLongForNonSitePins", DateTime.Now.ToString("HH:MM:ss.fffff"));
                 var result = new PinSearchResultsDto(new GeoCoordinates(originCoords.Latitude, originCoords.Longitude), pinsInRadius);
-                DoCustomEvent("PinSearchResultsDto", DateTime.Now.ToString("HH:MM:ss.fffff"));
                 var eventName = (queryParams.FinderType == "CONNECT") ? "ConnectSearch" : "GroupsSearch";
                 var props = new EventProperties
                 {
@@ -428,8 +417,6 @@ namespace crds_angular.Controllers.API
                     {"Keywords", queryParams.UserKeywordSearchString}
                 };
                 _analyticsService.Track("Anonymous", eventName, props);
-                DoCustomEvent("_analyticsService", DateTime.Now.ToString("HH:MM:ss.fffff"));
-                DoCustomEvent("DONE", DateTime.Now.ToString("HH:MM:ss.fffff"));
                 return Ok(result);
             }
             catch (InvalidAddressException ex)
@@ -444,11 +431,10 @@ namespace crds_angular.Controllers.API
             }
         }
 
-        private static void DoCustomEvent(string methodName,string otherData)
+        private static void RecordCustomNewRelicEvent(string methodName,string otherData)
         {
-            var eventAttributes = new Dictionary<String, Object> { { "MethodName", methodName }, { "TimeStamp", otherData } };
-
-            NewRelic.Api.Agent.NewRelic.RecordCustomEvent("Ape", eventAttributes);
+            var eventAttributes = new Dictionary<string, object> { { "MethodName", methodName }, { "Elapsed Time", otherData } };
+            RecordCustomEvent("Ape", eventAttributes);
         }
 
         [RequiresAuthorization]
