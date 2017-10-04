@@ -136,9 +136,16 @@ namespace crds_angular.Controllers.API
         {
             try
             {
+                var stopWatch = Stopwatch.StartNew();
                 var participantId = _finderService.GetParticipantIdFromContact(contactId);
+                stopWatch.Stop();
+                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/GetParticipantIdFromContact_Execute", stopWatch.ElapsedMilliseconds);
+
                 //refactor this to JUST get location;
+                var stopWatch2 = Stopwatch.StartNew();
                 var pin = _finderService.GetPinDetailsForPerson(participantId);
+                stopWatch2.Stop();
+                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/GetPinDetailsForPerson_Execute", stopWatch2.ElapsedMilliseconds);
                 bool pinHasInvalidGeoCoords = ( (pin.Address == null) || (pin.Address.Latitude == null || pin.Address.Longitude == null)
                                                || (pin.Address.Latitude == 0 && pin.Address.Longitude == 0));
 
@@ -405,7 +412,7 @@ namespace crds_angular.Controllers.API
                 var stopWatch = Stopwatch.StartNew();
                 var originCoords = _finderService.GetMapCenterForResults(queryParams.UserLocationSearchString, queryParams.CenterGeoCoords, queryParams.FinderType);
                 stopWatch.Stop();
-                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/Time For GetMapCenterForResults to Execute", stopWatch.ElapsedMilliseconds);
+                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/Time_For_GetMapCenterForResults_Execution", stopWatch.ElapsedMilliseconds);
 
                 DoCustomEvent("GetMapCenterForResults", DateTime.Now.ToString("HH:MM:ss.fffff"));
                 var pinsInRadius = _finderService.GetPinsInBoundingBox(originCoords, queryParams.UserKeywordSearchString, awsBoundingBox, queryParams.FinderType, queryParams.ContactId, queryParams.UserFilterString);
