@@ -1,4 +1,4 @@
 <preloader full-screen='false' ng-show='!serveTeamMessage.ready'> </preloader>
 <div ng-show='serveTeamMessage.ready'>
-  <crds-embed href="{{ '/chatty-cathy/?group_id[]=' + serveTeamMessage.groupId}}" path="{{ '/chatty-cathy/?group_id[]=' + serveTeamMessage.groupId }}"></crds-embed>
+  <crds-embed href="{{ '/chatty-cathy/?group_id[]=' + serveTeamMessage.groupId + '&redirectUrl=/serve-signup/message/success'}}" path="{{ '/chatty-cathy/?group_id[]=' + serveTeamMessage.groupId + '&redirectUrl=/serve-signup/message/success'}}"></crds-embed>
 </div>
