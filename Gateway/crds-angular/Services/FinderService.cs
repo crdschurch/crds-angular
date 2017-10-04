@@ -1303,13 +1303,13 @@ namespace crds_angular.Services
             return pins;
         }
 
-        public Boolean areAllBoundingBoxParamsPresent(MapBoundingBox boundingBox)
+        public bool areAllBoundingBoxParamsPresent(MapBoundingBox boundingBox)
         {
             var isUpperLeftLatNull = boundingBox.UpperLeftLat == null;
             var isUpperLeftLngNull = boundingBox.UpperLeftLng == null;
             var isBottomRightLatNull = boundingBox.BottomRightLat == null;
             var isBottomRightLngNull = boundingBox.BottomRightLng == null;
-            Boolean areAllBoundingBoxParamsPresent = !isUpperLeftLatNull && !isUpperLeftLngNull && !isBottomRightLatNull && !isBottomRightLngNull;
+            var areAllBoundingBoxParamsPresent = !isUpperLeftLatNull && !isUpperLeftLngNull && !isBottomRightLatNull && !isBottomRightLngNull;
 
             return areAllBoundingBoxParamsPresent; 
         }
