@@ -14,6 +14,9 @@ export default function MyServeRouter($httpProvider, $stateProvider) {
           description: ''
         }
       },
+      params: {
+        messageSent: null
+      },
       resolve: {
         loggedin: crds_utilities.checkLoggedin,
         ServeOpportunities: 'ServeOpportunities',
@@ -22,16 +25,29 @@ export default function MyServeRouter($httpProvider, $stateProvider) {
           return ServeTeamService.getIsLeader();
         },
         $cookies: '$cookies',
-        Groups: function (ServeOpportunities, $cookies) {     
+        Groups: function (ServeOpportunities, $cookies) {
           return ServeOpportunities.ServeDays.query({
             id:   $cookies.get('userId')
           }).$promise;
         }
-      }
+      },
+      onEnter: function ($state, $stateParams, $cookies, $rootScope) {
+        // show sent growl if redirect from message sent success route
+        if($stateParams.messageSent) {
+          $rootScope.$emit('notify', $rootScope.MESSAGES.emailSent);
+        }
+      },
+    })
+    .state('serve-signup.message-success', {
+      parent: 'noSideBar',
+      url: '/serve-signup/message/success',
+      onEnter: function ($state, $stateParams, $cookies) {
+        $state.go('serve-signup', { messageSent: true});
+      },
     })
     .state('serve-signup.message', {
       parent: 'noSideBar',
-      url: '/serve-signup/message',
+      url: '/serve-signup/message/:groupId',
       template: '<serve-team-message></serve-team-message>',
       resolve: {
         /*@ngInject*/
