@@ -74,7 +74,7 @@ namespace MinistryPlatform.Translation.Repositories
                 apiToken = ApiLogin();
             string userNameClean = userName.Replace("'", "''");
             string searchUser = $"dp_Users.User_Name='{userNameClean}'";
-            string columns = "User_Name,User_GUID, ISNULL(Can_Impersonate, 0), User_Email,User_ID";
+            string columns = "User_Name,User_GUID, ISNULL(Can_Impersonate, 0) AS Can_Impersonate, User_Email,User_ID";
             var users = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpUser>(searchUser, columns, null, true);
             return users.FirstOrDefault();
         }
@@ -121,18 +121,27 @@ namespace MinistryPlatform.Translation.Repositories
         }
 
 
-#if false // TODO: This needs more work
+
         public List<MpRoleDto> GetUserRolesRest(int userId, string apiToken=null)
         {
             if (string.IsNullOrEmpty(apiToken))
                 apiToken = ApiLogin();
             string searchStr = $"User_ID={userId}";
             string columns = "dp_User_Roles.Role_ID, Role_ID_Table.Role_Name";
-            var records = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpRoleDto>(searchStr, columns);
-            return records; 
+            var records = _ministryPlatformRest.UsingAuthenticationToken(apiToken).SearchTable<Dictionary<string,object>>("dp_User_Roles",searchStr, columns);
+            if (records == null || !records.Any())
+            {
+                return (null);
+            }
+
+            return records.Select(record => new MpRoleDto
+            {
+                Id = record.ToInt("Role_ID"),
+                Name = record.ToString("Role_Name")
+            }).ToList();
 
         }
-#endif
+
 
         public void UpdateUser(Dictionary<string, object> userUpdateValues)
         {

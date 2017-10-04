@@ -7,7 +7,7 @@ GO
 DECLARE @thisyear as VARCHAR(4)
 set @thisyear = CONVERT(VARCHAR(4), datepart(year, getdate()));
 
-DECLARE @tripName AS VARCHAR(24)
+DECLARE @tripName AS VARCHAR(50)
 set @tripName = '(t+auto) GO Bedrock '+@thisyear;
 
 DECLARE @startYear as VARCHAR(19)

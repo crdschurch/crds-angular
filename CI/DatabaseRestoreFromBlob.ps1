@@ -207,12 +207,15 @@ UPDATE s
 			new.Key_Name = s.Key_Name
 	WHERE s.Value != new.Value
 
-DROP TABLE #NewConfigSettings
+DROP TABLE #NewConfigSettings;
 
 -- Delete the processor id for all donors
-UPDATE Donors
-    SET Processor_ID = ''
- 
+DISABLE TRIGGER Donors.tr_DisallowDefaultDonorUpdate ON dbo.Donors;
+
+UPDATE Donors SET Processor_ID = '';
+
+ENABLE TRIGGER Donors.tr_DisallowDefaultDonorUpdate ON dbo.Donors;
+
 -- Update dp_Tools Launch_Page value
 UPDATE dp_Tools
     SET Launch_Page = REPLACE(Launch_Page, '$DpToolUriToBeReplaced', '$DpToolNewUri')

@@ -5,53 +5,21 @@ import Event from '../models/event';
 
 export default class StreamStatusService {
 
-  constructor($rootScope, $q, $resource) {
+  constructor($rootScope, $resource) {
     this.rootScope = $rootScope;
-    this.q = $q;
     this.resource = $resource;
     this.streamStatus = undefined;
-    this.url = __STREAMSPOT_ENDPOINT__;
-    this.ssid = __STREAMSPOT_SSID__;
-    this.headers = {
-      'Content-Type': 'application/json',
-      'x-API-Key': __STREAMSPOT_API_KEY__
-    };
-    this.time = 0;
   }
 
   getStatus() {
     return this.streamStatus;
   }
 
-  presetStreamStatus() {
-    const deferred = this.q.defer();
-
-    const url = `${this.url}broadcaster/${this.ssid}/events`;
-
-    return this.resource(url, {}, { get: { method: 'GET', headers: this.headers } })
-        .get()
-        .$promise
-        .then((response) => {
-          const events = response.data.events;
-          const formattedEvents = this.formatEvents(events);
-          const isBroadcasting = this.isBroadcasting(formattedEvents);
-          this.streamStatus = this.determineStreamStatus(formattedEvents, isBroadcasting);
-          deferred.resolve(formattedEvents);
-        });
-  }
-
-  formatEvents(events) {
-    return _
-        .chain(events)
-        .sortBy('start')
-        .map((object) => {
-          const event = Event.build(object);
-          if (event.isBroadcasting() || event.isUpcoming()) {
-            return event;
-          }
-        })
-        .compact()
-        .value();
+  presetStreamStatus(eventsPromise) {
+    eventsPromise.then((events) => {
+      const isBroadcasting = this.isBroadcasting(events);
+      this.streamStatus = this.determineStreamStatus(events, isBroadcasting);
+    });
   }
 
   setStreamStatus(events, isBroadcasting) {
