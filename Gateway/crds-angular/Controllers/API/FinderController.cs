@@ -14,6 +14,7 @@ using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
 using System.ComponentModel.DataAnnotations;
 using System.Device.Location;
+using System.Diagnostics;
 using crds_angular.Exceptions;
 using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Crossroads.Groups;
@@ -400,7 +401,12 @@ namespace crds_angular.Controllers.API
                     awsBoundingBox = _awsCloudsearchService.BuildBoundingBox(queryParams.BoundingBox);
                 }
                 DoCustomEvent("BuildBoundingBox", DateTime.Now.ToString("HH:MM:ss.fffff"));
+
+                var stopWatch = Stopwatch.StartNew();
                 var originCoords = _finderService.GetMapCenterForResults(queryParams.UserLocationSearchString, queryParams.CenterGeoCoords, queryParams.FinderType);
+                stopWatch.Stop();
+                NewRelic.Api.Agent.NewRelic.RecordMetric("Custom/Time For GetMapCenterForResults to Execute", stopWatch.ElapsedMilliseconds);
+
                 DoCustomEvent("GetMapCenterForResults", DateTime.Now.ToString("HH:MM:ss.fffff"));
                 var pinsInRadius = _finderService.GetPinsInBoundingBox(originCoords, queryParams.UserKeywordSearchString, awsBoundingBox, queryParams.FinderType, queryParams.ContactId, queryParams.UserFilterString);
                 DoCustomEvent("GetPinsInBoundingBox", DateTime.Now.ToString("HH:MM:ss.fffff"));
