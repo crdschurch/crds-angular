@@ -52,7 +52,7 @@ BEGIN
 	WHERE g.Group_Type_ID = 9 -- Serving Team Group Type
 	AND r.Response_Date < DATEADD(MONTH, -3, GETDATE())
 	AND g.Group_Id IN (SELECT Item FROM dbo.dp_Split(@GroupID, ','))
-	AND gp.End_Date IS NULL
+	AND (gp.End_Date IS NULL OR gp.End_Date > GETDATE())
 	AND gp.Group_ID IN (SELECT Item FROM dbo.dp_Split(@GroupID, ','))
 	AND o.Add_to_Group IN (SELECT Item FROM dbo.dp_Split(@GroupID, ','))
 	GROUP BY p.Participant_ID, c.First_Name, c.Last_Name, r.Response_Date, g.Group_Name, c.Email_Address, c.Mobile_Phone
