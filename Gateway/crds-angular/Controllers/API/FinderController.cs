@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -13,12 +14,14 @@ using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
 using System.ComponentModel.DataAnnotations;
 using System.Device.Location;
+using System.Diagnostics;
 using crds_angular.Exceptions;
 using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Crossroads.Groups;
 using crds_angular.Services.Analytics;
 using Crossroads.Web.Common.Configuration;
 using log4net;
+using static NewRelic.Api.Agent.NewRelic;
 
 namespace crds_angular.Controllers.API
 {
@@ -135,9 +138,10 @@ namespace crds_angular.Controllers.API
             try
             {
                 var participantId = _finderService.GetParticipantIdFromContact(contactId);
+                
                 //refactor this to JUST get location;
                 var pin = _finderService.GetPinDetailsForPerson(participantId);
-                bool pinHasInvalidGeoCoords = ( (pin.Address == null) || (pin.Address.Latitude == null || pin.Address.Longitude == null)
+                var pinHasInvalidGeoCoords = ( (pin.Address == null) || (pin.Address.Latitude == null || pin.Address.Longitude == null)
                                                || (pin.Address.Latitude == 0 && pin.Address.Longitude == 0));
 
                 if (pinHasInvalidGeoCoords && throwOnEmptyCoordinates)
@@ -391,21 +395,21 @@ namespace crds_angular.Controllers.API
                 // 9/20/2017 Bounding box is NOT being used. This code being left in because there is 
                 //           discussion around limiting the number of pins returned.  kdb
                 AwsBoundingBox awsBoundingBox = null;
-                Boolean areAllBoundingBoxParamsPresent = _finderService.areAllBoundingBoxParamsPresent(queryParams.BoundingBox); 
-
+                var areAllBoundingBoxParamsPresent = _finderService.areAllBoundingBoxParamsPresent(queryParams.BoundingBox);
                 if (areAllBoundingBoxParamsPresent)
                 {
                     awsBoundingBox = _awsCloudsearchService.BuildBoundingBox(queryParams.BoundingBox);
                 }
-               
+
+                var stopWatch = Stopwatch.StartNew();
                 var originCoords = _finderService.GetMapCenterForResults(queryParams.UserLocationSearchString, queryParams.CenterGeoCoords, queryParams.FinderType);
-
+                stopWatch.Stop();
+                RecordMetric("Custom/Time_For_GetMapCenterForResults_Execution", stopWatch.ElapsedMilliseconds);
+                RecordCustomNewRelicEvent(" _finderService.GetMapCenterForResults", stopWatch.ElapsedMilliseconds.ToString());
+                
                 var pinsInRadius = _finderService.GetPinsInBoundingBox(originCoords, queryParams.UserKeywordSearchString, awsBoundingBox, queryParams.FinderType, queryParams.ContactId, queryParams.UserFilterString);
-
-                pinsInRadius = _finderService.RandomizeLatLongForNonSitePins(pinsInRadius); 
-
+                pinsInRadius = _finderService.RandomizeLatLongForNonSitePins(pinsInRadius);
                 var result = new PinSearchResultsDto(new GeoCoordinates(originCoords.Latitude, originCoords.Longitude), pinsInRadius);
-
                 var eventName = (queryParams.FinderType == "CONNECT") ? "ConnectSearch" : "GroupsSearch";
                 var props = new EventProperties
                 {
@@ -413,7 +417,6 @@ namespace crds_angular.Controllers.API
                     {"Keywords", queryParams.UserKeywordSearchString}
                 };
                 _analyticsService.Track("Anonymous", eventName, props);
-
                 return Ok(result);
             }
             catch (InvalidAddressException ex)
@@ -426,6 +429,12 @@ namespace crds_angular.Controllers.API
                 var apiError = new ApiErrorDto("Get Pin By Address Failed", ex);
                 throw new HttpResponseException(apiError.HttpResponseMessage);
             }
+        }
+
+        private static void RecordCustomNewRelicEvent(string methodName,string otherData)
+        {
+            var eventAttributes = new Dictionary<string, object> { { "MethodName", methodName }, { "Elapsed Time", otherData } };
+            RecordCustomEvent("Ape", eventAttributes);
         }
 
         [RequiresAuthorization]

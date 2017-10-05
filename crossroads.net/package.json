@@ -112,7 +112,7 @@
     "assets-webpack-plugin": "^2.3.0",
     "blueimp-load-image": "^1.14.0",
     "bootstrap": "^3.3.7",
-    "crds-shared-header": "0.2.14",
+    "crds-shared-header": "0.4.11",
     "crds-styles": "0.10.0",
     "del": "^2.2.2",
     "es6-shim": "^0.35.1",

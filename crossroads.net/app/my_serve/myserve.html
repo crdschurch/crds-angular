@@ -2,7 +2,17 @@
   <h1 class="page-header">Sign Up To Serve </h1>
 
   <div class="clearfix" data-ng-show="!serve.showNoOpportunitiesMsg() || !serve.showNoOpportunitiesMsg()">
-    <button type="button" ng-if="serve.isLeader" class="btn btn-primary btn-block-mobile  mobile-flush-bottom sm-pull-right" ui-sref="serve-signup.message">Send Message </button>
+    <div class="btn-group sm-pull-right" ng-if="serve.isLeader">
+      <button type="button" class="btn btn-primary btn-block-mobile mobile-flush-bottom sm-pull-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Send Message <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li ng-repeat="team in serve.teams">
+          <a href="#" ui-sref="serve-signup.message({groupId: team.groupId})">{{team.groupName}}</a>
+        </li>
+      </ul>
+    </div>
+
     <div ng-include="'my_serve/myserve_icon_key.html'" class="hidden-xs"></div>
   </div>
 
