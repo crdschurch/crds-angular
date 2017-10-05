@@ -48,10 +48,13 @@ BEGIN
 	INNER JOIN Contacts c ON c.Contact_ID = p.Contact_ID 
 	INNER JOIN Group_Participants gp on gp.Participant_ID = p.Participant_ID
 	INNER JOIN Groups g ON g.Group_ID = gp.Group_ID
+	INNER JOIN Opportunities o ON o.Opportunity_ID = r.Opportunity_ID
 	WHERE g.Group_Type_ID = 9 -- Serving Team Group Type
 	AND r.Response_Date < DATEADD(MONTH, -3, GETDATE())
 	AND g.Group_Id IN (SELECT Item FROM dbo.dp_Split(@GroupID, ','))
-	AND gp.End_Date IS NOT NULL
+	AND gp.End_Date IS NULL
+	AND gp.Group_ID IN (SELECT Item FROM dbo.dp_Split(@GroupID, ','))
+	AND o.Add_to_Group IN (SELECT Item FROM dbo.dp_Split(@GroupID, ','))
 	GROUP BY p.Participant_ID, c.First_Name, c.Last_Name, r.Response_Date, g.Group_Name, c.Email_Address, c.Mobile_Phone
 
 	-- if contact doesn't have a mobile phone, default to their household phone
