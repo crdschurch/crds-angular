@@ -167,43 +167,42 @@ namespace MinistryPlatform.Translation.Repositories
             return doesUserLeadSomeGroup; 
         }
 
-        public int addParticipantToGroup(int participantId,
+        public int AddParticipantToGroup(int participantId,
                                          int groupId,
                                          int groupRoleId,
-                                         Boolean childCareNeeded,
+                                         bool childCareNeeded,
+                                         bool employeeRole,
                                          DateTime startDate,
                                          DateTime? endDate = null,
-                                         Boolean? employeeRole = false,
                                          int? enrolledBy = null)
         {
+            var token = ApiLogin();
             logger.Debug("Adding participant " + participantId + " to group " + groupId);
 
-            var values = new Dictionary<string, object>
+            var groupParticipant = new MpGroupParticipant
             {
-                {"Participant_ID", participantId},
-                {"Group_Role_ID", groupRoleId},
-                {"Start_Date", startDate},
-                {"End_Date", endDate},
-                {"Employee_Role", employeeRole},
-                {"Child_Care_Requested", childCareNeeded},
-                {"Enrolled_By", enrolledBy }
+                ParticipantId = participantId,
+                GroupId = groupId,
+                GroupRoleId = groupRoleId,
+                ChildCareRequested = childCareNeeded,
+                StartDate = startDate,
+                EndDate = endDate,
+                EmployeeRole = employeeRole,
+                EnrolledBy = enrolledBy
             };
 
-            var groupParticipantId =
-                WithApiLogin<int>(
-                    apiToken =>
-                    {
-                        return
-                            (ministryPlatformService.CreateSubRecord(GroupsParticipantsPageId,
-                                                                     groupId,
-                                                                     values,
-                                                                     apiToken,
-                                                                     true));
-                    });
+            var newGroupParticipant = _ministryPlatformRestRepository.UsingAuthenticationToken(token).PostWithReturn<MpGroupParticipant, MpGroupParticipant>(new List<MpGroupParticipant>() { groupParticipant }).FirstOrDefault();
+            if (newGroupParticipant != null)
+            {
+                var groupParticipantId = newGroupParticipant.GroupParticipantId;
+           
 
-            logger.Debug("Added participant " + participantId + " to group " + groupId + ": record id: " +
-                         groupParticipantId);
-            return (groupParticipantId);
+                logger.Debug("Added participant " + participantId + " to group " + groupId + ": record id: " +
+                             groupParticipantId);
+                return (groupParticipantId);
+            }
+
+            throw new ApplicationException("AddParticipantToGroup: Failed to Add Participant");
         }
 
         public void endDateGroupParticipant(int groupParticipantId, int groupId, DateTime? endDate = null)

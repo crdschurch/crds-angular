@@ -122,7 +122,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"Enrolled_By", null }
             };
 
-            int groupParticipantId = _fixture.addParticipantToGroup(123, 456, 789, true, startDate, endDate, true);
+            int groupParticipantId = _fixture.AddParticipantToGroup(123, 456, 789, true, false, startDate, endDate);
 
             _ministryPlatformService.Verify(mocked => mocked.CreateSubRecord(
                 _groupsParticipantsPageId,

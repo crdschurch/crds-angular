@@ -167,7 +167,7 @@ namespace crds_angular.Services
             var pinDetails = Mapper.Map<PinDto>(_finderRepository.GetPinDetails(participantId));
 
             //make sure we have a lat/long
-            if (pinDetails != null && pinDetails.Address.Latitude != null && pinDetails.Address.Longitude != null)
+            if (pinDetails?.Address.Latitude != null && pinDetails.Address.Longitude != null)
             {
                 _addressService.SetGeoCoordinates(pinDetails.Address);
                 pinDetails.Address.AddressLine1 = "";
@@ -259,10 +259,10 @@ namespace crds_angular.Services
             var groups = _groupRepository.GetGroupsByGroupType(_anywhereGroupType);
 
             //get groups that this user is the primary contact for at this address
-            var matchingGroupsCount = groups.Where(x => x.PrimaryContact == contactId.ToString())
+            var matchingGroupsCount = groups
+                .Where(x => x.PrimaryContact == contactId.ToString())
                 .Where(x => x.Address.Address_Line_1 == address.AddressLine1)
-                .Where(x => x.Address.City == address.City)
-                .Where(x => x.Address.State == address.State).Count();
+                .Where(x => x.Address.City == address.City).Count(x => x.Address.State == address.State);
 
             if (matchingGroupsCount > 0)
             {
@@ -335,9 +335,9 @@ namespace crds_angular.Services
 
         public void GatheringJoinRequest(string token, int gatheringId)
         {
-            GroupDTO group = _groupService.GetGroupDetails(gatheringId);
+            var group = _groupService.GetGroupDetails(gatheringId);
 
-            int commType = group.GroupTypeId == _smallGroupType ? _connectCommunicationTypeRequestToJoinSmallGroup : _connectCommunicationTypeRequestToJoinGathering;
+            var commType = group.GroupTypeId == _smallGroupType ? _connectCommunicationTypeRequestToJoinSmallGroup : _connectCommunicationTypeRequestToJoinGathering;
 
             var connection = new ConnectCommunicationDto
             {
