@@ -420,7 +420,7 @@ namespace crds_angular.Services
 
             if (finderType.Equals(_finderConnect))
             {
-                queryString = "(or pintype:3 pintype:2 pintype:1)";
+                queryString = (String.IsNullOrEmpty(filterSearchString)) ? "(or pintype:3 pintype:2 pintype:1)" : filterSearchString;
             }
             else if (finderType.Equals(_finderGroupTool))
             {
