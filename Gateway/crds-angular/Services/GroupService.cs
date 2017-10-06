@@ -177,12 +177,12 @@ namespace crds_angular.Services
                 var roleId = participant.groupRoleId ?? _groupRoleDefaultId;
 
                 var participantId = participant.particpantId.Value;
-                var groupParticipantId = _mpGroupRepository.addParticipantToGroup(participantId,
+                var groupParticipantId = _mpGroupRepository.AddParticipantToGroup(participantId,
                                                                            Convert.ToInt32(groupId),
                                                                            roleId,
-                                                                           participant.childCareNeeded,
+                                                                           participant.childCareNeeded, false,
                                                                            DateTime.Now,
-                                                                           null, false, participant.EnrolledBy);
+                                                                           null, participant.EnrolledBy);
 
                 var configuration = MpObjectAttributeConfigurationFactory.GroupParticipant();
                 _objectAttributeService.SaveObjectAttributes(groupParticipantId, participant.AttributeTypes, participant.SingleAttributes, configuration);
@@ -232,10 +232,11 @@ namespace crds_angular.Services
 
                     if (groupParticipantId < 0) 
                     {
-                        groupParticipantId = _mpGroupRepository.addParticipantToGroup(participantId,
+                        groupParticipantId = _mpGroupRepository.AddParticipantToGroup(participantId,
                                                                                       Convert.ToInt32(groupId),
                                                                                       roleId,
                                                                                       participant.childCareNeeded,
+                                                                                      false,
                                                                                       DateTime.Now);
 
                         var configuration = MpObjectAttributeConfigurationFactory.GroupParticipant();
@@ -313,7 +314,7 @@ namespace crds_angular.Services
 
             try
             {
-                return _mpGroupRepository.addParticipantToGroup(participant.ParticipantId, groupId, roleId, false, DateTime.Now);
+                return _mpGroupRepository.AddParticipantToGroup(participant.ParticipantId, groupId, roleId, false, false, DateTime.Now);
             }
             catch (Exception e)
             {

@@ -502,10 +502,11 @@ namespace crds_angular.Services
                     var groupParticipantId = _groupParticipantService.Get(eventDto.GroupId, participant.ParticipantId);
                     if (groupParticipantId == 0)
                     {
-                        groupParticipantId = _groupService.addParticipantToGroup(participant.ParticipantId,
+                        groupParticipantId = _groupService.AddParticipantToGroup(participant.ParticipantId,
                                                                                  eventDto.GroupId,
                                                                                  defaultGroupRoleId,
                                                                                  participant.ChildcareRequested,
+                                                                                 false,
                                                                                  today);
                     }
 
