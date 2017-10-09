@@ -188,3 +188,11 @@
 .serve-team-confirm-role {
   line-height: 1.2;
 }
+
+// xs only
+@media (max-width: $screen-xs-max) {
+  .dropdown-menu.teams {
+    left: inherit;
+    right: inherit;
+  }
+}
