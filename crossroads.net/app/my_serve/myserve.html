@@ -6,7 +6,8 @@
       <button type="button" class="btn btn-primary btn-block-mobile mobile-flush-bottom sm-pull-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Send Message <span class="caret"></span>
       </button>
-      <ul class="dropdown-menu dropdown-menu-right">
+      <!-- align right on desktop, left on mobile -->
+      <ul class="dropdown-menu dropdown-menu-right teams">
         <li ng-repeat="team in serve.teams">
           <a href="#" ui-sref="serve-signup.message({groupId: team.groupId})">{{team.groupName}}</a>
         </li>
