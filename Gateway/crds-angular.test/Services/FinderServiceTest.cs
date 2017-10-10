@@ -1104,5 +1104,128 @@ namespace crds_angular.test.Services
             _communicationRepository.Verify(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false),Times.Exactly(4));
             
         }
+
+        [Test]
+        public void ShouldAcceptInquiry()
+        {
+            const string token = "token";
+            const int groupId = 123;
+            const int participantId = 7777;
+            const int contactId = 9999;
+            const int roleId = 0;
+
+            var inquiry = new Inquiry
+            {
+                ContactId = contactId,
+                GroupId = groupId,
+                EmailAddress = "bob@b.com",
+                FirstName = "bob",
+                LastName = "smith",
+                RequestDate = new DateTime(2017, 10, 11),
+                InquiryId = 990722
+            };
+
+            var groupAddress = new AddressDTO
+            {
+                AddressLine1 = "123 Main Street",
+                City = "Dayton",
+                State = "OH",
+                PostalCode = "34551"
+            };
+
+            var group = new GroupDTO();
+            group.GroupName = "Fake Group";
+            group.GroupId = groupId;
+            group.ContactId = contactId;
+            group.MeetingDayId = 1;
+            group.MeetingFrequencyID = 1;
+            group.MeetingTime = "0001-01-01T05:25:00.000Z";
+            group.Address = groupAddress;
+
+            const int primaryContactParticipantId = 98765;
+
+            var primaryContactContactInfo = new MpMyContact
+            {
+                Contact_ID = 4444,
+                First_Name = "Great",
+                Last_Name = "Leader",
+                Email_Address = "great@leader.com",
+                Mobile_Phone = "123-456-7890"
+            };
+
+            var newMemberContact = new MpMyContact
+            {
+                Contact_ID = contactId,
+                First_Name = "bob",
+                Last_Name = "smith",
+                Email_Address = "bob@bob.com",
+                Mobile_Phone = "555-555-5555"
+            };
+
+            var newMemberParticipant = new MpParticipant
+            {
+                ContactId = contactId,
+                ParticipantId = participantId
+            };
+
+            var emailTemplate = new MpMessageTemplate
+            {
+                FromContactId = 234,
+                FromEmailAddress = "ae@g.com",
+                ReplyToContactId = 456,
+                ReplyToEmailAddress = "ss@g.com"
+            };
+
+            _mpContactRepository.Setup(x => x.GetContactIdByParticipantId(participantId)).Returns(contactId);
+            _mpGroupToolService.Setup(x => x.GetGroupInquiryForContactId(groupId, contactId)).Returns(inquiry);
+            _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(new List<MpGroupParticipant>());
+            _mpGroupToolService.Setup(x => x.ApproveDenyInquiryFromMyGroup(token, groupId, true, inquiry, It.IsAny<string>(), roleId));
+            _groupService.Setup(x => x.GetGroupDetails(groupId)).Returns(group);
+            _lookupService.Setup(x => x.GetMeetingDayFromId(group.MeetingDayId)).Returns("Friday");
+            _groupService.Setup(x => x.GetPrimaryContactParticipantId(groupId)).Returns(primaryContactParticipantId);
+            _mpContactRepository.Setup(x => x.GetContactByParticipantId(primaryContactParticipantId)).Returns(primaryContactContactInfo);
+            _mpContactRepository.Setup(x => x.GetContactById(contactId)).Returns(newMemberContact);
+            _mpParticipantRepository.Setup(x => x.GetParticipant(contactId)).Returns(newMemberParticipant);
+            _mpConfigurationWrapper.Setup(x => x.GetConfigValue("BaseUrl")).Returns("www.somesite.com");
+            _mpConfigurationWrapper.Setup(x => x.GetConfigValue("GroupsTryAGroupPathFragment")).Returns("/g/2/");
+            _communicationRepository.Setup(x => x.GetTemplate(It.IsAny<int>())).Returns(emailTemplate);
+            _communicationRepository.Setup(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
+
+            _fixture.TryAGroupAcceptDeny(token, groupId, participantId, true);
+        }
+
+        [Test]
+        [ExpectedException(typeof(Exception), ExpectedMessage = "User is already a group member")]
+        public void TryAGroupAcceptDenyShouldThrowWhenUserInGroup()
+        {
+            const string token = "token";
+            const int groupId = 123;
+            const int participantId = 7777;
+            const int contactId = 9999;
+
+            var inquiry = new Inquiry
+            {
+                ContactId = contactId,
+                GroupId = groupId,
+                EmailAddress = "bob@b.com",
+                FirstName = "bob",
+                LastName = "smith",
+                RequestDate = new DateTime(2017, 10, 11),
+                InquiryId = 990722
+            };
+
+            var groupParticipant = new MpGroupParticipant
+            {
+                ContactId = contactId,
+                ParticipantId = participantId
+            };
+            var groupParticipantList = new List<MpGroupParticipant> {groupParticipant};
+
+            _mpContactRepository.Setup(x => x.GetContactIdByParticipantId(participantId)).Returns(contactId);
+            _mpGroupToolService.Setup(x => x.GetGroupInquiryForContactId(groupId, contactId)).Returns(inquiry);
+            _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(groupParticipantList);
+            
+            _fixture.TryAGroupAcceptDeny(token, groupId, participantId, true);
+        }
     }
 }

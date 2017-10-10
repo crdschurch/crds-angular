@@ -11,7 +11,7 @@ namespace MinistryPlatform.Translation.Models
         public int InquiryId { get; set; }
         [JsonProperty(PropertyName = "Group_ID")]
         public int GroupId { get; set; }
-        [JsonProperty(PropertyName = "Contacty_ID")]
+        [JsonProperty(PropertyName = "Contact_ID")]
         public int ContactId { get; set; }
         [JsonProperty(PropertyName = "Inquiry_Date")]
         public DateTime RequestDate { get; set; }
