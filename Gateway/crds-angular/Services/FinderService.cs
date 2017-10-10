@@ -564,9 +564,9 @@ namespace crds_angular.Services
             }
         }
 
-        private Boolean isMyPin(PinDto pin, int contactId)
+        private bool isMyPin(PinDto pin, int contactId)
         {
-            Boolean isMyPin = pin.Contact_ID == contactId && contactId != 0; 
+            var isMyPin = pin.Contact_ID == contactId && contactId != 0; 
             return isMyPin; 
         }
 
@@ -1047,7 +1047,7 @@ namespace crds_angular.Services
             }
         }
 
-        private Dictionary<string, object> GetEmailMergeData(string token,int groupId)
+        private Dictionary<string, object> GetEmailMergeData(int newUserContactId ,int groupId)
         {
             // group
             var group = _groupService.GetGroupDetails(groupId);
@@ -1061,8 +1061,9 @@ namespace crds_angular.Services
             var leaderContact = _contactRepository.GetContactByParticipantId(GetLeaderParticipantIdFromGroup(groupId));
 
             //participant
-            var participant = _participantRepository.GetParticipantRecord(token);
-            var newMember = _contactRepository.GetContactById(participant.ContactId);
+            
+            var newMember = _contactRepository.GetContactById(newUserContactId);
+            var participant = _participantRepository.GetParticipant(newUserContactId);
 
             //URL
             var baseUrl = _configurationWrapper.GetConfigValue("BaseUrl");
@@ -1100,7 +1101,8 @@ namespace crds_angular.Services
         {
             try
             {
-                var mergeData = GetEmailMergeData(token, groupid);
+                var newMemberId = _contactRepository.GetContactId(token);
+                var mergeData = GetEmailMergeData(newMemberId, groupid);
 
                 var emailTemplateId = _configurationWrapper.GetConfigIntValue("GroupsTryAGroupLeaderNotificationTemplateId");
 
@@ -1148,11 +1150,11 @@ namespace crds_angular.Services
             }
         }
 
-        private void SendTryAGroupAcceptDenyEmail(string token, int groupid, int toContactId,bool accept)
+        private void SendTryAGroupAcceptDenyEmail(string token, int groupid, int toContactId, bool accept)
         {
             try
             {
-                var mergeData = GetEmailMergeData(token, groupid);
+                var mergeData = GetEmailMergeData(toContactId, groupid);
                
                 var emailTemplateId = _configurationWrapper.GetConfigIntValue(accept ? "GroupsTryAGroupParticipantAcceptedNotificationTemplateId" : "GroupsTryAGroupParticipantDeclinedNotificationTemplateId");
                 
