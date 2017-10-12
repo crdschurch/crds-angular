@@ -47,13 +47,15 @@ namespace Crossroads.ScheduledDataUpdate
         private readonly IGroupToolService _groupToolService;
         private readonly IAwsCloudsearchService _awsService;
         private readonly ICorkboardService _corkboardService;
+        private readonly IRoomService _roomService;
 
-        public Program(ITaskService taskService, IGroupToolService groupToolService, IAwsCloudsearchService awsService, ICorkboardService corkboardService)
+        public Program(ITaskService taskService, IGroupToolService groupToolService, IAwsCloudsearchService awsService, ICorkboardService corkboardService, IRoomService roomService)
         {
             _taskService = taskService;
             _groupToolService = groupToolService;
             _awsService = awsService;
             _corkboardService = corkboardService;
+            _roomService = roomService;
         }
 
         public int Run(string[] args)
@@ -89,6 +91,24 @@ namespace Crossroads.ScheduledDataUpdate
                 catch (Exception ex)
                 {
                     Log.Error("Auto Complete Tasks failed.", ex);
+                    exitCode = 9999;
+                }
+            }
+
+            if (options.RoomReservationRejectionNotification)
+            {
+                modeSelected = true;
+                try
+                {
+                    Log.Info("Room Reservation Rejection Notification");
+
+                    _taskService.RoomReservationRejectionNotification();
+
+                    Log.Info("Room Reservation Rejection Notification successfully");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Room Reservation Rejection Notification failed.", ex);
                     exitCode = 9999;
                 }
             }

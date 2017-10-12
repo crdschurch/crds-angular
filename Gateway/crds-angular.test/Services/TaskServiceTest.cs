@@ -23,6 +23,8 @@ namespace crds_angular.test.Services
         private Mock<IConfigurationWrapper> _configurationWrapper;
         private Mock<IUserImpersonationService> _impersonationService;
         private Mock<IUserRepository> _userService;
+        private Mock<IEmailCommunication> _emailCommunicationService;
+
 
         private TaskService _fixture;
 
@@ -34,12 +36,14 @@ namespace crds_angular.test.Services
             _configurationWrapper = new Mock<IConfigurationWrapper>(MockBehavior.Strict);
             _impersonationService = new Mock<IUserImpersonationService>(MockBehavior.Strict);
             _userService = new Mock<IUserRepository>();
+            _emailCommunicationService = new Mock<IEmailCommunication>();
 
             _fixture = new TaskService(_taskRepository.Object,
                                        _apiUserService.Object,
                                        _configurationWrapper.Object,
                                        _impersonationService.Object,
-                                       _userService.Object);
+                                       _userService.Object,
+                                       _emailCommunicationService.Object);
         }
 
         [Test]

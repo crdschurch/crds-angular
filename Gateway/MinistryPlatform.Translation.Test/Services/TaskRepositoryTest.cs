@@ -21,6 +21,7 @@ namespace MinistryPlatform.Translation.Test
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRestRepository;
+        private Mock<IApiUserRepository> _apiUserRepository;
         private readonly int _roomReservationPageID;
 
         [SetUp]
@@ -30,6 +31,7 @@ namespace MinistryPlatform.Translation.Test
             _authService = new Mock<IAuthenticationRepository>(MockBehavior.Strict);
             _configWrapper = new Mock<IConfigurationWrapper>(MockBehavior.Strict);
             _ministryPlatformRestRepository = new Mock<IMinistryPlatformRestRepository>(MockBehavior.Strict);
+            _apiUserRepository = new Mock<IApiUserRepository>();
 
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("TasksNeedingAutoStarted")).Returns(2212);
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("TasksPageId")).Returns(400);
@@ -43,7 +45,7 @@ namespace MinistryPlatform.Translation.Test
                 ExpiresIn = 123
             });
 
-            _fixture = new TaskRepository(_authService.Object, _configWrapper.Object, _ministryPlatformService.Object, _ministryPlatformRestRepository.Object);
+            _fixture = new TaskRepository(_authService.Object, _configWrapper.Object, _ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _apiUserRepository.Object);
         }
 
         [Test]

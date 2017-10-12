@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.UI.WebControls;
 using Crossroads.Utilities.Interfaces;
 using log4net;
 using Crossroads.Web.Common;
@@ -57,6 +58,12 @@ namespace MinistryPlatform.Translation.Repositories
                 Rejected = record.ToNullableBool("Rejected") ?? false
             }).ToList();
         }
+
+        public List<MpRoomReservationDto> GetRejectedRoomReservations()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public int CreateRoomReservation(MpRoomReservationDto roomReservation)
         {
