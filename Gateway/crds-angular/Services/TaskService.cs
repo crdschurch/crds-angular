@@ -88,6 +88,7 @@ namespace crds_angular.Services
         {
             try
             {
+                var apiUserToken = _apiUserService.GetToken();
                 var rejectedReservations = _taskRepository.GetRejectedRoomReservations();
 
                 foreach (var rejection in rejectedReservations)
@@ -106,7 +107,7 @@ namespace crds_angular.Services
                         ToContactId = rejection.Requestor_Contact_ID,
                         MergeData = mergeData
                     };
-                    _emailCommunicationService.SendEmail(email);
+                    _emailCommunicationService.SendEmail(email, apiUserToken);
                 }
 
             }

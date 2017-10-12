@@ -86,7 +86,8 @@ namespace MinistryPlatform.Translation.Repositories
         {
             try
             {
-                var results = _ministryPlatformRestRepository.UsingAuthenticationToken(_apiUserService.GetToken()).GetFromStoredProc<MpRoomReservationRejectionDto>(GetRejectedRoomReservationsStoredProc);
+                var apiToken = ApiLogin();
+                var results = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).GetFromStoredProc<MpRoomReservationRejectionDto>(GetRejectedRoomReservationsStoredProc);
                 return results?.FirstOrDefault();
             }
             catch (Exception ex)

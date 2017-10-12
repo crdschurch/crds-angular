@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Serve;
 using crds_angular.Services;
 using crds_angular.Services.Interfaces;
@@ -9,6 +10,7 @@ using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
+using MinistryPlatform.Translation.Models.EventReservations;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
@@ -83,7 +85,6 @@ namespace crds_angular.test.Services
             bool rejected = false;
             string comments = "Auto Completed";
 
-            _configurationWrapper.Setup(m => m.GetConfigIntValue("RoomReservationRejectedEmailTemplateId")).Returns(It.IsAny<int>());
             _apiUserService.Setup(m => m.GetToken()).Returns("1a2b3c4d5e6f7g8h");
             _userService.Setup(m => m.GetUserByRecordId(It.IsAny<int>())).Returns(user);
             _impersonationService.Setup(m => m.WithImpersonation(token, user.UserId, It.IsAny<Func<bool>>())).Returns((string lambdaToken, string userId, Func<bool> predicate) =>
@@ -99,6 +100,51 @@ namespace crds_angular.test.Services
 
             // Assert
             _taskRepository.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldCallRoomReservationRejectionNotification()
+        {
+            _configurationWrapper.Setup(m => m.GetConfigIntValue("RoomReservationRejectedEmailTemplateId")).Returns(It.IsAny<int>());
+            _apiUserService.Setup(m => m.GetToken()).Returns("1a2b3c4d5e6f7g8h");
+
+            var testReturnValues = new List<MpRoomReservationRejectionDto>()
+            {
+                new MpRoomReservationRejectionDto()
+                {
+                    Requestor_Contact_ID = 1,
+                    Room_Name = "My Room",
+                    Event_Start_Date = "2017-10-11 15:30:00:000",
+                    Event_Title = "Moose Tossing",
+                    Task_Rejection_Reason = "Can't toss a moose. Not in my house."
+                }
+            };
+            string token = "1a2b3c4d5e6f7g8h";
+            var mergeData = new Dictionary<string, object>
+            {
+                {"Room_Name", "My Room"},
+                {"Event_Start_Date", "2017-10-11 15:30:00:000"},
+                {"Event_Title", "Moose Tossing"},
+                {"Task_Rejection_Reason","Can't toss a moose. Not in my house."},
+            };
+
+            var email = new EmailCommunicationDTO
+            {
+                TemplateId = 1,
+                ToContactId = 2,
+                MergeData = mergeData
+            };
+
+            _taskRepository.Setup(m => m.GetRejectedRoomReservations()).Returns(testReturnValues);
+
+            _emailCommunicationService.Setup(m => m.SendEmail(email, token));
+
+            _fixture.RoomReservationRejectionNotification();
+
+            _taskRepository.VerifyAll();
+            _taskRepository.Verify(m=>m.GetRejectedRoomReservations(), Times.Once());
+
+
         }
     }
 }
