@@ -33,7 +33,7 @@ namespace crds_angular.test.Services
         {
             _taskRepository = new Mock<ITaskRepository>(MockBehavior.Strict);
             _apiUserService = new Mock<IApiUserRepository>(MockBehavior.Strict);
-            _configurationWrapper = new Mock<IConfigurationWrapper>(MockBehavior.Strict);
+            _configurationWrapper = new Mock<IConfigurationWrapper>();
             _impersonationService = new Mock<IUserImpersonationService>(MockBehavior.Strict);
             _userService = new Mock<IUserRepository>();
             _emailCommunicationService = new Mock<IEmailCommunication>();
@@ -83,6 +83,7 @@ namespace crds_angular.test.Services
             bool rejected = false;
             string comments = "Auto Completed";
 
+            _configurationWrapper.Setup(m => m.GetConfigIntValue("RoomReservationRejectedEmailTemplateId")).Returns(It.IsAny<int>());
             _apiUserService.Setup(m => m.GetToken()).Returns("1a2b3c4d5e6f7g8h");
             _userService.Setup(m => m.GetUserByRecordId(It.IsAny<int>())).Returns(user);
             _impersonationService.Setup(m => m.WithImpersonation(token, user.UserId, It.IsAny<Func<bool>>())).Returns((string lambdaToken, string userId, Func<bool> predicate) =>
