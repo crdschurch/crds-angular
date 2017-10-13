@@ -51,6 +51,7 @@ BEGIN
 	SELECT * from #Temp
 
 END
+GO
 
 -- setup permissions for API User in MP
 
