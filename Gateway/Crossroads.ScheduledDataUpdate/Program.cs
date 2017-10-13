@@ -47,15 +47,13 @@ namespace Crossroads.ScheduledDataUpdate
         private readonly IGroupToolService _groupToolService;
         private readonly IAwsCloudsearchService _awsService;
         private readonly ICorkboardService _corkboardService;
-        private readonly IRoomService _roomService;
 
-        public Program(ITaskService taskService, IGroupToolService groupToolService, IAwsCloudsearchService awsService, ICorkboardService corkboardService, IRoomService roomService)
+        public Program(ITaskService taskService, IGroupToolService groupToolService, IAwsCloudsearchService awsService, ICorkboardService corkboardService)
         {
             _taskService = taskService;
             _groupToolService = groupToolService;
             _awsService = awsService;
             _corkboardService = corkboardService;
-            _roomService = roomService;
         }
 
         public int Run(string[] args)

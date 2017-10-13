@@ -38,6 +38,7 @@ BEGIN
     WHERE
         t.Completed = 0 
         AND t._Rejected = 1 
+		AND e.Cancelled = 0
         AND e.Event_End_Date > GETDATE();
 
 	-- Mark the tasks as completed
