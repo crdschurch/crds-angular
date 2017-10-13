@@ -51,3 +51,38 @@ BEGIN
 	SELECT * from #Temp
 
 END
+
+-- setup permissions for API User in MP
+
+DECLARE @procName nvarchar(100) = N'cr_GetRejectedRoomReservations'
+DECLARE @procDescription nvarchar(100) = N'Retrieves the list of room reservations that have been rejected for events that have not been cancelled.'
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[dp_API_Procedures] WHERE [Procedure_Name] = @procName)
+BEGIN
+        INSERT INTO [dbo].[dp_API_Procedures] (
+                 Procedure_Name
+                ,Description
+        ) VALUES (
+                 @procName
+                ,@procDescription
+        )
+END
+
+DECLARE @API_ROLE_ID int = 62;
+DECLARE @API_ID int;
+
+SELECT @API_ID = API_Procedure_ID FROM [dbo].[dp_API_Procedures] WHERE [Procedure_Name] = @procName;
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[dp_Role_API_Procedures] WHERE [Role_ID] = @API_ROLE_ID AND [API_Procedure_ID] = @API_ID)
+BEGIN
+        INSERT INTO [dbo].[dp_Role_API_Procedures] (
+                 [Role_ID]
+                ,[API_Procedure_ID]
+                ,[Domain_ID]
+        ) VALUES (
+                 @API_ROLE_ID
+                ,@API_ID
+                ,1
+        )
+END
+GO
