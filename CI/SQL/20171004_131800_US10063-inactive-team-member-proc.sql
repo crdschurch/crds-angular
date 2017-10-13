@@ -61,7 +61,7 @@ BEGIN
 	AND e.Event_Start_Date < GETDATE() -- look only at past signups
 	GROUP BY p.Participant_ID, c.First_Name, c.Last_Name, e.Event_Start_Date, g.Group_Name, g.Group_ID, c.Email_Address, c.Mobile_Phone
 
-	-- Get people who have signed up for the group more than 90 days ago, but have never served
+	-- Get people who have signed up for the group more than 90 days ago, but have never served for that group
 	INSERT INTO @ServeData
 	SELECT DISTINCT
 	NULL AS esd,
