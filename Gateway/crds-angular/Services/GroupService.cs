@@ -913,6 +913,7 @@ namespace crds_angular.Services
             {
                 var message = $"Could not update group participant {participantId}";
                 _logger.Error(message, e);
+                throw e;
             }
         }
 
