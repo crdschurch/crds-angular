@@ -63,7 +63,9 @@ namespace MinistryPlatform.Translation.Test.Services
                     {"Label", "Label 1"},
                     {"Room_Name", "Name 1"},
                     {"Allow_Checkin", false},
-                    {"Volunteers", 1}
+                    {"Volunteers", 1},
+                    {"_Approved", 1 },
+                    {"Rejected", 0 }
                 },
                 new Dictionary<string, object>
                 {
@@ -77,7 +79,9 @@ namespace MinistryPlatform.Translation.Test.Services
                     {"Label", "Label 2"},
                     {"Room_Name", "Name 2"},
                     {"Allow_Checkin", true},
-                    {"Volunteers", 10}
+                    {"Volunteers", 10},
+                    {"_Approved", 1 },
+                    {"Rejected", 0 }
                 },
                 new Dictionary<string, object>
                 {
@@ -91,7 +95,9 @@ namespace MinistryPlatform.Translation.Test.Services
                     {"Label", "Label 3"},
                     {"Room_Name", "Name 3"},
                     {"Allow_Checkin", null},
-                    {"Volunteers", 11}
+                    {"Volunteers", 11},
+                    {"_Approved", 1 },
+                    {"Rejected", 0 }
                 }
             };
 
@@ -253,7 +259,9 @@ namespace MinistryPlatform.Translation.Test.Services
                     {"Label", Gen.Sample(75, 1, Gen.OneOf(Arb.Generate<string>())).HeadOrDefault},
                     {"Room_Name", Gen.Sample(75, 1, Gen.OneOf(Arb.Generate<string>())).HeadOrDefault},
                     {"Allow_Checkin", Gen.Sample(1, 1, Gen.OneOf(Arb.Generate<bool>())).HeadOrDefault},
-                    {"Volunteers", Gen.Sample(1, 1, Gen.OneOf(Arb.Generate<int>())).HeadOrDefault}
+                    {"Volunteers", Gen.Sample(1, 1, Gen.OneOf(Arb.Generate<int>())).HeadOrDefault},
+                    {"_Approved", Gen.Sample(1, 1, Gen.OneOf(Arb.Generate<bool>())).HeadOrDefault},
+                    {"Rejected", Gen.Sample(1, 1, Gen.OneOf(Arb.Generate<bool>())).HeadOrDefault},
                 });
             }
 

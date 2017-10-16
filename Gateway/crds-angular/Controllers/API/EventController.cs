@@ -11,7 +11,6 @@ using crds_angular.Services.Interfaces;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using IEventService = crds_angular.Services.Interfaces.IEventService;
 using Crossroads.ApiVersioning;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 
@@ -19,7 +18,7 @@ namespace crds_angular.Controllers.API
 {
     public class EventController : MPAuth
     {
-        private IMinistryPlatformService _ministryPlatformService;
+        private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IApiUserRepository _apiUserService;
         private readonly IEventService _eventService;
 
@@ -144,6 +143,8 @@ namespace crds_angular.Controllers.API
 
             });
         }
+
+       
 
         private List<Event> ConvertToEvents(List<Dictionary<string, object>> todaysEvents)
         {

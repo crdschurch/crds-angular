@@ -18,15 +18,12 @@
 
     crds_utilities.preventRouteTypeUrlEncoding($urlMatcherFactory, 'volunteerRouteType', /\/volunteer-sign-up\/.*$/);
 
-    // Commented out for US2924, will be added back after Corkboard go-live
-    //crds_utilities.preventRouteTypeUrlEncoding($urlMatcherFactory, 'corkboardRouteType', /\/corkboard\/?.*$/);
-
     $stateProvider
         .state('root', {
           abstract: true,
           template: '<ui-view/>',
           resolve: {
-            Meta: ['SystemPage', '$state', function(SystemPage, $state) {
+            Meta: ['SystemPage', '$state', '$rootScope', function(SystemPage, $state, $rootScope) {
               return SystemPage.get({
                 state: $state.next.name
               }).$promise.then(
@@ -36,7 +33,7 @@
                         $state.next.data = {};
                       }
 
-                      $state.params.renderLegacyStyles = (typeof systemPage.systemPages[0].legacyStyles !== 'undefined'
+                      $rootScope.doRenderLegacyStyles = (typeof systemPage.systemPages[0].legacyStyles !== 'undefined'
                         ? Boolean(parseInt(systemPage.systemPages[0].legacyStyles))
                         : true); // revert to value set on route
 
@@ -284,11 +281,6 @@
             }
           }
         })
-        .state('atriumEvents', {
-          parent: 'noHeaderOrFooter',
-          url: '/atriumevents?site',
-          templateUrl: 'events/atriumevents.html',
-        })
         .state('giving_history', {
           parent: 'noSideBar',
           url: '/givinghistory',
@@ -373,39 +365,6 @@
           controller: 'ImpersonateController as impersonate',
           data: {
             isProtected: true
-          }
-        })
-        .state('explore', {
-          parent: 'noHeaderOrFooter',
-          url: '/explore',
-          templateUrl: 'explore/explore.html',
-          data: {
-            meta: {
-              title: 'Explore',
-              description: ''
-            }
-          }
-        })
-        .state('ng2test', {
-          parent: 'noHeaderOrFooter',
-          url: '/ng2test',
-          template: '<ng2-test></ng2-test>',
-          data: {
-            meta: {
-              title: 'Ng2Test',
-              description: ''
-            }
-          }
-        })
-        .state('ng2testcmsdata', {
-          parent: 'noHeaderOrFooter',
-          url: '/ng2testcmsdata',
-          template: '<ng2-test-cms-data></ng2-test-cms-data>',
-          data: {
-            meta: {
-              title: 'Ng2TestCMSData',
-              description: ''
-            }
           }
         })
         .state('superbowl', {
@@ -530,18 +489,6 @@
             }
           }
         })
-        .state('crdsStylesTest', {
-          parent: 'noSideBar',
-          url: '/stylesTest',
-          template: '/stylesTest',
-          data: {
-            renderLegacyStyles: false,
-            meta: {
-              title: 'Styles Test',
-              description: ''
-            }
-          }
-        })
         .state('thedaily', {
           parent: 'noSideBar',
           url: '/thedaily',
@@ -560,25 +507,6 @@
             }
           }
         });
-
-    // Commented out for US2924, will be added back after Corkboard go-live
-    //
-    //.state('corkboard', {
-    //  url: '{link:corkboardRouteType}',
-    //  resolve: {
-    //    RedirectToSubSite: function($window, $location) {
-    //      // Force browser to do a full reload to load corkboard's index.html
-    //      $window.location.href = $location.path();
-    //    }
-    //  },
-    //  data: {
-    //    preventRouteAuthentication: true,
-    //    meta: {
-    //      title: 'Corkboard',
-    //      description: ''
-    //    }
-    //  }
-    //})
 
     //Leave the comment below.  Once we have a true 404 page hosted in the same domain, this is how we
     //will handle the routing.

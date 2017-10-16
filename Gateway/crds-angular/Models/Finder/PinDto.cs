@@ -36,7 +36,7 @@ namespace crds_angular.Models.Finder
         public int? Host_Status_ID { get; set; }
 
         [JsonProperty("gathering")]
-        public GroupDTO Gathering { get; set; }
+        public FinderGroupDto Gathering { get; set; }
 
         [JsonProperty("householdId")]
         public int? Household_ID { get; set; }

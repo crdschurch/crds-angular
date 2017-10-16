@@ -10,8 +10,7 @@
         <linked-content target="{{ contentCard.content.target }}"
                         href="{{ contentCard.content.url }}"
                         ng-if="contentCard.content.title"
-                        title="{{ contentCard.content.title }}"
-                        ng-bind-html="contentCard.content.title | truncate: 38"></linked-content>
+                        title="{{ contentCard.content.title }}">{{contentCard.content.title | truncate: 38}}</linked-content>
       </figcaption>
     </figure>
 

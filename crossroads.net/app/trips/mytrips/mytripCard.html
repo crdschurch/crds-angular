@@ -1,28 +1,64 @@
 <!-- Card Item -->
 <div class="card-item" data-category="view">
-
   <!-- Card Header -->
   <div class="card-header card-background-dark clearfix">
     <h3 class="card-row flush-bottom">{{trip.tripName}}</h3>
     <span class="text-muted">{{ cardName(trip.eventParticipantFirstName, trip.eventParticipantLastName) }}</span> <span class="hidden-xs">&middot;</span> <br class="visible-xs" /> <span class="text-muted trip-date">{{trip.tripStartDate}} - {{trip.tripEnd}}</span>
   </div><!-- /card-heading -->
 
+  <!-- Documents -->
+  <div class="col-xs-12 documents" ng-show="showWaiver(trip.contactId) || showIPromise(trip.contactId)">
+    <h5 class="flush-bottom">Sign These Documents</h5>
+
+    <!-- I Promise -->
+    <div class="go-trip-document" ng-show="showIPromise(trip.contactId)">
+      <button class="btn btn-default go-trip-document-btn" ng-disabled="trip.iPromiseSigned" ng-click="signIPromise(trip.eventParticipantId)">
+        <span ng-hide="trip.iPromiseSigned">
+          <svg class="icon icon-2 text-warning" viewBox="0 0 256 256">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/svgs/icons.svg#exclamation-circle"></use>
+          </svg>
+        </span>
+        <span ng-show="trip.iPromiseSigned">
+          <svg class="icon icon-2 text-success" viewBox="0 0 256 256">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/svgs/icons.svg#check-circle"></use>
+          </svg>
+        </span>
+        I Promise
+      </button>
+    </div><!-- /i-promise -->
+
+    <!-- Waivers -->
+    <div ng-repeat="waiver in waivers" class="go-trip-document">
+      <button class="btn btn-default go-trip-document-btn" ng-show="showWaiver(trip.contactId)" ng-click="signWaiver(waiver.waiverId, trip.eventParticipantId, trip.tripName)" ng-disabled="waiver.accepted">
+
+        <span ng-hide="waiver.accepted">
+          <svg class="icon icon-2 text-warning" viewBox="0 0 256 256">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/svgs/icons.svg#exclamation-circle"></use>
+          </svg>
+        </span>
+
+        <span ng-show="waiver.accepted">
+          <svg class="icon icon-2 text-success" viewBox="0 0 256 256">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/svgs/icons.svg#check-circle"></use>
+          </svg>
+        </span>
+
+        {{waiver.waiverName}}
+      </button>
+    </div><!-- /waivers -->
+  </div><!-- /documents -->
+
   <!-- Fund Progress Bar -->
   <div class="col-xs-12 col-top fund-progress">
     <p class="flush-bottom text-right trip-funding" style="width: 100%">${{trip.totalRaised}} Funded</p>
-    <progressbar ng-class="{'progress-striped' : !goalMet(trip.totalRaised, trip.fundraisingGoal)}"type="success" max="trip.fundraisingGoal" value="trip.totalRaised"></progressbar>
+    <progressbar ng-class="{'progress-striped' : !goalMet(trip.totalRaised, trip.fundraisingGoal)}" type="success" max="trip.fundraisingGoal" value="trip.totalRaised"></progressbar>
     <p class="pull-right funding-goal">${{trip.fundraisingGoal}} Goal</p>
   </div><!-- /fund-progress -->
 
   <!-- Goal Status -->
   <div ng-if="goalMet(trip.totalRaised, trip.fundraisingGoal)" class="col-xs-12 goal-status">
     <div class="card-row days-left">Goal Reached!</div>
-    <p class="text-muted">{{trip.fundraisingDays}} days remaining for raising funds</p>
   </div><!-- /goal-status -->
-
-  <div ng-if="!goalMet(trip.totalRaised, trip.fundraisingGoal)" class="col-xs-12 push-bottom goal-status">
-    <div class="card-row days-left"><span class="text-danger">{{trip.fundraisingDays}}</span> days remaining for raising funds</div>
-  </div>
 
   <!-- Trip-Sharing -->
   <div class="col-xs-7 trip-sharing" ng-show="trip.eventParticipantId > 0">
@@ -31,7 +67,7 @@
       data-url="{{trip.shareUrl}}">
         <a href class="addthis_button_facebook"
           tooltip="Share your trip fundraising page with friends and family on Facebook"
-          tooltip-append-to-body="true" u
+          tooltip-append-to-body="true"
           tooltip-placement="right">
         </a>
         <a href class="addthis_button_twitter"

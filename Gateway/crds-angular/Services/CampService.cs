@@ -124,7 +124,7 @@ namespace crds_angular.Services
                 ProductId = eventProduct.ProductId,
                 ProductName = eventProduct.ProductName,
                 BasePrice = eventProduct.BasePrice,
-                DepositPrice = eventProduct.DepositPrice,
+                DepositPrice = eventProduct.DepositPrice.Value,
                 Options = ConvertProductOptionPricetoDto(eventProductOptionPrices,eventProduct.BasePrice,campEvent.EventStartDate),
                 BasePriceEndDate = campEvent.EventStartDate,
                 FinancialAssistance = financialAssistance,
@@ -329,17 +329,19 @@ namespace crds_angular.Services
             if (group.Status && group.Value.GroupId != campReservation.CurrentGrade)
             {
                 _groupRepository.endDateGroupParticipant(group.Value.GroupParticipantId, group.Value.GroupId, DateTime.Now);
-                _groupRepository.addParticipantToGroup(participant.ParticipantId,
+                _groupRepository.AddParticipantToGroup(participant.ParticipantId,
                                                       campReservation.CurrentGrade,
                                                       _configurationWrapper.GetConfigIntValue("Group_Role_Default_ID"),
+                                                      false,
                                                       false,
                                                       DateTime.Now);
             }
             else if (!group.Status)
             {
-                _groupRepository.addParticipantToGroup(participant.ParticipantId,
+                _groupRepository.AddParticipantToGroup(participant.ParticipantId,
                                                         campReservation.CurrentGrade,
                                                         _configurationWrapper.GetConfigIntValue("Group_Role_Default_ID"),
+                                                        false,
                                                         false,
                                                         DateTime.Now);
             }
@@ -442,8 +444,12 @@ namespace crds_angular.Services
             var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
             family.AddRange(_contactRepository.GetOtherHouseholdMembers(loggedInContact.Household_ID));
 
+            // US8846: show camps for 60 days beyond the end date so that users can continue to
+            // make payments even after the camp is completed.
+            DateTime cutoffDate = DateTime.Today.AddDays(-60);
+
             var camps = _eventRepository.GetEvents(campType, apiToken);
-            foreach (var camp in camps.Where(c => c.EventEndDate >= DateTime.Today))
+            foreach (var camp in camps.Where(c => c.EventEndDate >= cutoffDate))
             {
                 var campers = _eventRepository.EventParticipants(apiToken, camp.EventId).ToList();
                 if (campers.Any())

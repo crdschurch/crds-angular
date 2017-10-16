@@ -36,18 +36,8 @@ function htmlReplace(devBuild) {
     assets = {
       ang: { js: '/assets/ang.js' },
       core: { js: '/assets/core.js', css: '/assets/core.css' },
-      common: { js: '/assets/common.js' },
-      profile: { js: '/assets/profile.js' },
-      trips: { js: '/assets/trips.js' },
-      camps: { js: '/assets/camps.js'},
-      childcare: { js: '/assets/childcare.js' },
-      search: { js: '/assets/search.js' },
-      media: { js: '/assets/media.js' },
-      give: { js: '/assets/give.js' },
-      govolunteer: { js: '/assets/govolunteer.js' },
+      misc: { js: '/assets/misc.js' },
       main: { js: '/assets/main.js', css: '/assets/main.css' },
-      formbuilder: { js: '/assets/formbuilder.js' },
-      formlybuilder: { js: '/assets/formlybuilder.js' },
       legacy: { css: '/assets/legacy.css' }
     };
   } else {
@@ -59,23 +49,10 @@ function htmlReplace(devBuild) {
       angjs: assets.ang.js,
       corejs: {src: assets.core.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
       corecss: assets.core.css,
-      commonjs: {src: assets.common.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
-      profilejs: {src: assets.profile.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
-      tripsjs: {src: assets.trips.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
-      campsjs: {src: assets.camps.js, tpl: '<script src="%s" type="text/javascript" defer></script>'},
-      childcarejs: {src: assets.childcare.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
-      searchjs: {src: assets.search.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
-      mediajs: {src: assets.media.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
-      givejs: {src: assets.give.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
-      govolunteerjs: {src: assets.govolunteer.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
-      formbuilderjs: {src: assets.formbuilder.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
-      formlybuilderjs: {src: assets.formlybuilder.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
+      miscjs: {src: assets.misc.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
       js: {src: assets.main.js, tpl: '<script src="%s" type="text/javascript"  defer></script>'},
       legacycss: assets.legacy.css
     })).pipe(gulp.dest('./'));
-
-  gulp.src('./lib/load-image.all.min.js')
-      .pipe(gulp.dest('./assets'));
 
   if (!devBuild) {
     var rootedCoreCss = '.' + assets.core.css;
@@ -147,9 +124,6 @@ gulp.task('browser-sync-dev', ['icons'], function() {
   });
 
   htmlReplace(true);
-
-  gulp.src('./lib/load-image.all.min.js') .pipe(gulp.dest('./assets'));
-
 });
 
 // Run the dev server
@@ -183,9 +157,6 @@ gulp.task('webpack-dev-server', ['icons-watch'], function(callback) {
       });
 
   htmlReplace(true);
-
-  gulp.src('./lib/load-image.all.min.js')
-      .pipe(gulp.dest('./assets'));
 
   gutil.log('[start]', 'Access crossroads.net at https://localhost:8080/#');
   gutil.log('[start]', 'Access crossroads.net Live Reload at https://localhost:8080/webpack-dev-server/#');
@@ -235,10 +206,6 @@ gulp.task('webpack:build-dev', ['icons'], function(callback) {
     callback();
 
     htmlReplace(true);
-
-    gulp.src('./lib/load-image.all.min.js')
-      .pipe(gulp.dest('./assets'));
-
   });
 
 });

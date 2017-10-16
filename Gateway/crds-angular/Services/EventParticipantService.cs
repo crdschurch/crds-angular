@@ -1,8 +1,6 @@
 ﻿using System;
 using crds_angular.Models.Crossroads.Events;
 using crds_angular.Services.Interfaces;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Repositories.Interfaces;

@@ -7,12 +7,14 @@ using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Description;
 using crds_angular.Exceptions.Models;
 using crds_angular.Models.Crossroads.GroupLeader;
 using crds_angular.Security;
 using crds_angular.Services.Interfaces;
 using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
+using ThirdParty.Json.LitJson;
 
 namespace crds_angular.Controllers.API
 {
@@ -71,6 +73,23 @@ namespace crds_angular.Controllers.API
             throw new HttpResponseException(dataError.HttpResponseMessage);
         }
 
+        [ResponseType(typeof(object))]
+        [VersionedRoute(template: "group-leader/url-segment", minimumVersion: "1.0.0")]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetURLSegment()
+        {
+                try
+                {
+                    var urlSegment = _groupLeaderService.GetUrlSegment().Wait();
+                    return Ok(new { url = urlSegment });
+            }
+                catch (Exception e)
+                {
+                    var apiError = new ApiErrorDto("Getting Url Segment Failed: ", e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+        }
+
         [VersionedRoute(template: "group-leader/spiritual-growth", minimumVersion: "1.0.0")]
         [HttpPost]
         public async Task<IHttpActionResult> SaveSpiritualGrowth([FromBody] SpiritualGrowthDTO spiritualGrowth)
@@ -84,7 +103,7 @@ namespace crds_angular.Controllers.API
                         _groupLeaderService.SaveSpiritualGrowth(spiritualGrowth)
                             .Concat(_groupLeaderService.SetApplied(token)).Wait();
 
-                        _groupLeaderService.GetReferenceData(spiritualGrowth.ContactId).Subscribe((res) =>
+                        _groupLeaderService.GetApplicationData(spiritualGrowth.ContactId).Subscribe((res) =>
                         {
                             if ((string)res["referenceContactId"] != "0")
                             {
@@ -93,6 +112,11 @@ namespace crds_angular.Controllers.API
                             else
                             {
                                 _groupLeaderService.SendNoReferenceEmail(res).Subscribe(CancellationToken.None);
+                            }
+
+                            if (((string)res["studentLeaderRequest"]).ToUpper() == "TRUE")
+                            {
+                                _groupLeaderService.SendStudentMinistryRequestEmail(res).Subscribe(CancellationToken.None);
                             }
                         });
                         return Ok();

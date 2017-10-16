@@ -8,7 +8,6 @@ using log4net;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using CommandLine;
-using CommandLine.Text;
 using Crossroads.Utilities.Services;
 
 
@@ -47,12 +46,14 @@ namespace Crossroads.ScheduledDataUpdate
         private readonly ITaskService _taskService;
         private readonly IGroupToolService _groupToolService;
         private readonly IAwsCloudsearchService _awsService;
+        private readonly ICorkboardService _corkboardService;
 
-        public Program(ITaskService taskService, IGroupToolService groupToolService, IAwsCloudsearchService awsService)
+        public Program(ITaskService taskService, IGroupToolService groupToolService, IAwsCloudsearchService awsService, ICorkboardService corkboardService)
         {
             _taskService = taskService;
             _groupToolService = groupToolService;
             _awsService = awsService;
+            _corkboardService = corkboardService;
         }
 
         public int Run(string[] args)
@@ -88,6 +89,24 @@ namespace Crossroads.ScheduledDataUpdate
                 catch (Exception ex)
                 {
                     Log.Error("Auto Complete Tasks failed.", ex);
+                    exitCode = 9999;
+                }
+            }
+
+            if (options.RoomReservationRejectionNotification)
+            {
+                modeSelected = true;
+                try
+                {
+                    Log.Info("Room Reservation Rejection Notification");
+
+                    _taskService.RoomReservationRejectionNotification();
+
+                    Log.Info("Room Reservation Rejection Notification successfully");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Room Reservation Rejection Notification failed.", ex);
                     exitCode = 9999;
                 }
             }
@@ -134,6 +153,40 @@ namespace Crossroads.ScheduledDataUpdate
                 }
             }
 
+            if (options.CorkboardAwsRefreshMode)
+            {
+                modeSelected = true;
+                try
+                {
+                    Log.Info("Starting Corkboard AWS Refresh");
+                    _corkboardService.SyncPosts();                    
+
+                    Log.Info("Finished Corkboard AWS Refresh successfully");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Corkboard AWS Refresh failed.", ex);
+                    exitCode = 9999;
+                }
+            }
+
+            if (options.ArchivePendingGroupInquiriesMode)
+            {
+                modeSelected = true;
+                try
+                {
+                    Log.Info("Starting group inquiry archival process...");
+                    _groupToolService.ArchivePendingGroupInquiriesOlderThan90Days();
+
+                    Log.Info("Groups archival stored proc successful...");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Group archival stored proc failed.", ex);
+                    exitCode = 9999;
+                }
+            }
+
             if (!modeSelected)
             {
                 Log.Error(options.GetUsage());
@@ -141,34 +194,6 @@ namespace Crossroads.ScheduledDataUpdate
             }
 
             return exitCode;
-        }
-
-        public class Options
-        {
-            [Option('H', "help", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
-              HelpText = "Get help on running this program.")]
-            public bool HelpMode { get; set; }
-
-            [Option("AutoCompleteTasks", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
-              HelpText = "Execute 'Auto Complete Tasks' to complete outstanding event/room tasks for users")]
-            public bool AutoCompleteTasksMode { get; set; }
-
-            [Option("SmallGroupInquiryReminder", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
-              HelpText = "Execute 'Small Group Inquiry Reminder' to send emails to group leaders who have pending inquiries on their groups")]
-            public bool SmallGroupInquiryReminderMode { get; set; }
-
-            [Option("ConnectAwsRefreshMode", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
-              HelpText = "Execute 'Connect AWS Refresh' to refresh connect groups that have been approved by staff")]
-            public bool ConnectAwsRefreshMode { get; set; }
-
-            [ParserState]
-            public IParserState LastParserState { get; set; }
-
-            [HelpOption]
-            public string GetUsage()
-            {
-                return HelpText.AutoBuild(this, current => HelpText.DefaultParsingErrorsHandler(this, current));
-            }
-        }
+        }        
     }
 }

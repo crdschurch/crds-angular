@@ -9,21 +9,11 @@ const definePlugin = new webpack.DefinePlugin(environmentVars.get());
 
 module.exports = {
   entry: {
-    childcare: './app/childcare_dashboard/childcareDashboard.module.js',
-    trips: './app/trips/trips.module.js',
-    camps: './app/camps/camps.module.js',
-    search: './app/search/search.module.js',
-    media: './app/media/media.module.js',
-    give: './app/give/give.module.js',
-    profile: './app/profile/profile.module.js',
     main: './app/app.js',
+    misc: './app/misc.js',
     ang: './core/ang.js',
-    govolunteer: './app/go_volunteer/goVolunteer.module.js',
     core: ['./core/core.js'],
-    legacy: ['./styles/legacy.scss'],
-    common: ['./app/common/common.module.js'],
-    formbuilder: ['./app/formBuilder/formBuilder.module.js'],
-    formlybuilder: ['./app/formlyBuilder/formlyBuilder.module.js']
+    legacy: ['./styles/legacy.scss']
   },
   watchPattern: ['app/**/**', 'core/**/**'],
   externals: {

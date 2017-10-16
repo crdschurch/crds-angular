@@ -44,13 +44,17 @@
         <CommandText>report_CRDS_Childcare_Summary</CommandText>
       </Query>
       <Fields>
-        <Field Name="Group_Name">
-          <DataField>Group_Name</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
+        <Field Name="Event_ID">
+          <DataField>Event_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="EventDate">
           <DataField>EventDate</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Group_Name">
+          <DataField>Group_Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="StartTime">
           <DataField>StartTime</DataField>
@@ -59,10 +63,6 @@
         <Field Name="EndTime">
           <DataField>EndTime</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
-        </Field>
-        <Field Name="Age">
-          <DataField>Age</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="ID__Of_RSVP">
           <DataField>Total RSVP</DataField>
@@ -74,6 +74,10 @@
         </Field>
         <Field Name="Rsvp_Online">
           <DataField>Rsvp Online</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="ParticipantAge">
+          <DataField>ParticipantAge</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="Rsvp_Override">
@@ -103,7 +107,7 @@
                   <Width>1in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.80208in</Width>
+                  <Width>1.5in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1.625in</Width>
@@ -272,7 +276,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Age/Grade Group</Value>
+                                  <Value>Age in Years</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -556,7 +560,12 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Age.Value</Value>
+                                  <Value>=Switch(Fields!ParticipantAge.Value = 0,"Kids Club 0 Yr",
+		Fields!ParticipantAge.Value = 1,"Kids Club 1 Yr",
+        Fields!ParticipantAge.Value = 2,"Kids Club 2 Yr",
+		Fields!ParticipantAge.Value = 3,"Kids Club 3 Yr",
+		Fields!ParticipantAge.Value = 4,"Kids Club 4 Yr", 
+		Fields!ParticipantAge.Value &gt;= 5,"Kids Club 5+ Yr")</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Color>#4d4d4d</Color>
@@ -578,6 +587,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -708,7 +718,7 @@
             <DataSetName>DataSet1</DataSetName>
             <Top>1.0875in</Top>
             <Height>0.5in</Height>
-            <Width>9.94792in</Width>
+            <Width>10.64584in</Width>
             <Style>
               <Border>
                 <Style>None</Style>

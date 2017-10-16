@@ -6,11 +6,15 @@ using crds_angular.Exceptions.Models;
 using crds_angular.Models.Json;
 using crds_angular.Security;
 using crds_angular.Services;
+using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using MinistryPlatform.Translation.Models.DTO;
 using Crossroads.ApiVersioning;
+using Crossroads.ClientApiKeys;
 using Crossroads.Web.Common.Security;
+using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+
 
 namespace crds_angular.Controllers.API
 {
@@ -21,11 +25,25 @@ namespace crds_angular.Controllers.API
         private readonly IUserRepository _userService;
         private readonly ILoginService _loginService;
 
-        public LoginController(ILoginService loginService, IPersonService personService, IUserRepository userService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        private readonly IContactRepository _contactRepository;
+        private readonly IAnalyticsService _analyticsService;
+
+        public LoginController(ILoginService loginService, 
+                                IPersonService personService, 
+                                IUserRepository userService, 
+                                IAnalyticsService analyticsService,
+                                IUserImpersonationService userImpersonationService, 
+                                IAuthenticationRepository authenticationRepository,
+                                IContactRepository contactRepository) : base(userImpersonationService, authenticationRepository)
+
         {
             _loginService = loginService;
             _personService = personService;
             _userService = userService;
+
+            _contactRepository = contactRepository;
+            _analyticsService = analyticsService;
+
         }
 
         [VersionedRoute(template: "request-password-reset", minimumVersion: "1.0.0")]
@@ -96,8 +114,9 @@ namespace crds_angular.Controllers.API
                     }
                     else
                     {
-                        var roles = _personService.GetLoggedInUserRoles(token);
-                        var user = _userService.GetByAuthenticationToken(token);
+                        var apiToken = _userService.HelperApiLogin();
+                        var user = _userService.GetByUserName(person.EmailAddress, apiToken); //235 ms _userService.GetByAuthenticationToken(token) was 1.5 seconds 
+                        var roles = _userService.GetUserRolesRest(user.UserRecordId, apiToken);
                         var l = new LoginReturn(token, person.ContactId, person.FirstName, person.EmailAddress, person.MobilePhone, roles, user.CanImpersonate);
                         return this.Ok(l);
                     }
@@ -112,12 +131,14 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "login", minimumVersion: "1.0.0")]
         [Route("login")]
         [ResponseType(typeof (LoginReturn))]
+        // TODO - Once Ez-Scan has been updated to send a client API key (US7764), remove the IgnoreClientApiKey attribute
+        [IgnoreClientApiKey]
         public IHttpActionResult Post([FromBody] Credentials cred)
         {
             try
             {
                 // try to login
-                var authData = AuthenticationRepository.Authenticate(cred.username, cred.password);
+                var authData = AuthenticationRepository.Authenticate(cred.username, cred.password); //nothing we can do to speed this up
                 var token = authData.AccessToken;
                 var exp = authData.ExpiresIn+"";
                 var refreshToken = authData.RefreshToken;
@@ -127,24 +148,29 @@ namespace crds_angular.Controllers.API
                     return this.Unauthorized();
                 }
 
-                var userRoles = _personService.GetLoggedInUserRoles(token);
-                var user = _userService.GetByAuthenticationToken(token);
-                var p = _personService.GetLoggedInUserProfile(token);
+                var apiToken = _userService.HelperApiLogin();
+                var user = _userService.GetByUserName(cred.username,apiToken); //235 ms _userService.GetByAuthenticationToken(token) was 1.5 seconds 
+                var userRoles = _userService.GetUserRolesRest(user.UserRecordId, apiToken);
+                var c = _contactRepository.GetContactByUserRecordId(user.UserRecordId, apiToken);//use a rest call and use the id directly
                 var r = new LoginReturn
                 {
                     userToken = token,
                     userTokenExp = exp,
                     refreshToken = refreshToken,
-                    userId = p.ContactId,
-                    username = p.FirstName,
-                    userEmail = p.EmailAddress,
+                    userId = c.Contact_ID,
+                    username = c.First_Name,
+                    userEmail = c.Email_Address,
                     roles = userRoles,
-                    age = p.Age,
-                    userPhone = p.MobilePhone,
-                    canImpersonate = user.CanImpersonate
+                    age = c.Age,
+                    userPhone = c.Mobile_Phone,
+                    canImpersonate = user.CanImpersonate 
                 };
 
-                _loginService.ClearResetToken(cred.username);
+
+                _loginService.ClearResetToken(user.UserRecordId); //no need to lookup the userid if we already have it
+                _contactRepository.UpdateContactToActive(c.Contact_ID); //205
+                _analyticsService.Track(c.Contact_ID.ToString(), "SignedIn"); 
+
 
                 return this.Ok(r);
             }

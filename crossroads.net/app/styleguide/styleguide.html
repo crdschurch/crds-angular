@@ -968,6 +968,18 @@
 
           <div class="row">
             <div class="col-sm-12">
+              <p>&nbsp;</p>
+              <p><em>Example:</em></p>
+              <code>&lt;img class="imgix-fluid" data-src="//crossroads-media.imgix.net/images/IanHenderson-GOmamaCSM.jpg" /&gt;</code>
+              <p>&nbsp;</p>
+              <p><em>Note:</em></p>
+              <p>DO NOT populate the src attribute or the image will load twice, duplicating http requests.</p>
+              <p>&nbsp;</p>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12">
               <img data-src="//crossroads-media.imgix.net/images/IanHenderson-GOmamaCSM.jpg" class="imgix-fluid img-responsive" >
             </div>
           </div>
@@ -994,6 +1006,22 @@
           <div class="row">
             <div class="col-sm-12" >
               <p>For background images, the <code>data-src</code> needs to exist on the contain with the background along with class <code>imgix-fluid-bg</code>. Use class <code>img-background</code> to make the image cover the contain and center.</p>
+              
+              <div class="row">
+                <div class="col-sm-12">
+                  <p>&nbsp;</p>
+                  <p><em>Example:</em></p>
+                  <code>
+                    &lt;div class="imgix-fluid-bg img-background" data-src="//crossroads-media.imgix.net/images/thestory_image_copy1.jpg"&gt;<br/>
+                      &lt;h1 style="text-align: center; color: white; opacity: 0.2; font-size: 8vw; padding: 240px 15px;font-weight:bold;"&gt;BACKGROUND IMAGES&lt;/h1&gt;<br/>
+                    &lt;/div&gt;
+                  </code>
+                  <p>&nbsp;</p>
+                  <p><em>Note:</em></p>
+                  <p>DO NOT populate the src attribute or the background image will load twice, duplicating http requests.</p>
+                </div>
+              </div>
+              
               <div class="imgix-fluid-bg img-background" data-src="//crossroads-media.imgix.net/images/thestory_image_copy1.jpg">
                 <h1 style="text-align: center; color: white; opacity: 0.2; font-size: 8vw; padding: 240px 15px;font-weight:bold;">BACKGROUND IMAGES</h1>
               </div>

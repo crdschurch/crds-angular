@@ -45,7 +45,9 @@ namespace crds_angular.test.Services
             foreach (var e in _errors)
             {
                 var e1 = e;
+                var value = e1.Value;
                 _contentBlockService.SetupGet(mocked => mocked[e1.Key]).Returns(e1.Value);
+                _contentBlockService.Setup<bool>(mocked => mocked.TryGetValue(e1.Key, out value)).Returns(true);
             }
 
             _fixture = new StripePaymentProcessorService(_restClient.Object, _configuration.Object, _contentBlockService.Object);
@@ -389,7 +391,7 @@ namespace crds_angular.test.Services
 
             _restClient.Setup(mocked => mocked.Execute<StripeCharge>(It.IsAny<IRestRequest>())).Returns(stripeResponse.Object);
 
-            var response = _fixture.ChargeCustomer("cust_token", 9090, 98765, false);
+            var response = _fixture.ChargeCustomer("cust_token", 9090, 98765, false,"bart_simpson@crossroads.net", "Bart Simpson");
 
             _restClient.Verify(mocked => mocked.Execute<StripeCharge>(
                 It.Is<IRestRequest>(o =>
@@ -435,7 +437,7 @@ namespace crds_angular.test.Services
             _restClient.Setup(mocked => mocked.Execute<StripeCharge>(It.IsAny<IRestRequest>())).Returns(chargeResponse.Object);
             try
             {
-                _fixture.ChargeCustomer("token", -900, 98765, false);
+                _fixture.ChargeCustomer("token", -900, 98765, false, "bart_simpson@crossroads.net", "Bart Simpson");
                 Assert.Fail("Should have thrown exception");
             }
             catch (PaymentProcessorException e)

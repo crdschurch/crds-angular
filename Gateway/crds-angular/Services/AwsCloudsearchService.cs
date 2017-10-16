@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Device.Location;
 using System.IO;
 using System.Linq;
@@ -11,6 +10,7 @@ using Amazon.CloudSearchDomain.Model;
 using AutoMapper;
 using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Finder;
+using MinistryPlatform.Translation.Models.Finder;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Newtonsoft.Json;
 
@@ -18,63 +18,59 @@ namespace crds_angular.Services
 {
     public class AwsCloudsearchService : MinistryPlatformBaseService, IAwsCloudsearchService
     {
-        private readonly IAddressGeocodingService _addressGeocodingService;
         private readonly IFinderRepository _finderRepository;
-        private readonly IConfigurationWrapper _configurationWrapper;
         protected string AmazonSearchUrl;
         protected string AwsAccessKeyId;
         protected string AwsSecretAccessKey;
 
-        public AwsCloudsearchService(IAddressGeocodingService addressGeocodingService, 
-                                     IFinderRepository finderRepository,                          
+        public AwsCloudsearchService(IFinderRepository finderRepository,                          
                                      IConfigurationWrapper configurationWrapper)
         {
-            _addressGeocodingService = addressGeocodingService;
             _finderRepository = finderRepository;
-            _configurationWrapper = configurationWrapper;
+            var configurationWrapper1 = configurationWrapper;
 
-            AmazonSearchUrl    = _configurationWrapper.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ENDPOINT");
-            AwsAccessKeyId     = _configurationWrapper.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ACCESSKEYID");
-            AwsSecretAccessKey = _configurationWrapper.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_SECRETACCESSKEY");
-
-
+            AmazonSearchUrl    = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ENDPOINT");
+            AwsAccessKeyId     = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ACCESSKEYID");
+            AwsSecretAccessKey = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_SECRETACCESSKEY");
         }
 
         public UploadDocumentsResponse UploadAllConnectRecordsToAwsCloudsearch()
         {
-            var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
-
             var pinList = GetDataForCloudsearch();
+            return SendAwsDocs(pinList);
+        }
 
-            //serialize
-            var json = JsonConvert.SerializeObject(pinList, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            var upload = new UploadDocumentsRequest()
+        public void UploadSingleGroupToAwsFromMp(int groupId)
+        {
+            MpConnectAws groupFromMp = _finderRepository.GetSingleGroupRecordFromMpInAwsPinFormat(groupId);
+            if (groupFromMp != null) // new unauthorized gatherings will not get sent
             {
-                ContentType = ContentType.ApplicationJson,
-                Documents = ms
-            };
+                AwsConnectDto groupInAwsUploadFormat = Mapper.Map<AwsConnectDto>(groupFromMp);
 
-            return(cloudSearch.UploadDocuments(upload));
+                AwsCloudsearchDto awsDto = CreateCloudSearchUploadDto(groupInAwsUploadFormat);
+                List<AwsCloudsearchDto> awsDtoList = new List<AwsCloudsearchDto>() { awsDto };
+
+                SendAwsDocs(awsDtoList);
+            } 
         }
 
         public UploadDocumentsResponse DeleteAllConnectRecordsInAwsCloudsearch()
         {
+            var results = SearchConnectAwsCloudsearch("matchall", "_no_fields");
+            var deletelist = results.Hits.Hit.Select(hit => new AwsCloudsearchDto
+            {
+                id = hit.Id, type = "delete"
+            }).ToList();
+
+            return SendAwsDocs(deletelist);
+        }
+
+        private UploadDocumentsResponse SendAwsDocs(List<AwsCloudsearchDto> awsDocs)
+        {
             var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
 
-            var results = SearchConnectAwsCloudsearch("matchall", "_no_fields");
-            var deletelist = new List<AwsCloudsearchDto>();
-            foreach (var hit in results.Hits.Hit)
-            {
-                var deleterec = new AwsCloudsearchDto
-                {
-                    id = hit.Id,
-                    type = "delete"
-                };
-                deletelist.Add(deleterec);
-            }
             // serialize
-            var json = JsonConvert.SerializeObject(deletelist, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var json = JsonConvert.SerializeObject(awsDocs, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
             var upload = new UploadDocumentsRequest()
             {
@@ -85,11 +81,48 @@ namespace crds_angular.Services
             return (cloudSearch.UploadDocuments(upload));
         }
 
+        public UploadDocumentsResponse DeleteGroupFromAws(int groupId)
+        {
+            var results = SearchConnectAwsCloudsearch($"groupid: {groupId}", "_no_fields");
+            var deletelist = results.Hits.Hit.Select(hit => new AwsCloudsearchDto
+            {
+                id = hit.Id, type = "delete"
+            }).ToList();
+
+            return SendAwsDocs(deletelist);
+        }
+
+        public void UpdateGroupInAws(int groupId)
+        {
+            var results = SearchConnectAwsCloudsearch($"groupid: {groupId}", "_no_fields");
+
+            switch (results.Hits.Hit.Count)
+            {
+                case 0:
+                    // not found, so lets add it to aws
+                    UploadSingleGroupToAwsFromMp(groupId);
+                    return;
+                case 1:
+                    // found the exact match, let's update
+                    var idToUpdate = results.Hits.Hit.FirstOrDefault()?.Id;
+                    MpConnectAws groupFromAws = _finderRepository.GetSingleGroupRecordFromMpInAwsPinFormat(groupId);
+                    AwsConnectDto groupInAwsUploadFormat = Mapper.Map<AwsConnectDto>(groupFromAws);
+
+                    AwsCloudsearchDto awsDto = CreateCloudSearchUploadDto(groupInAwsUploadFormat);
+                    awsDto.id = idToUpdate;
+                    List<AwsCloudsearchDto> awsDtoList = new List<AwsCloudsearchDto> { awsDto };
+                    SendAwsDocs((awsDtoList));
+                    return; 
+                default:
+                    // we found multiple matches. This seems to be an issue. Let's delete all mathing groups and just add the one we want
+                    DeleteGroupFromAws(groupId);
+                    UploadSingleGroupToAwsFromMp(groupId);
+                    return;
+            }
+        }
 
         public UploadDocumentsResponse DeleteSingleConnectRecordInAwsCloudsearch(int participantId, int pinType)
         {
-            var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
-
             var results = SearchConnectAwsCloudsearch($"(and participantid:{participantId} pintype:{pinType})", "_no_fields");
             var deletelist = new List<AwsCloudsearchDto>();
             foreach (var hit in results.Hits.Hit)
@@ -101,19 +134,20 @@ namespace crds_angular.Services
                 };
                 deletelist.Add(deleterec);
             }
-            // serialize
-            var json = JsonConvert.SerializeObject(deletelist, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            var upload = new UploadDocumentsRequest()
-            {
-                ContentType = ContentType.ApplicationJson,
-                Documents = ms
-            };
-
-            return (cloudSearch.UploadDocuments(upload));
+            return SendAwsDocs(deletelist);
         }
 
+        private AwsCloudsearchDto CreateCloudSearchUploadDto(AwsConnectDto groupDto)
+        {
+            AwsCloudsearchDto awsDto = new AwsCloudsearchDto()
+            {
+                type = "add",
+                id = groupDto.AddressId + "-" + groupDto.PinType + "-" + groupDto.ParticipantId + "-" + groupDto.GroupId,
+                fields = groupDto
+            };
 
+            return awsDto;
+        }
 
         private List<AwsCloudsearchDto> GetDataForCloudsearch()
         {
@@ -132,19 +166,15 @@ namespace crds_angular.Services
             return pinlist;
         }
 
-        public AwsBoundingBox BuildBoundingBox(string upperleftlat , string upperleftlng , string bottomrightlat , string bottomrightlng )
+        public AwsBoundingBox BuildBoundingBox(MapBoundingBox mapBox)
         {
-            var ulLat = Convert.ToDouble(upperleftlat.Replace("$", "."));
-            var ulLng = Convert.ToDouble(upperleftlng.Replace("$", "."));
-
-            var brLat = Convert.ToDouble(bottomrightlat.Replace("$", "."));
-            var brLng = Convert.ToDouble(bottomrightlng.Replace("$", "."));
-
-            return  new AwsBoundingBox
+            var awsMapBoundingBox = new AwsBoundingBox
             {
-                UpperLeftCoordinates = new GeoCoordinates(ulLat,ulLng),
-                BottomRightCoordinates = new GeoCoordinates(brLat,brLng)
+                UpperLeftCoordinates = new GeoCoordinates(mapBox.UpperLeftLat, mapBox.UpperLeftLng),
+                BottomRightCoordinates = new GeoCoordinates(mapBox.BottomRightLat, mapBox.BottomRightLng)
             };
+
+            return awsMapBoundingBox; 
         }
 
         public SearchResponse SearchConnectAwsCloudsearch(string querystring, string returnFields, int returnSize = 10000, GeoCoordinate originCoords = null, AwsBoundingBox boundingBox = null)
@@ -169,6 +199,22 @@ namespace crds_angular.Services
                 searchRequest.Sort = "distance asc";
                 searchRequest.Return += ",distance";
             }
+
+            var response = cloudSearch.Search(searchRequest);
+            return (response);
+        }
+
+        public SearchResponse SearchByGroupId(string groupId)
+        {
+            var cloudSearch = new AmazonCloudSearchDomainClient(AwsAccessKeyId, AwsSecretAccessKey, AmazonSearchUrl);
+            var searchRequest = new SearchRequest
+            {
+                Query = "groupid: " + groupId,
+                QueryParser = QueryParser.Structured,                
+                QueryOptions = "{'fields': ['groupid']}",
+                Size = 1,
+                Return = "_all_fields"
+            };
 
             var response = cloudSearch.Search(searchRequest);
             return (response);

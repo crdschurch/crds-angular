@@ -16,7 +16,11 @@
   p {
     margin-bottom: ($jumbotron-padding / 2);
     font-size: $jumbotron-font-size;
-    font-weight: 200;
+    font-weight: 300;
+  }
+
+  .title {
+    font-weight: 300;
   }
 
   > hr {

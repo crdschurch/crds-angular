@@ -9,5 +9,6 @@ namespace crds_angular.Services.Interfaces
         bool SaveCommunicationPrefs(string token, AccountInfo accountInfo);
         AccountInfo getAccountInfo(string token);
         User RegisterPerson(User newUserData);
+        int RegisterPersonWithoutUserAccount(User newUserData);
     }
 }

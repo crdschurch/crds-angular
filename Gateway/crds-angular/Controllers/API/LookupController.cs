@@ -15,6 +15,7 @@ using Crossroads.ApiVersioning;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
+using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.Controllers.API
 {
@@ -23,12 +24,14 @@ namespace crds_angular.Controllers.API
         private IConfigurationWrapper _configurationWrapper;
         private readonly LookupRepository _lookupRepository;
         private readonly IAuthenticationRepository _authenticationRepository;
+        private readonly IUserRepository _userService;
 
-        public LookupController(IConfigurationWrapper configurationWrapper, LookupRepository lookupRepository, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public LookupController(IConfigurationWrapper configurationWrapper, LookupRepository lookupRepository, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository, IUserRepository userService) : base(userImpersonationService, authenticationRepository)
         {
             _configurationWrapper = configurationWrapper;
             _lookupRepository = lookupRepository;
             _authenticationRepository = authenticationRepository;
+            _userService = userService;
         }
 
 
@@ -214,14 +217,14 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult EmailExists(int userId, string email)
         {
+            //the userId parameter really contains the contact id
             //TODO let's clean this up
             var authorizedWithCookie = Authorized(t =>
             {
                 var exists = _lookupRepository.EmailSearch(email, t);
-                if (exists.Count == 0 || Convert.ToInt32(exists["dp_RecordID"]) == userId)
-                {
+                if (exists.Count == 0 || _userService.GetContactIdByUserId(Convert.ToInt32(exists["dp_RecordID"])) == userId)
                     return Ok();
-                }
+
                 return BadRequest();
             });
 

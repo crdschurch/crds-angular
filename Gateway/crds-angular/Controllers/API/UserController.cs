@@ -7,6 +7,7 @@ using crds_angular.Models.Crossroads;
 using crds_angular.Services.Interfaces;
 using crds_angular.Exceptions.Models;
 using crds_angular.Security;
+using crds_angular.Services.Analytics;
 using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
@@ -19,14 +20,22 @@ namespace crds_angular.Controllers.API
         private readonly IAccountService _accountService;
         private readonly IContactRepository _contactRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IAnalyticsService _analyticsService;
+
         // Do not change this string without also changing the same in the corejs register_controller
         private const string DUPLICATE_USER_MESSAGE = "Duplicate User";
 
-        public UserController(IAccountService accountService, IContactRepository contactRepository, IUserRepository userRepository, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public UserController(IAccountService accountService, 
+                                IContactRepository contactRepository, 
+                                IUserRepository userRepository, 
+                                IAnalyticsService analyticsService,
+                                IUserImpersonationService userImpersonationService, 
+                                IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
         {
             _accountService = accountService;
             _contactRepository = contactRepository;
             _userRepository = userRepository;
+            _analyticsService = analyticsService;
         }
 
         [ResponseType(typeof(User))]
@@ -38,6 +47,9 @@ namespace crds_angular.Controllers.API
             try
             {
                 var userRecord = _accountService.RegisterPerson(user);
+                var contact_Id = _contactRepository.GetContactIdByEmail(user.email);
+
+                _analyticsService.Track(contact_Id.ToString(), "SignedUp");
                 return Ok(userRecord);
             }
             catch (DuplicateUserException e)

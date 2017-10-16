@@ -50,7 +50,7 @@ export default class GeolocationController {
   }
 
   submitEnabled() {
-    return this.location.count > 0 || this.location.zipcode !== '';
+    return this.location.count > 0 && this.location.zipcode !== '';
   }
 
   setCount(count) {
@@ -111,12 +111,15 @@ export default class GeolocationController {
       if (this.location.zipcode.length > 0 && !this.location.zipcode.match(/^\d{5}$/)) {
         this.invalidZipcode = true;
       } else {
-        this.locationService.saveLocation(this.location);
-        this.success = true;
-        setTimeout(() => {
-          this.dismissed();
-          this.locationService.success();
-        }, CONSTANTS.GEOLOCATION.MODAL_TIMEOUT);
+        if (this.location.count>0)
+        {
+          this.locationService.saveLocation(this.location);
+          this.success = true;
+          setTimeout(() => {
+            this.dismissed();
+            this.locationService.success();
+          }, CONSTANTS.GEOLOCATION.MODAL_TIMEOUT);
+        }
 
       }
     }

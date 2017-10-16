@@ -126,8 +126,91 @@
           loggedin: crds_utilities.checkLoggedin,
           Trip: 'Trip',
           $cookies: '$cookies',
-          MyTrips: function(Trip) {
+          $state: '$state',
+          MyTrips(Trip) {
             return Trip.MyTrips.get().$promise;
+          }
+        }
+      })
+      .state('travelinformation', {
+        parent: 'noSideBar',
+        url: '/trips/mytrips/update',
+        template: '<travel-information></travel-information>',
+        data: {
+          isProtected: true,
+          meta: {
+            title: 'My Trips',
+            description: ''
+          }
+        },
+        resolve: {
+          loggedin: crds_utilities.checkLoggedin,
+
+          $cookies: '$cookies',
+          $stateParams: '$stateParams',
+          Profile: 'Profile',
+          TravelInformationService: 'TravelInformationService',
+          $q: '$q',
+          Person: (Profile, $stateParams, $cookies, $q, TravelInformationService) => {
+            const deferred = $q.defer();
+            let cid = $cookies.get('userId');
+            if ($stateParams.contactId) {
+              cid = $stateParams.contactId;
+            }
+
+            Profile.Person.get({ contactId: cid }, (p) => {
+              TravelInformationService.setPerson(p);
+              deferred.resolve(p);
+            }, () => {
+              deferred.reject();
+            });
+            return deferred.promise;
+          }
+        }
+      })
+      .state('tripwaiver', {
+        parent: 'centeredContentPage',
+        url: '/trips/mytrips/waiver/:waiverId',
+        template: '<trip-waiver></trip-waiver>',
+        data: {
+          isProtected: true,
+          meta: {
+            title: 'Trip Waiver',
+            description: ''
+          }
+        },
+        resolve: {
+          $stateParams: '$stateParams',
+          loggedin: crds_utilities.checkLoggedin,
+          Trip: 'Trip',
+          Waiver($stateParams, Trip) {
+            return Trip.Waiver.get({ waiverId: $stateParams.waiverId }).$promise;
+          }
+        }
+      })
+      .state('trippromise', {
+        parent: 'centeredContentPage',
+        url: '/trips/mytrips/promise/:eventParticipantId',
+        template: '<trip-promise my-trip-promise="MyTripsPromise"></trip-promise>',
+        controller($scope, MyTripsPromise) {
+          $scope.MyTripsPromise = MyTripsPromise;
+        },
+        data: {
+          isProtected: true,
+          meta: {
+            title: 'I Promise',
+            description: ''
+          }
+        },
+        resolve: {
+          loggedin: crds_utilities.checkLoggedin,
+          $rootScope: '$rootScope',
+          $state: '$state',
+          $stateParams: '$stateParams',
+          $log: '$log',
+          Trip: 'Trip',
+          MyTripsPromise(Trip, $stateParams) {
+            return Trip.MyTripsPromise.get({ eventParticipantId: $stateParams.eventParticipantId }).$promise;
           }
         }
       })

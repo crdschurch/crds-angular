@@ -22,7 +22,7 @@
                   </div><!--/row-->
                 </div>
                 <div class="col-sm-6" ng-show="$root.username == undefined">
-                  <register-form> </register-form>
+                  <register-form register-callback='register.redirectToGetStarted'> </register-form>
                 </div><!--/col-sm-12-->
                 <div class="col-sm-6" ng-show="$root.username != undefined">
                   <preloader full-screen='true'> </preloader>

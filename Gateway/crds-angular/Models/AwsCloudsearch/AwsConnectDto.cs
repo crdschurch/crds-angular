@@ -76,5 +76,45 @@ namespace crds_angular.Models.AwsCloudsearch
 
         [JsonProperty(PropertyName = "pintype")]
         public int PinType { get; set; }
+
+        // fields below added for finder-grouptool
+        [JsonProperty(PropertyName = "groupcategory")]
+        public string[] GroupCategory { get; set; }
+
+        [JsonProperty(PropertyName = "grouptype")]
+        public string GroupType { get; set; }
+
+        [JsonProperty(PropertyName = "groupagerange")]
+        public string[] GroupAgeRange { get; set; }
+
+        [JsonProperty(PropertyName = "groupmeetingday")]
+        public string GroupMeetingDay { get; set; }
+
+        [JsonProperty(PropertyName = "groupmeetingtime")]
+        public string GroupMeetingTime { get; set; }
+
+        [JsonProperty(PropertyName = "groupvirtual")]
+        public int GroupVirtual { get; set; }
+
+        [JsonProperty(PropertyName = "grouplocation")]
+        public string GroupLocation { get; set; }
+
+        [JsonProperty(PropertyName = "groupmeetingfrequency")]
+        public string GroupMeetingFrequency { get; set; }
+
+        [JsonProperty(PropertyName = "groupkidswelcome")]
+        public int GroupKidsWelcome { get; set; }
+
+        [JsonProperty(PropertyName = "groupprimarycontactfirstname")]
+        public string GroupPrimaryContactFirstName { get; set; }
+
+        [JsonProperty(PropertyName = "groupprimarycontactlastname")]
+        public string GroupPrimaryContactLastName { get; set; }
+
+        [JsonProperty(PropertyName = "groupprimarycontactcongregation")]
+        public string GroupPrimaryContactCongregation { get; set; }
+
+        [JsonProperty(PropertyName = "groupavailableonline")]
+        public int GroupAvailableOnline { get; set; }
     }
 }

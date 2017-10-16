@@ -57,9 +57,12 @@
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
       vm.bodyClasses = {};
       $rootScope.bodyClasses = [];
-      $rootScope.renderLegacyStyles = (toState.data.renderLegacyStyles !== false);
-      if ((toState.resolve || toState.data.resolve) && !event.defaultPrevented) {
+      delete $rootScope.doRenderLegacyStyles;
+
+      // This was removed to fix DE3879. When it was removed, it broke the ability to do a trip deposit.
+      if ((toState.resolve !== undefined || (toState.data !== undefined && toState.data.resolve)) && !event.defaultPrevented) {
         vm.resolving = true;
+        $rootScope.renderLegacyStyles = true;
       }
 
       if (fromState.name == 'explore') {
@@ -68,10 +71,13 @@
       }
     });
 
-    $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {      
-      if (typeof fromParams.renderLegacyStyles !== 'undefined') {
-        $rootScope.renderLegacyStyles = fromParams.renderLegacyStyles;
+    $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+      if(typeof $rootScope.doRenderLegacyStyles !== 'undefined') {
+        $rootScope.renderLegacyStyles = $rootScope.doRenderLegacyStyles;
+      } else {
+        $rootScope.renderLegacyStyles = toState.data !== undefined ? toState.data.renderLegacyStyles !== false : true;
       }
+
       if (typeof fromParams.bodyClasses !== 'undefined') {
         $rootScope.bodyClasses = fromParams.bodyClasses;
       }

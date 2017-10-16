@@ -5,6 +5,7 @@ using crds_angular.Services.Interfaces;
 using Crossroads.AsyncJobs.Interfaces;
 using Crossroads.AsyncJobs.Models;
 using log4net;
+using MinistryPlatform.Translation.Exceptions;
 
 namespace Crossroads.AsyncJobs.Processors
 {
@@ -29,8 +30,18 @@ namespace Crossroads.AsyncJobs.Processors
             }
             catch (Exception e)
             {
-                var msg = "Unexpected error processing Stripe Event " + stripeEvent.Type;
-                _logger.Error(msg, e);
+                if (e is DonationNotFoundException)
+                {
+                    // Sometimes we receive a webhook callback before the donation has been
+                    // added to the database.  This is a known issue, so just do minimal
+                    // logging without a full stack trace.
+                    _logger.Error($"StripeEventProcessor: Donation not found processing {stripeEvent.Type}: {e.Message}");
+                }
+                else
+                {
+                    var msg = "Unexpected error processing Stripe Event " + stripeEvent.Type;
+                    _logger.Error(msg, e);
+                }
 
                 _stripeEventService.RecordFailedEvent(stripeEvent, new StripeEventResponseDTO
                 {

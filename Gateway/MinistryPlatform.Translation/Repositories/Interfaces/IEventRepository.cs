@@ -11,14 +11,14 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
     {
         int CreateEvent(MpEventReservationDto eventReservationReservation);
         void UpdateEvent(MpEventReservationDto eventReservationReservation);
-        int SafeRegisterParticipant(int participantId, int eventId, int groupId = 0, int groupParticipantId = 0);
+        int SafeRegisterParticipant(int eventId, int participantId, int groupId = 0, int groupParticipantId = 0);
         int RegisterParticipantForEvent(int participantId, int eventId, int groupId = 0, int groupParticipantId = 0);
         int RegisterInterestedParticipantWithEndDate(int participantId, int eventId, DateTime? endDate);
         void SetParticipantAsRegistered(int eventId, int participantId);
         void UpdateParticipantEndDate(int eventParticipantId, DateTime? endDate);
         int UnregisterParticipantForEvent(int participantId, int eventId);
         List<MpEvent> GetEvents(string eventType, string token);
-        List<MpEvent> GetEventsByTypeForRange(int eventTypeId, DateTime startDate, DateTime endDate, string token);
+        List<MpEvent> GetEventsByTypeForRange(int eventTypeId, DateTime startDate, DateTime endDate, string token, bool includeCancelledEvents = true);
         List<MpGroup> GetGroupsForEvent(int eventId);
         int GetEventParticipantRecordId(int eventId, int participantId);
         bool EventHasParticipant(int eventId, int participantId);
@@ -41,7 +41,8 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         List<MpEvent> GetEventTemplatesBySite(string site, string token);
         void DeleteEventGroupsForEvent(int eventId, string token, int? groupTypeID = null);
 
-        List<MpWaivers> GetWaivers(int eventId, int contactId);
+        List<MpEventWaivers> GetWaivers(int eventId, int contactId);
+        List<MpEventWaivers> GetWaivers(int eventId);
         void SetWaivers(List<MpWaiverResponse> waiverResponses);
 
         bool IsEventSeries(int eventId);

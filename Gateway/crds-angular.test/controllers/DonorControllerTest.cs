@@ -24,6 +24,7 @@ using DonationStatus = crds_angular.Models.Crossroads.Stewardship.DonationStatus
 using IDonationService = crds_angular.Services.Interfaces.IDonationService;
 using IDonorService = crds_angular.Services.Interfaces.IDonorService;
 using MPInterfaces = MinistryPlatform.Translation.Repositories.Interfaces;
+using crds_angular.Services.Interfaces;
 
 namespace crds_angular.test.controllers
 {
@@ -36,6 +37,7 @@ namespace crds_angular.test.controllers
         private Mock<IAuthenticationRepository> _authenticationService;
         private Mock<MPInterfaces.IDonorRepository> _mpDonorService;
         private Mock<IUserImpersonationService> _impersonationService;
+        private Mock<IAnalyticsService> _analyticsService;
         private string _authType;
         private string _authToken;
         private const int ContactId = 8675309;
@@ -62,7 +64,8 @@ namespace crds_angular.test.controllers
             _authenticationService = new Mock<IAuthenticationRepository>();
             _mpDonorService = new Mock<MPInterfaces.IDonorRepository>();
             _impersonationService = new Mock<IUserImpersonationService>();
-            _fixture = new DonorController(_donorService.Object, _paymentService.Object, _donationService.Object, _mpDonorService.Object, _authenticationService.Object, _impersonationService.Object);
+            _analyticsService = new Mock<IAnalyticsService>();
+            _fixture = new DonorController(_donorService.Object, _paymentService.Object, _donationService.Object, _mpDonorService.Object, _authenticationService.Object, _impersonationService.Object, _analyticsService.Object);
 
             _authType = "auth_type";
             _authToken = "auth_token";
@@ -569,7 +572,12 @@ namespace crds_angular.test.controllers
             };
             var contactDonorUpdated = new MpContactDonor
             {
-                Email = "me@here.com"
+                Email = "me@here.com",
+                Details = new MpContactDetails
+                {
+                    EmailAddress = "me@here.com",
+                    DisplayName = "Bart Simpson"
+                }
             };
             var recurringGiftDto = new RecurringGiftDto
             {
@@ -578,7 +586,7 @@ namespace crds_angular.test.controllers
 
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(_authType + " " + _authToken)).Returns(contactDonor);
             _donorService.Setup(mocked => mocked.CreateOrUpdateContactDonor(contactDonor, string.Empty, string.Empty, string.Empty, string.Empty, null, null)).Returns(contactDonorUpdated);
-            _donorService.Setup(mocked => mocked.CreateRecurringGift(_authType + " " + _authToken, recurringGiftDto, contactDonorUpdated)).Returns(123);
+            _donorService.Setup(mocked => mocked.CreateRecurringGift(_authType + " " + _authToken, recurringGiftDto, contactDonorUpdated, "me@here.com", "Bart Simpson")).Returns(123);
 
             var response = _fixture.CreateRecurringGift(recurringGiftDto);
             _donorService.VerifyAll();
@@ -595,8 +603,19 @@ namespace crds_angular.test.controllers
         public void TestCreateRecurringGiftStripeError()
         {
             const string stripeToken = "tok_123";
-            var contactDonor = new MpContactDonor();
-            var contactDonorUpdated = new MpContactDonor();
+            var contactDonor = new MpContactDonor
+            {
+                Email = "you@here.com"
+            };
+            var contactDonorUpdated = new MpContactDonor
+            {
+                Email = "me@here.com",
+                Details = new MpContactDetails
+                {
+                    EmailAddress = "me@here.com",
+                    DisplayName = "Bart Simpson"
+                }
+            };
             var recurringGiftDto = new RecurringGiftDto
             {
                 StripeTokenId = stripeToken
@@ -612,7 +631,7 @@ namespace crds_angular.test.controllers
 
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(_authType + " " + _authToken)).Returns(contactDonor);
             _donorService.Setup(mocked => mocked.CreateOrUpdateContactDonor(contactDonor, string.Empty, string.Empty, string.Empty, string.Empty, null, null)).Returns(contactDonorUpdated);
-            _donorService.Setup(mocked => mocked.CreateRecurringGift(_authType + " " + _authToken, recurringGiftDto, contactDonorUpdated)).Throws(stripeException);
+            _donorService.Setup(mocked => mocked.CreateRecurringGift(_authType + " " + _authToken, recurringGiftDto, contactDonorUpdated, "me@here.com", "Bart Simpson")).Throws(stripeException);
 
             var response = _fixture.CreateRecurringGift(recurringGiftDto);
             _donorService.VerifyAll();

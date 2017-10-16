@@ -6,9 +6,7 @@ using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Trip;
 using crds_angular.Services.Interfaces;
 using Crossroads.Utilities.Extensions;
-using Crossroads.Utilities.Interfaces;
 using log4net;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
@@ -140,19 +138,17 @@ namespace crds_angular.Services
                 RegistrationDeposit = campaign.RegistrationDeposit,
                 AgeExceptions = campaign.AgeExceptions,
                 IsFull = false,
-                EventId = campaign.EventId
+                EventId = campaign.EventId,
+                EventStart = campaign.EventStart
             };
-            var pledges = new List<MpPledge>();
 
             if (campaign.MaximumRegistrants != null)
             {
-                pledges = _mpPledgeService.GetPledgesByCampaign(pledgeCampaignId, token);               
+                var pledges = _mpPledgeService.GetPledgesByCampaign(pledgeCampaignId, token);
+                if (pledges.Count >= campaign.MaximumRegistrants)
+                    response.IsFull = true;
             }
-            if (campaign.MaximumRegistrants == null || campaign.MaximumRegistrants > pledges.Count)
-            {
-                return response;
-            }
-            response.IsFull = true;
+
             return response;
         }
 
@@ -351,11 +347,12 @@ namespace crds_angular.Services
                     t.FundraisingGoal = Convert.ToInt32(pledge.PledgeTotal);
                     t.EventParticipantId = tripParticipant.EventParticipantId;
                     t.EventParticipantFirstName = tripParticipant.Nickname;
-                    t.EventParticipantLastName = tripParticipant.Lastname;
+                    t.EventParticipantLastName = tripParticipant.Lastname;                    
+                    t.IPromiseSigned = GetIPromise(tripParticipant.EventParticipantId);
+                    t.ContactId = contactId;
 
                     events.Add(t);
                 }
-               
             }
 
             foreach (var e in events)
@@ -416,6 +413,9 @@ namespace crds_angular.Services
             var tripRecord = _campaignService.GetGoTripDetailsByCampaign(pledgeCampaignId).FirstOrDefault();
             var tripDonor = _mpDonorService.GetContactDonor(contactId);
             var campaign = _campaignService.GetPledgeCampaign(pledgeCampaignId);
+
+            if (campaign == null)
+                throw new ApplicationException($"Pledge campaign Id {pledgeCampaignId} not found or expired");
 
             tripParticipantPledgeInfo.PledgeAmount = tripRecord != null ? (int)tripRecord.CampaignFundRaisingGoal : 0;
             tripParticipantPledgeInfo.CampaignNickname = campaign.Nickname;
@@ -735,6 +735,36 @@ namespace crds_angular.Services
             answers.Add(new MpFormAnswer {Response = page6.ValidPassport, FieldId = _configurationWrapper.GetConfigIntValue("TripForm.ValidPassport")});
 
             return answers;
+        }
+
+        public bool GetIPromise(int eventParticipantId)
+        {
+            var token = _apiUserRepository.GetToken();
+            var iPromiseDocId = _configurationWrapper.GetConfigIntValue("IPromiseDocumentId");
+            var docs = _tripRepository.GetTripDocuments(eventParticipantId, token);
+            return docs.Any(d => d.DocumentId == iPromiseDocId && d.Received);
+        }
+
+        public TripDocument GetIPromiseDocument(int eventParticipantId)
+        {
+            var token = _apiUserRepository.GetToken();
+            var iPromiseDocId = _configurationWrapper.GetConfigIntValue("IPromiseDocumentId");
+            var docs = _tripRepository.GetTripDocuments(eventParticipantId, token);
+            return docs.Where(d => d.DocumentId == iPromiseDocId).Select(d => new TripDocument{ DocumentId = d.DocumentId, EventParticipantId = d.EventParticipantId, EventParticipantDocumentId = d.EventParticipantDocumentId, Received = d.Received, Notes = d.Notes, TripName = d.EventTitle}).FirstOrDefault();
+        }
+
+        public void ReceiveIPromiseDocument(TripDocument iPromiseDoc)
+        {
+            var token = _apiUserRepository.GetToken();
+            _tripRepository.ReceiveTripDocument(new MpEventParticipantDocument
+            {
+                DocumentId = iPromiseDoc.DocumentId,
+                EventParticipantId = iPromiseDoc.EventParticipantId,
+                EventParticipantDocumentId = iPromiseDoc.EventParticipantDocumentId,
+                EventTitle = iPromiseDoc.TripName,
+                Notes = iPromiseDoc.Notes,
+                Received = iPromiseDoc.Received
+            }, token);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
+using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
@@ -17,6 +18,7 @@ namespace MinistryPlatform.Translation.Test.Services
     {
         private InvitationRepository _fixture;
         private Mock<IMinistryPlatformService> _ministryPlatformService;
+        private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;
 
         private const int InvitationPageId = 123;
 
@@ -24,6 +26,7 @@ namespace MinistryPlatform.Translation.Test.Services
         public void SetUp()
         {
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
+            _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
             var config = new Mock<IConfigurationWrapper>(MockBehavior.Strict);
             var auth = new Mock<IAuthenticationRepository>(MockBehavior.Strict);
 
@@ -37,7 +40,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 ExpiresIn = 123
             });
 
-            _fixture = new InvitationRepository(_ministryPlatformService.Object, config.Object, auth.Object);
+            _fixture = new InvitationRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, config.Object, auth.Object);
         }
 
         [Test]

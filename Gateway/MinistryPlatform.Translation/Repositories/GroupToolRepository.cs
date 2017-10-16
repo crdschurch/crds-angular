@@ -102,6 +102,20 @@ namespace MinistryPlatform.Translation.Repositories
             return results?.FirstOrDefault();
         }
 
+        public void ArchivePendingGroupInquiriesOlderThan90Days()
+        {
+            try
+            {
+                const string spName = "api_crds_Archive_Pending_Group_Inquiries_Older_Than_90_Days";
+                _mpRestRepository.GetFromStoredProc<bool>(spName);
+
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Failed to execute stored proc to archive groups");
+            }
+        }
+
         public List<MpInquiry> GetInquiries(int? groupId = null)
         {
             var mpInquiries = new List<MpInquiry>();

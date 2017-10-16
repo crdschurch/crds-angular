@@ -37,6 +37,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _configuration.Setup(mocked => mocked.GetConfigIntValue("Household_Default_Source_ID")).Returns(30);
             _configuration.Setup(mocked => mocked.GetConfigIntValue("Household_Position_Default_ID")).Returns(1);
             _configuration.Setup(mocked => mocked.GetConfigIntValue("StaffContactAttribute")).Returns(7088);
+            _configuration.Setup(mocked => mocked.GetConfigIntValue("EventToolContactAttribute")).Returns(9048);
             _configuration.Setup(mocked => mocked.GetConfigIntValue("Addresses")).Returns(271);
             _configuration.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configuration.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
@@ -384,7 +385,7 @@ namespace MinistryPlatform.Translation.Test.Services
         }
 
         [Test]
-        public void ShouldGetStaffContacts()
+        public void ShouldGetPrimaryContacts()
         {
             var returnData = new List<Dictionary<string, object>>
             {
@@ -403,12 +404,12 @@ namespace MinistryPlatform.Translation.Test.Services
                 }
             };
 
-            const string columns = "Contact_ID_Table.*";
-            string filter = $"Attribute_ID = 7088 AND Start_Date <= GETDATE() AND (end_date is null OR end_Date > GETDATE())";
+            const string columns = "Contact_ID_Table.Contact_ID, Contact_ID_Table.Display_Name, Contact_ID_Table.Email_Address, Contact_ID_Table.First_Name, Contact_ID_Table.Last_Name";
+            string filter = $"Attribute_ID IN (7088,9048) AND Start_Date <= GETDATE() AND (End_Date IS NULL OR End_Date > GETDATE())";
 
-            _ministryPlatformRest.Setup(m => m.Search<MpContactAttribute, Dictionary<string, object>>(filter, columns, null, true)).Returns(returnData);
+            _ministryPlatformRest.Setup(m => m.Search<MpContactAttribute, Dictionary<string, object>>(filter, columns, "Display_Name", true)).Returns(returnData);
 
-            var result = _fixture.StaffContacts();
+            var result = _fixture.PrimaryContacts();
 
             _ministryPlatformRest.VerifyAll();
 

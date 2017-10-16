@@ -34,8 +34,8 @@
     </div>
 
     <footer ng-hide="geolocation.success">
-      <a ng-click="geolocation.submit()" class="btn btn-standard">Submit Roll Call</a><br>
-      <a href="#" class="btn btn-link" ng-click="geolocation.dismissed()" ng-show="geolocation.isModal">Dismiss</a>
+      <a ng-click="geolocation.submit()" class="btn btn-standard" ng-disabled="!geolocation.submitEnabled()">Submit Roll Call</a><br>
+      <a href="#" class="btn btn-link" ng-click="geolocation.dismissed()"  ng-show="geolocation.isModal">Dismiss</a>
     </footer>
 
     <ng-transclude></ng-transclude>

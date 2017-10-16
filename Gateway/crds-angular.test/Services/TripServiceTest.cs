@@ -7,15 +7,13 @@ using crds_angular.Models.Crossroads.Trip;
 using crds_angular.Services;
 using crds_angular.Services.Interfaces;
 using Crossroads.Utilities.FunctionalHelpers;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
+using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
-using Rhino.Mocks;
 using IDonationRepository = MinistryPlatform.Translation.Repositories.Interfaces.IDonationRepository;
 using IEventRepository = MinistryPlatform.Translation.Repositories.Interfaces.IEventRepository;
 using IGroupRepository = MinistryPlatform.Translation.Repositories.Interfaces.IGroupRepository;
@@ -142,9 +140,12 @@ namespace crds_angular.test.Services
             var mockFamily = new List<FamilyMember> { new FamilyMember { ContactId = 12345 }, new FamilyMember { ContactId = 98765 } };
             _serveService.Setup(m => m.GetImmediateFamilyParticipants(token)).Returns(mockFamily);
 
+            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _configurationWrapper.Setup(m => m.GetConfigIntValue(It.IsAny<string>())).Returns(10);
             _donationService.Setup(m => m.GetMyTripDistributions(It.IsAny<int>())).Returns(MockTripDonationsResponse());
             _eventParticipantService.Setup(m => m.TripParticipants(It.IsAny<string>())).Returns(mockTripParticipants());
             _pledgeService.Setup(m => m.GetPledgeByCampaignAndDonor(It.IsAny<int>(), It.IsAny<int>())).Returns(mockPledge());
+            _tripRepository.Setup(m => m.GetTripDocuments(It.IsAny<int>(), token)).Returns(new List<MpEventParticipantDocument>());
             var myTrips = _fixture.GetMyTrips(token);
 
             _serveService.VerifyAll();
@@ -163,9 +164,12 @@ namespace crds_angular.test.Services
             var mockFamily = new List<FamilyMember> { new FamilyMember { ContactId = 12345 } };
             _serveService.Setup(m => m.GetImmediateFamilyParticipants(token)).Returns(mockFamily);
 
+            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _configurationWrapper.Setup(m => m.GetConfigIntValue(It.IsAny<string>())).Returns(10);
             _donationService.Setup(m => m.GetMyTripDistributions(It.IsAny<int>())).Returns(MockFundingPastTripDonationsResponse());
             _eventParticipantService.Setup(m => m.TripParticipants(It.IsAny<string>())).Returns(mockTripParticipants());
             _pledgeService.Setup(m => m.GetPledgeByCampaignAndDonor(It.IsAny<int>(), It.IsAny<int>())).Returns(mockPledge());
+            _tripRepository.Setup(m => m.GetTripDocuments(It.IsAny<int>(), token)).Returns(new List<MpEventParticipantDocument>());
             var myTrips = _fixture.GetMyTrips(token);
 
             Assert.IsNotNull(myTrips);
@@ -476,6 +480,83 @@ namespace crds_angular.test.Services
             _apiUserReposity.VerifyAll();
             _campaignService.VerifyAll();
             _pledgeService.Verify(m => m.GetPledgesByCampaign(pledgeCampaignId, apiToken), Times.Never);
+        }
+
+        [Test]
+        public void ShouldGetSignedIPromise()
+        {
+            const int eventParticipantId = 1234;
+            const string token = "faketoken";
+            var mockDocs = new List<MpEventParticipantDocument>
+            {
+                new MpEventParticipantDocument
+                {
+                    EventParticipantDocumentId = 1,
+                    DocumentId = 10,
+                    EventParticipantId = 1234,
+                    Received = true
+                },
+                new MpEventParticipantDocument
+                {
+                    EventParticipantDocumentId = 2,
+                    DocumentId = 12,
+                    EventParticipantId = 1234,
+                    Received = false
+                }
+            };
+
+            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _configurationWrapper.Setup(m => m.GetConfigIntValue("IPromiseDocumentId")).Returns(10);
+            _tripRepository.Setup(m => m.GetTripDocuments(eventParticipantId, token)).Returns(mockDocs);
+
+            var result = _fixture.GetIPromise(eventParticipantId);
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void ShouldGetNotSignedIPromise()
+        {
+            const int eventParticipantId = 1234;
+            const string token = "faketoken";
+            var mockDocs = new List<MpEventParticipantDocument>
+            {
+                new MpEventParticipantDocument
+                {
+                    EventParticipantDocumentId = 1,
+                    DocumentId = 11,
+                    EventParticipantId = 1234,
+                    Received = true
+                },
+                new MpEventParticipantDocument
+                {
+                    EventParticipantDocumentId = 2,
+                    DocumentId = 12,
+                    EventParticipantId = 1234,
+                    Received = false
+                }
+            };
+
+            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _configurationWrapper.Setup(m => m.GetConfigIntValue("IPromiseDocumentId")).Returns(10);
+            _tripRepository.Setup(m => m.GetTripDocuments(eventParticipantId, token)).Returns(mockDocs);
+
+            var result = _fixture.GetIPromise(eventParticipantId);
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void ShouldGetNotSignedIPromiseWhenNoDocs()
+        {
+            const int eventParticipantId = 1234;
+            const string token = "faketoken";
+            var mockDocs = new List<MpEventParticipantDocument>();
+
+            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _configurationWrapper.Setup(m => m.GetConfigIntValue("IPromiseDocumentId")).Returns(10);
+            _tripRepository.Setup(m => m.GetTripDocuments(eventParticipantId, token)).Returns(mockDocs);
+
+            var result = _fixture.GetIPromise(eventParticipantId);
+            Assert.IsFalse(result);
         }
 
         private MpEvent EventDetails(int eventId = 8)

@@ -20,6 +20,10 @@ streaming, landing {
     font-weight: 300;
   }
 
+  .landing-connect h3 > a {
+    color: #FFF;
+  }
+
   .countdown {
     display: flex;
     flex-flow: row nowrap;
@@ -251,7 +255,7 @@ streaming, landing {
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
-    padding: 2em 0;
+    padding: 0;
 
     &, h1 {
       color: #FFF;
@@ -1455,6 +1459,7 @@ modal.watch-now {
     padding: 0;
     height: 450px;
     background-color: black;
+    overflow: hidden;
   }
   iframe {
     height: 450px;

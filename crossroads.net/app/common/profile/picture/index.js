@@ -11,4 +11,6 @@
 
   require('./profilePicture.html');
   require('./profileImageUpload.html');
+  require('script!./../../../../lib/load-image.all.min.js');
+
 })();

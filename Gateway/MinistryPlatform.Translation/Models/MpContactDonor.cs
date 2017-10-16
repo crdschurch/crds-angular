@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Runtime.Serialization;
+using AutoMapper.Internal;
+using MinistryPlatform.Translation.Extensions;
+using MinistryPlatform.Translation.Models.DTO;
+using Newtonsoft.Json.Linq;
 
 namespace MinistryPlatform.Translation.Models
 {
@@ -9,7 +14,7 @@ namespace MinistryPlatform.Translation.Models
     /// directly without ever logging in.  There are various properties on this object
     /// that can be referenced to determine the state of the MpContactDonor.
     /// </summary>
-    public class MpContactDonor
+    public class MpContactDonor : MpBaseDto
     {
         public int ContactId { get; set; }
         public int DonorId { get; set; }
@@ -23,6 +28,7 @@ namespace MinistryPlatform.Translation.Models
         public bool RegisteredUser {get; set; }
         public MpContactDetails Details { get; set; }
         public MpDonorAccount Account { get; set; }
+
 
         /// <summary>
         /// Returns true if this MpContactDonor represents an existing MP Contact, false if not.
@@ -43,6 +49,16 @@ namespace MinistryPlatform.Translation.Models
         public bool HasDetails { get { return (Details != null); } }
 
         public bool HasAccount { get { return (Account != null); } }
+
+        protected override void ProcessUnmappedData(System.Collections.Generic.IDictionary<string, JToken> unmappedData, StreamingContext context)
+        {
+            if (Details == null) Details = new MpContactDetails();
+            Details.EmailAddress = unmappedData.GetUnmappedDataField<string>("Email");
+            Details.FirstName = unmappedData.GetUnmappedDataField<string>("FirstName");
+            Details.LastName = unmappedData.GetUnmappedDataField<string>("LastName");
+            Details.HouseholdId = unmappedData.GetUnmappedDataField<int>("HouseholdId");
+            Details.DisplayName = unmappedData.GetUnmappedDataField<string>("DisplayName");
+        }
     }
 
     public class MpContactDetails

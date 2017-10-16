@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using log4net;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
@@ -29,6 +31,7 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly IApiUserRepository _apiUserRepository;
         private readonly int _participantsPageId;
         private readonly int _securityRolesSubPageId;
+        
 
         public ContactRepository(IMinistryPlatformService ministryPlatformService, IAuthenticationRepository authenticationService, IConfigurationWrapper configuration, IMinistryPlatformRestRepository ministryPlatformRest, IApiUserRepository apiUserRepository)
             : base(authenticationService, configuration)
@@ -108,6 +111,18 @@ namespace MinistryPlatform.Translation.Repositories
             return ParseProfileRecord(pageViewRecords[0]);
         }
 
+        public IObservable<MpSimpleContact> GetSimpleContact(int contactId)
+        {
+            try
+            {
+                return Observable.Start(() => _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Get<MpSimpleContact>(contactId));
+            }
+            catch (Exception e)
+            {
+                return Observable.Throw<MpSimpleContact>(new Exception($"Can't find a contact with ID = {contactId}"));
+            }
+        }
+
         public MpMyContact GetContactByIdCard(string idCard)
         {
             var searchString = string.Format(new String(',', 34) + "\"{0}\"", idCard);
@@ -161,6 +176,25 @@ namespace MinistryPlatform.Translation.Repositories
             }
         }
 
+        public MpContact GetEmailFromDonorId(int donorId)
+        {
+            MpContact contact = new MpContact();
+            try
+            {
+                string searchFilter = $"Donor_Record={donorId}";
+                var foundEmails = _ministryPlatformRest.UsingAuthenticationToken(base.ApiLogin()).Search<MpContact>(searchFilter, "Contact_ID, Donor_Record, Email_Address");
+                if (foundEmails.Count == 1)
+                    contact = foundEmails.First();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException(
+                    string.Format("GetEmailFromDonorId failed.  Donor Id: {0}", donorId), ex);
+            }
+
+            return contact;
+        }
+
         public int GetContactIdByEmail(string email)
         {
             var records = _ministryPlatformService.GetRecordsDict(_configurationWrapper.GetConfigIntValue("Contacts"), ApiLogin(), (email));
@@ -175,6 +209,61 @@ namespace MinistryPlatform.Translation.Repositories
 
             var record = records[0];
             return record.ToInt("dp_RecordID");
+        }
+
+
+        #region changes inactive users to active and records in the audit log
+        public void UpdateContactToActive(int contactId)
+        {
+            try
+            {
+                var token = ApiLogin();
+                var searchString = $"Contact_ID = {contactId}";
+                const string column = "Contact_Status_ID";
+                var contactstatus = _ministryPlatformRest.UsingAuthenticationToken(token).Search<int>("Contacts", searchString, column, null);
+
+                if (contactstatus == 2)
+                {
+                    contactstatus = 1;
+                    Dictionary<string, object> activestatus = new Dictionary<string, object>()
+                    {
+                        {"Contact_ID",contactId },
+                        {"Contact_Status_ID", contactstatus}
+                    };
+                    _ministryPlatformRest.UsingAuthenticationToken(token).UpdateRecord("Contacts", -1, activestatus);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new ApplicationException("Error Changing User to Active Status: " + e.Message);
+            }
+        }
+
+    #endregion
+
+        public int GetActiveContactIdByEmail(string email)
+        {
+            // filter out contact_status = deceased (id = 3)
+            var token = ApiLogin();
+            string filter = $" Display_Name != 'Guest Giver' AND Contact_Status_ID != 3 AND Email_Address = '{email}'";
+            var columns = new List<string>
+            {
+                "Email_Address",
+                "Contact_ID"
+            };
+
+            var records = _ministryPlatformRest.UsingAuthenticationToken(token).Search<MpMyContact>(filter, columns);
+
+            if (records.Count > 1)
+            {
+                throw new Exception("User email did not return exactly one user record");
+            }
+            if (records.Count < 1)
+            {
+                return 0;
+            }
+            
+            return records[0].Contact_ID;
         }
 
         public int GetContactIdByParticipantId(int participantId)
@@ -260,13 +349,32 @@ namespace MinistryPlatform.Translation.Repositories
             return contact;
         }
 
-        public List<Dictionary<string, object>> StaffContacts()
+        public List<Dictionary<string, object>> PrimaryContacts(bool staffOnly = false)
         {
-            var token = ApiLogin();
-            var staffContactAttribute = _configurationWrapper.GetConfigIntValue("StaffContactAttribute");
-            const string columns = "Contact_ID_Table.*";
-            string filter = $"Attribute_ID = {staffContactAttribute} AND Start_Date <= GETDATE() AND (end_date is null OR end_Date > GETDATE())";
-            var records = _ministryPlatformRest.UsingAuthenticationToken(token).Search<MpContactAttribute, Dictionary<string, object>>(filter, columns, null, true);
+            string columns = string.Join(", ",
+                "Contact_ID_Table.Contact_ID",
+                "Contact_ID_Table.Display_Name",
+                "Contact_ID_Table.Email_Address",
+                "Contact_ID_Table.First_Name",
+                "Contact_ID_Table.Last_Name"
+            );
+
+            // always include contacts with the "Staff" attribute
+            List<int> attributeIds = new List<int>()
+            {
+                _configurationWrapper.GetConfigIntValue("StaffContactAttribute")
+            };
+
+            // optionally include contacts with the "Event Tool Contact" attribute
+            if (!staffOnly)
+                attributeIds.Add(_configurationWrapper.GetConfigIntValue("EventToolContactAttribute"));
+
+            string filter = $"Attribute_ID IN ({string.Join(",", attributeIds)})";
+            filter += " AND Start_Date <= GETDATE() AND (End_Date IS NULL OR End_Date > GETDATE())";
+
+            string apiToken = ApiLogin();
+            var records = _ministryPlatformRest.UsingAuthenticationToken(apiToken)
+                            .Search<MpContactAttribute, Dictionary<string, object>>(filter, columns, "Display_Name", true);
             return records;
         }
 
@@ -349,23 +457,26 @@ namespace MinistryPlatform.Translation.Repositories
                                   Dictionary<string, object> householdDictionary,
                                   Dictionary<string, object> addressDictionary)
         {
-            // don't create orphaned address records
-            bool addressAlreadyExists = addressDictionary["Address_ID"] != null ? true : false;
-            if (!addressAlreadyExists && householdDictionary == null)
-                throw new ArgumentException("Household is required when adding a new address");
-
             string apiToken = _apiUserRepository.GetToken();
 
-            if (addressAlreadyExists)
+            if (addressDictionary != null)
             {
-                //address exists, update it
-                _ministryPlatformService.UpdateRecord(_configurationWrapper.GetConfigIntValue("Addresses"), addressDictionary, apiToken);
-            }
-            else
-            {
-                //address does not exist, create it, then attach to household
-                var addressId = _ministryPlatformService.CreateRecord(_configurationWrapper.GetConfigIntValue("Addresses"), addressDictionary, apiToken);
-                householdDictionary["Address_ID"] = addressId;
+                // don't create orphaned address records
+                bool addressAlreadyExists = addressDictionary["Address_ID"] != null ? true : false;
+                if (!addressAlreadyExists && householdDictionary == null)
+                    throw new ArgumentException("Household is required when adding a new address");
+
+                if (addressAlreadyExists)
+                {
+                    //address exists, update it
+                    _ministryPlatformService.UpdateRecord(_configurationWrapper.GetConfigIntValue("Addresses"), addressDictionary, apiToken);
+                }
+                else
+                {
+                    //address does not exist, create it, then attach to household
+                    var addressId = _ministryPlatformService.CreateRecord(_configurationWrapper.GetConfigIntValue("Addresses"), addressDictionary, apiToken);
+                    householdDictionary["Address_ID"] = addressId;
+                }
             }
 
             if (householdDictionary != null)
@@ -396,14 +507,15 @@ namespace MinistryPlatform.Translation.Repositories
             return contactIdList;
         }
 
-        public MpMyContact GetContactByUserRecordId(int userRecordId)
+        public MpMyContact GetContactByUserRecordId(int userRecordId, string apiToken=null)
         {
-            var token = ApiLogin();
+            if (String.IsNullOrEmpty(apiToken))
+                apiToken = ApiLogin();
             Dictionary<string, object> filter = new Dictionary<string, object>()
             {
                 {"User_Account", userRecordId}
             };
-            var records = _ministryPlatformRest.UsingAuthenticationToken(token).Get<MpMyContact>("Contacts",filter);
+            var records = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Get<MpMyContact>("Contacts",filter);
             if (records.Count > 1)
             {
                 throw new ApplicationException("GetContactByUserRecordId returned multiple records");
@@ -419,8 +531,7 @@ namespace MinistryPlatform.Translation.Repositories
         public IObservable<MpHousehold> UpdateHousehold(MpHousehold household)
         {
             var token = ApiLogin();            
-            var asyncresult = Task.Run(() => _ministryPlatformRest.UsingAuthenticationToken(token)
-                                                        .Update<MpHousehold>(household));
+            var asyncresult = Task.Run(() => _ministryPlatformRest.UsingAuthenticationToken(token).Update<MpHousehold>(household));
             return asyncresult.ToObservable();
         }
 

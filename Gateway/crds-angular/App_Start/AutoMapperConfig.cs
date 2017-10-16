@@ -26,6 +26,7 @@ using MpEvent = MinistryPlatform.Translation.Models.MpEvent;
 using MpGroup = MinistryPlatform.Translation.Models.MpGroup;
 using MpInvitation = MinistryPlatform.Translation.Models.MpInvitation;
 using MpResponse = MinistryPlatform.Translation.Models.MpResponse;
+using crds_angular.Services;
 
 namespace crds_angular.App_Start
 {
@@ -397,9 +398,19 @@ namespace crds_angular.App_Start
             Mapper.CreateMap<PinDto, FinderPinDto>();
             Mapper.CreateMap<FinderPinDto, PinDto>();
             Mapper.CreateMap<AwsConnectDto,MpConnectAws>();
-            Mapper.CreateMap<MpConnectAws,AwsConnectDto>()
-                .ForMember(dest => dest.LatLong, opts => opts.MapFrom(
-                   src => (src.Latitude==null || src.Longitude==null) ? "0 , 0" : $"{src.Latitude} , {src.Longitude}"));
+            Mapper.CreateMap<MpConnectAws, AwsConnectDto>()
+                .ForMember(dest => dest.LatLong,
+                           opts => opts.MapFrom(
+                               src => (src.Latitude == null || src.Longitude == null) ? "0 , 0" : $"{src.Latitude} , {src.Longitude}"))
+                .ForMember(dest => dest.GroupAgeRange,
+                           opts => opts.MapFrom(
+                               src => src.GroupAgeRange.Split(',')))
+                .ForMember(dest => dest.GroupCategory,
+                           opts => opts.MapFrom(
+                               src => src.GroupCategory.Split(',')))
+                .ForMember(dest => dest.GroupMeetingTime,
+                           opts => opts.MapFrom(
+                               src => new AwsTimeHelper().ConvertTimeToUtcString(src.GroupMeetingTime)));
 
             Mapper.CreateMap<PinDto, AwsConnectDto>()
                 .ForMember(dest => dest.FirstName, opts => opts.MapFrom(src => src.FirstName))
@@ -425,6 +436,9 @@ namespace crds_angular.App_Start
 
             Mapper.CreateMap<ConnectCommunicationDto, MpConnectCommunication>();
             Mapper.CreateMap<MpConnectCommunication, ConnectCommunicationDto>();
+
+            Mapper.CreateMap<FinderGroupDto, GroupDTO>();
+            Mapper.CreateMap<GroupDTO, FinderGroupDto>();
 
             Mapper.CreateMap<MpSU2SOpportunity, ServeOpportunity>();
             Mapper.CreateMap<ServeOpportunity, MpSU2SOpportunity>();

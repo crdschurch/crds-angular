@@ -46,11 +46,9 @@ build/
 styles/main.css*
 styles/modules/*.css*
 styles/pages/*.css*
-corkboard
 
 .DS_Store
 
-corkboard
 karma_html/
 
 .htaccess

@@ -26,7 +26,7 @@ namespace crds_angular.Services
         private readonly int _groupInvitationEmailTemplate;
         private readonly int _groupInvitationEmailTemplateCustom;
         private readonly int _tripInvitationType;
-        private readonly int _tripInvitationEmailTemplate;
+        private readonly int _tripInvitationEmailTemplate;        
 
         private readonly int _anywhereGatheringInvitationTypeId;
         private readonly int _anywhereGatheringInvitationEmailTemplate;
@@ -37,6 +37,8 @@ namespace crds_angular.Services
         private readonly int _groupRoleLeader;
 
         private readonly ILog _logger = LogManager.GetLogger(typeof(GroupToolService));
+
+        private readonly string _baseUrl;
 
         public InvitationService(
                            IInvitationRepository invitationRepository,
@@ -60,12 +62,16 @@ namespace crds_angular.Services
             _tripInvitationEmailTemplate = configuration.GetConfigIntValue("PrivateInviteTemplate");
             _anywhereGatheringInvitationEmailTemplate = configuration.GetConfigIntValue("AnywhereGatheringInvitationEmailTemplate");
             _anywhereGatheringInvitationTypeId = configuration.GetConfigIntValue("AnywhereGatheringInvitationType");
+            
 
             _defaultInvitationEmailTemplate = configuration.GetConfigIntValue("DefaultInvitationEmailTemplate");
 
             _domainId = configuration.GetConfigIntValue("DomainId");
 
             _groupRoleLeader = configuration.GetConfigIntValue("GroupRoleLeader");
+
+            //URL
+            _baseUrl = configuration.GetConfigValue("BaseUrl");
         }
 
         public Invitation CreateInvitation(Invitation dto, string token)
@@ -73,20 +79,20 @@ namespace crds_angular.Services
             try
             {
                 var mpInvitation = Mapper.Map<MpInvitation>(dto);
-
                 var invitation = _invitationRepository.CreateInvitation(mpInvitation);
-
-                var group = _groupRepository.getGroupDetails(dto.SourceId);
-
-                var leaderParticipantRecord = _participantRepository.GetParticipantRecord(token);
-
-                try
-                {                    
-                    SendEmail(invitation, leaderParticipantRecord, group);
-                }
-                catch (Exception e)
+                if (dto.InvitationType == _anywhereGatheringInvitationTypeId || dto.InvitationType == _groupInvitationType)
                 {
-                    _logger.Error($"Error sending email to {invitation.EmailAddress} for invitation {invitation.InvitationGuid}", e);
+                    var group = _groupRepository.getGroupDetails(dto.SourceId);
+                    var leaderParticipantRecord = _participantRepository.GetParticipantRecord(token);
+
+                    try
+                    {
+                        SendEmail(invitation, leaderParticipantRecord, group);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Error($"Error sending email to {invitation.EmailAddress} for invitation {invitation.InvitationGuid}", e);
+                    }
                 }
 
                 dto.InvitationGuid = invitation.InvitationGuid;
@@ -114,7 +120,7 @@ namespace crds_angular.Services
                 ValidateGroupInvitation(dto, token);
             }
 
-        } 
+        }
 
         private void ValidateGroupInvitation(Invitation dto, string token)
         {
@@ -168,6 +174,9 @@ namespace crds_angular.Services
             } else if (invitation.InvitationType == _tripInvitationType) {
                 emailTemplateId = _tripInvitationEmailTemplate;
             } else if (invitation.InvitationType == _anywhereGatheringInvitationTypeId) {
+                mergeData["YesURL"] = $"{_baseUrl}/connect/accept-invite/{group.GroupId}/{invitation.InvitationGuid}";
+                mergeData["NoURL"]  = $"{_baseUrl}/connect/decline-invite/{group.GroupId}/{invitation.InvitationGuid}";
+
                 mergeData["Recipient_Name"] = invitation.RecipientName.Substring(0, 1).ToUpper() + invitation.RecipientName.Substring(1).ToLower();
                 mergeData.Add("Leader_Name", leaderContact.Nickname.Substring(0,1).ToUpper() + leaderContact.Nickname.Substring(1).ToLower() + " " + leaderContact.Last_Name.Substring(0,1).ToUpper() + ".");
                 mergeData.Add("City", group.Address.City);

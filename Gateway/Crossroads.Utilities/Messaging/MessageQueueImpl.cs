@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Messaging;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Messaging;
 using Crossroads.Utilities.Messaging.Interfaces;
 
 namespace Crossroads.Utilities.Messaging
@@ -25,6 +20,12 @@ namespace Crossroads.Utilities.Messaging
         public MessageQueue CreateQueue(string queueName, QueueAccessMode accessMode, IMessageFormatter formatter = null)
         {
             _messageQueue = _messageQueueFactory.CreateQueue(queueName, accessMode, formatter);
+            // If sending messages, make the queue durable
+            if (accessMode == QueueAccessMode.Send || accessMode == QueueAccessMode.SendAndReceive)
+            {
+                _messageQueue.DefaultPropertiesToSend.Recoverable = true;
+            }
+
             return _messageQueue;
         }
 

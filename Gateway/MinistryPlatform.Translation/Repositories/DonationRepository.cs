@@ -326,7 +326,7 @@ namespace MinistryPlatform.Translation.Repositories
                 var paymentType = PaymentType.GetPaymentType(result.paymentTypeId).name;
                 var declineEmailTemplate = PaymentType.GetPaymentType(result.paymentTypeId).declineEmailTemplateId;
 
-                _donorService.SendEmail(declineEmailTemplate, result.donorId, result.donationAmt / Constants.StripeDecimalConversionValue, paymentType, result.donationDate,
+                _donorService.SendEmail(declineEmailTemplate, result.donorId, result.donationAmt / Constants.StripeDecimalConversionValue, paymentType, result.donationDate, DateTime.Now,
                     program, result.donationNotes);
             }
             catch (Exception ex)
@@ -393,7 +393,8 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpTripDistribution> GetMyTripDistributions(int contactId)
         {
-            var results = _ministryPlatformService.GetPageViewRecords(_tripDistributionsPageView, ApiLogin(), contactId.ToString());
+            string searchString = $"{contactId},";
+            var results = _ministryPlatformService.GetPageViewRecords(_tripDistributionsPageView, ApiLogin(), searchString);
             var trips = new List<MpTripDistribution>();
             foreach (var result in results)
             {
@@ -721,19 +722,25 @@ namespace MinistryPlatform.Translation.Repositories
             _ministryPlatformService.UpdateRecord(_donationDistributionPageId, distributionData, ApiLogin());
         }
 
-        public void SendMessageFromDonor(int pledgeId, int donationId, string message)
+        public void SendMessageFromDonor(int pledgeId, int donationId, string message, string fromDonor)
         {
             var toDonor = _pledgeService.GetDonorForPledge(pledgeId);
-            var donorContact = _donorService.GetEmailViaDonorId(toDonor);
+            var toContact = _donorService.GetEmailViaDonorId(toDonor);
             var template = _communicationService.GetTemplate(_tripDonationMessageTemplateId);
 
-            var toContacts = new List<MpContact> {new MpContact {ContactId = donorContact.ContactId, EmailAddress = donorContact.Email}};
+            var toContacts = new List<MpContact> {new MpContact {ContactId = toContact.ContactId, EmailAddress = toContact.Email}};
 
             var from = new MpContact()
             {
                 ContactId = 5,
                 EmailAddress = "updates@crossroads.net"
             };
+
+
+            var mergeData = new Dictionary<string, object>
+                {
+                    {"Donor_Name", fromDonor }
+                };
 
             var comm = new MpCommunication
             {
@@ -744,7 +751,7 @@ namespace MinistryPlatform.Translation.Repositories
                 FromContact = from,
                 ReplyToContact = from,
                 ToContacts = toContacts,
-                MergeData = new Dictionary<string, object>()
+                MergeData = mergeData
             };
             var communicationId = _communicationService.SendMessage(comm, true);
             AddDonationCommunication(donationId, communicationId);
@@ -754,8 +761,13 @@ namespace MinistryPlatform.Translation.Repositories
         {
             // this code sets the status of a pending message to donor to ready to send, once there's a successful donation
             // stripe webhook returned - JPC 2/25/2016
-            var donationCommunicationRecords = _ministryPlatformService.GetRecordsDict(_donationCommunicationsPageId, ApiLogin(), string.Format("\"{0}\"",donationId), "");
+            var donationCommunicationRecords = _ministryPlatformService.GetRecordsDict(_donationCommunicationsPageId, ApiLogin(), string.Format("\"{0}\"", donationId), "");
             var donationCommunicationRecord = donationCommunicationRecords.FirstOrDefault();
+
+            // a message from the donor is optional, so there's nothing to do if no message is available
+            if (donationCommunicationRecord == null)
+                return;
+
             var communicationId = Int32.Parse(donationCommunicationRecord["Communication_ID"].ToString());
             var recordId = Int32.Parse(donationCommunicationRecord["dp_RecordID"].ToString());
 

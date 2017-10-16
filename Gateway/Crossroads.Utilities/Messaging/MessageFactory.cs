@@ -12,7 +12,10 @@ namespace Crossroads.Utilities.Messaging
     {
         public Message CreateMessage(dynamic messageBody, IMessageFormatter formatter)
         {
-            return (new Message(messageBody, formatter ?? new JsonMessageFormatter()));
+            return (new Message(messageBody, formatter ?? new JsonMessageFormatter())
+            {
+                Recoverable = true
+            });
         }
     }
 }

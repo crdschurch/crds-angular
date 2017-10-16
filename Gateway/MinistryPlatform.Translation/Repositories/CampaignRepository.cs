@@ -33,6 +33,7 @@ namespace MinistryPlatform.Translation.Repositories
         {            
             return WithApiLogin<MpPledgeCampaign>(token =>
             {
+                // NOTE: This page view excludes trips whose Event.Event_Start_Date >= today
                 var results = _ministryPlatformService.GetPageViewRecords(_configurationWrapper.GetConfigIntValue("GoTripsWithForms"), token, campaignId.ToString());
                 var campaigns = new List<MpPledgeCampaign>();
                 foreach (var result in results)

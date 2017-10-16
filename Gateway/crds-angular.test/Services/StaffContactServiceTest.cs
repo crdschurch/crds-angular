@@ -41,13 +41,13 @@ namespace crds_angular.test.Services
                 }
             };
 
-            _contactRepository.Setup(m => m.StaffContacts()).Returns(returnData);
+            _contactRepository.Setup(m => m.PrimaryContacts(true)).Returns(returnData);
 
             var result = _fixture.GetStaffContacts();
             _contactRepository.VerifyAll();
             Assert.AreEqual(result.Count, 2);
-            Assert.AreEqual(result[1].ContactId, 1);
-            Assert.AreEqual(result[0].DisplayName, "Croft, Lara");
+            Assert.AreEqual(result[0].ContactId, 1);
+            Assert.AreEqual(result[1].DisplayName, "Croft, Lara");
 
         }
     }

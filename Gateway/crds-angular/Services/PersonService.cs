@@ -1,13 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
+using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Profile;
+using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.Repositories;
+using RestSharp.Extensions;
+using Segment.Model;
 using MPServices = MinistryPlatform.Translation.Repositories.Interfaces;
 
 
@@ -15,26 +20,32 @@ namespace crds_angular.Services
 {
     public class PersonService : MinistryPlatformBaseService, IPersonService
     {
-        private readonly MPServices.IContactRepository _contactService;
+        private readonly MPServices.IContactRepository _contactRepository;
         private readonly IObjectAttributeService _objectAttributeService;
         private readonly IApiUserRepository _apiUserService;
         private readonly MPServices.IParticipantRepository _participantService;
-        private readonly MPServices.IUserRepository _userService;
+        private readonly MPServices.IUserRepository _userRepository;
         private readonly IAuthenticationRepository _authenticationService;
+        private readonly IAddressService _addressService;
+        private readonly IAnalyticsService _analyticsService;
 
         public PersonService(MPServices.IContactRepository contactService, 
             IObjectAttributeService objectAttributeService, 
             IApiUserRepository apiUserService,
             MPServices.IParticipantRepository participantService,
             MPServices.IUserRepository userService,
-            IAuthenticationRepository authenticationService)
+            IAuthenticationRepository authenticationService,
+            IAddressService addressService,
+            IAnalyticsService analyticsService)
         {
-            _contactService = contactService;
+            _contactRepository = contactService;
             _objectAttributeService = objectAttributeService;
             _apiUserService = apiUserService;
             _participantService = participantService;
-            _userService = userService;
+            _userRepository = userService;
             _authenticationService = authenticationService;
+            _addressService = addressService;
+            _analyticsService = analyticsService;
         }
 
         public void SetProfile(string token, Person person)
@@ -43,7 +54,25 @@ namespace crds_angular.Services
             var householdDictionary = getDictionary(person.GetHousehold());
             var addressDictionary = getDictionary(person.GetAddress());
             addressDictionary.Add("State/Region", addressDictionary["State"]);
-            _contactService.UpdateContact(person.ContactId, contactDictionary, householdDictionary, addressDictionary);
+            
+
+            // Some front-end consumers require an Address (e.g., /profile/personal), and
+            // some do not (e.g., /undivided/facilitator).  Don't attempt to create/update
+            // an Address record if we have no data.
+            if (addressDictionary.Values.All(i => i == null))
+            {
+                addressDictionary = null;
+            }
+            else
+            {
+                //add the lat/long to the address 
+                var address = new AddressDTO(addressDictionary["Address_Line_1"].ToString(), "", addressDictionary["City"].ToString(),  addressDictionary["State"].ToString(),  addressDictionary["Postal_Code"].ToString(),null,null);
+                var coordinates = _addressService.GetGeoLocationCascading(address);
+                addressDictionary.Add("Latitude", coordinates.Latitude);
+                addressDictionary.Add("Longitude", coordinates.Longitude);
+            }
+
+            _contactRepository.UpdateContact(person.ContactId, contactDictionary, householdDictionary, addressDictionary);
             var configuration = MpObjectAttributeConfigurationFactory.Contact();            
             _objectAttributeService.SaveObjectAttributes(person.ContactId, person.AttributeTypes, person.SingleAttributes, configuration);
 
@@ -70,18 +99,42 @@ namespace crds_angular.Services
                 else
                 {
                     var userUpdateValues = person.GetUserUpdateValues();
-                    userUpdateValues["User_ID"] = _userService.GetUserIdByUsername(person.OldEmail);
-                    _userService.UpdateUser(userUpdateValues);
+                    userUpdateValues["User_ID"] = _userRepository.GetUserIdByUsername(person.OldEmail);
+                    _userRepository.UpdateUser(userUpdateValues);
                 }
             }
+            CaptureProfileAnalytics(person);
+        }
+
+        public void CaptureProfileAnalytics(Person person)
+        {
+            var dateOfBirth = (String.IsNullOrWhiteSpace(person.DateOfBirth)) ? null : Convert.ToDateTime(person.DateOfBirth).ToUniversalTime().ToString("o");
+            var props = new EventProperties
+            {
+                { "FirstName", person.NickName },
+                { "LastName", person.LastName },
+                { "Email", person.EmailAddress },
+                { "Country", person.ForeignCountry },
+                { "Zip", person.PostalCode },
+                { "State", person.State },
+                { "City", person.City },
+                { "Employer", person.EmployerName },
+                { "FirstAttendanceDate", person.AnniversaryDate },
+                { "Congregation", person.CongregationId },
+                { "DateOfBirth", dateOfBirth },
+                { "Age", person.Age },
+                { "Gender", person.GenderId },
+                { "MaritalStatus", person.MaritalStatusId }
+            };
+            _analyticsService.IdentifyLoggedInUser(person.ContactId.ToString(), props);
         }
 
         public Person GetPerson(int contactId)
         {
-            var contact = _contactService.GetContactById(contactId);
+            var contact = _contactRepository.GetContactById(contactId);
             var person = Mapper.Map<Person>(contact);
 
-            var family = _contactService.GetHouseholdFamilyMembers(person.HouseholdId);
+            var family = _contactRepository.GetHouseholdFamilyMembers(person.HouseholdId);
             person.HouseholdMembers = family;
 
             // TODO: Should this move to _contactService or should update move it's call out to this service?
@@ -101,10 +154,10 @@ namespace crds_angular.Services
 
         public Person GetLoggedInUserProfile(String token)
         {
-            var contact = _contactService.GetMyProfile(token);
+            var contact = _contactRepository.GetMyProfile(token);
             var person = Mapper.Map<Person>(contact);
 
-            var family = _contactService.GetHouseholdFamilyMembers(person.HouseholdId);
+            var family = _contactRepository.GetHouseholdFamilyMembers(person.HouseholdId);
             person.HouseholdMembers = family;
 
             return person;

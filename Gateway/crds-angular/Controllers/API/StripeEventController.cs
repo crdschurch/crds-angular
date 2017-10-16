@@ -6,14 +6,16 @@ using crds_angular.Services.Interfaces;
 using crds_angular.Models.Crossroads.Stewardship;
 using crds_angular.Models.Json;
 using crds_angular.Services;
-using Crossroads.Utilities.Interfaces;
 using Crossroads.Utilities.Messaging.Interfaces;
 using Crossroads.ApiVersioning;
-using Crossroads.Web.Common;
+using Crossroads.ClientApiKeys;
 using Crossroads.Web.Common.Configuration;
+using MinistryPlatform.Translation.Exceptions;
 
 namespace crds_angular.Controllers.API
 {
+    // Ignore Client API Keys for all methods, since Stripe cannot send custom headers in webhooks
+    [IgnoreClientApiKey]
     public class StripeEventController : ApiController
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(StripeEventController));
@@ -23,9 +25,6 @@ namespace crds_angular.Controllers.API
         private readonly bool _asynchronous;
         private readonly IStripeEventService _stripeEventService;
 
-        // This value is used when creating the batch name for exporting to GP.  It must be 15 characters or less.
-        private const string BatchNameDateFormat = @"\M\PyyyyMMddHHmm";
-
         public StripeEventController(IConfigurationWrapper configuration, IStripeEventService stripeEventService = null,
             IMessageQueueFactory messageQueueFactory = null, IMessageFactory messageFactory = null)
         {
@@ -34,7 +33,7 @@ namespace crds_angular.Controllers.API
 
             b = configuration.GetConfigValue("StripeWebhookAsynchronousProcessingMode");
             _asynchronous = b != null && bool.Parse(b);
-            if (_asynchronous)
+            if (_asynchronous && messageQueueFactory != null)
             {
                 var eventQueueName = configuration.GetConfigValue("StripeWebhookEventQueueName");
                 _eventQueue = messageQueueFactory.CreateQueue(eventQueueName, QueueAccessMode.Send);
@@ -67,7 +66,7 @@ namespace crds_angular.Controllers.API
                 return (Ok());
             }
 
-            StripeEventResponseDTO response = null;
+            StripeEventResponseDTO response;
             try
             {
                 if (_asynchronous)
@@ -90,7 +89,19 @@ namespace crds_angular.Controllers.API
             catch (Exception e)
             {
                 var msg = "Unexpected error processing Stripe Event " + stripeEvent.Type;
-                _logger.Error(msg, e);
+
+                if (e is DonationNotFoundException)
+                {
+                    // Sometimes we receive a webhook callback before the donation has been
+                    // added to the database.  This is a known issue, so just do minimal
+                    // logging without a full stack trace.
+                    _logger.Error($"ProcessStripeEvent: Donation not found processing {stripeEvent.Type}: {e.Message}");
+                }
+                else
+                {
+                    _logger.Error(msg, e);
+                }
+
                 var responseDto = new StripeEventResponseDTO()
                 {
                     Exception = new ApplicationException(msg, e),

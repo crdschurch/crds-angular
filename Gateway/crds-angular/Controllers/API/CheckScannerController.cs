@@ -1,8 +1,6 @@
 ﻿using System;
-using System.CodeDom;
 using System.Messaging;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using crds_angular.Exceptions;
@@ -16,12 +14,14 @@ using Crossroads.Utilities.Messaging.Interfaces;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Crossroads.ApiVersioning;
-using Crossroads.Web.Common;
+using Crossroads.ClientApiKeys;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
+    // TODO - Once Ez-Scan has been updated to send a client API key (US7764), remove the IgnoreClientApiKey attribute
+    [IgnoreClientApiKey]
     public class CheckScannerController : MPAuth
     {
         private readonly bool _asynchronous;
@@ -32,7 +32,7 @@ namespace crds_angular.Controllers.API
         private readonly IMessageFactory _messageFactory;
         private readonly ICryptoProvider _cryptoProvider;
 
-        private readonly int CROSSROADS_FINANCE_CLERK_CONTACT_ID;
+        private readonly int _crossroadsFinanceClerkContactId;
 
         public CheckScannerController(IConfigurationWrapper configuration,
                                       ICheckScannerService checkScannerService,
@@ -53,7 +53,7 @@ namespace crds_angular.Controllers.API
             _asynchronous = b != null && bool.Parse(b);
 
             var id = configuration.GetConfigValue("CrossroadsFinanceClerkContactId");
-            CROSSROADS_FINANCE_CLERK_CONTACT_ID = (id == null ? -1 : Int32.Parse(id));
+            _crossroadsFinanceClerkContactId = (id == null ? -1 : int.Parse(id));
 
             if (_asynchronous)
             {
@@ -102,9 +102,9 @@ namespace crds_angular.Controllers.API
                 }
 
                 // US6745 - Only finance person receives email instead of the user who imports the batch
-                if (CROSSROADS_FINANCE_CLERK_CONTACT_ID > 0)
+                if (_crossroadsFinanceClerkContactId > 0)
                 {
-                    batch.MinistryPlatformContactId = CROSSROADS_FINANCE_CLERK_CONTACT_ID;
+                    batch.MinistryPlatformContactId = _crossroadsFinanceClerkContactId;
                     batch.MinistryPlatformUserId = _communicationService.GetUserIdFromContactId(batch.MinistryPlatformContactId.Value);
 
                     var message = _messageFactory.CreateMessage(batch);

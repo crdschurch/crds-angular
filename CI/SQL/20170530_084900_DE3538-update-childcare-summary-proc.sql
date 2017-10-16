@@ -107,7 +107,7 @@ AS
 		-- don't pull back a participant if they are part of the 27 group on the event
 		and not exists (select * from Group_Participants s_gp inner join Event_Groups s_eg on s_gp.Group_ID = 
 			s_eg.Group_ID inner join groups s_g on s_eg.Group_ID = s_g.Group_ID 
-				where s_g.Group_Type_ID = 27 and s_gp.Participant_ID = p.Participant_ID)
+				where s_g.Group_Type_ID = 27 and s_gp.Participant_ID = p.Participant_ID and s_eg.Event_ID = e.Event_Id)
 
 		SELECT Group_Name,
 			EventDate,

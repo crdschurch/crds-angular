@@ -9,12 +9,16 @@ export default class MessageService {
     }
 
     sendGroupMessage(groupId, message) {
-        return this.resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/grouptool/:groupId/:groupTypeId/groupmessage').save({groupId: groupId,
-            groupTypeId: CONSTANTS.GROUP.GROUP_TYPE_ID.SMALL_GROUPS}, message).$promise;
+        return this.resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/grouptool/:groupId/:groupTypeId/groupmessage').save({
+            groupId: groupId,
+            groupTypeId: CONSTANTS.GROUP.GROUP_TYPE_ID.SMALL_GROUPS
+        }, message).$promise;
     }
 
     sendLeaderMessage(message) {
         return this.resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/grouptool/:groupId/leadermessage').
-          save({groupId: message.groupId}, message).$promise;
+        save({
+            groupId: message.groupId
+        }, message).$promise;
     }
 }

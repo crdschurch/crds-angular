@@ -13,6 +13,7 @@ using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
+using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
@@ -665,7 +666,7 @@ namespace crds_angular.test.Services
             _productRepository.Setup(m => m.GetProductForEvent(camps.First().EventId)).Returns(product);
             _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(product.ProductId, family[0].ContactId))
                 .Returns(mpInvoiceResult);
-            _paymentService.Setup(m => m.GetPaymentDetails(0, mpInvoiceResult.Value.InvoiceId, token)).Returns(paymentDetail);
+            _paymentService.Setup(m => m.GetPaymentDetails(0, mpInvoiceResult.Value.InvoiceId, token, false)).Returns(paymentDetail);
 
             var result = _fixture.GetMyCampInfo(token);
             Assert.AreEqual(result.Count, 1);
@@ -1142,7 +1143,7 @@ namespace crds_angular.test.Services
             _formSubmissionRepository.Setup(m => m.GetFormResponseAnswer(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns("true");
             _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(product.ProductId, contactid))
                 .Returns(mpInvoiceResult);
-            _paymentService.Setup(m => m.GetPaymentDetails(0, mpInvoiceResult.Value.InvoiceId, token)).Returns(paymentDetail);
+            _paymentService.Setup(m => m.GetPaymentDetails(0, mpInvoiceResult.Value.InvoiceId, token, false)).Returns(paymentDetail);
 
             var result = _fixture.GetCampProductDetails(eventId,contactid, token);
             Assert.IsTrue(result.Options.Count == 2);
@@ -1178,7 +1179,7 @@ namespace crds_angular.test.Services
             _contactService.Setup(m => m.GetContactById(mpPayment.First().ContactId)).Returns(new MpMyContact() { Contact_ID = contactId, Email_Address = "some@email2.com", First_Name = "Natt", Last_Name = "last"});
             _contactService.Setup(m => m.GetContactById(mpPayment.First().ContactId)).Returns(new MpMyContact() {Contact_ID = contactId, Email_Address = "some@email.com"});
           
-            _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MpCommunication>(), false)).Returns(1);
+            _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false)).Returns(1);
 
             var resp = _fixture.SendCampConfirmationEmail(eventId, invoiceId, paymentId, token);
            

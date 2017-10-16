@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   module.exports = LoginController;
@@ -14,7 +14,9 @@
     'Session',
     '$timeout',
     'User',
-    'ImageService'];
+    'ImageService',
+    'AnalyticsService'
+  ];
 
   function LoginController(
     $scope,
@@ -27,7 +29,8 @@
     Session,
     $timeout,
     User,
-    ImageService) {
+    ImageService,
+    AnalyticsService) {
 
     var vm = this;
     vm.path = ImageService.ProfileImageBaseURL + vm.contactId;
@@ -39,7 +42,7 @@
     $scope.credentials = {};
     $scope.credentials.username = $scope.newuser.email;
     $scope.passwordPrefix = 'login-page';
-    $scope.checkEmail = function() {
+    $scope.checkEmail = function () {
       //This logic is crazy, needs some attention
       return ($scope.navlogin.username.$error.required &&
         $scope.navlogin.$submitted &&
@@ -55,7 +58,7 @@
         !$scope.navlogin.username.$valid);
     };
 
-    $scope.toggleDesktopLogin = function() {
+    $scope.toggleDesktopLogin = function () {
       $scope.loginShow = !$scope.loginShow;
       if ($scope.registerShow) {
         $scope.registerShow = !$scope.registerShow;
@@ -64,16 +67,18 @@
       }
     };
 
-    $scope.logout = function() {
+    $scope.logout = function () {
       $state.go('logout');
       return;
     };
 
     function navigateToHome() {
-      $state.go('content', { link: '/' });
+      $state.go('content', {
+        link: '/'
+      });
     }
 
-    $scope.login = function() {
+    $scope.login = function () {
       if (($scope.credentials === undefined) ||
         ($scope.credentials.username === undefined ||
           $scope.credentials.password === undefined)) {
@@ -82,36 +87,36 @@
         $rootScope.$emit('notify', $rootScope.MESSAGES.generalError);
       } else {
         $scope.processing = true;
-        AuthService.login($scope.credentials).then(function(user) {
+        AuthService.login($scope.credentials).then(function (user) {
 
-          $scope.loginShow = false;
-          if ($scope.modal) {
-            $scope.modal.close();
-          }
+            $scope.loginShow = false;
+            if ($scope.modal) {
+              $scope.modal.close();
+            }
 
-          clearCredentials();
+            clearCredentials();
+            AnalyticsService.identifyLoggedInUser($rootScope.userid, $scope.credentials.username);
+            // If the state name ends with login or register (like 'login' or 'give.one_time_login'),
+            // either redirect to specified URL, or redirect to profile if URL is not specified.
+            if (_.endsWith($state.current.name, 'login') || _.endsWith($state.current.name, 'register')) {
+              $timeout(function () {
+                if (Session.hasRedirectionInfo()) {
+                  Session.redirectIfNeeded();
+                } else {
+                  navigateToHome();
+                }
+              }, 500);
+            } else if ($scope.loginCallback) {
+              $scope.processing = false;
+              $scope.loginCallback();
+            }
 
-          // If the state name ends with login or register (like 'login' or 'give.one_time_login'),
-          // either redirect to specified URL, or redirect to profile if URL is not specified.
-          if (_.endsWith($state.current.name, 'login') || _.endsWith($state.current.name, 'register')) {
-            $timeout(function () {
-              if (Session.hasRedirectionInfo()) {
-                Session.redirectIfNeeded();
-              } else {
-                navigateToHome();
-              }
-            }, 500);
-          } else if ($scope.loginCallback) {
-            $scope.processing = false;
-            $scope.loginCallback();
-          }
+            $scope.loginFailed = false;
+            $rootScope.showLoginButton = false;
+            $scope.navlogin.$setPristine();
+          },
 
-          $scope.loginFailed = false;
-          $rootScope.showLoginButton = false;
-          $scope.navlogin.$setPristine();
-        },
-
-          function() {
+          function () {
             $scope.pending = false;
             $scope.processing = false;
             $scope.loginFailed = true;

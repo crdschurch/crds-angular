@@ -18,7 +18,7 @@ else
 
 INSERT INTO [dbo].donors 
 (Contact_ID,Statement_Frequency_ID,Statement_Type_ID,Statement_Method_ID,Setup_Date                    ,Envelope_No,Cancel_Envelopes,Notes,First_Contact_Made,Domain_ID,__ExternalPersonID,_First_Donation_Date,_Last_Donation_Date,Processor_ID        ) VALUES
-(@contactID,1                     ,1                ,2                  ,{ts '2017-01-03 15:26:57.503'},null       ,0              ,null ,null              ,1        ,null              ,null                ,null               ,@processorID);
+(@contactID,1                     ,1                ,2                  ,{ts '2017-01-03 15:26:57.503'},null       ,0              ,'Scripted Donor' ,null              ,1        ,null              ,null                ,null               ,@processorID);
 
 --Retrieve Donor ID from new Donor record
 DECLARE @donor_id as int
@@ -45,7 +45,7 @@ else
 
 INSERT INTO [dbo].donors
 (Contact_ID,Statement_Frequency_ID,Statement_Type_ID,Statement_Method_ID,Setup_Date                    ,Envelope_No,Cancel_Envelopes,Notes,First_Contact_Made,Domain_ID,__ExternalPersonID,_First_Donation_Date,_Last_Donation_Date,Processor_ID        ) VALUES
-(@contactID,1                     ,1                ,2                  ,{ts '2017-01-03 15:26:57.503'},null       ,0              ,null ,null              ,1        ,null              ,null                ,null               ,@processorID);
+(@contactID,1                     ,1                ,2                  ,{ts '2017-01-03 15:26:57.503'},null       ,0              ,'Scripted Donor' ,null              ,1        ,null              ,null                ,null               ,@processorID);
 
 --Retrieve Donor ID from new Donor record
 DECLARE @donor_id as int

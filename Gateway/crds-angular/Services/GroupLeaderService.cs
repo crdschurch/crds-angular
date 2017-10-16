@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using crds_angular.Models.Crossroads.GroupLeader;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;
@@ -20,8 +21,9 @@ namespace crds_angular.Services
         private readonly IParticipantRepository _participantRepository;
         private readonly ICommunicationRepository _communicationRepository;
         private readonly IContactRepository _contactRepository;
+        private readonly IAnalyticsService _analyticsService;
 
-        public GroupLeaderService(IPersonService personService, IUserRepository userRepository, IFormSubmissionRepository formSubmissionRepository, IParticipantRepository participantRepository, IConfigurationWrapper configWrapper, ICommunicationRepository communicationRepository, IContactRepository contactRepository)
+        public GroupLeaderService(IPersonService personService, IUserRepository userRepository, IFormSubmissionRepository formSubmissionRepository, IParticipantRepository participantRepository, IConfigurationWrapper configWrapper, ICommunicationRepository communicationRepository, IContactRepository contactRepository, IAnalyticsService analyticsService)
         {
             _personService = personService;
             _userRepository = userRepository;
@@ -30,6 +32,7 @@ namespace crds_angular.Services
             _configWrapper = configWrapper;
             _communicationRepository = communicationRepository;
             _contactRepository = contactRepository;
+            _analyticsService = analyticsService;
         }
 
         public IObservable<int> SaveReferences(GroupLeaderProfileDTO leader)
@@ -195,27 +198,51 @@ namespace crds_angular.Services
                 }
 
                 SendConfirmationEmail(spiritualGrowth.ContactId, spiritualGrowth.EmailAddress);
-
+                SendGroupLeaderAppliedAnalytics(form.ContactId);
                 observer.OnNext(responseId);
                 observer.OnCompleted();
                 return Disposable.Create(() => Console.WriteLine("Observable Destroyed"));
             });
         }
 
-        public IObservable<Dictionary<string, object>> GetReferenceData(int contactId)
+        public IObservable<Dictionary<string, object>> GetApplicationData(int contactId)
         {
             var formId = _configWrapper.GetConfigIntValue("GroupLeaderFormId");
-            var formFieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormReferenceContact");
+            var referenceFormFieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormReferenceContact");
+            var studentLeaderFormFieldId = _configWrapper.GetConfigIntValue("GroupLeaderStudentFieldId");
 
             return Observable.Return<MpParticipant>(_participantRepository.GetParticipant(contactId)).Zip(
                 Observable.Return<MpMyContact>(_contactRepository.GetContactById(contactId)),
-                Observable.Return<string>(_formSubmissionRepository.GetFormResponseAnswer(formId, contactId, formFieldId, null)),
-                (participant, contact, answer) => new Dictionary<string, object>
+                Observable.Return<string>(_formSubmissionRepository.GetFormResponseAnswer(formId, contactId, referenceFormFieldId, null)),
+                Observable.Return<string>(_formSubmissionRepository.GetFormResponseAnswer(formId, contactId, studentLeaderFormFieldId, null)),
+                (participant, contact, referenceAnswer, studentAnswer) => new Dictionary<string, object>
                 {
                     {"participant", participant},
                     {"contact", contact},
-                    {"referenceContactId", answer ?? "0" }
+                    {"referenceContactId", referenceAnswer ?? "0" },
+                    {"studentLeaderRequest", studentAnswer ?? "false" }
                 });
+        }
+
+        public IObservable<string> GetUrlSegment()
+        {
+            string appCode = _configWrapper.GetConfigValue("GroupLeaderAppCode");
+            string paramName = _configWrapper.GetConfigValue("GroupLeaderApplicationUrlSegment");
+            return Observable.Create<string>(observer =>
+            {
+                try
+                {
+                    string urlSegment = _configWrapper.GetMpConfigValue(appCode, paramName, true);
+                    observer.OnNext(urlSegment);
+                }
+                catch (Exception e)
+                {
+                    observer.OnError(new ApplicationException("Failed to get redirect url segment: ", e));
+                }
+
+                observer.OnCompleted();
+                return Disposable.Empty;
+            });
         }
 
         public IObservable<int> SendReferenceEmail(Dictionary<string, object> referenceData)
@@ -240,7 +267,32 @@ namespace crds_angular.Services
                     observer.OnError(new ApplicationException("Unable to send reference email", e));
                 }
                 return Disposable.Empty;
-            });                              
+            });
+        }
+
+        public IObservable<int> SendStudentMinistryRequestEmail(Dictionary<string, object> referenceData)
+        {
+            var templateId = _configWrapper.GetConfigIntValue("GroupLeaderForStudentsEmailTemplate");
+            return Observable.Create<int>(observer =>
+            {
+                try
+                {
+                    var studentMinistryId = _configWrapper.GetConfigIntValue("StudentMinistryContactId");
+                    var studentMinistryEmail = _contactRepository.GetContactEmail(studentMinistryId);
+                    var template = _communicationRepository.GetTemplateAsCommunication(
+                        templateId,
+                        studentMinistryId,
+                        studentMinistryEmail,
+                        SetupGenericEmailMergeData((MpMyContact)referenceData["contact"]));
+                    var messageId = _communicationRepository.SendMessage(template);
+                    observer.OnNext(messageId);
+                }
+                catch (Exception e)
+                {
+                    observer.OnError(new ApplicationException("Unable to send student ministry email", e));
+                }
+                return Disposable.Empty;
+            });
         }
 
         public IObservable<int> SendNoReferenceEmail(Dictionary<string, object> referenceData)
@@ -256,7 +308,7 @@ namespace crds_angular.Services
                         templateId,
                         toContactId,
                         toContactEmail,
-                        SetupNoReferenceEmailMergeData((MpMyContact) referenceData["contact"])
+                        SetupGenericEmailMergeData((MpMyContact) referenceData["contact"])
                     );
 
                     var messageId = _communicationRepository.SendMessage(template);
@@ -283,7 +335,7 @@ namespace crds_angular.Services
             };
         }
 
-        private Dictionary<string, object> SetupNoReferenceEmailMergeData(MpMyContact applicant)
+        private Dictionary<string, object> SetupGenericEmailMergeData(MpMyContact applicant)
         {
             return new Dictionary<string, object>
             {
@@ -291,6 +343,11 @@ namespace crds_angular.Services
                 { "Last_Name", applicant.Last_Name },
                 { "Email_Address", applicant.Email_Address }
             };
+        }
+
+        private void SendGroupLeaderAppliedAnalytics(int contactId)
+        {
+            _analyticsService.Track(contactId.ToString(), "AppliedAsGroupLeader");
         }
 
         private void SendConfirmationEmail(int toContactId, string toEmailAddress)

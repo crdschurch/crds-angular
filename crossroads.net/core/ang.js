@@ -24,6 +24,7 @@
   require('angular-image-crop');
   require('angulartics');
   require('angulartics-gtm');
+  require('angulartics-segment');
   require('angularjs-slider');
   require('angular-formly');
   require('angular-formly-templates-bootstrap');

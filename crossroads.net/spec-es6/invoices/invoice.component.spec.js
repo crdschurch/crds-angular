@@ -2,37 +2,52 @@ import invoicesModule from '../../app/invoices/invoices.module';
 import InvoiceController from '../../app/invoices/invoice.controller';
 
 describe('Invoice Component', () => {
-  let $componentController;
-  let fixture;
-  let invoicesService;
-  let rootScope;
-  let state;
-  let sce;
-
-  const bindings = {};
+  let $componentController,
+    fixture,
+    invoicesService,
+    rootScope,
+    stateParams,
+    sce,
+    q;
+  const invoiceId = 344;
 
   beforeEach(angular.mock.module(invoicesModule));
 
   beforeEach(inject(function (_$rootScope_, $injector, $sce) {
     invoicesService = $injector.get('InvoicesService');
     sce = $injector.get('$sce');
-    state = $injector.get('$state');
     rootScope = $injector.get('$rootScope');
-    state.params = {
-      invoiceId: 123
-    };
-    fixture = new InvoiceController(invoicesService, rootScope, state, sce);
+    stateParams = $injector.get('$stateParams');
+    stateParams.invoiceId = invoiceId;
+    q = $injector.get('$q');
+    fixture = new InvoiceController(invoicesService, rootScope, stateParams, sce, q);
   }));
 
-
-  describe('Registration open', () => {
+  describe('#onInit', () => {
     beforeEach(() => {
+      spyOn(invoicesService, 'getPaymentDetails').and.callFake(() => {
+        const deferred = q.defer();
+        deferred.resolve({ status: 200 });
+        return deferred.promise;
+      });
+      spyOn(invoicesService, 'getInvoiceDetails').and.callFake(() => {
+        const deferred = q.defer();
+        deferred.resolve({ status: 200 });
+        return deferred.promise;
+      });
       fixture.$onInit();
+      rootScope.$digest();
     });
 
-    it('should set urls, get invoice, set the view as ready', () => {
-      expect(fixture.baseUrl).not.toBeUndefined();
-      expect(fixture.returnUrl).not.toBeUndefined();
+    it('should set urls, set the view as ready', () => {
+      expect(fixture.baseUrl).toBe('https://embed.crossroads.net');
+      expect(fixture.returnUrl).toBe(`https://crossroads.net/invoices/${invoiceId}/email`);
+      expect(fixture.viewReady).toBeTruthy();
+    });
+
+    it('should set invoiceId, get invoice', () => {
+      expect(fixture.invoiceId).toBe(invoiceId);
+      expect(invoicesService.getInvoiceDetails).toHaveBeenCalledWith(invoiceId);
     });
 
   });

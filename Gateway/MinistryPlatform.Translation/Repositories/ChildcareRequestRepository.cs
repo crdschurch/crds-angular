@@ -221,7 +221,7 @@ namespace MinistryPlatform.Translation.Repositories
         public List<MpEvent> FindChildcareEvents(int childcareRequestId, List<MpChildcareRequestDate> requestedDates, MpChildcareRequest request)
         {
            var apiToken = _apiUserService.GetToken();
-           var events = _eventService.GetEventsByTypeForRange(_childcareEventType, request.StartDate, request.EndDate, apiToken);
+           var events = _eventService.GetEventsByTypeForRange(_childcareEventType, request.StartDate, request.EndDate, apiToken, false);
            return events;
         }
 

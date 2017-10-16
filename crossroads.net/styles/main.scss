@@ -1,3 +1,9 @@
 .crds-styles {
   @import '~crds-styles/assets/stylesheets/bootstrap';
 }
+
+/* Fix modal window backdrop regression in iOS - TCM 5/30/17 */
+body:not(.modal-open) .modal-backdrop.fade:not(.in) {
+  display: none;
+}
+

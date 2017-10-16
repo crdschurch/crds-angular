@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reactive.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Http.Results;
@@ -11,16 +12,23 @@ using crds_angular.Security;
 using crds_angular.Services.Interfaces;
 using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
+using log4net;
+using MinistryPlatform.Translation.Models;
+using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.Controllers.API
 {
     public class TripController : MPAuth
     {
-        private readonly ITripService _tripService;
+        private readonly ILog _logger = LogManager.GetLogger(typeof(DonationController));
 
-        public TripController(ITripService tripService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        private readonly ITripService _tripService;
+        private readonly IContactRepository _contactRepository;
+
+        public TripController(ITripService tripService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository, IContactRepository contactRepository) : base(userImpersonationService, authenticationRepository)
         {
             _tripService = tripService;
+            _contactRepository = contactRepository;
         }
 
         [ResponseType(typeof (List<FamilyMemberTripDto>))]
@@ -105,6 +113,7 @@ namespace crds_angular.Controllers.API
                 }
                 catch (Exception ex)
                 {
+                    _logger.Error("GetCampaigns failed", ex);
                     var apiError = new ApiErrorDto("Get Campaign Failed", ex);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
@@ -213,6 +222,66 @@ namespace crds_angular.Controllers.API
                 catch (Exception exception)
                 {
                     var apiError = new ApiErrorDto("ValidatePrivateInvite Failed", exception);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
+
+        [ResponseType(typeof(MpSimpleContact))]
+        [VersionedRoute(template: "trip/user", minimumVersion: "1.0.0")]
+        [HttpGet]
+        public IHttpActionResult GetLoggedInContact()
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    var contactId = _contactRepository.GetContactId(token);
+                    var contact = _contactRepository.GetSimpleContact(contactId).Wait();
+                    return Ok(contact);
+                }
+                catch (Exception e)
+                {
+                    var apiError = new ApiErrorDto("Get Logged in Contact Failed", e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
+
+        [ResponseType(typeof(TripDocument))]
+        [VersionedRoute(template: "trip/ipromise/{tripEventParticipantId}", minimumVersion: "1.0.0")]
+        [HttpGet]
+        public IHttpActionResult GetIPromiseDocument(int tripEventParticipantId)
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    var doc = _tripService.GetIPromiseDocument(tripEventParticipantId);
+                    return Ok(doc);
+                }
+                catch (Exception e)
+                {
+                    var apiError = new ApiErrorDto("Get I Promise Document Failed", e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
+
+        [VersionedRoute(template: "trip/ipromise", minimumVersion: "1.0.0")]
+        [HttpPost]
+        public IHttpActionResult ReceiveIPromiseDocument([FromBody] TripDocument iPromiseDoc)
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    _tripService.ReceiveIPromiseDocument(iPromiseDoc);
+                    return Ok();
+                }
+                catch (Exception e)
+                {
+                    var apiError = new ApiErrorDto("Save I Promise Document Failed", e);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
             });

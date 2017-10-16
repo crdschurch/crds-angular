@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Reactive.Linq;
+using System.Device.Location;
 using crds_angular.App_Start;
+using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Attribute;
 using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Services;
+using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -23,6 +25,8 @@ namespace crds_angular.test.Services
         private Mock<IApiUserRepository> _apiUserService;
         private Mock<MPInterfaces.IParticipantRepository> _participantService;
         private Mock<MPInterfaces.IUserRepository> _userService;
+        private Mock<IAddressService> _addressService;
+        private Mock<IAnalyticsService> _analyticsService;
 
         private PersonService _fixture;
         private MpMyContact _myContact;
@@ -50,6 +54,8 @@ namespace crds_angular.test.Services
             _participantService = new Mock<MPInterfaces.IParticipantRepository>();
             _userService = new Mock<MPInterfaces.IUserRepository>();
             _apiUserService = new Mock<IApiUserRepository>();            
+            _addressService = new Mock<IAddressService>();
+            _analyticsService = new Mock<IAnalyticsService>();
             
             _myContact = new MpMyContact
             {
@@ -62,7 +68,7 @@ namespace crds_angular.test.Services
                 Maiden_Name = "maiden-name",
                 Mobile_Phone = "mobile-phone",
                 Mobile_Carrier = 999,
-                Date_Of_Birth = "date-of-birth",
+                Date_Of_Birth = "12/20/1983",
                 Marital_Status_ID = 5,
                 Gender_ID = 2,
                 Employer_Name = "employer-name",
@@ -81,7 +87,7 @@ namespace crds_angular.test.Services
             };
             _householdMembers = new List<MpHouseholdMember>();
 
-            _fixture = new PersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object);
+            _fixture = new PersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object, _analyticsService.Object);
 
             //force AutoMapper to register
             AutoMapperConfig.RegisterMappings();
@@ -110,6 +116,8 @@ namespace crds_angular.test.Services
                                            It.IsAny<MpObjectAttributeConfiguration>()));
 
             _participantService.Setup(m => m.GetParticipant(person.ContactId)).Returns(participant);
+            _addressService.Setup(m => m.GetGeoLocationCascading(It.IsAny<AddressDTO>())).Returns(new GeoCoordinate(5, 6));
+            _analyticsService.Setup(m => m.Track(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<EventProperties>()));
             _fixture.SetProfile(token, person);
 
         }
@@ -138,7 +146,7 @@ namespace crds_angular.test.Services
             Assert.AreEqual("maiden-name", person.MaidenName);
             Assert.AreEqual("mobile-phone", person.MobilePhone);
             Assert.AreEqual(999, person.MobileCarrierId);
-            Assert.AreEqual("date-of-birth", person.DateOfBirth);
+            Assert.AreEqual("12/20/1983", person.DateOfBirth);
             Assert.AreEqual(5, person.MaritalStatusId);
             Assert.AreEqual(2, person.GenderId);
             Assert.AreEqual("employer-name", person.EmployerName);
@@ -177,7 +185,7 @@ namespace crds_angular.test.Services
             Assert.AreEqual("maiden-name", person.MaidenName);
             Assert.AreEqual("mobile-phone", person.MobilePhone);
             Assert.AreEqual(999, person.MobileCarrierId);
-            Assert.AreEqual("date-of-birth", person.DateOfBirth);
+            Assert.AreEqual("12/20/1983", person.DateOfBirth);
             Assert.AreEqual(5, person.MaritalStatusId);
             Assert.AreEqual(2, person.GenderId);
             Assert.AreEqual("employer-name", person.EmployerName);
@@ -217,6 +225,9 @@ namespace crds_angular.test.Services
                 AddressId = contact.Address_ID,
                 AddressLine1 = contact.Address_Line_1,
                 AddressLine2 = contact.Address_Line_2,
+                City = contact.City,
+                State = contact.State,
+                PostalCode = contact.Postal_Code,
                 Age = contact.Age,
                 CongregationId = contact.Congregation_ID,
                 ContactId = contact.Contact_ID,

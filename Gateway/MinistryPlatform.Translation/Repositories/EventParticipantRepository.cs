@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Crossroads.Utilities.FunctionalHelpers;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -144,6 +144,22 @@ namespace MinistryPlatform.Translation.Repositories
             }
         }
 
+        public IObservable<MpEventParticipant> GetEventParticpant(int eventParticipantId)
+        {
+            try
+            {
+                return Observable.Start(() =>
+                {
+                    var columns = "Event_Participants.[Event_Participant_ID],Event_ID_Table.[Event_Title],Participant_ID_Table.[Participant_ID],Participant_ID_Table_Contact_ID_Table.[Contact_ID],Event_ID_Table.[Event_ID],Event_ID_Table.[Event_Start_Date],Participation_Status_ID_Table.[Participation_Status_ID]";
+                    return _ministryPlatformRestRepository.UsingAuthenticationToken(ApiLogin()).Get<MpEventParticipant>(eventParticipantId, columns);
+                });
+            }
+            catch (Exception e)
+            {
+                return Observable.Throw<MpEventParticipant>(new Exception("Unable to get the event particpant"));
+            }
+        }
+
         public int GetEventParticipantByContactId(int eventId, int contactId)
         {
             const string tableName = "Event_Participants";
@@ -215,6 +231,36 @@ namespace MinistryPlatform.Translation.Repositories
             const string columnName = "Count(*)";
 
             return _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Search<int>(tableName, searchString, columnName, null, false);
+        }
+
+        public IObservable<MpEventParticipant> GetEventParticpantByEventParticipantWaiver(int eventParticipantWaiverId)
+        {
+            return Observable.Create<MpEventParticipant>(observer =>
+            {
+                try
+                {
+                    var columns = "Event_Participant_ID_Table.[Event_Participant_ID], Event_Participant_ID_Table_Event_ID_Table.[Event_Title] AS [Event_Title]";
+                    var filter = $"cr_Event_Participant_Waivers.[Event_Participant_Waiver_ID] = {eventParticipantWaiverId}";
+
+                    var result = _ministryPlatformRestRepository.UsingAuthenticationToken(ApiLogin())
+                        .Search<MpEventParticipantWaiver, MpEventParticipant>(filter, columns);
+                    if (result.Count > 0)
+                    {
+                        observer.OnNext(result.First());
+                        observer.OnCompleted();
+                    }
+                    else
+                    {
+                        observer.OnError(new Exception($"Unable to find event participant waiver with id {eventParticipantWaiverId}"));
+                    }
+                   
+                }
+                catch (Exception e)
+                {
+                    observer.OnError(e);
+                }
+                return Disposable.Empty;
+            });
         }
     }
 }

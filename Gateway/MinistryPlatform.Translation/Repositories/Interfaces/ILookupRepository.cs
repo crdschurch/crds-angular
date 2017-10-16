@@ -26,6 +26,8 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
 
         List<Dictionary<string, object>> GroupReasonEnded(string token);
 
+        List<Dictionary<string, object>> MeetingDays(string token);
+
         IEnumerable<T> GetList<T>(string token);
         T GetObject<T>(string token);
 

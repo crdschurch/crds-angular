@@ -36,6 +36,9 @@ namespace crds_angular.Models.Crossroads.Trip
         [JsonProperty(PropertyName = "eventId")]
         public int EventId { get; set; }
 
+        [JsonProperty(PropertyName = "eventStart")]
+        public DateTime EventStart { get; set; }
+
         [JsonProperty(PropertyName = "isFull")]
         public bool IsFull { get; set; }
     }

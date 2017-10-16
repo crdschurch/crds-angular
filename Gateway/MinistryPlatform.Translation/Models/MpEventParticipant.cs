@@ -1,5 +1,4 @@
 ﻿using System;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.MinistryPlatform;
 using Newtonsoft.Json;
 
@@ -27,13 +26,13 @@ namespace MinistryPlatform.Translation.Models
         public string EventTitle { get; set; }
 
         [JsonProperty(PropertyName = "Group_ID")]
-        public int GroupId { get; set; }
+        public int? GroupId { get; set; }
 
         [JsonProperty(PropertyName = "Group_Name")]
         public string GroupName { get; set; }
 
         [JsonProperty(PropertyName = "Group_Participant_ID")]
-        public int GroupParticipantId { get; set; }
+        public int? GroupParticipantId { get; set; }
 
         [JsonProperty(PropertyName = "Participant_ID")]
         public int ParticipantId { get; set; }
@@ -45,7 +44,7 @@ namespace MinistryPlatform.Translation.Models
         public int ParticipantStatus { get; set; }
 
         [JsonProperty(PropertyName = "Room_ID")]
-        public int RoomId { get; set; }
+        public int? RoomId { get; set; }
 
         [JsonProperty(PropertyName = "Setup_Date")]
         public DateTime? SetupDate { get; set; }

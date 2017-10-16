@@ -6,6 +6,7 @@ using System.Web.Http;
 using crds_angular.Controllers.API;
 using crds_angular.Services.Interfaces;
 using Crossroads.ClientApiKeys;
+using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Repositories.Interfaces;
@@ -21,6 +22,7 @@ namespace crds_angular.test.controllers
         private Mock<IAuthenticationRepository> _authenticationRepository;
         private Mock<IApiUserRepository> _apiUserRepository;
         private Mock<IUserImpersonationService> _userImpersonationService;
+        private Mock<IConfigurationWrapper> _configurationWrapper;
 
         private List<Type> _attributesThatRequireApiKey;
 
@@ -38,8 +40,9 @@ namespace crds_angular.test.controllers
             _authenticationRepository = new Mock<IAuthenticationRepository>();
             _apiUserRepository = new Mock<IApiUserRepository>();
             _userImpersonationService = new Mock<IUserImpersonationService>();
+            _configurationWrapper = new Mock<IConfigurationWrapper>();
 
-            _fixture = new ImageController(_mpService.Object, _authenticationRepository.Object, _apiUserRepository.Object, _userImpersonationService.Object);
+            _fixture = new ImageController(_mpService.Object, _authenticationRepository.Object, _apiUserRepository.Object, _userImpersonationService.Object, _configurationWrapper.Object);
         }
 
         [Test]

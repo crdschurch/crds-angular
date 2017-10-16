@@ -1,7 +1,7 @@
 USE [MinistryPlatform]
 GO
 
-/****** Object:  StoredProcedure [dbo].[report_CRDS_Childcare_Detail]    Script Date: 5/25/2017 8:43:12 AM ******/
+/****** Object:  StoredProcedure [dbo].[report_CRDS_Childcare_Detail]    Script Date: 6/6/2017 7:42:38 AM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -10,7 +10,7 @@ GO
 
 -- ===============================================================
 -- Author: John Cleaver	
--- Create date: 6/1/2017
+-- Create date: 6/6/2017
 -- Description:	Refactor of report_CRDS_Childcare_Detail proc
 -- ===============================================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[report_CRDS_Childcare_Detail]') AND type in (N'P', N'PC'))
@@ -49,8 +49,8 @@ AS
 		GroupParticipantStartDate datetime,
 		Checkin nvarchar(6), 
 		GradeGroup nvarchar(255),
-		RSVPOnline int,
-		RSVPOverride int				
+		RSVPOnline nvarchar(6),
+		RSVPOverride nvarchar(6)				
 	)
 
 	-- first case is children that had an rsvp
@@ -72,8 +72,8 @@ AS
 			(SELECT TOP(1) Group_Name from Groups s_g inner join Group_Participants s_gp on s_g.Group_ID = s_gp.Group_ID 
 				WHERE s_gp.Participant_ID = p.Participant_ID and s_gp.End_Date IS NULL and s_g.Group_Type_ID=4),
 				-- these magic numbers are just setting the RSVP-specific fields
-				1,
-				0
+				'Yes',
+				'No'
 		from Group_Participants gp
 		inner join event_groups eg on gp.Group_ID = eg.Group_ID
 		inner join events e on e.Event_ID = eg.Event_ID
@@ -108,8 +108,8 @@ AS
 			(SELECT TOP(1) Group_Name from Groups s_g inner join Group_Participants s_gp on s_g.Group_ID = s_gp.Group_ID 
 				WHERE s_gp.Participant_ID = p.Participant_ID and s_gp.End_Date IS NULL and s_g.Group_Type_ID=4),
 				-- these magic numbers are just setting the RSVP-specific fields
-				0,
-				1
+				'No',
+				'Yes'
 		from Event_Participants ep 
 		inner join Events e on ep.Event_ID = e.Event_ID
 		inner join Event_Groups eg on eg.Event_ID = e.Event_ID
@@ -124,7 +124,7 @@ AS
 		-- don't pull back a participant if they are part of the 27 group on the event
 		and not exists (select * from Group_Participants s_gp inner join Event_Groups s_eg on s_gp.Group_ID = 
 			s_eg.Group_ID inner join groups s_g on s_eg.Group_ID = s_g.Group_ID 
-				where s_g.Group_Type_ID = 27 and s_gp.Participant_ID = p.Participant_ID)
+				where s_g.Group_Type_ID = 27 and s_gp.Participant_ID = p.Participant_ID and s_eg.Event_ID = e.Event_Id)
 
 	SELECT * FROM @ChildcareDetail ORDER BY EventDate, Group_Name, EndTime
 

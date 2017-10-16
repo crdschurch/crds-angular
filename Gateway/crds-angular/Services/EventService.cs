@@ -8,7 +8,6 @@ using Crossroads.Utilities.FunctionalHelpers;
 using Crossroads.Utilities.Interfaces;
 using Crossroads.Utilities.Services;
 using log4net;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
@@ -503,10 +502,11 @@ namespace crds_angular.Services
                     var groupParticipantId = _groupParticipantService.Get(eventDto.GroupId, participant.ParticipantId);
                     if (groupParticipantId == 0)
                     {
-                        groupParticipantId = _groupService.addParticipantToGroup(participant.ParticipantId,
+                        groupParticipantId = _groupService.AddParticipantToGroup(participant.ParticipantId,
                                                                                  eventDto.GroupId,
                                                                                  defaultGroupRoleId,
                                                                                  participant.ChildcareRequested,
+                                                                                 false,
                                                                                  today);
                     }
 
@@ -612,9 +612,29 @@ namespace crds_angular.Services
 
             eventList.ForEach(evt =>
             {
-                var rooms = _roomService.GetRoomReservations(evt.EventId).Where(r => (!r.Cancelled && !r.Hidden)).Select(s => s.Name).ToList();
-                var roomsString = rooms.Count > 0 ? string.Join(", ", (object[]) rooms.ToArray()) : "No Room Reserved under the Date and Time";
-                SendPrimaryContactReminderEmail(evt, roomsString, token);
+                var actionNeeded = "";
+                var roomsString = "No Room Reserved under the Date and Time";
+                var rooms = _roomService.GetRoomReservations(evt.EventId).Where(r => !r.Cancelled).ToList();
+                if (rooms.Any()) //there are non-cancelled rooms
+                {
+                    //if there are approved rooms, show those
+                    var approvedRooms = rooms.Where(r => r.Approved).ToList();
+                    if (approvedRooms.Any())
+                        roomsString = string.Join(", ", approvedRooms.Select((s => s.Name)).ToArray());
+                    else //there aren't approved rooms - look for pending (not rejected) rooms
+                    {
+                        var pendingRooms = rooms.Where(r => !r.Rejected).ToList();
+                        if (pendingRooms.Any())
+                            roomsString = string.Join(", ", pendingRooms.Select((s => s.Name)).ToArray()) + " (Room Pending Approval)";
+                        else
+                        {
+                            roomsString = "NONE-Room Reservation was Rejected";
+                            actionNeeded = " - ACTION REQUIRED";
+                        }
+                    }
+                }
+
+                SendPrimaryContactReminderEmail(evt, roomsString, token, actionNeeded);
             });
         }
 
@@ -665,7 +685,7 @@ namespace crds_angular.Services
         }
 
         // ReSharper disable once UnusedParameter.Local
-        private void SendPrimaryContactReminderEmail(Models.Crossroads.Events.Event evt, string rooms, string token)
+        private void SendPrimaryContactReminderEmail(Models.Crossroads.Events.Event evt, string rooms, string token, string actionText)
         {
             try
             {
@@ -676,7 +696,8 @@ namespace crds_angular.Services
                     {"Event_Start_Date", evt.StartDate.ToShortDateString()},
                     {"Event_Start_Time", evt.StartDate.ToShortTimeString()},
                     {"Room_Name", rooms },
-                    {"Base_Url", _configurationWrapper.GetConfigValue("BaseMPUrl")}
+                    {"Base_Url", _configurationWrapper.GetConfigValue("BaseMPUrl")},
+                    {"Action_Needed", actionText}
                 };
 
                 var defaultContact = _contactService.GetContactById(AppSetting("DefaultContactEmailId"));

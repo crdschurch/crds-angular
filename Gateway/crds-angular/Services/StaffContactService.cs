@@ -18,7 +18,17 @@ namespace crds_angular.Services
 
         public List<PrimaryContactDto> GetStaffContacts()
         {
-            var mpContacts = _contactService.StaffContacts();
+            return GetContacts(true);
+        }
+
+        public List<PrimaryContactDto> GetPrimaryContacts()
+        {
+            return GetContacts(false);
+        }
+
+        private List<PrimaryContactDto> GetContacts(bool staffOnly)
+        {
+            var mpContacts = _contactService.PrimaryContacts(staffOnly);
             return mpContacts.Select(mpContact => new PrimaryContactDto
             {
                 ContactId = mpContact.ToInt("Contact_ID"),
@@ -26,7 +36,7 @@ namespace crds_angular.Services
                 Email = mpContact.ToString("Email_Address"),
                 FirstName = mpContact.ToString("First_Name"),
                 LastName = mpContact.ToString("Last_Name")
-            }).OrderBy(x => x.DisplayName).ToList();
+            }).ToList();
         }
     }
 }

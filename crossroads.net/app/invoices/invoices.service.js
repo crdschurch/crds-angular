@@ -8,30 +8,32 @@ class InvoicesService {
     this.scope = $rootScope;
     this.stateParams = $stateParams;
     this.resource = $resource;
-
+    this.invoiceDetailsResource = $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/v1.0.0/invoice/:invoiceId/details`);
     this.invoicesPaymentsResource = $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/v1.0.0/invoice/:invoiceId/payments`);
-    this.invoiceDetailResource = $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/v1.0.0/invoice/:invoiceId/details`);
-
+    this.invoicesPaymentConfirmationResource = $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/v1.0.0/invoice/:invoiceId/payment/:paymentId/confirmation`, { invoiceId: '@invoiceId', paymentId: '@paymentId' });
+    this.invoiceDetails = {};
     this.invoicePayments = {};
-    this.invoiceDetail = {};
   }
 
-  getInvoicePayments(invoiceId) {
-    return this.invoicesPaymentsResource.get({ invoiceId }, (invoicePayments) => {
-      this.invoicePayments = invoicePayments;
-    },
-
-    (err) => {
+  getInvoiceDetails(invoiceId) {
+    return this.invoiceDetailsResource.get({ invoiceId }, (invoiceDetails) => {
+      this.invoiceDetails = invoiceDetails;
+    }, (err) => {
       this.log.error(err);
     }).$promise;
   }
 
-  getInvoiceDetail(invoiceId) {
-    return this.invoiceDetailResource.get({ invoiceId }, (invoiceDetail) => {
-      this.invoiceDetail = invoiceDetail;
-    },
+  getPaymentDetails(invoiceId) {
+    return this.invoicesPaymentsResource.get({ invoiceId }, (invoicePayments) => {
+      this.invoicePayments = invoicePayments;
+    }, (err) => {
+      this.log.error(err);
+    }).$promise;
+  }
 
-    (err) => {
+  sendPaymentConfirmation(invoiceId, paymentId) {
+    return this.invoicesPaymentConfirmationResource.save({ invoiceId, paymentId }, (invoicePayments) => {
+    }, (err) => {
       this.log.error(err);
     }).$promise;
   }

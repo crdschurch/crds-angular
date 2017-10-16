@@ -54,58 +54,60 @@ namespace MinistryPlatform.Translation.Test.Services
         private const int EventParticipantPageId = 281;
         private const int EventParticipantStatusDefaultId = 2;
         private const int EventsPageId = 308;
-        private const string EventsWithEventTypeId = "EventsWithEventTypeId";
 
-        private List<Dictionary<string, object>> MockEventsDictionaryByEventTypeId()
+        private List<MpEvent> MockEventsListByEventTypeId()
         {
-            return new List<Dictionary<string, object>>
+            return new List<MpEvent>
             {
-                new Dictionary<string, object>
+                new MpEvent
                 {
-                    {"dp_RecordID", 100},
-                    {"Event Title", "event-title-100"},
-                    {"Event Type", "event-type-100"},
-                    {"Event Start Date", new DateTime(2015, 3, 28, 8, 30, 0)},
-                    {"Event End Date", new DateTime(2015, 3, 28, 8, 30, 0)},
-                    {"Congregation_ID", 1}
+                    EventId = 100,
+                    EventTitle = "event-title-100",
+                    EventType = "event-type-100",
+                    EventStartDate = new DateTime(2015, 3, 28, 8, 30, 0),
+                    EventEndDate = new DateTime(2015, 3, 28, 8, 30, 0),
+                    CongregationId = 1,
+                    Cancelled = false
                 },
-                new Dictionary<string, object>
+                new MpEvent
                 {
-                    {"dp_RecordID", 200},
-                    {"Event Title", "event-title-200"},
-                    {"Event Type", "event-type-200"},
-                    {"Event Start Date", new DateTime(2015, 4, 1, 8, 30, 0)},
-                    {"Event End Date", new DateTime(2015, 4, 1, 8, 30, 0)},
-                    {"Congregation_ID", 1}
+                    EventId = 200,
+                    EventTitle = "event-title-200",
+                    EventType = "event-type-200",
+                    EventStartDate = new DateTime(2015, 4, 1, 8, 30, 0),
+                    EventEndDate = new DateTime(2015, 4, 1, 8, 30, 0),
+                    CongregationId = 1,
+                    Cancelled = false
                 },
-                new Dictionary<string, object>
+                new MpEvent
                 {
-                    {"dp_RecordID", 300},
-                    {"Event Title", "event-title-300"},
-                    {"Event Type", "event-type-300"},
-                    {"Event Start Date", new DateTime(2015, 4, 2, 8, 30, 0)},
-                    {"Event End Date", new DateTime(2015, 4, 2, 8, 30, 0)},
-                    {"Congregation_ID", 1}
-                }
-                ,
-                new Dictionary<string, object>
+                    EventId = 300,
+                    EventTitle = "event-title-300",
+                    EventType = "event-type-300",
+                    EventStartDate = new DateTime(2015, 4, 2, 8, 30, 0),
+                    EventEndDate = new DateTime(2015, 4, 2, 8, 30, 0),
+                    CongregationId = 1,
+                    Cancelled = false
+                },
+                new MpEvent
                 {
-                    {"dp_RecordID", 400},
-                    {"Event Title", "event-title-400"},
-                    {"Event Type", "event-type-400"},
-                    {"Event Start Date", new DateTime(2015, 4, 30, 8, 30, 0)},
-                    {"Event End Date", new DateTime(2015, 4, 30, 8, 30, 0)},
-                    {"Congregation_ID", 1}
-                }
-                ,
-                new Dictionary<string, object>
+                    EventId = 400,
+                    EventTitle = "event-title-400",
+                    EventType = "event-type-400",
+                    EventStartDate = new DateTime(2015, 4, 30, 8, 30, 0),
+                    EventEndDate = new DateTime(2015, 4, 30, 8, 30, 0),
+                    CongregationId = 1,
+                    Cancelled = false
+                },
+                new MpEvent
                 {
-                    {"dp_RecordID", 500},
-                    {"Event Title", "event-title-500"},
-                    {"Event Type", "event-type-500"},
-                    {"Event Start Date", new DateTime(2015, 5, 1, 8, 30, 0)},
-                    {"Event End Date", new DateTime(2015, 5, 1, 8, 30, 0)},
-                    {"Congregation_ID", 1}
+                    EventId = 500,
+                    EventTitle = "event-title-500",
+                    EventType = "event-type-500",
+                    EventStartDate = new DateTime(2015, 5, 1, 8, 30, 0),
+                    EventEndDate = new DateTime(2015, 5, 1, 8, 30, 0),
+                    CongregationId = 1,
+                    Cancelled = false
                 }
             };
         }
@@ -258,16 +260,16 @@ namespace MinistryPlatform.Translation.Test.Services
         public void GetEventsByTypeAndRange()
         {
             var eventTypeId = 1;
-            var search = ",," + eventTypeId;
-            _ministryPlatformService.Setup(mock => mock.GetPageViewRecords(EventsWithEventTypeId, It.IsAny<string>(), search, "", 0))
-                .Returns(MockEventsDictionaryByEventTypeId());
 
-            var startDate = new DateTime(2015, 4, 1);
-            var endDate = new DateTime(2015, 4, 30);
-            var events = _fixture.GetEventsByTypeForRange(eventTypeId, startDate, endDate, It.IsAny<string>());
-            Assert.IsNotNull(events);
-            Assert.AreEqual(3, events.Count);
-            Assert.AreEqual("event-title-200", events[0].EventTitle);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.Search<MpEvent>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), false))
+                .Returns(MockEventsListByEventTypeId());
+
+            var startDate = new DateTime(2015, 3, 1);
+            var endDate = new DateTime(2015, 5, 30);
+            var events = _fixture.GetEventsByTypeForRange(eventTypeId, startDate, endDate, "ABC");
+            Assert.AreEqual(events.Count, 5);
+            _ministryPlatformService.VerifyAll();
         }
 
         [Test]
@@ -409,7 +411,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 }
             };
 
-            _ministryPlatformRestService.Setup(m => m.Search<MpWaivers>($"Event_ID = {eventId} AND Active=1", columnList, null, false)).Returns(mockWaiver);           
+            _ministryPlatformRestService.Setup(m => m.Search<MpEventWaivers>($"Event_ID = {eventId} AND Active=1", columnList, null, false)).Returns(mockWaiver);           
             _ministryPlatformRestService.Setup(m => m.Search<MpWaiverResponse>($"Waiver_ID_Table.Waiver_ID = 123 AND Event_Participant_ID_Table_Event_ID_Table.Event_ID = {eventId} AND cr_Event_Participant_Waivers.Event_Participant_ID = {eventParticipantId}", columns, null, false)).Returns(mockWaiverResponse);
             _ministryPlatformRestService.Setup(m => m.Search<MpWaiverResponse>($"Waiver_ID_Table.Waiver_ID = 456 AND Event_Participant_ID_Table_Event_ID_Table.Event_ID = {eventId} AND cr_Event_Participant_Waivers.Event_Participant_ID = {eventParticipantId}", columns, null, false)).Returns(mockWaiverResponse2);
             _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRestService.Object);
@@ -466,11 +468,11 @@ namespace MinistryPlatform.Translation.Test.Services
         }
 
 
-        private static List<MpWaivers> mockWaivers()
+        private static List<MpEventWaivers> mockWaivers()
         {
-            return new List<MpWaivers>
+            return new List<MpEventWaivers>
             {
-                new MpWaivers
+                new MpEventWaivers
                 {
                     Accepted = false,
                     Required = true,
@@ -479,7 +481,7 @@ namespace MinistryPlatform.Translation.Test.Services
                     WaiverId = 123,
                     WaiverText = "I waive ALL my rights."
                 },
-                new MpWaivers
+                new MpEventWaivers
                 {
                     Accepted = false,
                     Required = true,

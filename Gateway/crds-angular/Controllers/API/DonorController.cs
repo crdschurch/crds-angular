@@ -17,6 +17,7 @@ using MPInterfaces = MinistryPlatform.Translation.Repositories.Interfaces;
 using Crossroads.ApiVersioning;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Security;
+using crds_angular.Services.Analytics;
 
 namespace crds_angular.Controllers.API
 {
@@ -28,13 +29,15 @@ namespace crds_angular.Controllers.API
         private readonly MPInterfaces.IDonorRepository _mpDonorService;
         private readonly IAuthenticationRepository _authenticationService;
         private readonly IUserImpersonationService _impersonationService;
+        private readonly IAnalyticsService _analyticsService;
 
         public DonorController(IDonorService donorService,
                                 IPaymentProcessorService stripePaymentService, 
                                 IDonationService donationService, 
                                 MPInterfaces.IDonorRepository mpDonorService, 
                                 IAuthenticationRepository authenticationService,
-                                IUserImpersonationService impersonationService) : base(impersonationService, authenticationService)
+                                IUserImpersonationService impersonationService,
+                                IAnalyticsService analyticsService) : base(impersonationService, authenticationService)
         {
             _donorService = donorService;
             _stripePaymentService = stripePaymentService;
@@ -42,6 +45,7 @@ namespace crds_angular.Controllers.API
             _authenticationService = authenticationService;
             _mpDonorService = mpDonorService;
             _impersonationService = impersonationService;
+            _analyticsService = analyticsService;
         }
     
         [ResponseType(typeof(DonorDTO))]
@@ -318,11 +322,14 @@ namespace crds_angular.Controllers.API
                         ? _impersonationService.WithImpersonation(token,
                                                                   impersonateUserId,
                                                                   () =>
-                                                                      _donorService.CreateRecurringGift(token, recurringGiftDto, donor))
-                        : _donorService.CreateRecurringGift(token, recurringGiftDto, donor);
+                                                                      _donorService.CreateRecurringGift(token, recurringGiftDto, donor, donor.Email, donor.Details?.DisplayName))
+                        : _donorService.CreateRecurringGift(token, recurringGiftDto, donor, donor.Email, donor.Details?.DisplayName);
 
                     recurringGiftDto.EmailAddress = donor.Email;
                     recurringGiftDto.RecurringGiftId = recurringGift;
+
+                    _analyticsService.Track(donor.ContactId.ToString(), "PaymentSucceededServerSide", new EventProperties() { { "Url", recurringGiftDto.SourceUrl }, { "FundingMethod", recurringGiftDto.Source }, { "Email", "" }, { "CheckoutType", "Registered" }, { "Amount", recurringGiftDto.PlanAmount } });
+
                     return Ok(recurringGiftDto);
                 }
                 catch (PaymentProcessorException stripeException)

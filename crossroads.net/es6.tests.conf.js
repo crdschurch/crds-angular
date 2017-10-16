@@ -19,6 +19,7 @@ module.exports = function(config) {
     files: [
       'https://js.stripe.com/v2/',
       './node_modules/phantomjs-polyfill/bind-polyfill.js',
+      './node_modules/phantomjs-polyfill-includes/includes-polyfill.js',
       { pattern: 'spec-es6/spec_index.js', watched: false },
     ],
 

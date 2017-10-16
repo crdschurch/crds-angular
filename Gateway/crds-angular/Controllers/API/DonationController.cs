@@ -19,6 +19,7 @@ using Crossroads.ApiVersioning;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Security;
 using Newtonsoft.Json;
+using crds_angular.Services.Analytics;
 
 namespace crds_angular.Controllers.API
 {
@@ -37,6 +38,7 @@ namespace crds_angular.Controllers.API
         private readonly MPInterfaces.IPledgeRepository _mpPledgeService;
         private readonly IPaymentService _paymentService;
         private readonly MPInterfaces.IInvoiceRepository _invoiceRepository;
+        private readonly IAnalyticsService _analyticsService;
 
         public DonationController(MPInterfaces.IDonorRepository mpDonorService,
                                   IPaymentProcessorService stripeService,
@@ -48,7 +50,8 @@ namespace crds_angular.Controllers.API
                                   MPInterfaces.IPledgeRepository mpPledgeService,
                                   IUserImpersonationService impersonationService,
                                   IPaymentService paymentService,
-                                  MPInterfaces.IInvoiceRepository invoiceRepository) : base(impersonationService, authenticationService)
+                                  MPInterfaces.IInvoiceRepository invoiceRepository,
+                                  IAnalyticsService analyticsService) : base(impersonationService, authenticationService)
         {
             _mpDonorService = mpDonorService;
             _stripeService = stripeService;
@@ -61,6 +64,7 @@ namespace crds_angular.Controllers.API
             _mpDonationService = mpDonationService;
             _mpPledgeService = mpPledgeService;
             _paymentService = paymentService;
+            _analyticsService = analyticsService;
         }
 
         /// <summary>
@@ -256,7 +260,7 @@ namespace crds_angular.Controllers.API
 
                 var contactId = _contactRepository.GetContactId(token);
                 donor = _mpDonorService.GetContactDonor(contactId);
-                var charge = _stripeService.ChargeCustomer(donor.ProcessorId, dto.Amount, donor.DonorId, isPayment);
+                var charge = _stripeService.ChargeCustomer(donor.ProcessorId, dto.Amount, donor.DonorId, isPayment,donor.Email, donor.Details?.DisplayName);
                 var fee = charge.BalanceTransaction != null ? charge.BalanceTransaction.Fee : null;
 
                 int? pledgeId = null;
@@ -288,10 +292,12 @@ namespace crds_angular.Controllers.API
                         PredefinedAmount = dto.PredefinedAmount
                     };
 
+                    var from = dto.Anonymous ? "Anonymous" : donor.Details.FirstName + " " + donor.Details.LastName;
+
                     var donationId = _mpDonorService.CreateDonationAndDistributionRecord(donationAndDistribution, !dto.TripDeposit);
                     if (!dto.GiftMessage.IsNullOrWhiteSpace() && pledgeId != null)
                     {
-                        SendMessageFromDonor(pledgeId.Value, donationId, dto.GiftMessage);
+                        SendMessageFromDonor(pledgeId.Value, donationId, dto.GiftMessage, from);
                     }
                     var response = new DonationDTO
                     {
@@ -300,6 +306,9 @@ namespace crds_angular.Controllers.API
                         Id = donationId.ToString(),
                         Email = donor.Email
                     };
+
+                    _analyticsService.Track(donor.ContactId.ToString(), "PaymentSucceededServerSide", new EventProperties() { { "Url", dto.SourceUrl }, { "FundingMethod", dto.PaymentType }, { "Email",  "" }, { "CheckoutType", "Registered" }, { "Amount", dto.Amount } });
+
 
                     return Ok(response);
                 }
@@ -376,7 +385,7 @@ namespace crds_angular.Controllers.API
             try
             {
                 donor = _gatewayDonorService.GetContactDonorForEmail(dto.EmailAddress);
-                var charge = _stripeService.ChargeCustomer(donor.ProcessorId, dto.Amount, donor.DonorId, isPayment);
+                var charge = _stripeService.ChargeCustomer(donor.ProcessorId, dto.Amount, donor.DonorId, isPayment, donor.Email, donor.Details?.DisplayName);
                 var fee = charge.BalanceTransaction != null ? charge.BalanceTransaction.Fee : null;
                 int? pledgeId = null;
                 if (dto.PledgeCampaignId != null && dto.PledgeDonorId != null)
@@ -405,10 +414,12 @@ namespace crds_angular.Controllers.API
                     SourceUrl = dto.SourceUrl
                 };
 
+                var from = dto.Anonymous ? "Anonymous" : donor.Details.FirstName + " " + donor.Details.LastName;
+
                 var donationId = _mpDonorService.CreateDonationAndDistributionRecord(donationAndDistribution);
                 if (!dto.GiftMessage.IsNullOrWhiteSpace() && pledgeId != null)
                 {
-                    SendMessageFromDonor(pledgeId.Value, donationId, dto.GiftMessage);
+                    SendMessageFromDonor(pledgeId.Value, donationId, dto.GiftMessage, from);
                 }
 
                 var response = new DonationDTO()
@@ -419,6 +430,7 @@ namespace crds_angular.Controllers.API
                     Email = donor.Email
                 };
 
+                _analyticsService.Track(donor.ContactId.ToString(), "PaymentSucceededServerSide", new EventProperties() { {"Url", dto.SourceUrl }, { "FundingMethod", dto.PaymentType }, { "Email", donor.Email }, { "CheckoutType", "Guest" }, { "Amount", dto.Amount } });
                 return Ok(response);
             }
             catch (PaymentProcessorException stripeException)
@@ -434,11 +446,11 @@ namespace crds_angular.Controllers.API
             }
         }
 
-        private void SendMessageFromDonor(int pledgeId, int donationId, string message)
+        private void SendMessageFromDonor(int pledgeId, int donationId, string message, string from)
         {
             try
             {
-                _mpDonationService.SendMessageFromDonor(pledgeId, donationId, message);
+                _mpDonationService.SendMessageFromDonor(pledgeId, donationId, message, from);
             }
             catch (Exception ex) {
                 _logger.Error(string.Format("Send Message From Donor Failed, pledgeId ({0})", pledgeId),ex);

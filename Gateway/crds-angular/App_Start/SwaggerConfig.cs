@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -18,6 +19,11 @@ namespace crds_angular
         public static void Register()
         {
             var thisAssembly = typeof (SwaggerConfig).Assembly;
+
+            if (ConfigurationManager.AppSettings["DisableSwagger"] == "True")
+            {
+                return;
+            }
 
             GlobalConfiguration.Configuration
                 .EnableSwagger(c =>

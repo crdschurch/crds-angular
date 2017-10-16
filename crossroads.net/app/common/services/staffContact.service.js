@@ -6,6 +6,6 @@
   StaffContact.$inject = ['$resource'];
 
   function StaffContact($resource) {
-    return $resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/staffcontacts');
+    return $resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/primarycontacts');
   }
 })();

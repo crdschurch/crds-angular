@@ -279,9 +279,23 @@
         // 422 indicates an HTTP "Unprocessable Entity", in this case meaning Group is Full
         // http://tools.ietf.org/html/rfc4918#section-11.2
         if (error.status === 422) {
-          $rootScope.$emit('notify', $rootScope.MESSAGES.fullGroupError);
-          vm.showFull = true;
-          vm.showContent = false;
+          vm.groupDetails = Group.Detail.get({
+              groupId: vm.groupId
+          }).$promise.then(function(res) {
+            if(res.waitListInd) {
+              $rootScope.$emit('notify', $rootScope.MESSAGES.notEnoughRoomError);
+              vm.waitListCase = true;
+              vm.showWaitList = true;
+              vm.signupPage.title = vm.signupPage.title + ' - Waitlist';
+              vm.groupId = res.waitListGroupId;
+            }
+            else {
+              $rootScope.$emit('notify', $rootScope.MESSAGES.fullGroupError);
+              vm.showFull = true;
+              vm.showContent = false;
+            }
+          });
+
         } else {
           $rootScope.$emit('notify', $rootScope.MESSAGES.generalError);
           vm.showFull = false;

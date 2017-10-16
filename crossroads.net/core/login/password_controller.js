@@ -10,7 +10,8 @@ require('../services/password_service');
     '$log',
     '$state',
     'PasswordService',
-    'Validation'
+    'Validation',
+    'AnalyticsService'
   ];
 
   function PasswordController(
@@ -18,10 +19,10 @@ require('../services/password_service');
     $log,
     $state,
     PasswordService,
-    Validation) {
+    Validation,
+    AnalyticsService) {
 
     $log.debug('Inside Password Controller');
-
     var vm = this;
     vm.saving = false;
     vm.resetRequest = resetRequest;
@@ -57,6 +58,8 @@ require('../services/password_service');
 
     function submitPassword(form) {
       $log.debug('submitPassword start');
+      AnalyticsService.trackForgotPassword();
+
       if (form !== null) {
         form.$setSubmitted(true);
         if (form.$valid) {

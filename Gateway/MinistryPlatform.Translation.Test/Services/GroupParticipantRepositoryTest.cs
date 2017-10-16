@@ -299,7 +299,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
             string csvGroupIds = "1,2,3";
             string search = $"group_participants.group_id in ({csvGroupIds})" +
-                            $" AND (Group_Participants.End_Date > '{DateTime.Now:yyyy-MM-dd H:mm:ss}' OR Group_Participants.End_Date Is Null)";
+                            $" AND (Group_Participants.End_Date > GetDate() OR Group_Participants.End_Date Is Null)";
 
             _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
@@ -390,7 +390,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
             string csvGroupIds = "1,2,3";
             string search = $"group_participants.group_id in ({csvGroupIds})" +
-                            $" AND (Group_Participants.End_Date > '{DateTime.Now:yyyy-MM-dd H:mm:ss}' OR Group_Participants.End_Date Is Null)";
+                            $" AND (Group_Participants.End_Date > GetDate() OR Group_Participants.End_Date Is Null)";
 
             _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
@@ -480,7 +480,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 }
             };
             string search = $"group_participants.group_id in ({groupId})" +
-                            $" AND (Group_Participants.End_Date > '{DateTime.Now:yyyy-MM-dd H:mm:ss}' OR Group_Participants.End_Date Is Null)";
+                            $" AND (Group_Participants.End_Date > GetDate() OR Group_Participants.End_Date Is Null)";
 
             _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);

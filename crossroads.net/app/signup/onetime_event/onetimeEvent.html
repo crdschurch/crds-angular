@@ -1,4 +1,4 @@
-<div ng-if="onetimeEvent.events.length>0">
+
 <div class="row">
   <div class="col-sm-10 col-sm-offset-1 col-md-8 col-sm-offset-2">
     <div dynamic-content="onetimeEvent.pageInfo.content | html"> </div>
@@ -6,6 +6,7 @@
 </div>
 <hr>
 
+<div ng-if="onetimeEvent.events.length>0">
 <form name="onetimeEvent.onetime">
   <div ng-repeat="event in onetimeEvent.events">
     <onetime-event-block

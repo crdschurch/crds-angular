@@ -1,4 +1,3 @@
-
 import SmallGroup from '../model/smallGroup';
 import CONSTANTS from 'crds-constants';
 
@@ -25,17 +24,21 @@ export default class CreateGroupController {
 
     $onInit() {
         this.participantService.get().then((data) => {
-            if (_.get(data, 'ApprovedSmallGroupLeader', false)) {
-                this.approvedLeader = true;
-                this.ready = true;
-            } else {
-                this.window.location.href = this.window.location.origin + CONSTANTS.MICROCLIENTS.GROUP_LEADER_FORM.URL;
-            }
-        },
+                if (_.get(data, 'ApprovedSmallGroupLeader', false)) {
+                    this.approvedLeader = true;
+                    this.ready = true;
+                } else {
+                    this.groupService.groupLeaderUrl().then((segment) => {
+                        this.window.location.href = this.window.location.origin + segment;
+                    });
+                }
+            },
 
             (err) => {
                 this.log.error(`Unable to get Participant for logged-in user: ${err.status} - ${err.statusText}`);
-                this.window.location.href = this.window.location.origin + CONSTANTS.MICROCLIENTS.GROUP_LEADER_FORM.URL;
+                    this.groupService.groupLeaderUrl().then((segment) => {
+                        this.window.location.href = this.window.location.origin + segment;
+                    });
             });
 
         this.fields = this.createGroupService.getFields();
@@ -45,8 +48,7 @@ export default class CreateGroupController {
                     if (!this.window.confirm('Are you sure you want to leave this page?')) {
                         event.preventDefault();
                         return;
-                    }
-                    else {
+                    } else {
                         this.createGroupService.reset();
                         this.stateChangeWatcher();
                         return;

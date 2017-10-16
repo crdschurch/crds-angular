@@ -12,6 +12,8 @@ using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 
+
+
 namespace MinistryPlatform.Translation.Repositories
 {
     public class GroupRepository : BaseRepository, IGroupRepository
@@ -24,24 +26,21 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly IObjectAttributeRepository _objectAttributeRepository;
         private readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly int GroupsParticipantsPageId = Convert.ToInt32(AppSettings("GroupsParticipants"));
-        private readonly int GroupsParticipantsSubPageId = Convert.ToInt32(AppSettings("GroupsParticipantsSubPage"));
-        private readonly int CurrentGroupsParticipantsSubPage = Convert.ToInt32(AppSettings("CurrentGroupsParticipantsSubPage"));
         private readonly int GroupsPageId = Convert.ToInt32(AppSettings("Groups"));
         private readonly int GroupsSubgroupsPageId = Convert.ToInt32(AppSettings("GroupsSubgroups"));
         private readonly int DefaultEmailContactId = Convert.ToInt32(AppSettings("DefaultContactEmailId"));
         private readonly int GroupSignupRelationsPageId = Convert.ToInt32((AppSettings("GroupSignUpRelations")));
         private readonly int CommunityGroupConfirmationTemplateId = Convert.ToInt32(AppSettings("CommunityGroupConfirmationTemplateId"));
         private readonly int CommunityGroupWaitListConfirmationTemplateId = Convert.ToInt32(AppSettings("CommunityGroupWaitListConfirmationTemplateId"));
-        private readonly int CurrentGroupParticipantsByGroupTypePageView = Convert.ToInt32(AppSettings("CurrentGroupParticipantsByGroupTypePageView"));
         private readonly int MyCurrentGroupsPageView = Convert.ToInt32(AppSettings("MyCurrentGroupsPageView"));
         private readonly int JourneyGroupTypeId = Convert.ToInt32(AppSettings("JourneyGroupTypeId"));
         private readonly int JourneyGroupSearchPageViewId = Convert.ToInt32(AppSettings("JourneyGroupSearchPageViewId"));
-        private readonly int MySmallGroupsPageView = Convert.ToInt32(AppSettings("MySmallGroupsPageView"));
         private readonly int GroupLeaderRoleId = Convert.ToInt32(AppSettings("GroupLeaderRoleId"));
         private readonly int MyCurrentGroupParticipationPageId = Convert.ToInt32(AppSettings("MyCurrentGroupParticipationPageId"));
         private readonly int NewStudentMinistryGroupAlertEmailTemplate = Convert.ToInt32(AppSettings("NewStudentMinistryGroupAlertEmailTemplate"));
         private readonly int GroupHasMiddleSchoolStudents = Convert.ToInt32(AppSettings("GroupHasMiddleSchoolStudents"));
         private readonly int GroupHasHighSchoolStudents = Convert.ToInt32(AppSettings("GroupHasHighSchoolStudents"));
+       
 
         private readonly int GroupParticipantQualifiedServerPageView =
             Convert.ToInt32(AppSettings("GroupsParticipantsQualifiedServerPageView"));
@@ -57,7 +56,8 @@ namespace MinistryPlatform.Translation.Repositories
                                IContactRepository contactService,
                                IContentBlockService contentBlockService,
                                IAddressRepository addressRepository,
-                               IObjectAttributeRepository objectAttributeRepository)
+                               IObjectAttributeRepository objectAttributeRepository
+                               )
             : base(authenticationService, configurationWrapper)
         {
             this.ministryPlatformService = ministryPlatformService;
@@ -146,43 +146,59 @@ namespace MinistryPlatform.Translation.Repositories
             return (groupId);
         }
 
-        public int addParticipantToGroup(int participantId,
-                                         int groupId,
-                                         int groupRoleId,
-                                         Boolean childCareNeeded,
-                                         DateTime startDate,
-                                         DateTime? endDate = null,
-                                         Boolean? employeeRole = false,
-                                         int? enrolledBy = null)
+        public bool GetDoesUserLeadSomeGroup(int userParticipantId)
         {
-            logger.Debug("Adding participant " + participantId + " to group " + groupId);
-
-            var values = new Dictionary<string, object>
+            bool doesUserLeadSomeGroup; 
+            var token = ApiLogin();
+            string filter = $" Group_Role_ID = {GroupLeaderRoleId} AND Participant_ID = {userParticipantId}";
+            var columns = new List<string>
             {
-                {"Participant_ID", participantId},
-                {"Group_Role_ID", groupRoleId},
-                {"Start_Date", startDate},
-                {"End_Date", endDate},
-                {"Employee_Role", employeeRole},
-                {"Child_Care_Requested", childCareNeeded},
-                {"Enrolled_By", enrolledBy }
+                "Group_ID"
             };
 
-            var groupParticipantId =
-                WithApiLogin<int>(
-                    apiToken =>
-                    {
-                        return
-                            (ministryPlatformService.CreateSubRecord(GroupsParticipantsPageId,
-                                                                     groupId,
-                                                                     values,
-                                                                     apiToken,
-                                                                     true));
-                    });
+            var records = _ministryPlatformRestRepository.UsingAuthenticationToken(token).Search<MpGroupParticipant>(filter, columns);
 
-            logger.Debug("Added participant " + participantId + " to group " + groupId + ": record id: " +
-                         groupParticipantId);
-            return (groupParticipantId);
+            doesUserLeadSomeGroup = records.Any(); 
+             
+            return doesUserLeadSomeGroup; 
+        }
+
+        public int AddParticipantToGroup(int participantId,
+                                         int groupId,
+                                         int groupRoleId,
+                                         bool childCareNeeded,
+                                         bool employeeRole,
+                                         DateTime startDate,
+                                         DateTime? endDate = null,
+                                         int? enrolledBy = null)
+        {
+            var token = ApiLogin();
+            logger.Debug("Adding participant " + participantId + " to group " + groupId);
+
+            var groupParticipant = new MpGroupParticipant
+            {
+                ParticipantId = participantId,
+                GroupId = groupId,
+                GroupRoleId = groupRoleId,
+                ChildCareRequested = childCareNeeded,
+                StartDate = startDate,
+                EndDate = endDate,
+                EmployeeRole = employeeRole,
+                EnrolledBy = enrolledBy
+            };
+
+            var newGroupParticipant = _ministryPlatformRestRepository.UsingAuthenticationToken(token).PostWithReturn<MpGroupParticipant, MpGroupParticipant>(new List<MpGroupParticipant>() { groupParticipant }).FirstOrDefault();
+            if (newGroupParticipant != null)
+            {
+                var groupParticipantId = newGroupParticipant.GroupParticipantId;
+           
+
+                logger.Debug("Added participant " + participantId + " to group " + groupId + ": record id: " +
+                             groupParticipantId);
+                return (groupParticipantId);
+            }
+
+            throw new ApplicationException("AddParticipantToGroup: Failed to Add Participant");
         }
 
         public void endDateGroupParticipant(int groupParticipantId, int groupId, DateTime? endDate = null)
@@ -483,7 +499,8 @@ namespace MinistryPlatform.Translation.Repositories
         public List<MpGroup> GetGroupsByGroupType(int groupTypeId)
         {
             var token = ApiLogin();
-            const string columns = "Group_ID, Group_Name, Group_Type_ID, Description, Ministry_ID, Congregation_ID, Start_Date, End_Date, Available_Online, Meeting_Time, Meeting_Day_ID, Meeting_Frequency_ID, Kids_Welcome, Offsite_Meeting_Address, Target_Size, Group_Is_Full, Enable_Waiting_List, Child_Care_Available, Maximum_Age, Remaining_Capacity, Minimum_Participants, Primary_Contact ";
+
+            const string columns = "Group_ID, Group_Name, Group_Type_ID, Offsite_Meeting_Address";
             string filter = $"Group_Type_ID = {groupTypeId} ";
 
             var groups = _ministryPlatformRestRepository.UsingAuthenticationToken(token).Search<MpGroup>(filter, columns);
@@ -550,7 +567,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         private List<MpGroupParticipant> LoadGroupParticipants(int groupId, string token, bool activeGroups = true)
         {
-            const string columns = "Group_Participant_ID, Group_Participants.Group_ID, Group_Participants.Participant_ID, Group_Participants.Group_Role_ID, Group_ID_Table.Group_Name, Participant_ID_Table.Contact_ID, Participant_ID_Table_Contact_ID_Table.Nickname, Participant_ID_Table_Contact_ID_Table.Display_Name, Participant_ID_Table_Contact_ID_Table.Last_Name, Group_Role_ID_Table.Role_Title, Participant_ID_Table_Contact_ID_Table.Email_Address, Group_ID_Table_Congregation_ID_Table.Congregation_Name as Congregation, Group_Participants.Start_Date AS StartDate, CAST(IIF(Participant_ID_Table.Group_Leader_Status_ID = 4, 1, 0) AS bit) AS IsApprovedSmallGroupLeader";
+            const string columns = "Group_Participant_ID, Group_Participants.Group_ID, Group_Participants.Participant_ID, Group_Participants.Group_Role_ID, Group_ID_Table.Group_Name, Participant_ID_Table.Contact_ID, Participant_ID_Table_Contact_ID_Table.Nickname, Participant_ID_Table_Contact_ID_Table.Display_Name, Participant_ID_Table_Contact_ID_Table.Last_Name, Group_Role_ID_Table.Role_Title, Participant_ID_Table_Contact_ID_Table.Email_Address, Group_ID_Table_Congregation_ID_Table.Congregation_Name as Congregation, Group_Participants.Start_Date, CAST(IIF(Participant_ID_Table.Group_Leader_Status_ID = 4, 1, 0) AS bit) AS IsApprovedSmallGroupLeader";
             string filter = $"Group_Participants.Group_ID = {groupId} AND (Group_Participants.End_Date IS NULL OR Group_Participants.End_Date >= GETDATE())";
 
             if (activeGroups)
@@ -569,23 +586,26 @@ namespace MinistryPlatform.Translation.Repositories
             return groupParticipants;
         }
 
-        public IList<MpEvent> getAllEventsForGroup(int groupId)
+        //DE2903 : Added the date time parameter to filter out past events
+        public IList<MpEvent> getAllEventsForGroup(int groupId, DateTime? minEndDate = null, bool includeCancelledEvents = false)
         {
-            var apiToken = ApiLogin();
-            var groupEvents = ministryPlatformService.GetSubpageViewRecords("GroupEventsSubPageView", groupId, apiToken);
-            if (groupEvents == null || groupEvents.Count == 0)
-            {
-                return null;
-            }
-            return groupEvents.Select(tmpEvent => new MpEvent
-            {
-                EventId = tmpEvent.ToInt("Event_ID"),
-                Congregation = tmpEvent.ToString("Congregation_Name"),
-                EventStartDate = tmpEvent.ToDate("Event_Start_Date"),
-                EventEndDate = tmpEvent.ToDate("Event_End_Date"),
-                EventTitle = tmpEvent.ToString("Event_Title"),
-                EventType = tmpEvent.ToString("Event_Type_ID")
-            }).ToList();
+            var parameters = new Dictionary<string, object>();
+            parameters.Add("Group_ID", groupId);
+
+            // optionally filter out events whose end date has passed
+            if (minEndDate != null)
+                parameters.Add("Min_End_Date", minEndDate.Value.Date);
+
+            // optionally filter out cancelled events
+            if (!includeCancelledEvents)
+                parameters.Add("Cancelled", 0);
+
+            string apiToken = ApiLogin();
+            var resultSet = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken)
+                        .GetFromStoredProc<MpEvent>("api_crds_Get_Events_For_Group", parameters);
+
+            List<MpEvent> eventList = (resultSet != null && resultSet.Count > 0) ? resultSet[0] : null;
+            return eventList;
         }
 
         public IList<string> GetEventTypesForGroup(int groupId, string token)
@@ -615,9 +635,18 @@ namespace MinistryPlatform.Translation.Repositories
 
         public bool ParticipantGroupMember(int groupId, int participantId)
         {
+            return (GetParticipantGroupMemberId(groupId, participantId) > 0);
+        }
+
+        public int GetParticipantGroupMemberId(int groupId, int participantId)
+        {
+            object gpid = null;
             var searchString = string.Format(",{0},{1}", groupId, participantId);
             var teams = ministryPlatformService.GetPageViewRecords("GroupParticipantsById", ApiLogin(), searchString);
-            return teams.Count != 0;
+            if (teams.Count!=0 && teams.FirstOrDefault().TryGetValue("Group_Participant_ID", out gpid))
+                return (int)gpid;
+            else
+                return -1;
         }
 
         public bool checkIfUserInGroup(int participantId, IList<MpGroupParticipant> groupParticipants)
@@ -995,32 +1024,15 @@ namespace MinistryPlatform.Translation.Repositories
 
         public void CreateGroupInquiry(MpInquiry inquiry)
         {
-            var values = new Dictionary<string, object>
+            var token = ApiLogin();
+            try
             {
-                {"Contact_ID", inquiry.ContactId},
-                {"Group_ID", inquiry.GroupId},
-                {"Email", inquiry.EmailAddress},
-                {"Phone", inquiry.PhoneNumber},
-                {"First_Name", inquiry.FirstName},
-                {"Last_Name", inquiry.LastName},
-                {"Inquiry_Date", System.DateTime.Now}
-            };
-
-            WithApiLogin<int>(token =>
+                _ministryPlatformRestRepository.UsingAuthenticationToken(token).Post<MpInquiry>(new List<MpInquiry> {inquiry});
+            }
+            catch (Exception e)
             {
-                try
-                {
-                    ministryPlatformService.CreateSubRecord(_configurationWrapper.GetConfigIntValue("GroupInquiresSubPage"),
-                                                            inquiry.GroupId,
-                                                            values,
-                                                            token);
-                    return 1;
-                }
-                catch (Exception e)
-                {
-                    throw new ApplicationException("Error creating group inquiry: " + e.Message);
-                }
-            });
+                throw new ApplicationException("Error creating group inquiry: " + e.Message);
+            }
         }
 
         public MpGroupParticipant GetAuthenticatedUserParticipationByGroupID(string token, int groupId)

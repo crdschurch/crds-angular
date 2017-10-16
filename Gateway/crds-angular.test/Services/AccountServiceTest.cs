@@ -24,6 +24,7 @@ namespace crds_angular.test.Services
         private Mock<IMinistryPlatformService> _ministryPlatformService;
         private Mock<IApiUserRepository> _apiUserService;
         private Mock<IParticipantRepository> _participantService;
+        private Mock<IContactRepository> _contactRepository;
 
         private AccountService _fixture;
 
@@ -38,6 +39,7 @@ namespace crds_angular.test.Services
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _apiUserService = new Mock<IApiUserRepository>();
             _participantService = new Mock<IParticipantRepository>();
+            _contactRepository = new Mock<IContactRepository>();
 
             _fixture = new AccountService(_configurationWrapper.Object,
                                           _comunicationService.Object,
@@ -46,7 +48,8 @@ namespace crds_angular.test.Services
                                           _ministryPlatformService.Object,
                                           _lookupService.Object,
                                           _apiUserService.Object,
-                                          _participantService.Object);
+                                          _participantService.Object,
+                                          _contactRepository.Object);
         }
 
         [Test]

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Device.Location;
-using System.Linq;
-using Amazon.CloudSearch.Model.Internal.MarshallTransformations;
 using crds_angular.App_Start;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Finder;
@@ -17,10 +15,10 @@ using AutoMapper;
 using crds_angular.Models.Crossroads.Groups;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
-using Rhino.Mocks;
 using Amazon.CloudSearchDomain.Model;
 using crds_angular.Exceptions;
 using crds_angular.Models.AwsCloudsearch;
+using crds_angular.Services.Analytics;
 using Crossroads.Web.Common.Security;
 using MvcContrib.TestHelper;
 
@@ -47,6 +45,10 @@ namespace crds_angular.test.Services
         private Mock<IFinderService> _mpFinderServiceMock;
         private Mock<IAuthenticationRepository> _authenticationRepository;
         private Mock<ICommunicationRepository> _communicationRepository;
+      
+        private Mock<IAccountService> _accountService;
+        private Mock<ILookupService> _lookupService;
+        private Mock<IAnalyticsService> _analyticsService;
 
         private int _memberRoleId = 16;
         private int _anywhereGatheringInvitationTypeId = 3;
@@ -70,15 +72,19 @@ namespace crds_angular.test.Services
             _awsCloudsearchService = new Mock<IAwsCloudsearchService>();
             _authenticationRepository = new Mock<IAuthenticationRepository>();
             _communicationRepository = new Mock<ICommunicationRepository>();
-
+            _accountService = new Mock<IAccountService>();
+            _analyticsService = new Mock<IAnalyticsService>();
+            
 
             _mpFinderServiceMock = new Mock<IFinderService>(MockBehavior.Strict);
+            _lookupService = new Mock<ILookupService>();
 
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("GroupRoleLeader")).Returns(22);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("ApprovedHostStatus")).Returns(3);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("AnywhereGroupTypeId")).Returns(30);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("SmallGroupTypeId")).Returns(1);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigValue("FinderConnectFlag")).Returns("CONNECT");
+            _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigValue("FinderGroupToolFlag")).Returns("SMALL_GROUPS");
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Group_Role_Default_ID")).Returns(_memberRoleId);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("AnywhereGatheringInvitationType")).Returns(_anywhereGatheringInvitationTypeId);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("GroupInvitationType")).Returns(_groupInvitationTypeId);
@@ -96,10 +102,152 @@ namespace crds_angular.test.Services
                                          _invitationService.Object,
                                          _awsCloudsearchService.Object,
                                          _authenticationRepository.Object,
-                                         _communicationRepository.Object);
+                                         _communicationRepository.Object,
+                                         _accountService.Object,
+                                         _lookupService.Object,
+                                         _analyticsService.Object);
 
             //force AutoMapper to register
             AutoMapperConfig.RegisterMappings();
+        }
+
+        [Test]
+        [ExpectedException(typeof(Exception), ExpectedMessage = "User does not have access to requested address")]
+        public void ShouldThrowExceptionIfParticipantIdsDontMatch()
+        {
+            const int participantId = 42;
+            const string token = "ABC";
+            const int addressParticipantId = 99;
+
+            _mpParticipantRepository.Setup(mock => mock.GetParticipantRecord(token)).Returns(new MpParticipant()
+            {
+                ParticipantId = participantId
+            });
+
+            _fixture.GetPersonAddress(token, addressParticipantId, true);
+        }
+
+        [Test]
+        [ExpectedException(typeof(Exception), ExpectedMessage = "User address not found")]
+        public void GetPersonShouldThrowWhenAddressNotFound()
+        {
+            const int participantId = 42;
+            const string token = "ABC";
+
+
+            _mpParticipantRepository.Setup(mock => mock.GetParticipantRecord(token)).Returns(new MpParticipant()
+            {
+                ParticipantId = participantId
+            });
+
+            _mpFinderRepository.Setup(mock => mock.GetPinAddress(participantId)).Returns((MpAddress) null);
+
+            _fixture.GetPersonAddress(token, participantId, true);
+        }
+
+        [Test]
+        public void ShouldGetFullPersonAddress()
+        {
+            const int participantId = 42;
+            const string token = "ABC";
+            _mpParticipantRepository.Setup(mock => mock.GetParticipantRecord(token)).Returns(new MpParticipant()
+            {
+                ParticipantId = participantId
+            });
+
+            _mpFinderRepository.Setup(mock => mock.GetPinAddress(participantId)).Returns(this.getAMpAddress());
+
+            var result = _fixture.GetPersonAddress(token, participantId, true);
+            Assert.AreEqual(result.AddressID, 1);
+            Assert.AreEqual(result.AddressLine1, "1 Street");
+
+        }
+
+        [Test]
+        public void ShouldCallAnalyticsWhenAcceptingAnInvite()
+        {
+            var hostPin = GetAPin(2);
+            var invitedContact = new MpMyContact()
+            {
+                Contact_ID = 42,
+                Email_Address = "invited@email.com"
+            };
+            const int groupId = 42;
+            const string invitationGuid = "ILIKEICECREAM";
+            const string token = "IAMAUTHENTICATEDMAN";
+
+            _mpGroupToolService.Setup(m => m.AcceptDenyGroupInvitation(
+                                          It.Is<string>(toke => toke.Equals(token)),
+                                          It.Is<int>(GroupID => GroupID == groupId),
+                                          It.Is<string>(invite => invite.Equals(invitationGuid)),
+                                          It.Is<Boolean>(t => t == true)
+                                      ));
+
+            _groupService.Setup(m => m.GetPrimaryContactParticipantId(It.Is<int>(GroupID => GroupID == groupId))).Returns(42);
+            _mpFinderRepository.Setup(m => m.GetPinDetails(It.Is<int>(partId => partId == 42))).Returns(convertPinDtoToFinderPinDto(hostPin));
+            _mpContactRepository.Setup(m => m.GetContactById(It.Is<int>(id => id == invitedContact.Contact_ID))).Returns(invitedContact);
+            _authenticationRepository.Setup(m => m.GetContactId(It.Is<string>(Token => Token.Equals(token)))).Returns(invitedContact.Contact_ID);
+            _mpFinderRepository.Setup(m => m.RecordConnection(It.IsAny<MpConnectCommunication>()));
+            _communicationRepository.Setup(m => m.GetTemplate(It.IsAny<int>())).Returns(new MpMessageTemplate());
+            _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
+            _analyticsService.Setup(m => m.Track(
+                                        It.Is<string>(hostId => hostId.Equals(hostPin.Contact_ID.ToString())),
+                                        It.Is<string>(eventName => eventName.Equals("HostInvitationAccepted")),
+                                        It.Is<EventProperties>(props => props["InvitationTo"].Equals(invitedContact.Contact_ID)
+                                                                        && props["InvitationToEmail"].Equals(invitedContact.Email_Address))
+                                    ));
+
+            _analyticsService.Setup(m => m.Track(
+                                        It.Is<string>(invitedId => invitedId.Equals(invitedContact.Contact_ID.ToString())),
+                                        It.Is<string>(eventName => eventName.Equals("InviteeAcceptedInvitation")),
+                                        It.Is<EventProperties>(props => props["InvitationFrom"].Equals(hostPin.Contact_ID)
+                                                                        && props["InvitationFromEmail"].Equals(hostPin.EmailAddress))
+                                    ));
+
+            _fixture.AcceptDenyGroupInvitation(token, groupId, invitationGuid, true);
+            _analyticsService.VerifyAll();
+            _groupService.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldGetPartialPersonAddress()
+        {
+            const int participantId = 42;
+            const string token = "ABC";
+            _mpParticipantRepository.Setup(mock => mock.GetParticipantRecord(token)).Returns(new MpParticipant()
+            {
+                ParticipantId = participantId
+            });
+
+            _mpFinderRepository.Setup(mock => mock.GetPinAddress(participantId)).Returns(this.getAMpAddress());
+
+            var result = _fixture.GetPersonAddress(token, participantId, false);
+            Assert.AreEqual(result.AddressID, 1);
+            Assert.AreEqual(result.AddressLine1, null);
+            Assert.AreEqual(result.AddressLine2, null);
+            Assert.AreEqual(result.City, "City!");
+
+        }
+
+        [Test]
+        public void ShouldGetPartialAddressDifferentParticipantId()
+        {
+            const int participantId = 42;
+            const int addressParticipantId = 33;
+            const string token = "ABC";
+            _mpParticipantRepository.Setup(mock => mock.GetParticipantRecord(token)).Returns(new MpParticipant()
+            {
+                ParticipantId = participantId
+            });
+
+            _mpFinderRepository.Setup(mock => mock.GetPinAddress(addressParticipantId)).Returns(this.getAMpAddress());
+
+            var result = _fixture.GetPersonAddress(token, addressParticipantId, false);
+            Assert.AreEqual(result.AddressID, 1);
+            Assert.AreEqual(result.AddressLine1, null);
+            Assert.AreEqual(result.AddressLine2, null);
+            Assert.AreEqual(result.City, "City!");
+
         }
 
         [Test]
@@ -132,47 +280,34 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldGetGroupPinDetailsAnywhere()
         {
-            _groupService.Setup(g => g.GetPrimaryContactParticipantId(It.IsAny<int>())).Returns(986765);
-            _apiUserRepository.Setup(ar => ar.GetToken()).Returns("abc123");
-            _mpFinderRepository.Setup(m => m.GetPinDetails(986765))
-                .Returns(new FinderPinDto
-                {
-                    LastName = "Ker",
-                    FirstName = "Joe",
-                    Address = new MpAddress {Address_ID = 12, Postal_Code = "1234", Address_Line_1 = "123 street", City = "City", State = "OH"},
-                    Participant_ID = 123,
-                    EmailAddress = "joeker@gmail.com",
-                    Contact_ID = 22,
-                    Household_ID = 13,
-                    Host_Status_ID = 3
-                });
 
-            _groupService.Setup(gs => gs.GetGroupsByTypeOrId("abc123", 986765, null, 121212, false, false))
-                .Returns(new List<GroupDTO>
-                {
-                    new GroupDTO
-                    {
-                        GroupId = 121212,
-                        GroupTypeId = 30,
-                        Participants = new List<GroupParticipantDTO>
-                        {
-                            new GroupParticipantDTO
-                            {
-                                GroupRoleId = 22,
-                                ParticipantId = 222
-                            }
-                        },
-                        Address = new AddressDTO() {AddressID = 99, PostalCode = "98765", AddressLine1 = "345 road", City = "Town", State = "CA"}
-                    }
-                });
+            var searchresults = new SearchResponse();
+            searchresults.Hits = new Hits();
+            searchresults.Hits.Found = 1;
+            searchresults.Hits.Start = 0;
+            searchresults.Hits.Hit = new List<Hit>();
+            var hit = new Hit();
+            var fields = new Dictionary<string, List<string>>();
+            fields.Add("firstname", new List<string>() {"Sara"});
+            fields.Add("lastname", new List<string>() {"Smith"});
+            fields.Add("pintype", new List<string>() {"2"});
+            fields.Add("latlong", new List<string>() {"38.94526,-84.661275"});
+            fields.Add("groupid", new List<string>() {"121212"});
+            fields.Add("city", new List<string>() {"Union"});
+            fields.Add("zip", new List<string>() {"41091"});
+            fields.Add("contactid", new List<string>() {"111111"});
 
-            var result = _fixture.GetPinDetailsForGroup(121212);
+            hit.Fields = fields;
+            searchresults.Hits.Hit.Add(hit);
 
-            _mpFinderRepository.VerifyAll();
+            _awsCloudsearchService.Setup(
+                mocked => mocked.SearchByGroupId(It.IsAny<string>())).Returns(searchresults);
 
-            Assert.AreEqual(result.LastName, "Ker");
-            Assert.AreEqual(result.Address.AddressID, 99);
-            Assert.AreEqual(result.Address.AddressLine1, "");
+            var result = _fixture.GetPinDetailsForGroup(121212, new GeoCoordinate(38.94526, -84.661275));
+
+            Assert.IsInstanceOf<PinDto>(result);
+
+            Assert.AreEqual(result.FirstName, "Sara");
             Assert.AreEqual(result.Gathering.GroupId, 121212);
             Assert.AreEqual(result.PinType, PinType.GATHERING);
         }
@@ -180,50 +315,38 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldGetGroupPinDetailsSmallGroup()
         {
-            _groupService.Setup(g => g.GetPrimaryContactParticipantId(It.IsAny<int>())).Returns(986765);
-            _apiUserRepository.Setup(ar => ar.GetToken()).Returns("abc123");
-            _mpFinderRepository.Setup(m => m.GetPinDetails(986765))
-                .Returns(new FinderPinDto
-                {
-                    LastName = "Ker",
-                    FirstName = "Joe",
-                    Address = new MpAddress { Address_ID = 12, Postal_Code = "1234", Address_Line_1 = "123 street", City = "City", State = "OH" },
-                    Participant_ID = 123,
-                    EmailAddress = "joeker@gmail.com",
-                    Contact_ID = 22,
-                    Household_ID = 13,
-                    Host_Status_ID = 3
-                });
+            var searchresults = new SearchResponse();
+            searchresults.Hits = new Hits();
+            searchresults.Hits.Found = 1;
+            searchresults.Hits.Start = 0;
+            searchresults.Hits.Hit = new List<Hit>();
+            var hit = new Hit();
+            var fields = new Dictionary<string, List<string>>();
+            fields.Add("firstname", new List<string>() {"Sara"});
+            fields.Add("lastname", new List<string>() {"Smith"});
+            fields.Add("pintype", new List<string>() {"4"});
+            fields.Add("latlong", new List<string>() {"38.94526,-84.661275"});
+            fields.Add("groupid", new List<string>() {"121212"});
+            fields.Add("groupname", new List<string>() {"Sara S."});
+            fields.Add("city", new List<string>() {"Union"});
+            fields.Add("zip", new List<string>() {"41091"});
+            fields.Add("contactid", new List<string>() {"111111"});
 
-            _groupService.Setup(gs => gs.GetGroupsByTypeOrId("abc123", 986765, null, 121212, false, false))
-                .Returns(new List<GroupDTO>
-                {
-                    new GroupDTO
-                    {
-                        GroupId = 121212,
-                        GroupTypeId = 1,
-                        Participants = new List<GroupParticipantDTO>
-                        {
-                            new GroupParticipantDTO
-                            {
-                                GroupRoleId = 22,
-                                ParticipantId = 222
-                            }
-                        },
-                        Address = new AddressDTO() {AddressID = 99, PostalCode = "98765", AddressLine1 = "345 road", City = "Town", State = "CA"}
-                    }
-                });
+            hit.Fields = fields;
+            searchresults.Hits.Hit.Add(hit);
 
-            var result = _fixture.GetPinDetailsForGroup(121212);
+            _awsCloudsearchService.Setup(
+                mocked => mocked.SearchByGroupId(It.IsAny<string>())).Returns(searchresults);
 
-            _mpFinderRepository.VerifyAll();
+            var result = _fixture.GetPinDetailsForGroup(121212, new GeoCoordinate(38.94526, -84.661275));
 
-            Assert.AreEqual(result.LastName, "Ker");
-            Assert.AreEqual(result.Address.AddressID, 99);
-            Assert.AreEqual(result.Address.AddressLine1, "");
+            Assert.IsInstanceOf<PinDto>(result);
+
+            Assert.AreEqual(result.FirstName, "Sara");
             Assert.AreEqual(result.Gathering.GroupId, 121212);
             Assert.AreEqual(result.PinType, PinType.SMALL_GROUP);
         }
+
         [Test]
         public void ShouldEnablePin()
         {
@@ -254,7 +377,7 @@ namespace crds_angular.test.Services
 
             _addressGeocodingService.Setup(mocked => mocked.GetGeoCoordinates(address)).Returns(mockCoords);
 
-            GeoCoordinate geoCoords = _fixture.GetGeoCoordsFromAddressOrLatLang(address, "39.2844738", "-84.319614");
+            GeoCoordinate geoCoords = _fixture.GetGeoCoordsFromAddressOrLatLang(address, new GeoCoordinates(39.2844738, -84.319614));
             Assert.AreEqual(mockCoords, geoCoords);
         }
 
@@ -271,7 +394,7 @@ namespace crds_angular.test.Services
 
             _addressGeocodingService.Setup(mocked => mocked.GetGeoCoordinates(address)).Returns(mockCoords);
 
-            GeoCoordinate geoCoords = _fixture.GetGeoCoordsFromAddressOrLatLang(address, "0", "0");
+            GeoCoordinate geoCoords = _fixture.GetGeoCoordsFromAddressOrLatLang(address, new GeoCoordinates(0, 0));
             Assert.AreEqual(mockCoords, geoCoords);
         }
 
@@ -285,23 +408,30 @@ namespace crds_angular.test.Services
                 Longitude = -84.319614
             };
 
-            var searchresults = new SearchResponse();
-            searchresults.Hits = new Hits();
-            searchresults.Hits.Found = 1;
-            searchresults.Hits.Start = 0;
-            searchresults.Hits.Hit = new List<Hit>();
+            var searchresults = new SearchResponse
+            {
+                Hits = new Hits
+                {
+                    Found = 1,
+                    Start = 0,
+                    Hit = new List<Hit>()
+                }
+            };
             var hit = new Hit();
-            var fields = new Dictionary<string, List<string>>();
-            fields.Add("city", new List<string>() {"Union"});
-            fields.Add("zip", new List<string>() {"41091"});
-            fields.Add("firstname", new List<string>() {"Robert"});
-            fields.Add("lastname", new List<string>() {"Smith"});
-            fields.Add("latlong", new List<string>() {"38.94526,-84.661275"});
+            var fields = new Dictionary<string, List<string>>
+            {
+                {"city", new List<string>() {"Union"}},
+                {"zip", new List<string>() {"41091"}},
+                {"firstname", new List<string>() {"Robert"}},
+                {"lastname", new List<string>() {"Smith"}},
+                {"latlong", new List<string>() {"38.94526,-84.661275"}}
+            };
             hit.Fields = fields;
             searchresults.Hits.Hit.Add(hit);
+            const string expectedSearchString = "(or pintype:3 pintype:2 pintype:1)";
 
             _awsCloudsearchService.Setup(
-                    mocked => mocked.SearchConnectAwsCloudsearch("matchall", "_all_fields", It.IsAny<int>(), It.IsAny<GeoCoordinate>(), It.IsAny<AwsBoundingBox>()))
+                    mocked => mocked.SearchConnectAwsCloudsearch(expectedSearchString, "_all_fields", It.IsAny<int>(), It.IsAny<GeoCoordinate>(), It.IsAny<AwsBoundingBox>()))
                 .Returns(searchresults);
 
             _mpGroupToolService.Setup(m => m.SearchGroups(It.IsAny<int[]>(), null, It.IsAny<string>(), null, originCoords)).Returns(new List<GroupDTO>());
@@ -317,7 +447,119 @@ namespace crds_angular.test.Services
                 BottomRightCoordinates = new GeoCoordinates(21.52, -77.78)
             };
 
-            List<PinDto> pins = _fixture.GetPinsInBoundingBox(originCoords, address, boundingBox, "CONNECT", 0);
+            var pins = _fixture.GetPinsInBoundingBox(originCoords, address, boundingBox, "CONNECT", 0, null);
+
+            Assert.IsInstanceOf<List<PinDto>>(pins);
+        }
+
+        public void ShouldUseFilterStringInConnectMode()
+        {
+            const string address = "123 Main Street, Walton, KY";
+            var originCoords = new GeoCoordinate()
+            {
+                Latitude = 39.2844738,
+                Longitude = -84.319614
+            };
+
+            var searchresults = new SearchResponse
+            {
+                Hits = new Hits
+                {
+                    Found = 1,
+                    Start = 0,
+                    Hit = new List<Hit>()
+                }
+            };
+            var hit = new Hit();
+            var fields = new Dictionary<string, List<string>>
+            {
+                {"city", new List<string>() {"Union"}},
+                {"zip", new List<string>() {"41091"}},
+                {"firstname", new List<string>() {"Robert"}},
+                {"lastname", new List<string>() {"Smith"}},
+                {"latlong", new List<string>() {"38.94526,-84.661275"}}
+            };
+            hit.Fields = fields;
+            searchresults.Hits.Hit.Add(hit);
+            const string expectedSearchString = "(or pintype:2 pintype:1)";
+
+            _awsCloudsearchService.Setup(
+                    mocked => mocked.SearchConnectAwsCloudsearch(expectedSearchString, "_all_fields", It.IsAny<int>(), It.IsAny<GeoCoordinate>(), It.IsAny<AwsBoundingBox>()))
+                .Returns(searchresults);
+
+            _mpGroupToolService.Setup(m => m.SearchGroups(It.IsAny<int[]>(), null, It.IsAny<string>(), null, originCoords)).Returns(new List<GroupDTO>());
+            _mpFinderRepository.Setup(mocked => mocked.GetPinsInRadius(originCoords)).Returns(new List<SpPinDto>());
+            _addressGeocodingService.Setup(mocked => mocked.GetGeoCoordinates(address)).Returns(originCoords);
+            _addressProximityService.Setup(mocked => mocked.GetProximity(address, new List<AddressDTO>(), originCoords)).Returns(new List<decimal?>());
+            _addressProximityService.Setup(mocked => mocked.GetProximity(address, new List<string>(), originCoords)).Returns(new List<decimal?>());
+
+
+            var boundingBox = new AwsBoundingBox
+            {
+                UpperLeftCoordinates = new GeoCoordinates(61.21, -149.9),
+                BottomRightCoordinates = new GeoCoordinates(21.52, -77.78)
+            };
+
+            var pins = _fixture.GetPinsInBoundingBox(originCoords, address, boundingBox, "CONNECT", 0, "(or pintype:2 pintype:1)");
+
+            Assert.IsInstanceOf<List<PinDto>>(pins);
+        }
+
+        [Test]
+        public void 
+            ShouldReturnAListOfGroupPinsWhenSearching()
+        {
+            const string address = "123 Main Street, Walton, KY";
+            var originCoords = new GeoCoordinate()
+            {
+                Latitude = 39.2844738,
+                Longitude = -84.319614
+            };
+
+            var searchresults = new SearchResponse
+            {
+                Hits = new Hits
+                {
+                    Found = 1,
+                    Start = 0,
+                    Hit = new List<Hit>()
+                }
+            };
+            var hit = new Hit();
+            var fields = new Dictionary<string, List<string>>
+            {
+                {"city", new List<string>() {"Union"}},
+                {"zip", new List<string>() {"41091"}},
+                {"firstname", new List<string>() {"Robert"}},
+                {"lastname", new List<string>() {"Smith"}},
+                {"latlong", new List<string>() {"38.94526,-84.661275"}}
+            };
+            hit.Fields = fields;
+            searchresults.Hits.Hit.Add(hit);
+            const string userKeywordSearchString = "baseball";
+            const string filterSearchString = "filter";
+            
+            string queryString = $"(and pintype:4 groupavailableonline:1 (or (prefix field=groupdescription '{userKeywordSearchString}') (prefix field=groupname '{userKeywordSearchString}') (prefix field=groupprimarycontactfirstname '{userKeywordSearchString}') (prefix field=groupprimarycontactlastname '{userKeywordSearchString}') groupname:'{userKeywordSearchString}' groupdescription:'{userKeywordSearchString}' groupprimarycontactfirstname:'{userKeywordSearchString}' groupprimarycontactlastname:'{userKeywordSearchString}') {filterSearchString})";
+            
+            
+            _awsCloudsearchService.Setup(
+                    mocked => mocked.SearchConnectAwsCloudsearch(queryString, "_all_fields", It.IsAny<int>(), It.IsAny<GeoCoordinate>(), It.IsAny<AwsBoundingBox>()))
+                .Returns(searchresults);
+
+            _mpGroupToolService.Setup(m => m.SearchGroups(It.IsAny<int[]>(), null, It.IsAny<string>(), null, originCoords)).Returns(new List<GroupDTO>());
+            _mpFinderRepository.Setup(mocked => mocked.GetPinsInRadius(originCoords)).Returns(new List<SpPinDto>());
+            _addressGeocodingService.Setup(mocked => mocked.GetGeoCoordinates(address)).Returns(originCoords);
+            _addressProximityService.Setup(mocked => mocked.GetProximity(address, new List<AddressDTO>(), originCoords)).Returns(new List<decimal?>());
+            _addressProximityService.Setup(mocked => mocked.GetProximity(address, new List<string>(), originCoords)).Returns(new List<decimal?>());
+
+
+            var boundingBox = new AwsBoundingBox
+            {
+                UpperLeftCoordinates = new GeoCoordinates(61.21, -149.9),
+                BottomRightCoordinates = new GeoCoordinates(21.52, -77.78)
+            };
+
+            var pins = _fixture.GetPinsInBoundingBox(originCoords, userKeywordSearchString, boundingBox, "SMALL_GROUPS", 0, filterSearchString);
 
             Assert.IsInstanceOf<List<PinDto>>(pins);
         }
@@ -366,9 +608,8 @@ namespace crds_angular.test.Services
                 Host_Status_ID = 0
             };
 
-            var geoCodes = new GeoCoordinate() { Altitude = 0, Course = 0, HorizontalAccuracy = 0, Latitude = 10, Longitude = 20, Speed = 0, VerticalAccuracy = 0 };
+            var geoCodes = new GeoCoordinate() {Altitude = 0, Course = 0, HorizontalAccuracy = 0, Latitude = 10, Longitude = 20, Speed = 0, VerticalAccuracy = 0};
 
-            var address = Mapper.Map<MpAddress>(pin.Address);
             var addressDictionary = new Dictionary<string, object>
             {
                 {"AddressID", pin.Address.AddressID},
@@ -554,7 +795,7 @@ namespace crds_angular.test.Services
 
             _addressGeocodingService.Setup(mocked => mocked.GetGeoCoordinates(It.IsAny<AddressDTO>())).Returns(geoCodes);
             _addressService.Setup(mocked => mocked.GetGeoLocationCascading(It.IsAny<AddressDTO>())).Returns(geoCodes);
-            _mpContactRepository.Setup(mocked => mocked.UpdateHouseholdAddress(pin.Contact_ID.Value, null, It.IsAny <Dictionary<string, object>>()));
+            _mpContactRepository.Setup(mocked => mocked.UpdateHouseholdAddress(pin.Contact_ID.Value, null, It.IsAny<Dictionary<string, object>>()));
             _mpFinderRepository.Setup(mocked => mocked.UpdateGathering(It.IsAny<FinderGatheringDto>())).Returns(expectedFinderGathering);
             _awsCloudsearchService.Setup(mocked => mocked.UploadNewPinToAws(It.IsAny<PinDto>()));
 
@@ -572,7 +813,7 @@ namespace crds_angular.test.Services
         {
             _mpConfigurationWrapper.Setup(x => x.GetConfigIntValue(It.IsAny<string>())).Returns(1);
             _mpFinderRepository.Setup(mocked => mocked.RecordConnection(It.IsAny<MpConnectCommunication>()));
-            
+
             _fixture.SayHi(123, 456);
             _mpFinderRepository.Verify(m => m.RecordConnection(It.IsAny<MpConnectCommunication>()), Times.Once);
         }
@@ -618,7 +859,7 @@ namespace crds_angular.test.Services
             _mpConfigurationWrapper.Setup(x => x.GetConfigIntValue(It.IsAny<string>())).Returns(1);
             _mpContactRepository.Setup(x => x.GetContactIdByEmail(It.IsAny<string>())).Returns(2);
             _mpContactRepository.Setup(x => x.GetContactId(It.IsAny<string>())).Returns(3);
-           _fixture.InviteToGroup(token, gatheringId, person, "CONNECT");
+            _fixture.InviteToGroup(token, gatheringId, person, "CONNECT");
             _invitationService.VerifyAll();
         }
 
@@ -632,7 +873,7 @@ namespace crds_angular.test.Services
                 firstName = "doug",
                 lastName = "shannon",
                 email = "a@b.com",
-            };            
+            };
 
             Invitation expectedInvitation = new Invitation()
             {
@@ -667,11 +908,16 @@ namespace crds_angular.test.Services
             _invitationService.VerifyAll();
         }
 
+        private FinderPinDto convertPinDtoToFinderPinDto(PinDto pinDto)
+        {
+            return Mapper.Map<FinderPinDto>(pinDto);
+        }
+
         private PinDto GetAPin(int designator = 1)
         {
             return new PinDto()
             {
-                Gathering = new GroupDTO()
+                Gathering = new FinderGroupDto
                 {
                     GroupId = designator * 10,
                     Address = this.getAnAddress(designator * 10),
@@ -726,6 +972,23 @@ namespace crds_angular.test.Services
             };
         }
 
+        private MpAddress getAMpAddress(int designator = 1)
+        {
+            return new MpAddress()
+            {
+                Address_ID = designator,
+                Address_Line_1 = $"{designator} Street",
+                Address_Line_2 = $"Apt {designator}",
+                City = "City!",
+                County = "County!",
+                Foreign_Country = "USA",
+                Latitude = 0,
+                Longitude = 0,
+                Postal_Code = "12345",
+                State = "Ohio"
+            };
+        }
+
         private AddressDTO getAnAddress(int designator = 1)
         {
             return new AddressDTO()
@@ -741,6 +1004,228 @@ namespace crds_angular.test.Services
                 PostalCode = "12345",
                 State = "Ohio"
             };
+        }
+
+        [Test]
+        public void TestAddUserToGroup()
+        {
+        var person = new User()
+            {
+                firstName = "albert",
+                lastName = "einstein",
+                email = "ae@g.com"
+            };
+
+            var token = "abc";
+            var gatheringId = 12345;
+            var emailTemplate = new MpMessageTemplate
+            {
+                FromContactId = 234,
+                FromEmailAddress = "ae@g.com",
+                ReplyToContactId = 456,
+                ReplyToEmailAddress = "ss@g.com"
+            };
+
+            var leaderContact = new MpMyContact
+            {
+                Email_Address = "in@g.com",
+                First_Name = "albert",
+                Last_Name = "Einstein"
+            };
+
+            var groupAddress = new AddressDTO();
+            groupAddress.AddressLine1 = "333";
+            groupAddress.AddressLine2 = "vine";
+            groupAddress.City = "Cin";
+            groupAddress.State = "OH";
+            groupAddress.PostalCode = "3455";
+
+            var group = new GroupDTO();
+            group.GroupName = "Physics";
+            group.ContactId = 1;
+            group.MeetingDayId = 1;
+            group.MeetingFrequencyID = 1;
+            group.MeetingTime = "0001-01-01T05:25:00.000Z";
+            group.Address = groupAddress;
+
+            var mpParticpant = new MpParticipant
+            {
+                ContactId = 1,
+                ParticipantId = 3
+            };
+
+            var groupList = new List<GroupDTO>();
+            groupList.Add(group);
+
+            var gplist = new List<GroupParticipantDTO>();
+
+            
+            var gpl1 = new GroupParticipantDTO
+            {
+                ContactId = 111,
+                Email = "111@leader.com",
+                GroupRoleId = 22,
+                NickName = "John_111"
+            };
+
+            var gpl2 = new GroupParticipantDTO
+            {
+                ContactId = 222,
+                Email = "222@leader.com",
+                GroupRoleId = 22,
+                NickName = "John_222"
+            };
+
+            var gpl3 = new GroupParticipantDTO
+            {
+                ContactId = 333,
+                Email = "333@leader.com",
+                GroupRoleId = 22,
+                NickName = "John_333"
+            };
+            var gpleaderlist = new List<GroupParticipantDTO> {gpl1, gpl2, gpl3};
+
+            _mpConfigurationWrapper.Setup(x => x.GetConfigIntValue("GroupsAddParticipantEmailNotificationTemplateId")).Returns(1);
+            _communicationRepository.Setup(x => x.GetTemplate(It.IsAny<int>())).Returns(emailTemplate);
+            _mpContactRepository.Setup(x => x.GetContactId(It.IsAny<string>())).Returns(3);
+            _mpContactRepository.Setup(x => x.GetContactById(3)).Returns(leaderContact);
+            _mpContactRepository.Setup(x => x.GetContactIdByEmail(It.IsAny<string>())).Returns(2);
+            _groupService.Setup(x => x.GetGroupDetails(It.IsAny<int>())).Returns(group);
+            _lookupService.Setup(x => x.GetMeetingDayFromId(It.IsAny<int>())).Returns("Friday");
+            _mpParticipantRepository.Setup(x => x.GetParticipantRecord(It.IsAny<string>())).Returns(mpParticpant);
+            _groupService.Setup(x => x.GetGroupsByTypeOrId(It.IsAny<string>(), It.IsAny<int>(), null, It.IsAny<int>(),true, false)).Returns(groupList);
+
+            _mpContactRepository.Setup(x => x.GetActiveContactIdByEmail("ae@g.com")).Returns(123987);
+            _groupService.Setup(x => x.GetGroupParticipants(12345, false)).Returns(gplist);
+
+            _groupService.Setup(x => x.GetGroupParticipantsWithoutAttributes(It.IsAny<int>())).Returns(gpleaderlist);
+
+            _fixture.AddUserDirectlyToGroup( token, person, gatheringId, _memberRoleId);
+            _communicationRepository.Verify(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false),Times.Exactly(4));
+            
+        }
+
+        [Test]
+        public void ShouldAcceptInquiry()
+        {
+            const string token = "token";
+            const int groupId = 123;
+            const int participantId = 7777;
+            const int contactId = 9999;
+            const int roleId = 0;
+
+            var inquiry = new Inquiry
+            {
+                ContactId = contactId,
+                GroupId = groupId,
+                EmailAddress = "bob@b.com",
+                FirstName = "bob",
+                LastName = "smith",
+                RequestDate = new DateTime(2017, 10, 11),
+                InquiryId = 990722
+            };
+
+            var groupAddress = new AddressDTO
+            {
+                AddressLine1 = "123 Main Street",
+                City = "Dayton",
+                State = "OH",
+                PostalCode = "34551"
+            };
+
+            var group = new GroupDTO();
+            group.GroupName = "Fake Group";
+            group.GroupId = groupId;
+            group.ContactId = contactId;
+            group.MeetingDayId = 1;
+            group.MeetingFrequencyID = 1;
+            group.MeetingTime = "0001-01-01T05:25:00.000Z";
+            group.Address = groupAddress;
+
+            const int primaryContactParticipantId = 98765;
+
+            var primaryContactContactInfo = new MpMyContact
+            {
+                Contact_ID = 4444,
+                First_Name = "Great",
+                Last_Name = "Leader",
+                Email_Address = "great@leader.com",
+                Mobile_Phone = "123-456-7890"
+            };
+
+            var newMemberContact = new MpMyContact
+            {
+                Contact_ID = contactId,
+                First_Name = "bob",
+                Last_Name = "smith",
+                Email_Address = "bob@bob.com",
+                Mobile_Phone = "555-555-5555"
+            };
+
+            var newMemberParticipant = new MpParticipant
+            {
+                ContactId = contactId,
+                ParticipantId = participantId
+            };
+
+            var emailTemplate = new MpMessageTemplate
+            {
+                FromContactId = 234,
+                FromEmailAddress = "ae@g.com",
+                ReplyToContactId = 456,
+                ReplyToEmailAddress = "ss@g.com"
+            };
+
+            _mpContactRepository.Setup(x => x.GetContactIdByParticipantId(participantId)).Returns(contactId);
+            _mpGroupToolService.Setup(x => x.GetGroupInquiryForContactId(groupId, contactId)).Returns(inquiry);
+            _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(new List<MpGroupParticipant>());
+            _mpGroupToolService.Setup(x => x.ApproveDenyInquiryFromMyGroup(token, groupId, true, inquiry, It.IsAny<string>(), roleId));
+            _groupService.Setup(x => x.GetGroupDetails(groupId)).Returns(group);
+            _lookupService.Setup(x => x.GetMeetingDayFromId(group.MeetingDayId)).Returns("Friday");
+            _groupService.Setup(x => x.GetPrimaryContactParticipantId(groupId)).Returns(primaryContactParticipantId);
+            _mpContactRepository.Setup(x => x.GetContactByParticipantId(primaryContactParticipantId)).Returns(primaryContactContactInfo);
+            _mpContactRepository.Setup(x => x.GetContactById(contactId)).Returns(newMemberContact);
+            _mpParticipantRepository.Setup(x => x.GetParticipant(contactId)).Returns(newMemberParticipant);
+            _mpConfigurationWrapper.Setup(x => x.GetConfigValue("BaseUrl")).Returns("www.somesite.com");
+            _mpConfigurationWrapper.Setup(x => x.GetConfigValue("GroupsTryAGroupPathFragment")).Returns("/g/2/");
+            _communicationRepository.Setup(x => x.GetTemplate(It.IsAny<int>())).Returns(emailTemplate);
+            _communicationRepository.Setup(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
+
+            _fixture.TryAGroupAcceptDeny(token, groupId, participantId, true);
+        }
+
+        [Test]
+        [ExpectedException(typeof(Exception), ExpectedMessage = "User is already a group member")]
+        public void TryAGroupAcceptDenyShouldThrowWhenUserInGroup()
+        {
+            const string token = "token";
+            const int groupId = 123;
+            const int participantId = 7777;
+            const int contactId = 9999;
+
+            var inquiry = new Inquiry
+            {
+                ContactId = contactId,
+                GroupId = groupId,
+                EmailAddress = "bob@b.com",
+                FirstName = "bob",
+                LastName = "smith",
+                RequestDate = new DateTime(2017, 10, 11),
+                InquiryId = 990722
+            };
+
+            var groupParticipant = new MpGroupParticipant
+            {
+                ContactId = contactId,
+                ParticipantId = participantId
+            };
+            var groupParticipantList = new List<MpGroupParticipant> {groupParticipant};
+
+            _mpContactRepository.Setup(x => x.GetContactIdByParticipantId(participantId)).Returns(contactId);
+            _mpGroupToolService.Setup(x => x.GetGroupInquiryForContactId(groupId, contactId)).Returns(inquiry);
+            _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(groupParticipantList);
+            
+            _fixture.TryAGroupAcceptDeny(token, groupId, participantId, true);
         }
     }
 }

@@ -34,10 +34,8 @@
   @import 'modules/grid.scss';
   @import 'modules/growl.scss';
   @import 'modules/menu-icon.scss';
-  @import 'modules/jquery.fullPage.scss';
   @import 'modules/mock-controls.scss';
   @import 'modules/modal.scss';
-  @import 'modules/modal-ng2.scss';
   @import 'modules/password.scss';
   @import 'modules/roll-call.scss';
   @import 'modules/sprites.scss';
@@ -60,7 +58,6 @@
   @import 'modules/timepicker.scss';
   @import 'modules/videojs.scss';
   @import 'pages/anywhere-leadership.scss';
-  @import 'pages/atrium.scss';
   @import 'pages/blog.scss';
   @import 'pages/brave.scss';
   @import 'pages/camps.scss';
@@ -71,9 +68,9 @@
   @import 'pages/corkboard.scss';
   @import 'pages/dashboard.scss';
   @import 'pages/easter.scss';
-  @import 'pages/explore.scss';
   @import 'pages/give.scss';
   @import 'pages/go-volunteer.scss';
+  @import 'pages/go-anywhere.scss';
   @import 'pages/groups.scss';
   @import 'pages/group-resources.scss';
   @import 'pages/group-dashboard.scss';
@@ -93,7 +90,9 @@
   @import 'pages/superbowl.scss';
   @import 'pages/thefeed.scss';
   @import 'pages/errorpage.scss';
+  @import 'pages/extend-the-weekend.scss';
   @import 'pages/go_trip_giving.scss';
+  @import 'pages/go-trip-mytrips.scss';
   @import 'pages/group_finder.scss';
   @import 'pages/group-search-results.scss';
   @import 'pages/profile.scss';
@@ -102,16 +101,21 @@
   @import 'pages/search.scss';
   @import 'pages/streaming.scss';
   @import 'pages/create-event.scss';
+  @import 'pages/worship-training.scss';
   @import 'helpers/utilities.scss';
   @import 'lib/angular-aside.scss';
   @import 'lib/angular-growl.scss';
   @import 'lib/ng-img-crop.scss';
-  @import url('//crossroads-media.s3.amazonaws.com/documents/styles/hotfix-y1.css');
+  @import url('//crossroads-media.s3.amazonaws.com/documents/styles/hotfix-y5.css');
   @import '../node_modules/ng-table/dist/ng-table.css';
 }
 
 .noscroll {
-  position: relative;
+  position: fixed !important;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   height: 100%;
   overflow: hidden;
 }
@@ -138,6 +142,14 @@
   .mobile-menu {
     position: fixed;
     top: 0;
+
+    &.modal {
+      overflow: hidden;
+    }
+
+    .modal-dialog .modal-content {
+      padding-bottom: 5em;
+    }
 
     &:not(.in) {
       .modal-dialog {

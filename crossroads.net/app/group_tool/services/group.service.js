@@ -18,6 +18,12 @@ export default class GroupService {
     this.imgService = ImageService;
   }
 
+  groupLeaderUrl() {
+    return this.resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/v1.0.0/group-leader/url-segment').get().$promise.then((result) => {
+      return result.url;
+    });
+  }
+
   getAgeRanges() {
     return this.resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/attributetype/:attributeTypeId').
       get({ attributeTypeId: CONSTANTS.ATTRIBUTE_TYPE_IDS.GROUP_AGE_RANGE }).$promise;

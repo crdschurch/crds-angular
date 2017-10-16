@@ -44,8 +44,13 @@
 
       changeProfileImage.result.then(function(croppedImage) {
         vm.path = croppedImage;
-        ImageService.ProfileImage.save(croppedImage);
-        $rootScope.$emit('profilePhotoChanged');
+
+        var saveResult = ImageService.ProfileImage.save(croppedImage);
+        saveResult.$promise.then(function() {
+          // broadcast a javascript event (not angular) so that non-angular
+          // components (e.g., shared header) can monitor
+          document.dispatchEvent(new Event('profilePhotoChanged'));
+        });
       });
 
     }

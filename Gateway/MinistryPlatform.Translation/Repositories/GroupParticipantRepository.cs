@@ -209,7 +209,8 @@ namespace MinistryPlatform.Translation.Repositories
                     " Participant_ID_table_contact_id_table.Display_Name, Group_Role_ID_table.Role_Title, Participant_ID_table_contact_id_table.Last_name," +
                     " Participant_ID_table_contact_id_table.email_address, Participant_ID_table.contact_id";
                 string search = $"group_participants.group_id in ({csvGroupIds})" +
-                                $" AND (Group_Participants.End_Date > '{DateTime.Now:yyyy-MM-dd H:mm:ss}' OR Group_Participants.End_Date Is Null)";
+                                $" AND (Group_Participants.End_Date > GetDate() OR Group_Participants.End_Date Is Null)";
+
                 string orderBy = "Participant_ID_table_contact_id_table.Last_name";
                 bool distinct = true;
 

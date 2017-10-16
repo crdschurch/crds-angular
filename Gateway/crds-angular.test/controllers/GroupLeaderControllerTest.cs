@@ -92,18 +92,20 @@ namespace crds_angular.test.controllers
             _fixture.Request.Headers.Authorization = new AuthenticationHeaderValue(authType, authToken);
             var mockSpiritualGrowth = SpiritualGrowthMock();
             const int referenceContactId = 987654;
+            const string studentLeaderRequest = "true";
             var participant = ParticipantMock();
             var contact = ContactMock(mockSpiritualGrowth.ContactId);
             var referenceData = new Dictionary<string, object>
             {
                 { "participant", participant },
                 { "contact", contact },
-                { "referenceContactId", referenceContactId.ToString() }
+                { "referenceContactId", referenceContactId.ToString() },
+                { "studentLeaderRequest", studentLeaderRequest  }
             };
 
             _groupLeaderService.Setup(m => m.SaveSpiritualGrowth(It.IsAny<SpiritualGrowthDTO>())).Returns(Observable.Start(() => 1));
             _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<string>())).Returns(Observable.Start(() => 1));
-            _groupLeaderService.Setup(m => m.GetReferenceData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));            
+            _groupLeaderService.Setup(m => m.GetApplicationData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));            
 
             var response = await _fixture.SaveSpiritualGrowth(mockSpiritualGrowth);
             Assert.IsInstanceOf<OkResult>(response);
@@ -125,7 +127,58 @@ namespace crds_angular.test.controllers
 
             _groupLeaderService.Setup(m => m.SaveSpiritualGrowth(It.IsAny<SpiritualGrowthDTO>())).Returns(Observable.Start(() => 1));
             _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<string>())).Returns(Observable.Start(() => 1));
-            _groupLeaderService.Setup(m => m.GetReferenceData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));
+            _groupLeaderService.Setup(m => m.GetApplicationData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));
+
+            var response = await _fixture.SaveSpiritualGrowth(mockSpiritualGrowth);
+            Assert.IsInstanceOf<OkResult>(response);
+        }
+
+        [Test]
+        public async void ShouldSendStudentLeaderRequestEmail()
+        {
+            _fixture.Request.Headers.Authorization = new AuthenticationHeaderValue(authType, authToken);
+            var mockSpiritualGrowth = SpiritualGrowthMock();
+            const string studentLeaderRequest = "true";
+            var participant = ParticipantMock();
+            var contact = ContactMock(mockSpiritualGrowth.ContactId);
+            var referenceData = new Dictionary<string, object>
+            {
+                { "participant", participant },
+                { "contact", contact },
+                { "referenceContactId", "0" },
+                { "studentLeaderRequest", studentLeaderRequest  }
+            };
+
+            _groupLeaderService.Setup(m => m.SaveSpiritualGrowth(It.IsAny<SpiritualGrowthDTO>())).Returns(Observable.Start(() => 1));
+            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<string>())).Returns(Observable.Start(() => 1));
+            _groupLeaderService.Setup(m => m.GetApplicationData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));
+            _groupLeaderService.Setup(m => m.SendStudentMinistryRequestEmail(It.IsAny<Dictionary<string, object>>())).Returns(Observable.Start(() => 1));
+            _groupLeaderService.Setup(m => m.SendNoReferenceEmail(It.IsAny<Dictionary<string, object>>())).Returns(Observable.Start(() => 1));
+
+            var response = await _fixture.SaveSpiritualGrowth(mockSpiritualGrowth);
+            Assert.IsInstanceOf<OkResult>(response);
+        }
+
+        [Test]
+        public async void ShouldNotSendStudentLeaderRequestEmail()
+        {
+            _fixture.Request.Headers.Authorization = new AuthenticationHeaderValue(authType, authToken);
+            var mockSpiritualGrowth = SpiritualGrowthMock();
+            const string studentLeaderRequest = "true";
+            var participant = ParticipantMock();
+            var contact = ContactMock(mockSpiritualGrowth.ContactId);
+            var referenceData = new Dictionary<string, object>
+            {
+                { "participant", participant },
+                { "contact", contact },
+                { "referenceContactId", "0" },
+                { "studentLeaderRequest", studentLeaderRequest  }
+            };
+
+            _groupLeaderService.Setup(m => m.SaveSpiritualGrowth(It.IsAny<SpiritualGrowthDTO>())).Returns(Observable.Start(() => 1));
+            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<string>())).Returns(Observable.Start(() => 1));
+            _groupLeaderService.Setup(m => m.GetApplicationData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));
+            _groupLeaderService.Setup(m => m.SendNoReferenceEmail(It.IsAny<Dictionary<string, object>>())).Returns(Observable.Start(() => 1));
 
             var response = await _fixture.SaveSpiritualGrowth(mockSpiritualGrowth);
             Assert.IsInstanceOf<OkResult>(response);

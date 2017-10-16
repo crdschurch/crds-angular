@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Messaging;
 using System.Net;
+using System.Reflection;
 using System.Web.Http.Results;
 using crds_angular.Controllers.API;
 using crds_angular.Models.Crossroads.Stewardship;
 using crds_angular.Models.Json;
 using crds_angular.Services;
 using crds_angular.Services.Interfaces;
-using Crossroads.Utilities.Interfaces;
+using Crossroads.ClientApiKeys;
 using Crossroads.Utilities.Messaging.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Moq;
 using Newtonsoft.Json.Linq;
@@ -104,6 +103,12 @@ namespace crds_angular.test.controllers
             _messageQueueFactory.VerifyAll();
             _messageFactory.VerifyAll();
 
+        }
+
+        [Test]
+        public void TestControllerIgnoresClientApiKeys()
+        {
+            Assert.IsNotNull(_fixture.GetType().GetCustomAttribute<IgnoreClientApiKeyAttribute>(), $"{_fixture.GetType().FullName} should specify the IgnoreClientApiKey Attribute at the class level");
         }
 
         // This test unfortunately does not work, as you cannot mock Message and MessageQueue.

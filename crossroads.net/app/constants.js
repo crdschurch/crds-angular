@@ -11,6 +11,7 @@
       CORE: 'crossroads.core',
       COMMON: 'crossroads.common',
       COMMUNITY_GROUPS: 'crossroads.community',
+      CORKBOARD: 'crossroads.corkboard',
       CROSSROADS: 'crossroads',
       FORM_BUILDER: 'crossroads.form_builder',
       FORMLY_BUILDER: 'crossroads.formly_builder',
@@ -28,7 +29,7 @@
       SIGNUP: 'crossroads.signup',
       TRIPS: 'crossroads.trips',
       INVOICES: 'crossroads.invoices',
-
+      WAIVERS: 'crossroads.waivers'
     },
     ATTRIBUTE_TYPE_IDS: {
       ABUSE_HISTORY: 69,

@@ -70,6 +70,17 @@
       // TODO: Consider how we could make this less hard coded,
       // put the timeout in the header also?
       const sessionLength = 1800000;
+
+      // We must ensure the timer for the stayLoggedInModal fires before the SESSION_ID cookie
+      // has expired.  The reactiveSso timer that fires every 3 seconds will automatically set
+      // $rootScope.email = null if the SESSION_ID cookie has expired.  If the reactiveSso timer
+      // fires AFTER the cookie has expired but BEFORE the stayLoggedInModal timer has fired,
+      // the stayLoggedInModal will end up with a null username (email) and any subsequent
+      // login attempts via that dialog will fail [reference DE2957]
+      // TODO: Can/should reactiveSso and stayLoggedInModal share a single timer to make the
+      // order of operations more predictable?
+      const stayLoggedInTimeout = sessionLength - 5000;   // 5 seconds before cookie expiration
+
       expDate.setTime(expDate.getTime() + sessionLength);
       if (timeoutPromise) {
         $interval.cancel(timeoutPromise);
@@ -79,7 +90,7 @@
         () => {
           openStayLoggedInModal($injector, $state, $modal);
         },
-        sessionLength
+        stayLoggedInTimeout
       );
 
       $cookies.put(cookieNames.SESSION_ID, response.headers('sessionId'), {

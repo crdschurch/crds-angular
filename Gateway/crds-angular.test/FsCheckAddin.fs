@@ -12,4 +12,3 @@ type FsCheckAddin() =
             let tcBuilder = new FsCheckTestCaseBuilder()
             host.GetExtensionPoint("TestCaseBuilders").Install(tcBuilder)
             true
-

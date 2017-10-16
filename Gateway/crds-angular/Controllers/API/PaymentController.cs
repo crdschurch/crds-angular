@@ -29,7 +29,7 @@ namespace crds_angular.Controllers.API
             }
             catch (Exception e)
             {
-                var apiError = new ApiErrorDto("Unable to get payment details", e);
+                var apiError = new ApiErrorDto("Unable to get invoice details", e);
                 throw new HttpResponseException(apiError.HttpResponseMessage);
             }
         }
@@ -106,6 +106,27 @@ namespace crds_angular.Controllers.API
                 try
                 {
                     _paymentService.SendPaymentConfirmation(paymentId, eventId, token);
+                    return Ok();
+                }
+                catch (Exception e)
+                {
+                    var apiError = new ApiErrorDto("Unable to send a confirmation email", e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+
+            });
+        }
+
+        [RequiresAuthorization]
+        [VersionedRoute(template: "invoice/{invoiceId}/payment/{paymentId}/confirmation", minimumVersion: "1.0.0")]
+        [AcceptVerbs("POST")]
+        public IHttpActionResult InvoicePaymentConfirmation(int invoiceId, int paymentId)
+        {
+            return Authorized((token) =>
+            {
+                try
+                {
+                    _paymentService.SendInvoicePaymentConfirmation(paymentId, invoiceId, token);
                     return Ok();
                 }
                 catch (Exception e)

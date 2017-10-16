@@ -17,6 +17,7 @@ import giveModule from '../app/give/give.module';
 import profileModule from '../app/profile/profile.module';
 import searchModule from '../app/search/search.module';
 import tripsModule from '../app/trips/trips.module';
+import waiversModule from '../app/waivers/waivers.module';
 import app from '../app/app';
 
 var testsContext = require.context('./', true, /.spec$/);

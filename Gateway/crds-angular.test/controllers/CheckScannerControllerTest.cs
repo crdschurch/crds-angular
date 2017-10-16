@@ -10,11 +10,13 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Web.Http.Controllers;
 using System.Web.Http.Results;
 using crds_angular.Exceptions;
 using crds_angular.Exceptions.Models;
 using crds_angular.Models.Json;
+using Crossroads.ClientApiKeys;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
@@ -279,6 +281,12 @@ namespace crds_angular.test.controllers
             var restResult = (RestHttpActionResult<ApiErrorDto>)result;
             Assert.AreEqual(HttpStatusCode.MethodNotAllowed, restResult.StatusCode);
             Assert.AreEqual("Could not create checking account at payment processor", restResult.Content.Message);
+        }
+
+        [Test]
+        public void TestControllerIgnoresClientApiKeys()
+        {
+            Assert.IsNotNull(_fixture.GetType().GetCustomAttribute<IgnoreClientApiKeyAttribute>(), $"{_fixture.GetType().FullName} should specify the IgnoreClientApiKey Attribute at the class level");
         }
 
     }

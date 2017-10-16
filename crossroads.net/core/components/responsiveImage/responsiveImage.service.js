@@ -30,7 +30,7 @@
       var images = $('.' + className);
       _.forEach(images, function(i) {
         var image = angular.element(i);
-        if(!image.is(':visible') && !image.imgix_watched) {
+        if(!image.is(':visible') && !image[0].imgix_watched) {
           var watcher = image.scope().$watch(
             function() {
               return(image.is(':visible'));
@@ -45,7 +45,7 @@
               }
             }
           );
-          image.imgix_watched = true;
+          image[0].imgix_watched = true;
         }
       });
     }

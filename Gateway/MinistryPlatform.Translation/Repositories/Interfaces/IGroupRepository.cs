@@ -9,16 +9,16 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
     {
         int CreateGroup(MpGroup group);
 
-        int addParticipantToGroup(int participantId,
+        int AddParticipantToGroup(int participantId,
                                   int groupId,
                                   int groupRoleId,
-                                  Boolean childCareNeeded,
+                                  bool childCareNeeded,
+                                  bool employeeRole,
                                   DateTime startDate,
                                   DateTime? endDate = null,
-                                  Boolean? employeeRole = false,
                                   int? enrolledBy = null);
 
-        IList<MpEvent> getAllEventsForGroup(int groupId);
+        IList<MpEvent> getAllEventsForGroup(int groupId, DateTime? minEndDate = null, bool includeCancelledEvents = false);
 
         MpGroup getGroupDetails(int groupId);
 
@@ -31,6 +31,8 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         bool ParticipantQualifiedServerGroupMember(int groupId, int participantId);
 
         bool ParticipantGroupMember(int groupId, int participantId);
+
+        int GetParticipantGroupMemberId(int groupId, int participantId);
 
         List<MpGroup> GetGroupsForEvent(int eventId);
 
@@ -80,5 +82,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         List<MpGroup> GetGroupsForParticipantByTypeOrID(int participantId, string token = null, int[] groupTypeIds = null, int? groupId = null);
 
         List<MpGroup> GetGroupsByGroupType(int groupTypeId);
+        bool GetDoesUserLeadSomeGroup(int participantId);
     }
 }

@@ -200,9 +200,9 @@ var attributeTypes = require('crds-constants').ATTRIBUTE_TYPE_IDS;
     }
 
     function openPassportExpireDatePicker($event) {
-        $event.preventDefault();
-       $event.stopPropagation();
-       vm.passportExpireDateOpen = true;
+      $event.preventDefault();
+      $event.stopPropagation();
+      vm.passportExpireDateOpen = true;
     }
 
     function page6ButtonText(){
@@ -414,10 +414,15 @@ var attributeTypes = require('crds-constants').ATTRIBUTE_TYPE_IDS;
         var regStart = moment(vm.campaign.registrationStart);
         var regEnd = moment(vm.campaign.registrationEnd);
         var today = moment();
+
+        // anyone can sign up during the registration period
         if (today.isBetween(regStart, regEnd)) {
           resolve(false);
         } else {
-          if (vm.privateInvite === undefined) {
+          // a private invitation may sign up outside of the registration period
+          // as long as the event has not yet started
+          var eventStart = moment(vm.campaign.eventStart);
+          if (vm.privateInvite === undefined || today.isAfter(eventStart)) {
             resolve(true);
           } else {
             Trip.ValidatePrivateInvite.get({

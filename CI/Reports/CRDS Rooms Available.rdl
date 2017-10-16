@@ -1,0 +1,1207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="MPReportsDS">
+      <DataSourceReference>/Data Sources/MPReportsDS</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>10d3a36a-861d-4824-b743-a796f7142539</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>MPReportsDS</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="DomainID">
+            <Value>=Parameters!DomainID.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="UserID">
+            <Value>=Parameters!UserID.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="PageID">
+            <Value>=Parameters!PageID.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="StartDate">
+            <Value>=Parameters!StartDate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="EndDate">
+            <Value>=Parameters!EndDate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="Time">
+            <Value>=Parameters!Time.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="EndTime">
+            <Value>=Parameters!EndTime.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="BuildingID">
+            <Value>=Parameters!BuildingID.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="DayofWeek">
+            <Value>=Parameters!DayofWeek.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="RoomsID">
+            <Value>=JOIN(Parameters!RoomsID.Value, ",")</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandType>StoredProcedure</CommandType>
+        <CommandText>report_CRDS_Rooms_Available</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="StartDate">
+          <DataField>StartDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Booked">
+          <DataField>Booked</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="HrStart">
+          <DataField>HrStart</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="HrEnd">
+          <DataField>HrEnd</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Room_Name">
+          <DataField>Room_Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Room_ID">
+          <DataField>Room_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Room_Number">
+          <DataField>Room_Number</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RowNum">
+          <DataField>RowNum</DataField>
+          <rd:TypeName>System.Int64</rd:TypeName>
+        </Field>
+        <Field Name="Building_Name">
+          <DataField>Building_Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Building_ID">
+          <DataField>Building_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DataSet2">
+      <Query>
+        <DataSourceName>MPReportsDS</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="DomainID">
+            <Value>=Parameters!DomainID.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="UserID">
+            <Value>=Parameters!UserID.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="PageID">
+            <Value>=Parameters!PageID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandType>StoredProcedure</CommandType>
+        <CommandText>dbo.report_filter_buildings</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="Building_Name">
+          <DataField>Building_Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Building_ID">
+          <DataField>Building_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DataSet3">
+      <Query>
+        <DataSourceName>MPReportsDS</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@DomainID">
+            <Value>=Parameters!DomainID.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@UserID">
+            <Value>=Parameters!UserID.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@PageID">
+            <Value>=Parameters!PageID.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@BuildingID">
+            <Value>=Parameters!BuildingID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandType>StoredProcedure</CommandType>
+        <CommandText>report_filter_rooms</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="Room_Name">
+          <DataField>Room_Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Room_ID">
+          <DataField>Room_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Textbox Name="textbox1">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>="Availability by room in 30 minute increments starting " &amp; Format(Parameters!StartDate.Value,"MM/dd/yyyy") &amp; " through " &amp; Format(Parameters!EndDate.Value,"MM/dd/yyyy") &amp; " for time slot " &amp; Parameters!Time.Label &amp; " - " &amp; Parameters!EndTime.Label &amp; " on " &amp; Parameters!DayofWeek.Label</Value>
+                    <Style>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>textbox1</rd:DefaultName>
+            <Height>0.25in</Height>
+            <Width>10.5in</Width>
+            <Style>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Tablix Name="list1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>3.42708in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>1.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Rectangle Name="list1_Contents">
+                          <ReportItems>
+                            <Tablix Name="matrix1">
+                              <TablixCorner>
+                                <TablixCornerRows>
+                                  <TablixCornerRow>
+                                    <TablixCornerCell>
+                                      <CellContents>
+                                        <Textbox Name="Building_Name">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value>=First(Fields!Building_Name.Value)</Value>
+                                                  <Style>
+                                                    <FontSize>12pt</FontSize>
+                                                    <FontWeight>Bold</FontWeight>
+                                                  </Style>
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style />
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <rd:DefaultName>Building_Name</rd:DefaultName>
+                                          <ZIndex>4</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <TopBorder>
+                                              <Color>Black</Color>
+                                              <Style>Solid</Style>
+                                              <Width>1pt</Width>
+                                            </TopBorder>
+                                            <BackgroundColor>Gainsboro</BackgroundColor>
+                                            <VerticalAlign>Bottom</VerticalAlign>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                        <RowSpan>2</RowSpan>
+                                      </CellContents>
+                                    </TablixCornerCell>
+                                  </TablixCornerRow>
+                                  <TablixCornerRow>
+                                    <TablixCornerCell />
+                                  </TablixCornerRow>
+                                </TablixCornerRows>
+                              </TablixCorner>
+                              <TablixBody>
+                                <TablixColumns>
+                                  <TablixColumn>
+                                    <Width>0.2586in</Width>
+                                  </TablixColumn>
+                                  <TablixColumn>
+                                    <Width>0.05208in</Width>
+                                  </TablixColumn>
+                                  <TablixColumn>
+                                    <Width>0.07292in</Width>
+                                  </TablixColumn>
+                                </TablixColumns>
+                                <TablixRows>
+                                  <TablixRow>
+                                    <Height>0.25in</Height>
+                                    <TablixCells>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Booked">
+                                            <CanGrow>true</CanGrow>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Sum(Fields!Booked.Value)</Value>
+                                                    <Style>
+                                                      <Color>=SWITCH(Max(Fields!Booked.Value)=-1,"Green",Max(Fields!Booked.Value)=0,"Yellow",Max(Fields!Booked.Value)&gt;0,"RED")</Color>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Right</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Booked</rd:DefaultName>
+                                            <Style>
+                                              <TopBorder>
+                                                <Style>Solid</Style>
+                                              </TopBorder>
+                                              <BottomBorder>
+                                                <Style>Solid</Style>
+                                              </BottomBorder>
+                                              <BackgroundColor>=SWITCH(Max(Fields!Booked.Value)=-1,"Green",Max(Fields!Booked.Value)=0,"Yellow",Max(Fields!Booked.Value)&gt;0,"RED")</BackgroundColor>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>3pt</PaddingTop>
+                                              <PaddingBottom>3pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                        <DataElementOutput>Output</DataElementOutput>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox17">
+                                            <CanGrow>true</CanGrow>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value />
+                                                    <Style>
+                                                      <Color>=SWITCH(Max(Fields!Booked.Value)=-1,"Green",Max(Fields!Booked.Value)=0,"Yellow",Max(Fields!Booked.Value)&gt;0,"RED")</Color>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Right</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox17</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Style>None</Style>
+                                              </Border>
+                                              <TopBorder>
+                                                <Style>Solid</Style>
+                                              </TopBorder>
+                                              <BottomBorder>
+                                                <Style>Solid</Style>
+                                              </BottomBorder>
+                                              <RightBorder>
+                                                <Color>Black</Color>
+                                                <Style>Solid</Style>
+                                                <Width>1pt</Width>
+                                              </RightBorder>
+                                              <BackgroundColor>=SWITCH(Max(Fields!Booked.Value)=-1,"Green",Max(Fields!Booked.Value)=0,"Yellow",Max(Fields!Booked.Value)&gt;0,"RED")</BackgroundColor>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>3pt</PaddingTop>
+                                              <PaddingBottom>3pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                        <DataElementOutput>Output</DataElementOutput>
+                                      </TablixCell>
+                                      <TablixCell>
+                                        <CellContents>
+                                          <Textbox Name="Textbox14">
+                                            <CanGrow>true</CanGrow>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value />
+                                                    <Style>
+                                                      <Color>=SWITCH(Max(Fields!Booked.Value)=-1,"Green",Max(Fields!Booked.Value)=0,"Yellow",Max(Fields!Booked.Value)&gt;0,"RED")</Color>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style>
+                                                  <TextAlign>Right</TextAlign>
+                                                </Style>
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Textbox14</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Style>None</Style>
+                                              </Border>
+                                              <TopBorder>
+                                                <Style>Solid</Style>
+                                              </TopBorder>
+                                              <BottomBorder>
+                                                <Style>Solid</Style>
+                                              </BottomBorder>
+                                              <RightBorder>
+                                                <Color>Black</Color>
+                                                <Style>Solid</Style>
+                                                <Width>1pt</Width>
+                                              </RightBorder>
+                                              <BackgroundColor>=SWITCH(Max(Fields!Booked.Value)=-1,"Green",Max(Fields!Booked.Value)=0,"Yellow",Max(Fields!Booked.Value)&gt;0,"RED")</BackgroundColor>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>3pt</PaddingTop>
+                                              <PaddingBottom>3pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                        <DataElementOutput>Output</DataElementOutput>
+                                      </TablixCell>
+                                    </TablixCells>
+                                  </TablixRow>
+                                </TablixRows>
+                              </TablixBody>
+                              <TablixColumnHierarchy>
+                                <TablixMembers>
+                                  <TablixMember>
+                                    <Group Name="matrix1_StartDate">
+                                      <GroupExpressions>
+                                        <GroupExpression>=Format(Fields!HrStart.Value,"MM/dd/yy")</GroupExpression>
+                                      </GroupExpressions>
+                                    </Group>
+                                    <TablixHeader>
+                                      <Size>0.26042in</Size>
+                                      <CellContents>
+                                        <Textbox Name="StartDate">
+                                          <CanGrow>true</CanGrow>
+                                          <KeepTogether>true</KeepTogether>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value>=Fields!HrStart.Value</Value>
+                                                  <Style>
+                                                    <FontWeight>Bold</FontWeight>
+                                                    <Format>MM/dd/yy</Format>
+                                                  </Style>
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style>
+                                                <TextAlign>Left</TextAlign>
+                                              </Style>
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <rd:DefaultName>StartDate</rd:DefaultName>
+                                          <ZIndex>3</ZIndex>
+                                          <Style>
+                                            <Border>
+                                              <Style>None</Style>
+                                            </Border>
+                                            <TopBorder>
+                                              <Style>Solid</Style>
+                                            </TopBorder>
+                                            <LeftBorder>
+                                              <Style>Solid</Style>
+                                            </LeftBorder>
+                                            <RightBorder>
+                                              <Style>Solid</Style>
+                                            </RightBorder>
+                                            <BackgroundColor>=IIF(ROWNUMBER(NOTHING) MOD 2 = 0,"Gainsboro","Transparent")</BackgroundColor>
+                                            <VerticalAlign>Bottom</VerticalAlign>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>2pt</PaddingTop>
+                                            <PaddingBottom>2pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                      </CellContents>
+                                    </TablixHeader>
+                                    <TablixMembers>
+                                      <TablixMember>
+                                        <Group Name="matrix1_RowNum">
+                                          <GroupExpressions>
+                                            <GroupExpression>=Fields!RowNum.Value</GroupExpression>
+                                          </GroupExpressions>
+                                        </Group>
+                                        <TablixMembers>
+                                          <TablixMember>
+                                            <TablixHeader>
+                                              <Size>0.73958in</Size>
+                                              <CellContents>
+                                                <Textbox Name="RowNum">
+                                                  <KeepTogether>true</KeepTogether>
+                                                  <Paragraphs>
+                                                    <Paragraph>
+                                                      <TextRuns>
+                                                        <TextRun>
+                                                          <Value>=Fields!HrStart.Value</Value>
+                                                          <Style>
+                                                            <FontWeight>Bold</FontWeight>
+                                                            <Format>hh:mm tt</Format>
+                                                          </Style>
+                                                        </TextRun>
+                                                      </TextRuns>
+                                                      <Style>
+                                                        <TextAlign>Center</TextAlign>
+                                                      </Style>
+                                                    </Paragraph>
+                                                  </Paragraphs>
+                                                  <rd:DefaultName>RowNum</rd:DefaultName>
+                                                  <ZIndex>2</ZIndex>
+                                                  <RepeatWith>matrix1</RepeatWith>
+                                                  <Style>
+                                                    <Border>
+                                                      <Style>None</Style>
+                                                    </Border>
+                                                    <TopBorder>
+                                                      <Style>Solid</Style>
+                                                    </TopBorder>
+                                                    <BottomBorder>
+                                                      <Style>Solid</Style>
+                                                    </BottomBorder>
+                                                    <BackgroundColor>=ReportItems!Color.Value</BackgroundColor>
+                                                    <PaddingLeft>1pt</PaddingLeft>
+                                                    <PaddingRight>1pt</PaddingRight>
+                                                    <PaddingTop>1pt</PaddingTop>
+                                                    <PaddingBottom>1pt</PaddingBottom>
+                                                    <WritingMode>Vertical</WritingMode>
+                                                  </Style>
+                                                </Textbox>
+                                              </CellContents>
+                                            </TablixHeader>
+                                            <TablixMembers>
+                                              <TablixMember />
+                                            </TablixMembers>
+                                          </TablixMember>
+                                        </TablixMembers>
+                                        <DataElementOutput>Output</DataElementOutput>
+                                      </TablixMember>
+                                      <TablixMember>
+                                        <TablixHeader>
+                                          <Size>0.73958in</Size>
+                                          <CellContents>
+                                            <Textbox Name="Textbox16">
+                                              <CanGrow>true</CanGrow>
+                                              <KeepTogether>true</KeepTogether>
+                                              <Paragraphs>
+                                                <Paragraph>
+                                                  <TextRuns>
+                                                    <TextRun>
+                                                      <Value />
+                                                      <Style>
+                                                        <FontWeight>Bold</FontWeight>
+                                                      </Style>
+                                                    </TextRun>
+                                                  </TextRuns>
+                                                  <Style>
+                                                    <TextAlign>Center</TextAlign>
+                                                  </Style>
+                                                </Paragraph>
+                                              </Paragraphs>
+                                              <rd:DefaultName>Textbox16</rd:DefaultName>
+                                              <RepeatWith>matrix1</RepeatWith>
+                                              <Style>
+                                                <Border>
+                                                  <Style>None</Style>
+                                                </Border>
+                                                <TopBorder>
+                                                  <Style>Solid</Style>
+                                                </TopBorder>
+                                                <BottomBorder>
+                                                  <Style>Solid</Style>
+                                                </BottomBorder>
+                                                <RightBorder>
+                                                  <Style>Solid</Style>
+                                                </RightBorder>
+                                                <BackgroundColor>=ReportItems!Color.Value</BackgroundColor>
+                                                <PaddingLeft>1pt</PaddingLeft>
+                                                <PaddingRight>1pt</PaddingRight>
+                                                <PaddingTop>1pt</PaddingTop>
+                                                <PaddingBottom>1pt</PaddingBottom>
+                                                <WritingMode>Vertical</WritingMode>
+                                              </Style>
+                                            </Textbox>
+                                          </CellContents>
+                                        </TablixHeader>
+                                      </TablixMember>
+                                      <TablixMember>
+                                        <TablixHeader>
+                                          <Size>0.73958in</Size>
+                                          <CellContents>
+                                            <Textbox Name="Color">
+                                              <CanGrow>true</CanGrow>
+                                              <KeepTogether>true</KeepTogether>
+                                              <Paragraphs>
+                                                <Paragraph>
+                                                  <TextRuns>
+                                                    <TextRun>
+                                                      <Value>=IIF(ROWNUMBER(NOTHING) MOD 2 = 0,"Gainsboro","Transparent")</Value>
+                                                      <Style>
+                                                        <FontWeight>Bold</FontWeight>
+                                                      </Style>
+                                                    </TextRun>
+                                                  </TextRuns>
+                                                  <Style>
+                                                    <TextAlign>Center</TextAlign>
+                                                  </Style>
+                                                </Paragraph>
+                                              </Paragraphs>
+                                              <RepeatWith>matrix1</RepeatWith>
+                                              <Style>
+                                                <Border>
+                                                  <Style>None</Style>
+                                                </Border>
+                                                <TopBorder>
+                                                  <Style>Solid</Style>
+                                                </TopBorder>
+                                                <BottomBorder>
+                                                  <Style>Solid</Style>
+                                                </BottomBorder>
+                                                <RightBorder>
+                                                  <Style>Solid</Style>
+                                                </RightBorder>
+                                                <PaddingLeft>1pt</PaddingLeft>
+                                                <PaddingRight>1pt</PaddingRight>
+                                                <PaddingTop>1pt</PaddingTop>
+                                                <PaddingBottom>1pt</PaddingBottom>
+                                                <WritingMode>Vertical</WritingMode>
+                                              </Style>
+                                            </Textbox>
+                                          </CellContents>
+                                        </TablixHeader>
+                                        <Visibility>
+                                          <Hidden>true</Hidden>
+                                        </Visibility>
+                                      </TablixMember>
+                                    </TablixMembers>
+                                    <DataElementOutput>Output</DataElementOutput>
+                                  </TablixMember>
+                                </TablixMembers>
+                              </TablixColumnHierarchy>
+                              <TablixRowHierarchy>
+                                <TablixMembers>
+                                  <TablixMember>
+                                    <Group Name="matrix1_Room_ID">
+                                      <GroupExpressions>
+                                        <GroupExpression>=Fields!Room_ID.Value</GroupExpression>
+                                      </GroupExpressions>
+                                    </Group>
+                                    <SortExpressions>
+                                      <SortExpression>
+                                        <Value>=Fields!Room_Name.Value</Value>
+                                      </SortExpression>
+                                    </SortExpressions>
+                                    <TablixHeader>
+                                      <Size>3.04348in</Size>
+                                      <CellContents>
+                                        <Textbox Name="Room_ID">
+                                          <CanGrow>true</CanGrow>
+                                          <Paragraphs>
+                                            <Paragraph>
+                                              <TextRuns>
+                                                <TextRun>
+                                                  <Value>=Fields!Room_Name.Value &amp; ": " &amp; Fields!Room_Number.Value</Value>
+                                                  <Style>
+                                                    <FontWeight>Bold</FontWeight>
+                                                  </Style>
+                                                </TextRun>
+                                              </TextRuns>
+                                              <Style>
+                                                <TextAlign>Left</TextAlign>
+                                              </Style>
+                                            </Paragraph>
+                                          </Paragraphs>
+                                          <rd:DefaultName>Room_ID</rd:DefaultName>
+                                          <ZIndex>1</ZIndex>
+                                          <Style>
+                                            <TopBorder>
+                                              <Style>Solid</Style>
+                                            </TopBorder>
+                                            <BottomBorder>
+                                              <Style>Solid</Style>
+                                            </BottomBorder>
+                                            <PaddingLeft>2pt</PaddingLeft>
+                                            <PaddingRight>2pt</PaddingRight>
+                                            <PaddingTop>3pt</PaddingTop>
+                                            <PaddingBottom>3pt</PaddingBottom>
+                                          </Style>
+                                        </Textbox>
+                                      </CellContents>
+                                    </TablixHeader>
+                                    <DataElementOutput>Output</DataElementOutput>
+                                    <KeepTogether>true</KeepTogether>
+                                  </TablixMember>
+                                </TablixMembers>
+                              </TablixRowHierarchy>
+                              <RepeatColumnHeaders>true</RepeatColumnHeaders>
+                              <RepeatRowHeaders>true</RepeatRowHeaders>
+                              <DataSetName>DataSet1</DataSetName>
+                              <Height>1.25in</Height>
+                              <Width>3.42708in</Width>
+                              <Style />
+                            </Tablix>
+                          </ReportItems>
+                          <KeepTogether>true</KeepTogether>
+                          <Style />
+                        </Rectangle>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <Group Name="list1_Details_Group">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!Building_ID.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <FixedColumnHeaders>true</FixedColumnHeaders>
+            <DataSetName>DataSet1</DataSetName>
+            <Top>0.25in</Top>
+            <Height>1.25in</Height>
+            <Width>3.42708in</Width>
+            <ZIndex>1</ZIndex>
+            <Style />
+          </Tablix>
+        </ReportItems>
+        <Height>1.5in</Height>
+        <Style />
+      </Body>
+      <Width>10.5in</Width>
+      <Page>
+        <PageHeader>
+          <Height>0.375in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="mp_report_title">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=Globals!ReportName</Value>
+                      <Style>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontSize>18pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                        <Color>DimGray</Color>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style />
+                </Paragraph>
+              </Paragraphs>
+              <Height>0.25in</Height>
+              <Width>5.375in</Width>
+              <Style />
+            </Textbox>
+            <Textbox Name="mp_run_time">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=Now</Value>
+                      <Style>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                        <Color>DimGray</Color>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Right</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <Left>8in</Left>
+              <Height>0.25in</Height>
+              <Width>2.5in</Width>
+              <ZIndex>1</ZIndex>
+              <Style>
+                <VerticalAlign>Bottom</VerticalAlign>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style />
+        </PageHeader>
+        <PageFooter>
+          <Height>0.375in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="mp_page_number">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>="Page " &amp; Globals!PageNumber &amp; " of " &amp; Globals!TotalPages</Value>
+                      <Style>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                        <Color>DimGray</Color>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Right</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <Top>0.125in</Top>
+              <Left>9.5in</Left>
+              <Height>0.25in</Height>
+              <Width>1in</Width>
+              <Style>
+                <VerticalAlign>Bottom</VerticalAlign>
+              </Style>
+            </Textbox>
+            <Image Name="mp_logo">
+              <Source>Embedded</Source>
+              <Value>MPLogo</Value>
+              <Sizing>FitProportional</Sizing>
+              <Top>0.125in</Top>
+              <Height>0.25in</Height>
+              <Width>1.92708in</Width>
+              <ZIndex>1</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+              </Style>
+            </Image>
+          </ReportItems>
+          <Style />
+        </PageFooter>
+        <PageHeight>8.5in</PageHeight>
+        <PageWidth>11in</PageWidth>
+        <LeftMargin>0.25in</LeftMargin>
+        <RightMargin>0.25in</RightMargin>
+        <TopMargin>0.5in</TopMargin>
+        <BottomMargin>0.5in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="DomainID">
+      <DataType>String</DataType>
+      <Prompt>DomainID</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="UserID">
+      <DataType>String</DataType>
+      <Prompt>UserID</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="PageID">
+      <DataType>Integer</DataType>
+      <Prompt>PageID</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="StartDate">
+      <DataType>DateTime</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=Today()</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Search Start Date</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="EndDate">
+      <DataType>DateTime</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=Today()</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Search End Date</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="Time">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>12</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Start Time</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>0</Value>
+            <Label>12:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>1</Value>
+            <Label>1:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>2</Value>
+            <Label>2:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>3</Value>
+            <Label>3:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>4</Value>
+            <Label>4:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>5</Value>
+            <Label>5:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>6</Value>
+            <Label>6:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>7</Value>
+            <Label>7:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>8</Value>
+            <Label>8:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>9</Value>
+            <Label>9:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>10</Value>
+            <Label>10:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>11</Value>
+            <Label>11:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>12</Value>
+            <Label>12:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>13</Value>
+            <Label>1:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>14</Value>
+            <Label>2:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>15</Value>
+            <Label>3:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>16</Value>
+            <Label>4:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>17</Value>
+            <Label>5:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>18</Value>
+            <Label>6:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>19</Value>
+            <Label>7:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>20</Value>
+            <Label>8:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>21</Value>
+            <Label>9:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>22</Value>
+            <Label>10:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>23</Value>
+            <Label>11:00 PM</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="EndTime">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>13</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>End Time</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>0</Value>
+            <Label>12:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>1</Value>
+            <Label>1:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>2</Value>
+            <Label>2:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>3</Value>
+            <Label>3:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>4</Value>
+            <Label>4:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>5</Value>
+            <Label>5:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>6</Value>
+            <Label>6:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>7</Value>
+            <Label>7:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>8</Value>
+            <Label>8:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>9</Value>
+            <Label>9:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>10</Value>
+            <Label>10:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>11</Value>
+            <Label>11:00 AM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>12</Value>
+            <Label>12:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>13</Value>
+            <Label>1:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>14</Value>
+            <Label>2:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>15</Value>
+            <Label>3:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>16</Value>
+            <Label>4:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>17</Value>
+            <Label>5:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>18</Value>
+            <Label>6:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>19</Value>
+            <Label>7:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>20</Value>
+            <Label>8:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>21</Value>
+            <Label>9:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>22</Value>
+            <Label>10:00 PM</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>23</Value>
+            <Label>11:00 PM</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="Hours">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>6</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Hours</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="DayofWeek">
+      <DataType>Integer</DataType>
+      <Nullable>true</Nullable>
+      <DefaultValue>
+        <Values>
+          <Value xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true" />
+        </Values>
+      </DefaultValue>
+      <Prompt>Day of Week</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Label>Any Day</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>1</Value>
+            <Label>Sunday</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>2</Value>
+            <Label>Monday</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>3</Value>
+            <Label>Tuesday</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>4</Value>
+            <Label>Wednesday</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>5</Value>
+            <Label>Thursday</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>6</Value>
+            <Label>Friday</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>7</Value>
+            <Label>Saturday</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="BuildingID">
+      <DataType>Integer</DataType>
+      <Prompt>Building</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DataSet2</DataSetName>
+          <ValueField>Building_ID</ValueField>
+          <LabelField>Building_Name</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="RoomsID">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Rooms</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DataSet3</DataSetName>
+          <ValueField>Room_ID</ValueField>
+          <LabelField>Room_Name</LabelField>
+        </DataSetReference>
+      </ValidValues>
+      <MultiValue>true</MultiValue>
+    </ReportParameter>
+  </ReportParameters>
+  <EmbeddedImages>
+    <EmbeddedImage Name="mp_sm_logo">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+    <EmbeddedImage Name="MPLogo">
+      <MIMEType>image/jpeg</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>http://localhost/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>6835654f-3954-4c4b-bf4b-64ce086231e9</rd:ReportID>
+</Report>

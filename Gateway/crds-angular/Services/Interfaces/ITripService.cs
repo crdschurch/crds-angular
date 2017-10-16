@@ -18,5 +18,8 @@ namespace crds_angular.Services.Interfaces
         TripParticipantPledgeDto GetCampaignPledgeInfo(int contactId, int pledgeCampaignId);
         bool HasScholarship(int contactId, int campaignId);
         void SendTripIsFullMessage(int campaignId);
+        bool GetIPromise(int eventParticipantId);
+        TripDocument GetIPromiseDocument(int tripEventId);
+        void ReceiveIPromiseDocument(TripDocument iPromiseDoc);
     }
 }

@@ -16,7 +16,6 @@
     ) {
 
         $log.debug('Inside The Daily Controller');
-
         var vm = this;
     }
 })();

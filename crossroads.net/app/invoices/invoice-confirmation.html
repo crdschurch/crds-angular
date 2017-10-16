@@ -1,0 +1,30 @@
+<preloader full-screen='false' ng-show='!invoiceConfirmation.viewReady'> </preloader>
+<section class="col-lg-offset-4 col-lg-4" ng-show='invoiceConfirmation.viewReady'>
+  <h2>Thank You!</h2>
+  <div class="row">
+    <ul class="list-unstyled">
+      <li>
+        <b class="col-xs-6">Description</b>
+        <span id="Description" class="col-xs-6">{{invoiceConfirmation.invoiceDetails.product.productName}}</b>
+      </li>
+      <li>
+        <b class="col-xs-6">Amount Paid</b>
+        <span id="AmountPaid" class="col-xs-6">{{invoiceConfirmation.paymentDetails.recentPaymentAmount | currency}}</b>
+      </li>
+      <li>
+        <b class="col-xs-6">Account Number</b>
+        <span id="AccountNumber" class="col-xs-6">XXXX - {{invoiceConfirmation.paymentDetails.recentPaymentLastFour}}</b>
+      </li>
+      <li>
+        <b class="col-xs-6">Invoice Number</b>
+        <span id="InvoiceNumber" class="col-xs-6">{{invoiceConfirmation.invoiceId}}</b>
+      </li>
+    </ul>
+  </div>
+  <br>
+  <div class="row">
+    <p id="EmailSentToMessage">
+      A receipt has been sent to {{invoiceConfirmation.paymentDetails.recipientEmail}}
+    </p>
+  </div>
+</section>

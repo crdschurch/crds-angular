@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Results;
 using crds_angular.Controllers.API;
-using crds_angular.Exceptions.Models;
-using crds_angular.Models.Crossroads.Stewardship;
 using crds_angular.Models.Crossroads.Trip;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Security;
+using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
-using NUnit.Core;
 using NUnit.Framework;
 
 namespace crds_angular.test.controllers
@@ -24,6 +20,7 @@ namespace crds_angular.test.controllers
     public class TripControllerTest
     {
         private readonly Mock<ITripService> _tripService;
+        private readonly Mock<IContactRepository> _contactRepository;
         private readonly TripController _fixture;
         private readonly string authToken;
         private readonly string authType;
@@ -31,7 +28,7 @@ namespace crds_angular.test.controllers
         public TripControllerTest()
         {
             _tripService = new Mock<ITripService>();
-            _fixture = new TripController(_tripService.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);
+            _fixture = new TripController(_tripService.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object, new Mock<IContactRepository>().Object );
             authType = "auth_type";
             authToken = "auth_token";
             _fixture.Request = new HttpRequestMessage();

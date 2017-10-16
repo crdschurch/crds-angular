@@ -15,7 +15,6 @@ var app = angular.module(constants.MODULES.GIVE, [
 .constant('GIVE_ROLES', { StewardshipDonationProcessor: 7 })
 ;
 
-app.config(require('./give.routes'));
 app.controller('GiveController', require('./give.controller'));
 
 require('./one_time');

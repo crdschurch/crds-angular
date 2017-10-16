@@ -8,8 +8,10 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
     public interface IContactRepository
     {
         string GetContactEmail(int contactId);
+        MpContact GetEmailFromDonorId(int donorId);
         int GetContactId(string token);
         MpMyContact GetContactById(int contactId);
+        IObservable<MpSimpleContact> GetSimpleContact(int contactId);
         MpMyContact GetContactByIdCard(string idCard);
         int GetContactIdByParticipantId(int participantId);
         List<MpHouseholdMember> GetHouseholdFamilyMembers(int householdId);
@@ -23,12 +25,14 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         void UpdateContact(int contactId, Dictionary<string, object> profileDictionary);
         void UpdateHouseholdAddress(int contactId, Dictionary<string, object> householdDictionary, Dictionary<string, object> addressDictionary);
         int GetContactIdByEmail(string email);
+        int GetActiveContactIdByEmail(string email);
         MpMyContact GetContactByParticipantId(int participantId);
-        List<Dictionary<string, object>> StaffContacts();
+        List<Dictionary<string, object>> PrimaryContacts(bool staffOnly = false);
         MpContact CreateSimpleContact(string firstName, string lastName, string email, string dob, string mobile);
         List<MpRecordID> CreateContact(MpContact minorContact);
-        MpMyContact GetContactByUserRecordId(int userRecordId);
+        MpMyContact GetContactByUserRecordId(int userRecordId, string apiToken=null);
         IObservable<MpHousehold> UpdateHousehold(MpHousehold household);
         void SetHouseholdAddress(int contactId, int householdId, int addressId);
+        void UpdateContactToActive(int contactId);
     }
 }

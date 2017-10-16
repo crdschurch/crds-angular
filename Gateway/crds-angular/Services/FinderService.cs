@@ -19,8 +19,10 @@ using Amazon.CloudSearchDomain.Model;
 using crds_angular.Exceptions;
 using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Crossroads.Groups;
+using crds_angular.Services.Analytics;
 using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models.Finder;
+using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 
 namespace crds_angular.Services
 {
@@ -52,10 +54,12 @@ namespace crds_angular.Services
         private readonly IAwsCloudsearchService _awsCloudsearchService;
         private readonly IAuthenticationRepository _authenticationRepository;
         private readonly ICommunicationRepository _communicationRepository;
+        private readonly IAccountService _accountService;
+        private readonly IAnalyticsService _analyticsService;
         private readonly int _approvedHost;
         private readonly int _pendingHost;
         private readonly int _anywhereGroupType;
-        private readonly int _leaderRoleId;
+        private readonly int _trialMemberRoleId;
         private readonly int _memberRoleId;
         private readonly int _anywhereGatheringInvitationTypeId;
         private readonly int _groupInvitationTypeId;
@@ -75,6 +79,7 @@ namespace crds_angular.Services
         private readonly int _connectCommunicationTypeInviteToSmallGroup;
         private readonly int _connectCommunicationTypeRequestToJoinSmallGroup;
         private readonly int _connectCommunicationTypeRequestToJoinGathering;
+        private readonly ILookupService _lookupService;
 
         private readonly Random _random = new Random(DateTime.Now.Millisecond);
         private const double MinutesInDegree = 60;
@@ -94,7 +99,10 @@ namespace crds_angular.Services
             IInvitationService invitationService,
             IAwsCloudsearchService awsCloudsearchService,
             IAuthenticationRepository authenticationRepository,
-            ICommunicationRepository communicationRepository
+            ICommunicationRepository communicationRepository,
+            IAccountService accountService,
+            ILookupService lookupService,
+            IAnalyticsService analyticsService
         )
         {
             // services
@@ -112,13 +120,15 @@ namespace crds_angular.Services
             _invitationService = invitationService;
             _awsCloudsearchService = awsCloudsearchService;
             _communicationRepository = communicationRepository;
+            _accountService = accountService;
+            _lookupService = lookupService;
+            _analyticsService = analyticsService;
             // constants
             _anywhereCongregationId = _configurationWrapper.GetConfigIntValue("AnywhereCongregationId");
             _approvedHost = configurationWrapper.GetConfigIntValue("ApprovedHostStatus");
             _pendingHost = configurationWrapper.GetConfigIntValue("PendingHostStatus");
             _anywhereGroupType = configurationWrapper.GetConfigIntValue("AnywhereGroupTypeId");
-            _leaderRoleId = configurationWrapper.GetConfigIntValue("GroupRoleLeader");
-            _memberRoleId = configurationWrapper.GetConfigIntValue("Group_Role_Default_ID");
+            _trialMemberRoleId = configurationWrapper.GetConfigIntValue("GroupsTrialMemberRoleId");
             _memberRoleId = configurationWrapper.GetConfigIntValue("Group_Role_Default_ID");
             _anywhereGatheringInvitationTypeId = configurationWrapper.GetConfigIntValue("AnywhereGatheringInvitationType");
             _groupInvitationTypeId = configurationWrapper.GetConfigIntValue("GroupInvitationType");
@@ -136,41 +146,20 @@ namespace crds_angular.Services
             _smallGroupType = _configurationWrapper.GetConfigIntValue("SmallGroupTypeId");
             _connectCommunicationTypeInviteToGathering = _configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeInviteToGathering");
             _connectCommunicationTypeInviteToSmallGroup = _configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeInviteToSmallGroup");
+            _connectCommunicationTypeRequestToJoinSmallGroup = _configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeRequestToJoinSmallGroup");
+            _connectCommunicationTypeRequestToJoinGathering = _configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeRequestToJoinGathering");
         }
 
-        public PinDto GetPinDetailsForGroup(int groupId)
+        public PinDto GetPinDetailsForGroup(int groupId, GeoCoordinate originCoords)
         {
-            //get the groups Primary contact
-            var participantId = GetLeaderParticipantIdFromGroup(groupId);
-            //get the pin details for the primary contact
-            var pin = GetPinDetailsForPerson(participantId);
+            List<PinDto> pins = null;
+            var cloudReturn = _awsCloudsearchService.SearchByGroupId(groupId.ToString());
 
-            var token = _apiUserRepository.GetToken();
+            pins = ConvertFromAwsSearchResponse(cloudReturn);
+            this.AddPinMetaData(pins, originCoords);
 
-            //get group details for the primary pin
-            pin.Gathering = _groupService.GetGroupsByTypeOrId(token, participantId, null, groupId, false, false).FirstOrDefault();
+            return pins.First();
 
-            if (pin.Gathering?.GroupTypeId == _anywhereGroupType)
-            {
-                pin.PinType = PinType.GATHERING;
-            }
-            else if (pin.Gathering?.GroupTypeId == _smallGroupType)
-            {
-                pin.PinType = PinType.SMALL_GROUP;
-            }
-            else
-            {
-                throw new Exception("Get Pin Details Failed, group type not valid");
-            }            
-            
-            if (pin.Gathering != null)
-            {
-                pin.Gathering.Address.AddressLine1 = "";
-                pin.Gathering.Address.AddressLine2 = "";
-                pin.Address = pin.Gathering.Address;
-
-            }
-            return pin;
         }
 
         public PinDto GetPinDetailsForPerson(int participantId)
@@ -178,7 +167,7 @@ namespace crds_angular.Services
             var pinDetails = Mapper.Map<PinDto>(_finderRepository.GetPinDetails(participantId));
 
             //make sure we have a lat/long
-            if (pinDetails != null && pinDetails.Address.Latitude != null && pinDetails.Address.Longitude != null)
+            if (pinDetails?.Address.Latitude != null && pinDetails.Address.Longitude != null)
             {
                 _addressService.SetGeoCoordinates(pinDetails.Address);
                 pinDetails.Address.AddressLine1 = "";
@@ -207,6 +196,11 @@ namespace crds_angular.Services
             pin.Gathering.Address.Latitude = coordinates.Latitude;
             pin.Gathering.Address.Longitude = coordinates.Longitude;
             pin.Gathering.GroupTypeId = _anywhereGroupType;
+            // When staff manually updates the gathering group in MP to be public/available online (or any other edit),
+            // the meeting_time in MP console is forced to a value (midnight)
+            // then on gathering group edits in the app, the meeting_time pre-populated and getting a sql datetime overflow
+            // Gatherings do not have meeting time, so set back to null
+            pin.Gathering.MeetingTime = null;
 
             if (pin.ShouldUpdateHomeAddress)
             {
@@ -265,10 +259,10 @@ namespace crds_angular.Services
             var groups = _groupRepository.GetGroupsByGroupType(_anywhereGroupType);
 
             //get groups that this user is the primary contact for at this address
-            var matchingGroupsCount = groups.Where(x => x.PrimaryContact == contactId.ToString())
+            var matchingGroupsCount = groups
+                .Where(x => x.PrimaryContact == contactId.ToString())
                 .Where(x => x.Address.Address_Line_1 == address.AddressLine1)
-                .Where(x => x.Address.City == address.City)
-                .Where(x => x.Address.State == address.State).Count();
+                .Where(x => x.Address.City == address.City).Count(x => x.Address.State == address.State);
 
             if (matchingGroupsCount > 0)
             {
@@ -320,6 +314,8 @@ namespace crds_angular.Services
             group.CongregationId = _anywhereCongregationId;
             group.GroupTypeId = _anywhereGroupType;
             group.MinistryId = _spritualGrowthMinistryId;
+            group.MeetingTime = null;
+
             _groupService.CreateGroup(group);
 
             //add our contact to the group as a leader
@@ -339,9 +335,9 @@ namespace crds_angular.Services
 
         public void GatheringJoinRequest(string token, int gatheringId)
         {
-            GroupDTO group = _groupService.GetGroupDetails(gatheringId);
+            var group = _groupService.GetGroupDetails(gatheringId);
 
-            int commType = group.GroupTypeId == _smallGroupType ? _connectCommunicationTypeRequestToJoinSmallGroup : _connectCommunicationTypeRequestToJoinGathering;
+            var commType = group.GroupTypeId == _smallGroupType ? _connectCommunicationTypeRequestToJoinSmallGroup : _connectCommunicationTypeRequestToJoinGathering;
 
             var connection = new ConnectCommunicationDto
             {
@@ -353,7 +349,27 @@ namespace crds_angular.Services
             };
             RecordCommunication(connection);
 
-            _groupToolService.SubmitInquiry(token, gatheringId);
+            _groupToolService.SubmitInquiry(token, gatheringId, true);
+        }
+
+        public void TryAGroup(string token, int groupId)
+        {
+            var group = _groupService.GetGroupDetails(groupId);
+
+            var commType = group.GroupTypeId == _smallGroupType ? _connectCommunicationTypeRequestToJoinSmallGroup : _connectCommunicationTypeRequestToJoinGathering;
+
+            var connection = new ConnectCommunicationDto
+            {
+                CommunicationTypeId = commType,
+                ToContactId = group.ContactId,
+                FromContactId = _contactRepository.GetContactId(token),
+                CommunicationStatusId = _configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusUnanswered"),
+                GroupId = groupId
+            };
+            
+            _groupToolService.SubmitInquiry(token, groupId, false);
+            RecordCommunication(connection);
+            SendTryAGroupEmailToLeader(token, groupId);
         }
 
         public AddressDTO GetAddressForIp(string ip)
@@ -386,41 +402,171 @@ namespace crds_angular.Services
             return participantId;
         }
 
-        public List<PinDto> GetPinsInBoundingBox(GeoCoordinate originCoords, string address, AwsBoundingBox boundingBox, string finderType, int contactId)
+        public bool DoesUserLeadSomeGroup(int contactId)
         {
-            List<PinDto> pins = null;
+            int participantId = _participantRepository.GetParticipant(contactId).ParticipantId;
+            bool doesUserLeadSomeGroup = _groupRepository.GetDoesUserLeadSomeGroup(participantId);
 
-            int id = _anywhereGroupType; 
+            return doesUserLeadSomeGroup;
+        }
+
+        public List<PinDto> GetPinsInBoundingBox(GeoCoordinate originCoords, string userKeywordSearchString, AwsBoundingBox boundingBox, string finderType, int contactId, string filterSearchString)
+        {
+            userKeywordSearchString = userKeywordSearchString?.Replace("%27", "\\'");
+            var queryString = "";
+            var returnSize = _configurationWrapper.GetConfigIntValue("ConnectDefaultNumberOfPins");
+
+            // new search string for AWS call based on the findertype, use pintype
 
             if (finderType.Equals(_finderConnect))
             {
-                var cloudReturn = _awsCloudsearchService.SearchConnectAwsCloudsearch("matchall",
-                                                                                     "_all_fields",
-                                                                                     _configurationWrapper.GetConfigIntValue("ConnectDefaultNumberOfPins"),
-                                                                                     originCoords,
-                                                                                     boundingBox);
-                pins = ConvertFromAwsSearchResponse(cloudReturn);
+                queryString = (String.IsNullOrEmpty(filterSearchString)) ? "(or pintype:3 pintype:2 pintype:1)" : filterSearchString;
             }
             else if (finderType.Equals(_finderGroupTool))
             {
-                
-                var groupTypeIds = new int[1] {_smallGroupType};
-                var groupDTOs = _groupToolService.SearchGroups(groupTypeIds);
-
-                pins = this.TransformGroupDtoToPinDto(groupDTOs, finderType);
+                queryString = $"(and pintype:4 groupavailableonline:1 (or (prefix field=groupdescription '{userKeywordSearchString}') (prefix field=groupname '{userKeywordSearchString}') (prefix field=groupprimarycontactfirstname '{userKeywordSearchString}') (prefix field=groupprimarycontactlastname '{userKeywordSearchString}') groupname:'{userKeywordSearchString}' groupdescription:'{userKeywordSearchString}' groupprimarycontactfirstname:'{userKeywordSearchString}' groupprimarycontactlastname:'{userKeywordSearchString}') {filterSearchString})";
             }
             else
             {     
                 throw new Exception("No pin search performed - finder type not found");
             }
 
-            this.AddPinMetaData(pins, originCoords, contactId);
+            var cloudReturn = _awsCloudsearchService.SearchConnectAwsCloudsearch(queryString, "_all_fields",returnSize, originCoords);
+            var pins = ConvertFromAwsSearchResponse(cloudReturn);
+
+            AddPinMetaData(pins, originCoords, contactId);
+
             return pins;
         }
 
-        private Boolean isMyPin(PinDto pin, int contactId)
+        public void AddUserDirectlyToGroup(string token, User user, int groupid, int roleId)
         {
-            Boolean isMyPin = pin.Contact_ID == contactId && contactId != 0; 
+            
+            //check to see if user exists in MP. Exclude Guest Giver and Deceased status
+            var contactId = _contactRepository.GetActiveContactIdByEmail(user.email);
+            if (contactId == 0)
+            {
+                user.password = System.Web.Security.Membership.GeneratePassword(25, 10);
+                contactId = _accountService.RegisterPersonWithoutUserAccount(user);
+            }
+            
+            var groupParticipant = _groupService.GetGroupParticipants(groupid, false).FirstOrDefault(p => p.ContactId == contactId);
+
+            // groupParticipant == null then participant not in group
+            if (groupParticipant == null)
+            {
+                SendEmailToAddedUser(token, user, groupid);
+                _groupService.addContactToGroup(groupid, contactId, roleId);
+                //send leader email
+                SendAddEmailToGroupLeaders(user, groupid);
+            }
+            else
+            {
+                throw new DuplicateGroupParticipantException($"Participant {groupParticipant.ParticipantId} already in group.");
+            }
+        }
+
+        private void SendAddEmailToGroupLeaders(User user, int groupId)
+        {
+            var leaders = GetParticipantsForGroup(groupId).Where(w => w.GroupRoleId == _configurationWrapper.GetConfigIntValue("GroupRoleLeader"));
+
+            var emailTemplateId = _configurationWrapper.GetConfigIntValue("GroupsAddParticipantLeaderEmailNotificationTemplateId");
+            var emailTemplate = _communicationRepository.GetTemplate(emailTemplateId);
+            var group = _groupService.GetGroupDetails(groupId);
+            var meetingDay = _lookupService.GetMeetingDayFromId(group.MeetingDayId);
+            var groupLocation = GetGroupAddress(groupId);
+            var formatedMeetingTime = group.MeetingTime == null ? "Flexible time" : $"{DateTimeOffset.Parse(@group.MeetingTime).LocalDateTime:t}";
+            var formatedMeetingDay = meetingDay ?? "Flexible day";
+            var formatedMeetingFrequency = group.MeetingFrequencyID == null ? "Flexible frequency" : getMeetingFrequency((int)group.MeetingFrequencyID);
+            var mergeData = new Dictionary<string, object>
+            {
+                {"Nickname", user.firstName},
+                {"Lastname", user.lastName},
+                {"Participant_Email", user.email},
+                {"Group_Name", group.GroupName},
+                {"Group_Meeting_Day",  formatedMeetingDay},
+                {"Group_Meeting_Time", formatedMeetingTime},
+                {"Group_Meeting_Frequency", formatedMeetingFrequency},
+                {"Group_Meeting_Location", groupLocation == null || groupLocation.AddressLine1 == null ? "Online" : $"{groupLocation.AddressLine1}\n{groupLocation.AddressLine2}\n{groupLocation.City}\n{groupLocation.State}\n{groupLocation.PostalCode}" },
+                {"Recipient_First_Name", " " }
+            };
+
+            var fromContact = new MpContact
+            {
+                ContactId = emailTemplate.FromContactId,
+                EmailAddress = emailTemplate.FromEmailAddress
+            };
+
+            var replyTo = new MpContact
+            {
+                ContactId = emailTemplate.ReplyToContactId,
+                EmailAddress = emailTemplate.ReplyToEmailAddress
+            };
+
+            foreach (var leader in leaders)
+            {
+                mergeData["Recipient_First_Name"] = leader.NickName;
+                var to = new List<MpContact>
+                {
+                    new MpContact
+                    {
+                        ContactId = leader.ContactId,
+                        EmailAddress = leader.Email
+                    }
+                };
+
+                var confirmation = new MpCommunication
+                {
+                    EmailBody = emailTemplate.Body,
+                    EmailSubject = emailTemplate.Subject,
+                    AuthorUserId = 5,
+                    DomainId = _domainId,
+                    FromContact = fromContact,
+                    ReplyToContact = replyTo,
+                    TemplateId = emailTemplateId,
+                    ToContacts = to,
+                    MergeData = mergeData
+                };
+                _communicationRepository.SendMessage(confirmation);
+            }
+        }
+
+        private void MakeAllLatLongsUnique(List<PinDto> thePins)
+        {
+           
+                var groupedMatchingLatitude = thePins
+                .Where(w => w.Address.Latitude != null && w.Address.Longitude != null)
+                    .GroupBy(u => new {u.Address.Latitude, u.Address.Longitude})
+                    .Select(grp => grp.ToList())
+                    .ToList();
+
+            foreach (var grouping in groupedMatchingLatitude.Where(x => x.Count > 1))
+            {
+                // each of these groups matches latitude, so we need to create slight differences
+                double? newLat = 0.0;
+                double? newLong = 0.0;
+                foreach (var g in grouping)
+                {
+                    if (newLat.Equals(0.0))
+                    {
+                        newLat  = g.Address.Latitude;
+                        newLong = g.Address.Longitude;
+                    }
+                    else
+                    {
+                        newLat += .0001;
+                        newLong -= .0001;
+
+                        g.Address.Latitude = newLat;
+                        g.Address.Longitude = newLong;
+                    }
+                }
+            }
+        }
+
+        private bool isMyPin(PinDto pin, int contactId)
+        {
+            var isMyPin = pin.Contact_ID == contactId && contactId != 0; 
             return isMyPin; 
         }
 
@@ -446,8 +592,13 @@ namespace crds_angular.Services
                     jsonData = $"{{ 'firstName': '{RemoveSpecialCharacters(pin.FirstName)}', 'lastInitial': '{RemoveSpecialCharacters(lastname)}','isHost':  false,'isMe': {isMyPinAsString(pin, contactId)},'pinType': {(int) pin.PinType}}}";
                     break;
                 case PinType.SMALL_GROUP:
-                    jsonData = $"{{ 'firstName': '{RemoveSpecialCharacters(pin.Gathering.GroupName)}', 'lastInitial': '','isHost':  false,'isMe': false,'pinType': {(int)pin.PinType}}}";
-                    break; 
+                    var groupName = RemoveSpecialCharacters(pin.Gathering.GroupName).Trim();
+                    if (groupName.Length > 22)
+                    {
+                        groupName = RemoveSpecialCharacters(pin.Gathering.GroupName).Trim().Substring(0, 22);
+                    }
+                    jsonData = $"{{ 'firstName': '{groupName}', 'lastInitial': '','isHost':  false,'isMe': false,'pinType': {(int)pin.PinType}}}";
+                    break;
             }
 
             return jsonData.Replace("'", "\"");
@@ -458,7 +609,7 @@ namespace crds_angular.Services
             var sb = new StringBuilder();
             foreach (var c in str)
             {
-                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_')
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_' || c == ' ')
                 {
                     sb.Append(c);
                 }
@@ -518,10 +669,9 @@ namespace crds_angular.Services
                     pin.Address.Latitude = Convert.ToDouble(coordinates[0]);
                     pin.Address.Longitude = Convert.ToDouble(coordinates[1]);
                 }
-                if (pin.PinType == PinType.GATHERING)
+                if (pin.PinType == PinType.GATHERING || pin.PinType == PinType.SMALL_GROUP)
                 {
-
-                    pin.Gathering = new GroupDTO
+                    pin.Gathering = new FinderGroupDto
                     {
                         GroupId = hit.Fields.ContainsKey("groupid") ? Convert.ToInt32(hit.Fields["groupid"].FirstOrDefault()) : 0,
                         GroupName = hit.Fields.ContainsKey("groupname") ? hit.Fields["groupname"].FirstOrDefault() : null,
@@ -531,7 +681,19 @@ namespace crds_angular.Services
                         ContactId = pin.Contact_ID.Value,
                         GroupTypeId = _anywhereGroupType,
                         CongregationId = _anywhereCongregationId,
-                        MinistryId = _spritualGrowthMinistryId
+                        MinistryId = _spritualGrowthMinistryId,
+                        KidsWelcome = hit.Fields.ContainsKey("groupkidswelcome") && hit.Fields["groupkidswelcome"].FirstOrDefault() == "1",
+                        MeetingDay = hit.Fields.ContainsKey("groupmeetingday") ? hit.Fields["groupmeetingday"].FirstOrDefault() : null,
+                        MeetingTime = hit.Fields.ContainsKey("groupmeetingtime") ? hit.Fields["groupmeetingtime"].FirstOrDefault() : null,
+                        MeetingFrequency = hit.Fields.ContainsKey("groupmeetingfrequency") ? hit.Fields["groupmeetingfrequency"].FirstOrDefault() : null,
+                        GroupType = hit.Fields.ContainsKey("grouptype") ? hit.Fields["grouptype"].FirstOrDefault() : null,
+                        VirtualGroup = hit.Fields.ContainsKey("groupvirtual") && hit.Fields["groupvirtual"].FirstOrDefault()== "1",
+                        PrimaryContactFirstName = hit.Fields.ContainsKey("groupprimarycontactfirstname") ? hit.Fields["groupprimarycontactfirstname"].FirstOrDefault() : null,
+                        PrimaryContactLastName = hit.Fields.ContainsKey("groupprimarycontactlastname") ? hit.Fields["groupprimarycontactlastname"].FirstOrDefault() : null,
+                        PrimaryContactCongregation = hit.Fields.ContainsKey("groupprimarycontactcongregation") ? hit.Fields["groupprimarycontactcongregation"].FirstOrDefault() : null,
+                        GroupAgesRangeList = hit.Fields.ContainsKey("groupagerange") ? hit.Fields["groupagerange"].ToList() : null,
+                        GroupCategoriesList = hit.Fields.ContainsKey("groupcategory") ? hit.Fields["groupcategory"].ToList() : null,
+                        AvailableOnline = hit.Fields.ContainsKey("groupavailableonline") && hit.Fields["groupavailableonline"].FirstOrDefault() == "1",                            
                     };
 
                     if (hit.Fields.ContainsKey("groupstartdate") && !String.IsNullOrWhiteSpace(hit.Fields["groupstartdate"].First()))
@@ -581,11 +743,12 @@ namespace crds_angular.Services
 
             int[] groupTypesToFetch = finderType == _finderConnect ? new int[] { _anywhereGroupType } : new int[] { _smallGroupType };
 
-            var groupPins = GetMyGroupPins(token, groupTypesToFetch, participantId);
+            var groupPins = GetMyGroupPins(token, groupTypesToFetch, participantId, finderType);
             var personPin = GetPinDetailsForPerson(participantId);
 
             pins.AddRange(groupPins);
-            if (personPin != null && personPin.ShowOnMap)
+
+            if (personPin != null && personPin.ShowOnMap && finderType == _finderConnect)
             {
                 pins.Add(personPin);
             }
@@ -599,10 +762,12 @@ namespace crds_angular.Services
 
             pins = this.AddPinMetaData(pins, originCoords, contactId);
 
+            MakeAllLatLongsUnique(pins);
+
             return pins;
         }
 
-        public List<PinDto> GetMyGroupPins(string token, int[] groupTypeIds, int participantId)
+        public List<PinDto> GetMyGroupPins(string token, int[] groupTypeIds, int participantId, string finderType)
         {
             var groupsByType = _groupRepository.GetGroupsForParticipantByTypeOrID(participantId, null, groupTypeIds);
 
@@ -611,19 +776,25 @@ namespace crds_angular.Services
                 return null;
             }
 
-            var groupDTOs = groupsByType.Select(Mapper.Map<MpGroup, GroupDTO>).ToList();
+            if (groupsByType.Count == 0)
+            {
+                return new List<PinDto>();
+            }
 
-            // TODO when do MY STUFF for Group Tool, will need to account for changing this flag to _finderGroupTool
-            var pins = this.TransformGroupDtoToPinDto(groupDTOs, _finderConnect);
+            var cloudsearchQueryString = groupsByType.Aggregate("(or ", (current, @group) => current + ("groupid:" + @group.GroupId + " ")) +")";
+            // use the groups found to get full dataset from AWS
+            var cloudReturn = _awsCloudsearchService.SearchConnectAwsCloudsearch(cloudsearchQueryString, "_all_fields");
+
+            var pins = ConvertFromAwsSearchResponse(cloudReturn);
 
             return pins;
         }
 
-        public GeoCoordinate GetGeoCoordsFromAddressOrLatLang(string address, string lat, string lng)
+        public GeoCoordinate GetGeoCoordsFromAddressOrLatLang(string address, GeoCoordinates centerCoords)
         {
 
-            double latitude = Convert.ToDouble(lat.Replace("$", "."));
-            double longitude = Convert.ToDouble(lng.Replace("$", "."));
+            double latitude = centerCoords.Lat.HasValue ? centerCoords.Lat.Value : 0;
+            double longitude = centerCoords.Lng.HasValue ? centerCoords.Lng.Value : 0;
 
             var geoCoordsPassedIn = latitude != 0 && longitude != 0;
 
@@ -715,31 +886,26 @@ namespace crds_angular.Services
             return invitation;
         }
 
-        public AddressDTO GetGroupAddress(string token, int groupId)
+        public AddressDTO GetGroupAddress(int groupId)
         {
-            var user = _participantRepository.GetParticipantRecord(token);
-            var group = _groupService.GetGroupsByTypeOrId(token, user.ParticipantId, null, groupId, true, false).FirstOrDefault();
-
-            if (user.ContactId == group.ContactId || group.Participants.Any(p => p.ParticipantId == user.ParticipantId))
-            {
-                return group.Address;
-            }
-            else
-            {
-                throw new Exception("User does not have access to requested address");
-            }
+            return _groupService.GetGroupDetails(groupId).Address;
         }
 
-        public AddressDTO GetPersonAddress(string token, int participantId)
+        public AddressDTO GetPersonAddress(string token, int participantId, bool shouldGetFullAddress = true)
         {
             var user = _participantRepository.GetParticipantRecord(token);
 
-            if (user.ParticipantId == participantId)
+            if ((user.ParticipantId == participantId) || !shouldGetFullAddress)
             {
                 var address = _finderRepository.GetPinAddress(participantId);
 
                 if (address != null)
                 {
+                    if (!shouldGetFullAddress)
+                    {
+                        address.Address_Line_1 = null;
+                        address.Address_Line_2 = null;
+                    }
                     return Mapper.Map<AddressDTO>(address);
                 }
                 else
@@ -794,6 +960,17 @@ namespace crds_angular.Services
                 RecordCommunication(connection);
 
                 SendGatheringInviteResponseEmail(accept, host, cm);
+
+                if (accept)
+                {
+                    // Call Analytics
+                    var props = new EventProperties {{"InvitationTo", cm.Contact_ID}, {"InvitationToEmail", cm.Email_Address}};
+                    _analyticsService.Track(host.Contact_ID.ToString(), "HostInvitationAccepted", props);
+
+                    props = new EventProperties {{"InvitationFrom", host.Contact_ID}, {"InvitationFromEmail", host.EmailAddress}};
+                    _analyticsService.Track(cm.Contact_ID.ToString(), "InviteeAcceptedInvitation", props);
+                }
+
             }
             catch (Exception e)
             {
@@ -856,47 +1033,249 @@ namespace crds_angular.Services
             }
         }
 
-        private List<PinDto> TransformGroupDtoToPinDto(List<GroupDTO> groupDTOs, string finderType)
+        private string getMeetingFrequency(int meetingFrequencyId)
         {
-            var pins = new List<PinDto>();
 
-            if (finderType.Equals(_finderConnect))
+            switch (meetingFrequencyId)
             {
-                foreach (var group in groupDTOs)
-                {
-                    var pin = Mapper.Map<PinDto>(group);
-                    pin.Gathering = group;
-
-                    pin.Gathering.ContactId = group.ContactId;
-                    pin.Participant_ID = group.ParticipantId;
-
-                    // TODO need to get rid of this call to GetContactById if get name from AWS search instead
-                    var contact = _contactRepository.GetContactById((int)pin.Contact_ID);
-                    pin.FirstName = contact.First_Name;
-                    pin.LastName = contact.Last_Name;
-                    pins.Add(pin);
-                }
+                case 1:
+                    return "Weekly";
+                case 2:
+                    return "Bi-Weekly";
+                default:
+                    return "Monthly";
             }
-            else if (finderType.Equals(_finderGroupTool))
-            {
-                foreach (var group in groupDTOs)
-                {
-                    var pin = Mapper.Map<PinDto>(group);
-                    pin.Gathering = group;
-                    pin.PinType = PinType.SMALL_GROUP;
-
-                    pin.FirstName = "FirstNamePlaceHolder"; // TODO wait and add in with AWS Data returned  - also refactor line 825 above
-                    pin.LastName = "LastNamePlaceHolder"; // TODO wait and add in with AWS Data returned  - also refactor line 825 above
-                    pin.Gathering.ContactId = group.ContactId;
-                    pin.Participant_ID = group.ParticipantId;
-
-                    pins.Add(pin);
-                }
-            }
-
-            return pins;
         }
 
+        private Dictionary<string, object> GetEmailMergeData(int newUserContactId ,int groupId)
+        {
+            // group
+            var group = _groupService.GetGroupDetails(groupId);
+            var groupLocation = GetGroupAddress(groupId);
+            var meetingDay = _lookupService.GetMeetingDayFromId(group.MeetingDayId);
+            var formatedMeetingTime = group.MeetingTime == null ? "Flexible time" : $"{DateTimeOffset.Parse(@group.MeetingTime).LocalDateTime:t}";
+            var formatedMeetingDay = meetingDay ?? "Flexible day";
+            var formatedMeetingFrequency = group.MeetingFrequencyID == null ? "Flexible frequency" : getMeetingFrequency((int)group.MeetingFrequencyID);
+
+            //leader
+            var leaderContact = _contactRepository.GetContactByParticipantId(GetLeaderParticipantIdFromGroup(groupId));
+
+            //participant
+            
+            var newMember = _contactRepository.GetContactById(newUserContactId);
+            var participant = _participantRepository.GetParticipant(newUserContactId);
+
+            //URL
+            var baseUrl = _configurationWrapper.GetConfigValue("BaseUrl");
+            var groupToolPath = _configurationWrapper.GetConfigValue("GroupsTryAGroupPathFragment");
+
+            var mergeData = new Dictionary<string, object>
+            {
+                {"YesURL", $"{baseUrl}{groupToolPath}/small-group/{groupId}/true/{participant.ParticipantId}" },
+                {"NoURL" , $"{baseUrl}{groupToolPath}/small-group/{groupId}/false/{participant.ParticipantId}" },
+                {"StartURL",   $"{baseUrl}{groupToolPath}/create-group" },
+                {"SearchURL",   $"{baseUrl}{groupToolPath}" },
+                {"Participant_Name",  newMember.Nickname},
+                {"Nickname", newMember.Nickname },
+                {"Last_Name", newMember.Last_Name },
+                {"Email_Address", newMember.Email_Address },
+                {"Phone_Number", newMember.Mobile_Phone },
+                {"Leader_Name", leaderContact.First_Name},
+                {"Primary_First_Name", leaderContact.First_Name},
+                {"Primary_Last_Name", leaderContact.Last_Name},
+                {"Primary_Email", leaderContact.Email_Address},
+                {"Primary_Phone", leaderContact.Mobile_Phone},
+                {"Leader_Full_Name", $"{leaderContact.First_Name} {leaderContact.Last_Name}" },
+                {"Leader_Email", leaderContact.Email_Address},
+                {"Group_Name", group.GroupName},
+                {"Group_Meeting_Day",  formatedMeetingDay},
+                {"Group_Meeting_Time", formatedMeetingTime},
+                {"Group_Meeting_Frequency", formatedMeetingFrequency},
+                {"Group_Meeting_Location", groupLocation == null || groupLocation.AddressLine1 == null ? "Online" : $"{groupLocation.AddressLine1}\n{groupLocation.AddressLine2}\n{groupLocation.City}\n{groupLocation.State}\n{groupLocation.PostalCode}" },
+                {"Leader_Phone", $"{leaderContact.Home_Phone}\n{leaderContact.Mobile_Phone}" }
+            };
+            return mergeData;
+        }
+
+        private void SendTryAGroupEmailToLeader(string token, int groupid)
+        {
+            try
+            {
+                var newMemberId = _contactRepository.GetContactId(token);
+                var mergeData = GetEmailMergeData(newMemberId, groupid);
+
+                var emailTemplateId = _configurationWrapper.GetConfigIntValue("GroupsTryAGroupLeaderNotificationTemplateId");
+
+                var emailTemplate = _communicationRepository.GetTemplate(emailTemplateId);
+                var fromContact = new MpContact
+                {
+                    ContactId = emailTemplate.FromContactId,
+                    EmailAddress = emailTemplate.FromEmailAddress
+                };
+                var replyTo = new MpContact
+                {
+                    ContactId = emailTemplate.ReplyToContactId,
+                    EmailAddress = emailTemplate.ReplyToEmailAddress
+                };
+
+                var primary = _contactRepository.GetContactById(_contactRepository.GetContactIdByParticipantId(_groupService.GetPrimaryContactParticipantId(groupid)));
+
+                var to = new List<MpContact>
+                {
+                    new MpContact
+                    {
+                        // Just need a contact ID here, doesn't have to be for the recipient
+                        ContactId = primary.Contact_ID,
+                        EmailAddress = primary.Email_Address
+                    }
+                };
+
+                var confirmation = new MpCommunication
+                {
+                    EmailBody = emailTemplate.Body,
+                    EmailSubject = emailTemplate.Subject,
+                    AuthorUserId = 5,
+                    DomainId = _domainId,
+                    FromContact = fromContact,
+                    ReplyToContact = replyTo,
+                    TemplateId = emailTemplateId,
+                    ToContacts = to,
+                    MergeData = mergeData
+                };
+                _communicationRepository.SendMessage(confirmation);
+            }
+            catch (Exception e)
+            {
+                return;
+            }
+        }
+
+        private void SendTryAGroupAcceptDenyEmail(string token, int groupid, int toContactId, bool accept)
+        {
+            try
+            {
+                var mergeData = GetEmailMergeData(toContactId, groupid);
+               
+                var emailTemplateId = _configurationWrapper.GetConfigIntValue(accept ? "GroupsTryAGroupParticipantAcceptedNotificationTemplateId" : "GroupsTryAGroupParticipantDeclinedNotificationTemplateId");
+                
+                var emailTemplate = _communicationRepository.GetTemplate(emailTemplateId);
+                var fromContact = new MpContact
+                {
+                    ContactId = emailTemplate.FromContactId,
+                    EmailAddress = emailTemplate.FromEmailAddress
+                };
+                var replyTo = new MpContact
+                {
+                    ContactId = emailTemplate.ReplyToContactId,
+                    EmailAddress = emailTemplate.ReplyToEmailAddress
+                };
+
+                var toContact = _contactRepository.GetContactById(toContactId);
+                var to = new List<MpContact>
+                {
+                    new MpContact
+                    {
+                        ContactId = toContact.Contact_ID,
+                        EmailAddress = toContact.Email_Address
+                    }
+                };
+
+                var confirmation = new MpCommunication
+                {
+                    EmailBody = emailTemplate.Body,
+                    EmailSubject = emailTemplate.Subject,
+                    AuthorUserId = 5,
+                    DomainId = _domainId,
+                    FromContact = fromContact,
+                    ReplyToContact = replyTo,
+                    TemplateId = emailTemplateId,
+                    ToContacts = to,
+                    MergeData = mergeData
+                };
+                _communicationRepository.SendMessage(confirmation);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
+        private void SendEmailToAddedUser(string token, User user, int groupid)
+        {
+            var emailTemplateId = _configurationWrapper.GetConfigIntValue("GroupsAddParticipantEmailNotificationTemplateId");
+            var emailTemplate = _communicationRepository.GetTemplate(emailTemplateId);
+            var leaderContactId = _contactRepository.GetContactId(token);
+            var leaderContact = _contactRepository.GetContactById(leaderContactId);
+            var leaderEmail = leaderContact.Email_Address;
+            var userEmail = user.email;
+            GroupDTO group = _groupService.GetGroupDetails(groupid);
+            var meetingDay = _lookupService.GetMeetingDayFromId(group.MeetingDayId);
+            var newMemberContactId = _contactRepository.GetActiveContactIdByEmail(user.email);
+            var groupLocation = GetGroupAddress(groupid);
+            var formatedMeetingTime = group.MeetingTime == null ? "Flexible time" : String.Format("{0:t}", DateTimeOffset.Parse(group.MeetingTime).LocalDateTime);
+            var formatedMeetingDay = meetingDay == null ? "Flexible day" : meetingDay;
+            var formatedMeetingFrequency = group.MeetingFrequencyID == null ? "Flexible frequency" : getMeetingFrequency((int)group.MeetingFrequencyID);
+            var mergeData = new Dictionary<string, object>
+            {
+                {"Participant_Name", user.firstName},
+                {"Leader_Name", leaderContact.First_Name},
+                {"Leader_Full_Name", $"{leaderContact.First_Name} {leaderContact.Last_Name}" },
+                {"Leader_Email", leaderEmail},
+                {"Group_Name", group.GroupName},
+                {"Group_Meeting_Day",  formatedMeetingDay},
+                {"Group_Meeting_Time", formatedMeetingTime},
+                {"Group_Meeting_Frequency", formatedMeetingFrequency},
+                {"Group_Meeting_Location", groupLocation == null || groupLocation.AddressLine1 == null ? "Online" : $"{groupLocation.AddressLine1}\n{groupLocation.AddressLine2}\n{groupLocation.City}\n{groupLocation.State}\n{groupLocation.PostalCode}" },
+                {"Leader_Phone", $"{leaderContact.Home_Phone}\n{leaderContact.Mobile_Phone}" }
+            };
+
+            var fromContact = new MpContact
+            {
+                ContactId = emailTemplate.FromContactId,
+                EmailAddress = emailTemplate.FromEmailAddress
+            };
+
+            var replyTo = new MpContact
+            {
+                ContactId = emailTemplate.ReplyToContactId,
+                EmailAddress = emailTemplate.ReplyToEmailAddress
+            };
+
+            var to = new List<MpContact>
+                {
+                    new MpContact
+                    {
+                      ContactId = newMemberContactId,
+                      EmailAddress = userEmail
+                    }
+                };
+
+            var confirmation = new MpCommunication
+            {
+                EmailBody = emailTemplate.Body,
+                EmailSubject = emailTemplate.Subject,
+                AuthorUserId = 5,
+                DomainId = _domainId,
+                FromContact = fromContact,
+                ReplyToContact = replyTo,
+                TemplateId = emailTemplateId,
+                ToContacts = to,
+                MergeData = mergeData
+            };
+            _communicationRepository.SendMessage(confirmation);
+            var connection = new ConnectCommunicationDto
+            {
+                CommunicationTypeId = _connectCommunicationTypeInviteToSmallGroup,
+                ToContactId = newMemberContactId,
+                FromContactId = _contactRepository.GetContactId(token),
+                CommunicationStatusId = _configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusNA"),
+                GroupId = groupid,
+              
+            };
+
+            RecordCommunication(connection);
+        }
+       
         public List<PinDto> AddPinMetaData(List<PinDto> pins, GeoCoordinate originCoords, int contactId = 0)
         {
             foreach (var pin in pins)
@@ -917,11 +1296,85 @@ namespace crds_angular.Services
 
                 //calculate proximity for all pins to origin
                 if (pin.Address.Latitude == null) continue;
-                if (pin.Address.Longitude != null) pin.Proximity = GetProximity(originCoords, new GeoCoordinate(pin.Address.Latitude.Value, pin.Address.Longitude.Value));
+                if (pin.Address.Longitude != null && originCoords != null)
+                {
+                    pin.Proximity = GetProximity(originCoords, new GeoCoordinate(pin.Address.Latitude.Value, pin.Address.Longitude.Value));
+                }
+
             }
             return pins;
         }
 
+        public bool areAllBoundingBoxParamsPresent(MapBoundingBox boundingBox)
+        {
+            var isUpperLeftLatNull = boundingBox.UpperLeftLat == null;
+            var isUpperLeftLngNull = boundingBox.UpperLeftLng == null;
+            var isBottomRightLatNull = boundingBox.BottomRightLat == null;
+            var isBottomRightLngNull = boundingBox.BottomRightLng == null;
+            var areAllBoundingBoxParamsPresent = !isUpperLeftLatNull && !isUpperLeftLngNull && !isBottomRightLatNull && !isBottomRightLngNull;
+
+            return areAllBoundingBoxParamsPresent; 
+        }
+
+        public List<PinDto> RandomizeLatLongForNonSitePins(List<PinDto> pins)
+        {
+            foreach (var pin in pins)
+            {
+                if (pin.PinType != PinType.SITE)
+                {
+                    pin.Address = RandomizeLatLong(pin.Address);
+                }
+            }
+
+            return pins;
+        }
+
+        public GeoCoordinate GetMapCenterForResults(string userSearchString, GeoCoordinates frontEndMapCenter, string finderType)
+        {
+            GeoCoordinate resultMapCenterCoords = new GeoCoordinate();
+
+            if (finderType == _finderConnect)
+            {
+                resultMapCenterCoords = GetGeoCoordsFromAddressOrLatLang(userSearchString, frontEndMapCenter);
+            }
+            else
+            {
+                if (frontEndMapCenter.Lat.HasValue && frontEndMapCenter.Lng.HasValue)
+                {
+                    resultMapCenterCoords  = new GeoCoordinate(frontEndMapCenter.Lat.Value, frontEndMapCenter.Lng.Value);
+                }
+                else
+                {
+                    resultMapCenterCoords = GetGeoCoordsFromAddressOrLatLang(userSearchString, frontEndMapCenter);
+                }
+            }
+
+            return resultMapCenterCoords;
+        }
+
+        public bool DoesActiveContactExists(string email)
+        {
+            var contactId = _contactRepository.GetActiveContactIdByEmail(email);
+            return contactId != 0;
+        }
+
+        public void TryAGroupAcceptDeny(string token, int groupId, int participantId, bool accept)
+        {
+            var contactId = _contactRepository.GetContactIdByParticipantId(participantId);
+            var inquiry = _groupToolService.GetGroupInquiryForContactId(groupId, contactId);
+
+            if(_groupRepository.GetGroupParticipants(groupId, true).Exists(p =>p.ParticipantId == participantId) || inquiry.Placed != null)
+            {
+               var e = new Exception("User is already a group member");
+               throw e;
+            }
+
+            //accept or deny the inquiry
+            _groupToolService.ApproveDenyInquiryFromMyGroup(token, groupId, accept, inquiry, "approved", _trialMemberRoleId);
+
+            //send the email
+            SendTryAGroupAcceptDenyEmail(token, groupId, contactId, accept);
+        }
     }
 }
 

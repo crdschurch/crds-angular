@@ -132,12 +132,13 @@ namespace crds_angular.test.Services
                 default_source = "123",
             };
             
-            _mpContactService.Setup(mocked => mocked.CreateContactForGuestGiver("me@here.com", GuestGiverDisplayName, string.Empty, string.Empty)).Returns(123);
-            _paymentService.Setup(mocked => mocked.CreateCustomer("stripe_token", null)).Returns(stripeCust);
+           
+            _mpContactService.Setup(mocked => mocked.CreateContactForGuestGiver("me@here.com", GuestGiverDisplayName, It.IsAny<string>(), It.IsAny<string>())).Returns(123);
+            _paymentService.Setup(mocked => mocked.CreateCustomer("stripe_token", It.IsAny<string>(), It.IsAny<string>(),It.IsAny<string>() )).Returns(stripeCust); 
             _mpDonorService.Setup(mocked => mocked.CreateDonorRecord(123, stripeCust.id, It.IsAny<DateTime>(), StatementFrequencyNever, StatementTypeIndividual, StatementMethodNone, null)).Returns(456);
             _paymentService.Setup(mocked => mocked.UpdateCustomerDescription(stripeCust.id, 456)).Returns("456");
 
-            var response = _fixture.CreateOrUpdateContactDonor(null, EncryptedKey, string.Empty, string.Empty, "me@here.com", "stripe_token", DateTime.Now);
+            var response = _fixture.CreateOrUpdateContactDonor(null, EncryptedKey, It.IsAny<string>(), It.IsAny<string>(), "me@here.com", "stripe_token", DateTime.Now);
 
             _mpDonorService.VerifyAll();
             _mpContactService.VerifyAll();
@@ -157,7 +158,11 @@ namespace crds_angular.test.Services
             {
                 ContactId = 12345,
                 DonorId = 0,
-                Email = "me@here.com"
+                Email = "me@here.com",
+                Details = new MpContactDetails
+                {
+                    DisplayName = "Bart Simpson"
+                }
             };
 
             var stripeCust = new StripeCustomer
@@ -166,11 +171,11 @@ namespace crds_angular.test.Services
                 default_source = "123",
             };
 
-            _paymentService.Setup(mocked => mocked.CreateCustomer("stripe_token", null)).Returns(stripeCust);
+            _paymentService.Setup(mocked => mocked.CreateCustomer("stripe_token", It.IsAny<string>(), "me@here.com", "Bart Simpson")).Returns(stripeCust);
             _mpDonorService.Setup(mocked => mocked.CreateDonorRecord(12345, stripeCust.id, It.IsAny<DateTime>(), StatementFrequencyNever, StatementTypeIndividual, StatementMethodNone, null)).Returns(456);
             _paymentService.Setup(mocked => mocked.UpdateCustomerDescription(stripeCust.id, 456)).Returns("456");
 
-            var response = _fixture.CreateOrUpdateContactDonor(donor, EncryptedKey,string.Empty, string.Empty,  "me@here.com", "stripe_token", DateTime.Now);
+            var response = _fixture.CreateOrUpdateContactDonor(donor, EncryptedKey, It.IsAny<string>(), It.IsAny<string>(),  "me@here.com", "stripe_token", DateTime.Now);
 
             _mpDonorService.VerifyAll();
             _mpContactService.VerifyAll();
@@ -190,7 +195,12 @@ namespace crds_angular.test.Services
                 ContactId = 12345,
                 DonorId = 0,
                 RegisteredUser = true,
-                Email = "me@here.com"
+                Email = "me@here.com",
+                Details = new MpContactDetails
+                {
+                    DisplayName = "Bart Simpson"
+                }
+
             };
 
             var stripeCust = new StripeCustomer
@@ -199,12 +209,13 @@ namespace crds_angular.test.Services
                 default_source = "123",
             };
 
-            _paymentService.Setup(mocked => mocked.CreateCustomer("stripe_token", null)).Returns(stripeCust);
+
+            _paymentService.Setup(mocked => mocked.CreateCustomer("stripe_token", string.Empty, "me@here.com", "Bart Simpson")).Returns(stripeCust);
             _mpDonorService.Setup(mocked => mocked.CreateDonorRecord(12345, stripeCust.id, It.IsAny<DateTime>(), 1, 1, 2, null)).Returns(456);
             _mpDonorService.Setup(mocked => mocked.GetEmailViaDonorId(456)).Returns(donor);
             _paymentService.Setup(mocked => mocked.UpdateCustomerDescription(stripeCust.id, 456)).Returns("456");
 
-            var response = _fixture.CreateOrUpdateContactDonor(donor, EncryptedKey, string.Empty, string.Empty, "me@here.com", "stripe_token", DateTime.Now);
+            var response = _fixture.CreateOrUpdateContactDonor(donor, EncryptedKey, It.IsAny<string>(), It.IsAny<string>(), "me@here.com", "stripe_token", DateTime.Now);
 
             _mpDonorService.VerifyAll();
             _mpContactService.VerifyAll();
@@ -224,7 +235,11 @@ namespace crds_angular.test.Services
             {
                 ContactId = 12345,
                 DonorId = 456,
-                Email = "me@here.com"
+                Email = "me@here.com",
+                Details = new MpContactDetails
+                {
+                    DisplayName = "Bart Simpson"
+                }
             };
 
             var stripeCust = new StripeCustomer
@@ -233,11 +248,12 @@ namespace crds_angular.test.Services
                 default_source = "123",
             };
 
-            _paymentService.Setup(mocked => mocked.CreateCustomer("stripe_token", null)).Returns(stripeCust);
+           
+            _paymentService.Setup(mocked => mocked.CreateCustomer("stripe_token", It.IsAny<string>(), "me@here.com", "Bart Simpson")).Returns(stripeCust);
             _mpDonorService.Setup(mocked => mocked.UpdatePaymentProcessorCustomerId(456, stripeCust.id)).Returns(456);
             _paymentService.Setup(mocked => mocked.UpdateCustomerDescription(stripeCust.id, 456)).Returns("456");
 
-            var response = _fixture.CreateOrUpdateContactDonor(donor, EncryptedKey, string.Empty, string.Empty, "me@here.com", "stripe_token", DateTime.Now);
+            var response = _fixture.CreateOrUpdateContactDonor(donor, EncryptedKey, It.IsAny<string>(), It.IsAny<string>(), "me@here.com", "stripe_token", DateTime.Now);
 
             _mpDonorService.VerifyAll();
             _mpContactService.VerifyAll();
@@ -358,11 +374,12 @@ namespace crds_angular.test.Services
                 ProgramName = "Crossroads",
                 Amount = 123.45M,
                 Recurrence = "12th of the month",
-                DonorAccountId = 90
+                DonorAccountId = 90,
+                StartDate = DateTime.Now
             };
 
-            _paymentService.Setup(mocked => mocked.CreateCustomer(recurringGiftDto.StripeTokenId, "678, Recurring Gift Subscription")).Returns(stripeCustomer);
-            _paymentService.Setup(mocked => mocked.CreatePlan(recurringGiftDto, contactDonor)).Returns(stripePlan);
+            _paymentService.Setup(mocked => mocked.CreateCustomer(recurringGiftDto.StripeTokenId, "678, Recurring Gift Subscription", "bart_simpson@crossroads.net", "Bart Simpson")).Returns(stripeCustomer);
+            _paymentService.Setup(mocked => mocked.CreatePlan(recurringGiftDto, contactDonor, "bart_simpson@crossroads.net", "Bart Simpson")).Returns(stripePlan);
             _mpDonorService.Setup(
                 mocked =>
                     mocked.CreateDonorAccount(defaultSource.brand,
@@ -372,7 +389,7 @@ namespace crds_angular.test.Services
                                               contactDonor.DonorId,
                                               defaultSource.id,
                                               stripeCustomer.id)).Returns(donorAccountId);
-            _paymentService.Setup(mocked => mocked.CreateSubscription(stripePlan.Id, stripeCustomer.id, recurringGiftDto.StartDate)).Returns(stripeSubscription);
+            _paymentService.Setup(mocked => mocked.CreateSubscription(stripePlan.Id, stripeCustomer.id, recurringGiftDto.StartDate, "bart_simpson@crossroads.net", "Bart Simpson")).Returns(stripeSubscription);
             _mpContactService.Setup(mocked => mocked.GetContactById(contactDonor.ContactId)).Returns(contact);
             _mpDonorService.Setup(
                 mocked =>
@@ -390,9 +407,9 @@ namespace crds_angular.test.Services
             _mpDonorService.Setup(mocked => mocked.GetDonorAccountPymtType(recurringGift.DonorAccountId.Value)).Returns(1);
             _mpDonorService.Setup(
                 mocked =>
-                    mocked.SendEmail(RecurringGiftSetupEmailTemplateId, recurringGift.DonorId, (int)(123.45M/100), "Bank", It.IsAny<DateTime>(), "Crossroads", string.Empty, "12th of the month", null));
+                    mocked.SendEmail(RecurringGiftSetupEmailTemplateId, recurringGift.DonorId, (int)(123.45M/100), "Bank", It.IsAny<DateTime>(), recurringGift.StartDate.Value, "Crossroads", string.Empty, "12th of the month", null));
 
-            var response = _fixture.CreateRecurringGift("auth", recurringGiftDto, contactDonor);
+            var response = _fixture.CreateRecurringGift("auth", recurringGiftDto, contactDonor, "bart_simpson@crossroads.net", "Bart Simpson");
             _paymentService.VerifyAll();
             _mpDonorService.VerifyAll();
             Assert.AreEqual(recurringGiftId, response);
@@ -461,8 +478,8 @@ namespace crds_angular.test.Services
                 Congregation_ID = 1
             };
 
-            _paymentService.Setup(mocked => mocked.CreateCustomer(recurringGiftDto.StripeTokenId, "678, Recurring Gift Subscription")).Returns(stripeCustomer);
-            _paymentService.Setup(mocked => mocked.CreatePlan(recurringGiftDto, contactDonor)).Returns(stripePlan);
+            _paymentService.Setup(mocked => mocked.CreateCustomer(recurringGiftDto.StripeTokenId, "678, Recurring Gift Subscription", "me@here.com", "Bart Simpson")).Returns(stripeCustomer);
+            _paymentService.Setup(mocked => mocked.CreatePlan(recurringGiftDto, contactDonor, "me@here.com", "Bart Simpson")).Returns(stripePlan);
             _mpDonorService.Setup(
                 mocked =>
                     mocked.CreateDonorAccount(defaultSource.brand,
@@ -472,7 +489,7 @@ namespace crds_angular.test.Services
                                               contactDonor.DonorId,
                                               defaultSource.id,
                                               stripeCustomer.id)).Returns(donorAccountId);
-            _paymentService.Setup(mocked => mocked.CreateSubscription(stripePlan.Id, stripeCustomer.id, recurringGiftDto.StartDate)).Returns(stripeSubscription);
+            _paymentService.Setup(mocked => mocked.CreateSubscription(stripePlan.Id, stripeCustomer.id, recurringGiftDto.StartDate, "me@here.com", "Bart Simpson")).Returns(stripeSubscription);
             _mpContactService.Setup(mocked => mocked.GetContactById(contactDonor.ContactId)).Returns(contact);
             var exception = new ApplicationException("Do it to it Lars");
             _mpDonorService.Setup(
@@ -496,7 +513,7 @@ namespace crds_angular.test.Services
 
             try
             {
-                _fixture.CreateRecurringGift("auth", recurringGiftDto, contactDonor);
+                _fixture.CreateRecurringGift("auth", recurringGiftDto, contactDonor, "me@here.com", "Bart Simpson");
                 Assert.Fail("Expected exception was not thrown");
             }
             catch (ApplicationException e)
@@ -548,10 +565,12 @@ namespace crds_angular.test.Services
             {
                 Congregation_ID = null
             };
+
+           
             const int recurringGiftId = 888;
 
             _paymentService.Setup(mocked => mocked.AddSourceToCustomer(contactDonor.ProcessorId, recurringGiftDto.StripeTokenId)).Returns(stripeCustomer);
-            _paymentService.Setup(mocked => mocked.CreatePlan(recurringGiftDto, contactDonor)).Returns(stripePlan);
+            _paymentService.Setup(mocked => mocked.CreatePlan(recurringGiftDto, contactDonor, "me@here.com", "Bart Simpson")).Returns(stripePlan);
             _mpDonorService.Setup(
                 mocked =>
                     mocked.CreateDonorAccount(stripeCustomer.brand,
@@ -561,7 +580,7 @@ namespace crds_angular.test.Services
                                               contactDonor.DonorId,
                                               stripeCustomer.id,
                                               contactDonor.ProcessorId)).Returns(donorAccountId);
-            _paymentService.Setup(mocked => mocked.CreateSubscription(stripePlan.Id, contactDonor.ProcessorId, recurringGiftDto.StartDate)).Returns(stripeSubscription);
+            _paymentService.Setup(mocked => mocked.CreateSubscription(stripePlan.Id, contactDonor.ProcessorId, recurringGiftDto.StartDate, "me@here.com", "Bart Simpson")).Returns(stripeSubscription);
             _mpContactService.Setup(mocked => mocked.GetContactById(contactDonor.DonorId)).Returns(contact);
             _mpDonorService.Setup(
                 mocked =>
@@ -574,7 +593,7 @@ namespace crds_angular.test.Services
                                                      stripeSubscription.Id, NotSiteSpecificCongregation, 
                                                      null, 
                                                      null)).Returns(recurringGiftId);
-            var response = _fixture.CreateRecurringGift("auth", recurringGiftDto, contactDonor);
+            var response = _fixture.CreateRecurringGift("auth", recurringGiftDto, contactDonor, "me@here.com", "Bart Simpson");
             _paymentService.VerifyAll();
             _mpDonorService.VerifyAll();
             _mpContactService.VerifyAll();
@@ -746,7 +765,8 @@ namespace crds_angular.test.Services
                 ProgramName = "Crossroads",
                 Amount = 123.45M,
                 Recurrence = "12th of the month",
-                DonorAccountId = 90
+                DonorAccountId = 90,
+                StartDate = DateTime.Now
             };
 
             var plan = new StripePlan
@@ -768,7 +788,7 @@ namespace crds_angular.test.Services
             _mpDonorService.Setup(mocked => mocked.GetDonorAccountPymtType(gift.DonorAccountId.Value)).Returns(3);
             _mpDonorService.Setup(
                 mocked =>
-                    mocked.SendEmail(RecurringGiftCancelEmailTemplateId, gift.DonorId, (int)(123.45M / 100), "Credit Card", It.IsAny<DateTime>(), "Crossroads", string.Empty, "12th of the month", null));
+                    mocked.SendEmail(RecurringGiftCancelEmailTemplateId, gift.DonorId, (int)(123.45M / 100), "Credit Card", It.IsAny<DateTime>(), gift.StartDate.Value, "Crossroads", string.Empty, "12th of the month", null));
 
             _fixture.CancelRecurringGift(authUserToken, recurringGiftId);
             _mpDonorService.VerifyAll();
@@ -896,7 +916,12 @@ namespace crds_angular.test.Services
             {
                 DonorId = 456,
                 ProcessorId = "cus_123",
-                Email = "me@here.com"
+                Email = "me@here.com",
+                Details = new MpContactDetails
+                {
+                    EmailAddress = "me@here.com",
+                    DisplayName = "Bart Simpson"
+                }
             };
 
             var existingGift = new MpCreateDonationDistDto
@@ -966,13 +991,14 @@ namespace crds_angular.test.Services
                 Congregation_ID = congregationId
             };
 
+
             _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(authUserToken, editGift.RecurringGiftId)).Returns(existingGift);
             _paymentService.Setup(mocked => mocked.UpdateCustomerSource(existingGift.StripeCustomerId, editGift.StripeTokenId)).Returns(stripeSource);
             _mpDonorService.Setup(mocked => mocked.CreateDonorAccount(stripeSource.brand, "0", stripeSource.last4, null, existingGift.DonorId, stripeSource.id, existingGift.StripeCustomerId)).Returns(newDonorAccountId);
             _paymentService.Setup(mocked => mocked.GetSubscription(existingGift.StripeCustomerId, existingGift.SubscriptionId)).Returns(oldSubscription);
             _paymentService.Setup(mocked => mocked.UpdateSubscriptionPlan(existingGift.StripeCustomerId, existingGift.SubscriptionId, newPlan.Id, trialEndDate)).Returns(oldSubscription);
             _paymentService.Setup(mocked => mocked.CancelPlan(oldSubscription.Plan.Id)).Returns(oldSubscription.Plan);
-            _paymentService.Setup(mocked => mocked.CreatePlan(editGift, donor)).Returns(newPlan);
+            _paymentService.Setup(mocked => mocked.CreatePlan(editGift, donor, "me@here.com", "Bart Simpson")).Returns(newPlan);
             _mpDonorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, existingGift.RecurringGiftId.Value));
             _mpContactService.Setup(mocked => mocked.GetContactById(donor.ContactId)).Returns(contact);
             _mpDonorService.Setup(
@@ -992,7 +1018,7 @@ namespace crds_angular.test.Services
             _mpDonorService.Setup(mocked => mocked.GetDonorAccountPymtType(234)).Returns(1);
             _mpDonorService.Setup(
                 mocked =>
-                    mocked.SendEmail(RecurringGiftUpdateEmailTemplateId, newRecurringGift.DonorId, (int)(80000M / 100), "Bank", It.IsAny<DateTime>(), "Crossroads", string.Empty, "12th of the month", null));
+                    mocked.SendEmail(RecurringGiftUpdateEmailTemplateId, newRecurringGift.DonorId, (int)(80000M / 100), "Bank", It.IsAny<DateTime>(), It.IsAny<DateTime>(), "Crossroads", string.Empty, "12th of the month", null));
 
             var result = _fixture.EditRecurringGift(authUserToken, editGift, donor);
             _mpDonorService.VerifyAll();
@@ -1030,7 +1056,12 @@ namespace crds_angular.test.Services
             {
                 DonorId = 456,
                 ProcessorId = "cus_123",
-                Email = "me@here.com"
+                Email = "me@here.com",
+                Details = new MpContactDetails
+                {
+                    EmailAddress = "me@here.com",
+                    DisplayName = "Bart Simpson"
+                }
             };
 
             var existingGift = new MpCreateDonationDistDto
@@ -1100,9 +1131,9 @@ namespace crds_angular.test.Services
             _paymentService.Setup(mocked => mocked.UpdateCustomerSource(existingGift.StripeCustomerId, editGift.StripeTokenId)).Returns(stripeSource);
             _mpDonorService.Setup(mocked => mocked.CreateDonorAccount(stripeSource.brand, "0", stripeSource.last4, null, existingGift.DonorId, stripeSource.id, existingGift.StripeCustomerId)).Returns(newDonorAccountId);
             _paymentService.Setup(mocked => mocked.CancelSubscription(existingGift.StripeCustomerId, existingGift.SubscriptionId)).Returns(oldSubscription);
-            _paymentService.Setup(mocked => mocked.CreateSubscription(newPlan.Id, existingGift.StripeCustomerId, newRecurringGift.StartDate.Value)).Returns(newSubscription);
+            _paymentService.Setup(mocked => mocked.CreateSubscription(newPlan.Id, existingGift.StripeCustomerId, newRecurringGift.StartDate.Value, "me@here.com", "Bart Simpson")).Returns(newSubscription);
             _paymentService.Setup(mocked => mocked.CancelPlan(oldSubscription.Plan.Id)).Returns(oldSubscription.Plan);
-            _paymentService.Setup(mocked => mocked.CreatePlan(editGift, donor)).Returns(newPlan);
+            _paymentService.Setup(mocked => mocked.CreatePlan(editGift, donor, "me@here.com", "Bart Simpson")).Returns(newPlan);
             _mpDonorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, existingGift.RecurringGiftId.Value));
             _mpContactService.Setup(mocked => mocked.GetContactById(donor.ContactId)).Returns(contact);
             _mpDonorService.Setup(

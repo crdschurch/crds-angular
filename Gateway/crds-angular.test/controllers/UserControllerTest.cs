@@ -7,6 +7,7 @@ using System.Web.Http.Results;
 using crds_angular.Controllers.API;
 using crds_angular.Exceptions;
 using crds_angular.Models.Crossroads;
+using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
@@ -25,6 +26,7 @@ namespace crds_angular.test.controllers
         private Mock<IAccountService> _accountService;
         private Mock<IUserRepository> _userRepository;
         private Mock<IContactRepository> _contactRepository;
+        private Mock<IAnalyticsService> _mockAnalyticService;
 
         private string _authType;
         private string _authToken;
@@ -35,8 +37,9 @@ namespace crds_angular.test.controllers
             _accountService = new Mock<IAccountService>();
             _userRepository = new Mock<IUserRepository>();
             _contactRepository = new Mock<IContactRepository>();
+            _mockAnalyticService = new Mock<IAnalyticsService>();
 
-            _fixture = new UserController(_accountService.Object, _contactRepository.Object, _userRepository.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);
+            _fixture = new UserController(_accountService.Object, _contactRepository.Object, _userRepository.Object, _mockAnalyticService.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);
 
             _authType = "auth_type";
             _authToken = "auth_token";
@@ -53,7 +56,9 @@ namespace crds_angular.test.controllers
 
             var response = _fixture.Post(user);
             _accountService.VerifyAll();
+            _mockAnalyticService.Verify(x => x.Track(It.IsAny<string>(), "SignedUp"), Times.Once);
 
+            
             Assert.IsNotNull(response);
             Assert.IsInstanceOf<OkNegotiatedContentResult<User>>(response);
             var responseData = ((OkNegotiatedContentResult<User>) response).Content;
@@ -119,7 +124,7 @@ namespace crds_angular.test.controllers
             _userRepository.Setup(mocked => mocked.GetUserIdByUsername(username)).Returns(mpUser.UserRecordId);
             _userRepository.Setup(mocked => mocked.GetUserByRecordId(mpUser.UserRecordId)).Returns(mpUser);
             _userRepository.Setup(mocked => mocked.GetUserRoles(mpUser.UserRecordId)).Returns(roles);
-            _contactRepository.Setup(mocked => mocked.GetContactByUserRecordId(mpUser.UserRecordId)).Returns(mpMyContact);
+            _contactRepository.Setup(mocked => mocked.GetContactByUserRecordId(mpUser.UserRecordId,null)).Returns(mpMyContact);
 
             var response = _fixture.Get(username);
               

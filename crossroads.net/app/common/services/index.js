@@ -9,6 +9,6 @@
     .factory('LookupService', require('./lookup.service'))
     .service('ZipcodeService', require('./zipcode.service'))
     .service('AddressValidationService', require('./addressValidation.service'))
+    .service('AnalyticsService', require('./analytics.service'))
     ;
-
 })();

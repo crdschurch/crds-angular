@@ -41,6 +41,7 @@ namespace MinistryPlatform.Translation.Models
 
         private IList<int> participants = new List<int>();
 
+        [JsonProperty(PropertyName = "Congregation_Name")]
         public string Congregation { get; set; }
 
         public string Site { get; set; }                      
