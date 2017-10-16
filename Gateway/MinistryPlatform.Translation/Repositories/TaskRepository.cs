@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common;
@@ -7,6 +8,7 @@ using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
+using MinistryPlatform.Translation.Models.EventReservations;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace MinistryPlatform.Translation.Repositories
@@ -16,14 +18,21 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
         private readonly int _autoStartedTaskPageViewId;
+        private readonly IApiUserRepository _apiUserService;
         private readonly int _roomReservationPageID;
+        public const string GetRejectedRoomReservationsStoredProc = "cr_GetRejectedRoomReservations";
 
-        public TaskRepository(IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper, 
-                IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository) :
+
+        public TaskRepository(IAuthenticationRepository authenticationService, 
+                                IConfigurationWrapper configurationWrapper, 
+                                IMinistryPlatformService ministryPlatformService, 
+                                IMinistryPlatformRestRepository ministryPlatformRestRepository,
+                                IApiUserRepository apiUserService) :
             base(authenticationService, configurationWrapper)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRestRepository;
+            _apiUserService = apiUserService;
             _autoStartedTaskPageViewId = _configurationWrapper.GetConfigIntValue("TasksNeedingAutoStarted");
             _roomReservationPageID = _configurationWrapper.GetConfigIntValue("RoomReservationPageId");
         }
@@ -72,5 +81,13 @@ namespace MinistryPlatform.Translation.Repositories
                     _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).DeleteTask(task.Task_ID, true, "Room Edited, Cancelled By User");
             }
         }
+
+        public List<MpRoomReservationRejectionDto> GetRejectedRoomReservations()
+        {
+            var apiToken = ApiLogin();
+            var results = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).GetFromStoredProc<MpRoomReservationRejectionDto>(GetRejectedRoomReservationsStoredProc);
+            return results?.FirstOrDefault();
+        }
+
     }
 }

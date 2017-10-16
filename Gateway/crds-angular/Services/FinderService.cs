@@ -167,7 +167,7 @@ namespace crds_angular.Services
             var pinDetails = Mapper.Map<PinDto>(_finderRepository.GetPinDetails(participantId));
 
             //make sure we have a lat/long
-            if (pinDetails != null && pinDetails.Address.Latitude != null && pinDetails.Address.Longitude != null)
+            if (pinDetails?.Address.Latitude != null && pinDetails.Address.Longitude != null)
             {
                 _addressService.SetGeoCoordinates(pinDetails.Address);
                 pinDetails.Address.AddressLine1 = "";
@@ -259,10 +259,10 @@ namespace crds_angular.Services
             var groups = _groupRepository.GetGroupsByGroupType(_anywhereGroupType);
 
             //get groups that this user is the primary contact for at this address
-            var matchingGroupsCount = groups.Where(x => x.PrimaryContact == contactId.ToString())
+            var matchingGroupsCount = groups
+                .Where(x => x.PrimaryContact == contactId.ToString())
                 .Where(x => x.Address.Address_Line_1 == address.AddressLine1)
-                .Where(x => x.Address.City == address.City)
-                .Where(x => x.Address.State == address.State).Count();
+                .Where(x => x.Address.City == address.City).Count(x => x.Address.State == address.State);
 
             if (matchingGroupsCount > 0)
             {
@@ -335,9 +335,9 @@ namespace crds_angular.Services
 
         public void GatheringJoinRequest(string token, int gatheringId)
         {
-            GroupDTO group = _groupService.GetGroupDetails(gatheringId);
+            var group = _groupService.GetGroupDetails(gatheringId);
 
-            int commType = group.GroupTypeId == _smallGroupType ? _connectCommunicationTypeRequestToJoinSmallGroup : _connectCommunicationTypeRequestToJoinGathering;
+            var commType = group.GroupTypeId == _smallGroupType ? _connectCommunicationTypeRequestToJoinSmallGroup : _connectCommunicationTypeRequestToJoinGathering;
 
             var connection = new ConnectCommunicationDto
             {
@@ -420,7 +420,7 @@ namespace crds_angular.Services
 
             if (finderType.Equals(_finderConnect))
             {
-                queryString = "(or pintype:3 pintype:2 pintype:1)";
+                queryString = (String.IsNullOrEmpty(filterSearchString)) ? "(or pintype:3 pintype:2 pintype:1)" : filterSearchString;
             }
             else if (finderType.Equals(_finderGroupTool))
             {
@@ -564,9 +564,9 @@ namespace crds_angular.Services
             }
         }
 
-        private Boolean isMyPin(PinDto pin, int contactId)
+        private bool isMyPin(PinDto pin, int contactId)
         {
-            Boolean isMyPin = pin.Contact_ID == contactId && contactId != 0; 
+            var isMyPin = pin.Contact_ID == contactId && contactId != 0; 
             return isMyPin; 
         }
 
@@ -1047,7 +1047,7 @@ namespace crds_angular.Services
             }
         }
 
-        private Dictionary<string, object> GetEmailMergeData(string token,int groupId)
+        private Dictionary<string, object> GetEmailMergeData(int newUserContactId ,int groupId)
         {
             // group
             var group = _groupService.GetGroupDetails(groupId);
@@ -1061,8 +1061,9 @@ namespace crds_angular.Services
             var leaderContact = _contactRepository.GetContactByParticipantId(GetLeaderParticipantIdFromGroup(groupId));
 
             //participant
-            var participant = _participantRepository.GetParticipantRecord(token);
-            var newMember = _contactRepository.GetContactById(participant.ContactId);
+            
+            var newMember = _contactRepository.GetContactById(newUserContactId);
+            var participant = _participantRepository.GetParticipant(newUserContactId);
 
             //URL
             var baseUrl = _configurationWrapper.GetConfigValue("BaseUrl");
@@ -1100,7 +1101,8 @@ namespace crds_angular.Services
         {
             try
             {
-                var mergeData = GetEmailMergeData(token, groupid);
+                var newMemberId = _contactRepository.GetContactId(token);
+                var mergeData = GetEmailMergeData(newMemberId, groupid);
 
                 var emailTemplateId = _configurationWrapper.GetConfigIntValue("GroupsTryAGroupLeaderNotificationTemplateId");
 
@@ -1148,11 +1150,11 @@ namespace crds_angular.Services
             }
         }
 
-        private void SendTryAGroupAcceptDenyEmail(string token, int groupid, int toContactId,bool accept)
+        private void SendTryAGroupAcceptDenyEmail(string token, int groupid, int toContactId, bool accept)
         {
             try
             {
-                var mergeData = GetEmailMergeData(token, groupid);
+                var mergeData = GetEmailMergeData(toContactId, groupid);
                
                 var emailTemplateId = _configurationWrapper.GetConfigIntValue(accept ? "GroupsTryAGroupParticipantAcceptedNotificationTemplateId" : "GroupsTryAGroupParticipantDeclinedNotificationTemplateId");
                 
@@ -1303,13 +1305,13 @@ namespace crds_angular.Services
             return pins;
         }
 
-        public Boolean areAllBoundingBoxParamsPresent(MapBoundingBox boundingBox)
+        public bool areAllBoundingBoxParamsPresent(MapBoundingBox boundingBox)
         {
             var isUpperLeftLatNull = boundingBox.UpperLeftLat == null;
             var isUpperLeftLngNull = boundingBox.UpperLeftLng == null;
             var isBottomRightLatNull = boundingBox.BottomRightLat == null;
             var isBottomRightLngNull = boundingBox.BottomRightLng == null;
-            Boolean areAllBoundingBoxParamsPresent = !isUpperLeftLatNull && !isUpperLeftLngNull && !isBottomRightLatNull && !isBottomRightLngNull;
+            var areAllBoundingBoxParamsPresent = !isUpperLeftLatNull && !isUpperLeftLngNull && !isBottomRightLatNull && !isBottomRightLngNull;
 
             return areAllBoundingBoxParamsPresent; 
         }

@@ -532,7 +532,7 @@ namespace crds_angular.Services
                         throw new DuplicateGroupParticipantException("Cannot accept invite - already member of group");
                     }
 
-                    _groupRepository.addParticipantToGroup(participant.ParticipantId, groupId, _defaultGroupRoleId, false, DateTime.Now);
+                    _groupRepository.AddParticipantToGroup(participant.ParticipantId, groupId, _defaultGroupRoleId, false, false, DateTime.Now);
                 }
 
                 _invitationRepository.MarkInvitationAsUsed(invitationGuid);

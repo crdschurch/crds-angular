@@ -30,7 +30,16 @@ namespace MinistryPlatform.Translation.Models
         public string GroupRoleTitle { get; set; }
         [JsonProperty("Email_Address")]
         public string Email { get; set; }
+        [JsonProperty("Child_Care_Requested")]
+        public bool ChildCareRequested { get; set; }
+        [JsonProperty("Start_Date")]
         public DateTime? StartDate { get; set; }
+        [JsonProperty("End_Date")]
+        public DateTime? EndDate { get; set; }
+        [JsonProperty("Employee_Role")]
+        public bool EmployeeRole { get; set; }
+        [JsonProperty("Enrolled_By")]
+        public int? EnrolledBy { get; set; }
         public string Congregation { get; set; }
         public bool IsApprovedSmallGroupLeader { get; set; }
     }

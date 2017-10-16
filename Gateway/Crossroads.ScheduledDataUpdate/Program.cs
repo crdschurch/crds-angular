@@ -93,6 +93,24 @@ namespace Crossroads.ScheduledDataUpdate
                 }
             }
 
+            if (options.RoomReservationRejectionNotification)
+            {
+                modeSelected = true;
+                try
+                {
+                    Log.Info("Room Reservation Rejection Notification");
+
+                    _taskService.RoomReservationRejectionNotification();
+
+                    Log.Info("Room Reservation Rejection Notification successfully");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Room Reservation Rejection Notification failed.", ex);
+                    exitCode = 9999;
+                }
+            }
+
             if (options.SmallGroupInquiryReminderMode)
             {
                 modeSelected = true;

@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Results;
 using crds_angular.Exceptions.Models;
 using crds_angular.Models.Json;
 using crds_angular.Security;
@@ -13,8 +14,10 @@ using MPInterfaces = MinistryPlatform.Translation.Repositories.Interfaces;
 using Crossroads.ApiVersioning;
 using crds_angular.Services.Interfaces;
 using Crossroads.ClientApiKeys;
+using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
+using MinistryPlatform.Translation.PlatformService;
 
 namespace crds_angular.Controllers.API
 {
@@ -23,11 +26,16 @@ namespace crds_angular.Controllers.API
         private readonly ILog _logger = LogManager.GetLogger(typeof (ImageController));
         private readonly MPInterfaces.IMinistryPlatformService _mpService;
         private readonly IApiUserRepository _apiUserService;
+        private readonly int _defaultContactId;
 
-        public ImageController(MPInterfaces.IMinistryPlatformService mpService, IAuthenticationRepository authenticationService, IApiUserRepository apiUserService, IUserImpersonationService userImpersonationService) : base(userImpersonationService, authenticationService)
+        public ImageController(MPInterfaces.IMinistryPlatformService mpService, IAuthenticationRepository authenticationService,
+            IApiUserRepository apiUserService, IUserImpersonationService userImpersonationService, IConfigurationWrapper configurationWrapper)
+            : base(userImpersonationService, authenticationService)
         {
             _apiUserService = apiUserService;
             _mpService = mpService;
+
+            _defaultContactId = configurationWrapper.GetConfigIntValue("DefaultProfileImageContactId");
         }
 
         private IHttpActionResult GetImage(int fileId, string fileName, string token)
@@ -69,22 +77,47 @@ namespace crds_angular.Controllers.API
         }
 
         /// <summary>
-        /// Retrieves a profile image given a contact ID.
+        /// Retrieves a profile image given a contact ID. If the contact ID does not have an associated
+        /// profile image, return the profile image for the Default contact.
         /// </summary>
         /// <param name="contactId"></param>
+        /// <param name="defaultIfMissing"></param>
         /// <returns>A byte stream?</returns>
         [VersionedRoute(template: "image/profile/{contactId}", minimumVersion: "1.0.0")]
         [Route("image/profile/{contactId:int}")]
         [HttpGet]
         [IgnoreClientApiKey]
-        public IHttpActionResult GetProfileImage(int contactId)
+        public IHttpActionResult GetProfileImage(int contactId, bool defaultIfMissing = true)
         {
-            var token = _apiUserService.GetToken();
-            var files = _mpService.GetFileDescriptions("Contacts", contactId, token);
-            var file = files.FirstOrDefault(f => f.IsDefaultImage);
-            return file != null ?
-                GetImage(file.FileId, file.FileName, token) :
-                (RestHttpActionResult<ApiErrorDto>.WithStatus(HttpStatusCode.NotFound, new ApiErrorDto("No matching image found")));
+            var apiToken = _apiUserService.GetDefaultApiUserToken();
+
+            IHttpActionResult result = GetContactImage(contactId, apiToken);
+            if (result is NotFoundResult && defaultIfMissing)
+                result = GetContactImage(_defaultContactId, apiToken);
+
+            return result;
+        }
+
+        private IHttpActionResult GetContactImage(int contactId, string token)
+        {
+            IHttpActionResult result = null;
+
+            try
+            {
+                var files = _mpService.GetFileDescriptions("Contacts", contactId, token);
+                var file = files.FirstOrDefault(f => f.IsDefaultImage);
+                if (file != null)
+                {
+                    result = GetImage(file.FileId, file.FileName, token);
+                }
+            }
+            catch (Exception)
+            {
+                // If the file is not present on the file system, GetImage() will throw an exception
+                // but we want to treat that as "not found" instead of an exception
+            }
+
+            return result ?? NotFound();
         }
 
         /// <summary>

@@ -14,7 +14,8 @@
     'Groups',
     'leader',
     'AUTH_EVENTS',
-    'ServeTeamService'
+    'ServeTeamService',
+    '$modal'
   ];
 
   function MyServeController(
@@ -28,7 +29,8 @@
     Groups,
     leader,
     AUTH_EVENTS,
-    ServeTeamService
+    ServeTeamService,
+    $modal
     ) {
 
     var vm = this;
@@ -44,6 +46,9 @@
     vm.showButton = showButton;
     vm.showNoOpportunitiesMsg = showNoOpportunitiesMsg;
     vm.isLeader = leader.isLeader;
+    vm.serveTeamService = ServeTeamService;
+
+    vm.teams = [];
 
     activate();
 
@@ -73,10 +78,20 @@
     ////////////////////////////
 
     function activate() {
-      if (vm.groups && vm.groups.length > 0)        
+      if (vm.groups && vm.groups.length > 0) {
         vm.lastDate = formatDate(vm.groups[vm.groups.length - 1].day );
-      else
+      }
+      else {
         vm.lastDate= formatDate(new Date(), 42); //kd we search 6 weeks to see if we can find anything on load 
+      }
+
+      vm.serveTeamService.getTeamDetailsByLeader().then((data) => {
+        vm.teams = data;
+      }).catch((err) => {
+        $log.debug("unable to retrieve teams")
+      }).finally(() => {
+        vm.ready = true;
+      });
     }
 
     function addOneWeek(date) {
