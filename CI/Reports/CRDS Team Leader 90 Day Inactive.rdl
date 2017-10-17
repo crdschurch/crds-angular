@@ -457,7 +457,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=FormatDateTime(Fields!Last_Serve_Date.Value,2)</Value>
+                                  <Value>=IIF(Fields!Last_Serve_Date.Value is Nothing, Nothing, FormatDateTime(Fields!Last_Serve_Date.Value,2))</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Color>#4d4d4d</Color>
@@ -479,6 +479,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
