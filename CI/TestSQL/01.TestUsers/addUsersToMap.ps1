@@ -8,10 +8,9 @@ param (
     [string]$uploadAwsEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/uploadallcloudsearchrecords'
  )
 
-function addUsersToMap($userCredentialsCSV, $userMapDataCSV){
-	$mapDataList = import-csv $userMapDataCSV	
-	$sourceFiles = "$([System.IO.Path]::GetFileNameWithoutExtension($userMapDataCSV))_x_$([System.IO.Path]::GetFileNameWithoutExtension($userCredentialsCSV))"
-	$logFile = "log_creating_$($sourceFiles).txt"
+function addUsersToMap($userCredentialsCSV){
+	$mapDataList = import-csv .\mapUserList.csv
+	$logFile = "log_creating_map_data.txt"
 	
 	foreach($mapUser in $mapDataList)
 	{
