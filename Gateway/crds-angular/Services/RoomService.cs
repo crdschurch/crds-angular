@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Events;
 using crds_angular.Services.Interfaces;
+using log4net;
 
 namespace crds_angular.Services
 {
@@ -12,9 +14,13 @@ namespace crds_angular.Services
         private readonly MinistryPlatform.Translation.Repositories.Interfaces.IEquipmentRepository _equipmentService;
         private readonly MinistryPlatform.Translation.Repositories.Interfaces.IEventRepository _eventService;
 
+
+        private readonly ILog _logger = LogManager.GetLogger(typeof(RoomService));
+
         public RoomService(MinistryPlatform.Translation.Repositories.Interfaces.IRoomRepository roomService,
                            MinistryPlatform.Translation.Repositories.Interfaces.IEquipmentRepository equipmentService,
-                           MinistryPlatform.Translation.Repositories.Interfaces.IEventRepository eventService)
+                           MinistryPlatform.Translation.Repositories.Interfaces.IEventRepository eventService
+                           )
         {
             _roomService = roomService;
             _equipmentService = equipmentService;
@@ -54,5 +60,8 @@ namespace crds_angular.Services
                 LayoutName = record.LayoutName
             }).ToList();
         }
+
+
+
     }
 }

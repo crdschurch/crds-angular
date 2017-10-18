@@ -10,7 +10,6 @@ import './serveTeam.html';
 import './refine/refineList.html';
 import './refine/serveModalContent.html';
 
-
 import OpportunityCapacityService from './capacity.service';
 import FilterStateService from  './filterState.service.js';
 import ServeTeamService from './serve_team.service.js';

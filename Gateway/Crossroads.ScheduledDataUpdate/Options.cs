@@ -13,6 +13,10 @@ namespace Crossroads.ScheduledDataUpdate
           HelpText = "Execute 'Auto Complete Tasks' to complete outstanding event/room tasks for users")]
         public bool AutoCompleteTasksMode { get; set; }
 
+        [Option("RoomReservationRejectionNotification", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
+            HelpText = "Execute 'Room Reservation Rejection Notification' to send emails to to people whose room reservation request has been rejected")]
+        public bool RoomReservationRejectionNotification { get; set; }
+
         [Option("SmallGroupInquiryReminder", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
           HelpText = "Execute 'Small Group Inquiry Reminder' to send emails to group leaders who have pending inquiries on their groups")]
         public bool SmallGroupInquiryReminderMode { get; set; }
@@ -28,7 +32,6 @@ namespace Crossroads.ScheduledDataUpdate
         [Option("ArchivePendingGroupInquiriesMode", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
             HelpText = "Execute 'api_crds_Archive_Pending_Group_Inquiries_Older_Than_90_Days'")]
         public bool ArchivePendingGroupInquiriesMode { get; set; }
-
 
         [ParserState]
         public IParserState LastParserState { get; set; }

@@ -329,17 +329,19 @@ namespace crds_angular.Services
             if (group.Status && group.Value.GroupId != campReservation.CurrentGrade)
             {
                 _groupRepository.endDateGroupParticipant(group.Value.GroupParticipantId, group.Value.GroupId, DateTime.Now);
-                _groupRepository.addParticipantToGroup(participant.ParticipantId,
+                _groupRepository.AddParticipantToGroup(participant.ParticipantId,
                                                       campReservation.CurrentGrade,
                                                       _configurationWrapper.GetConfigIntValue("Group_Role_Default_ID"),
+                                                      false,
                                                       false,
                                                       DateTime.Now);
             }
             else if (!group.Status)
             {
-                _groupRepository.addParticipantToGroup(participant.ParticipantId,
+                _groupRepository.AddParticipantToGroup(participant.ParticipantId,
                                                         campReservation.CurrentGrade,
                                                         _configurationWrapper.GetConfigIntValue("Group_Role_Default_ID"),
+                                                        false,
                                                         false,
                                                         DateTime.Now);
             }

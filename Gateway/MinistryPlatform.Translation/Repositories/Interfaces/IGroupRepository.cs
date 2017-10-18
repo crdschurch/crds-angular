@@ -9,13 +9,13 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
     {
         int CreateGroup(MpGroup group);
 
-        int addParticipantToGroup(int participantId,
+        int AddParticipantToGroup(int participantId,
                                   int groupId,
                                   int groupRoleId,
-                                  Boolean childCareNeeded,
+                                  bool childCareNeeded,
+                                  bool employeeRole,
                                   DateTime startDate,
                                   DateTime? endDate = null,
-                                  Boolean? employeeRole = false,
                                   int? enrolledBy = null);
 
         IList<MpEvent> getAllEventsForGroup(int groupId, DateTime? minEndDate = null, bool includeCancelledEvents = false);

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MinistryPlatform.Translation.Models;
+using MinistryPlatform.Translation.Models.EventReservations;
 
 
 namespace MinistryPlatform.Translation.Repositories.Interfaces
@@ -10,5 +11,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
 
         void CompleteTask(string token, int taskId, bool rejected, string comments);
         void DeleteTasksForRoomReservations(List<int> roomReserverationIDs);
+        List<MpRoomReservationRejectionDto> GetRejectedRoomReservations();
     }
 }

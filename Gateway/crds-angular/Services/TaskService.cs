@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using crds_angular.Models.Crossroads;
 using crds_angular.Services.Interfaces;
 using Crossroads.Utilities.Interfaces;
 using log4net;
@@ -21,25 +22,32 @@ namespace crds_angular.Services
         private readonly IConfigurationWrapper _configWrapper;
         private readonly IUserImpersonationService _impersonationService;
         private readonly MPInterfaces.IUserRepository _userService;
+        private readonly int _roomReservationRejectedEmailTemplateId;
+        private readonly IEmailCommunication _emailCommunicationService;
+
 
         public TaskService(MPInterfaces.ITaskRepository taskRepository,
                            IApiUserRepository apiUserService,
                            IConfigurationWrapper configWrapper,
                            IUserImpersonationService impersonationService,
-                           MPInterfaces.IUserRepository userService)
+                           MPInterfaces.IUserRepository userService,
+                           IEmailCommunication emailCommunicationService
+                           )
         {
             _taskRepository = taskRepository;
             _apiUserService = apiUserService;
             _configWrapper = configWrapper;
             _impersonationService = impersonationService;
             _userService = userService;
+            _emailCommunicationService = emailCommunicationService;
+            _roomReservationRejectedEmailTemplateId = _configWrapper.GetConfigIntValue("RoomReservationRejectedEmailTemplateId");
         }
 
         public void AutoCompleteTasks()
         {
             try
             {
-                var apiUserToken = _apiUserService.GetToken();
+                var apiUserToken = _apiUserService.GetDefaultApiUserToken();
                 var tasksToComplete = _taskRepository.GetTasksToAutostart();
 
                 _logger.InfoFormat("Number of tasks to autocomplete: {0} ", tasksToComplete.Count);
@@ -76,8 +84,40 @@ namespace crds_angular.Services
             }
         }
 
-        //public bool DeleteTaskbyRecordId(int recordID)
-        //{
-        //}
+        public void RoomReservationRejectionNotification()
+        {
+            try
+            {
+                var apiUserToken = _apiUserService.GetDefaultApiUserToken();
+                var rejectedReservations = _taskRepository.GetRejectedRoomReservations();
+
+                _logger.InfoFormat("Number of rejected room reservation notifications to send: {0} ", rejectedReservations.Count);
+
+                foreach (var rejection in rejectedReservations)
+                {
+                    var mergeData = new Dictionary<string, object>
+                    {
+                        {"Room_Name", rejection.Room_Name},
+                        {"Event_Start_Date", rejection.Event_Start_Date},
+                        {"Event_Title", rejection.Event_Title},
+                        {"Task_Rejection_Reason", rejection.Task_Rejection_Reason},
+                    };
+
+                    var email = new EmailCommunicationDTO
+                    {
+                        TemplateId = _roomReservationRejectedEmailTemplateId,
+                        ToContactId = rejection.Requestor_Contact_ID,
+                        MergeData = mergeData
+                    };
+                    _emailCommunicationService.SendEmail(email, apiUserToken);
+                }
+
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Exception retrieving pending inquiries", e);
+                throw;
+            }
+        }
     }
 }

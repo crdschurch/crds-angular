@@ -34,9 +34,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 "Groups.Kids_Welcome"
             };
 
-
-
-    private FinderRepository _fixture;
+        private FinderRepository _fixture;
 
 
         [SetUp]
@@ -68,7 +66,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 Participant_ID = 123
             };
             var addressResponse = new MpAddress {Address_ID = 1, Address_Line_1 = "123 street", City = "City!", Postal_Code = "12345"};
-            _apiUserRepo.Setup(m => m.GetToken()).Returns("abc");
+            _apiUserRepo.Setup(m => m.GetDefaultApiUserToken()).Returns("abc");
             _ministryPlatformRestRepository.Setup(
                 mocked =>
                     mocked.Search<FinderPinDto>(
@@ -108,7 +106,7 @@ namespace MinistryPlatform.Translation.Test.Services
         [Test]
         public void ShouldEnablePin()
         {
-            _apiUserRepo.Setup(m => m.GetToken()).Returns("abc");
+            _apiUserRepo.Setup(m => m.GetDefaultApiUserToken()).Returns("abc");
             _ministryPlatformRestRepository.Setup(
                 mocked =>
                         mocked.Put("Participants", It.IsAny<List<Dictionary<string, object>>>())
@@ -122,7 +120,7 @@ namespace MinistryPlatform.Translation.Test.Services
         [Test]
         public void ShouldUpdateGathering()
         {
-            _apiUserRepo.Setup(m => m.GetToken()).Returns("abc");
+            _apiUserRepo.Setup(m => m.GetDefaultApiUserToken()).Returns("abc");
             
 
             var gathering = this.GetAGatheringDto();
@@ -175,7 +173,7 @@ namespace MinistryPlatform.Translation.Test.Services
         [Test]
         public void ShouldDisablePin()
         {
-            _apiUserRepo.Setup(m => m.GetToken()).Returns("abc");
+            _apiUserRepo.Setup(m => m.GetDefaultApiUserToken()).Returns("abc");
             _ministryPlatformRestRepository.Setup(
                 mocked =>
                         mocked.Put("Participants", It.IsAny<List<Dictionary<string, object>>>())
