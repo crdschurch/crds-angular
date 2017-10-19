@@ -21,7 +21,6 @@
       MEDIA: 'crossroads.media',
       MY_SERVE: 'crossroads.my_serve',
       LIVE_STREAM: 'crossroads.live_stream',
-      GROUP_TOOL: 'crossroads.grouptool',
       MPTOOLS: 'crossroads.mptools',
       ONETIME_SIGNUP: 'crossroads.onetime',
       PROFILE: 'crossroads.profile',

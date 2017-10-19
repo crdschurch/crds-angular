@@ -2,7 +2,6 @@
 
 require('./childcare');
 require('./mp_tools');
-require('./group_tool');
 require('./live_stream');
 require('ui-select/dist/select.css');
 require('./invoices/invoices.module');
@@ -23,7 +22,6 @@ require('./invoices/invoices.module');
     constants.MODULES.LIVE_STREAM,
     constants.MODULES.MPTOOLS,
     constants.MODULES.MY_SERVE,
-    constants.MODULES.GROUP_TOOL,
     constants.MODULES.PROFILE,
     constants.MODULES.SEARCH,
     constants.MODULES.SIGNUP,

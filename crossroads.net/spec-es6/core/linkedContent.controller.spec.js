@@ -7,7 +7,7 @@ describe('Linked Content Controller', () => {
       element,
       sce;
 
-  beforeEach(angular.mock.module(constants.MODULES.GROUP_TOOL));
+  // beforeEach(angular.mock.module(constants.MODULES.GROUP_TOOL));
 
   beforeEach(inject(function ($injector) {
     element = angular.element('<div></div>');
