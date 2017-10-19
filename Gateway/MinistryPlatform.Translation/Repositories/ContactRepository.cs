@@ -18,6 +18,9 @@ namespace MinistryPlatform.Translation.Repositories
 {
     public class ContactRepository : BaseRepository, IContactRepository
     {
+
+        public const string GetContactByIdStoredProc = "api_crds_Get_Contact_By_ID";
+
         private readonly int _addressesPageId;
         private readonly int _congregationDefaultId;
         private readonly int _contactsPageId;
@@ -94,21 +97,12 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpMyContact GetContactById(int contactId)
         {
-            var searchString = string.Format(",\"{0}\"", contactId);
+            var apiToken = _apiUserRepository.GetToken();
 
-            var pageViewRecords = _ministryPlatformService.GetPageViewRecords("AllIndividualsWithContactId", ApiLogin(), searchString);
+            var parms = new Dictionary<string, object> { { "@ContactID", contactId } };
+            var contactInfo = _ministryPlatformRest.UsingAuthenticationToken(apiToken).GetFromStoredProc<MpMyContact>(GetContactByIdStoredProc, parms);
+            return contactInfo?.FirstOrDefault()?.FirstOrDefault();
 
-            if (pageViewRecords.Count > 1)
-            {
-                throw new ApplicationException("GetContactById returned multiple records");
-            }
-
-            if (pageViewRecords.Count == 0)
-            {
-                return null;
-            }
-
-            return ParseProfileRecord(pageViewRecords[0]);
         }
 
         public IObservable<MpSimpleContact> GetSimpleContact(int contactId)
