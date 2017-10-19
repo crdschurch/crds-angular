@@ -97,12 +97,15 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpMyContact GetContactById(int contactId)
         {
-            var apiToken = _apiUserRepository.GetToken();
-
             var parms = new Dictionary<string, object> { { "@ContactID", contactId } };
-            var contactInfo = _ministryPlatformRest.UsingAuthenticationToken(apiToken).GetFromStoredProc<MpMyContact>(GetContactByIdStoredProc, parms);
-            return contactInfo?.FirstOrDefault()?.FirstOrDefault();
+            var contacts = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).GetFromStoredProc<MpMyContact>(GetContactByIdStoredProc, parms)?.FirstOrDefault();
+            if (contacts != null && contacts.Count > 1)
+            {
+                throw new ApplicationException("GetContactById returned multiple records");
+            }
+            var contact = contacts?.FirstOrDefault();
 
+            return contact;
         }
 
         public IObservable<MpSimpleContact> GetSimpleContact(int contactId)
@@ -451,7 +454,7 @@ namespace MinistryPlatform.Translation.Repositories
                                   Dictionary<string, object> householdDictionary,
                                   Dictionary<string, object> addressDictionary)
         {
-            string apiToken = _apiUserRepository.GetToken();
+            string apiToken = ApiLogin();
 
             if (addressDictionary != null)
             {
@@ -480,7 +483,7 @@ namespace MinistryPlatform.Translation.Repositories
         public List<MpRecordID> CreateContact(MpContact minorContact)
         {
             var storedProc = _configurationWrapper.GetConfigValue("CreateContactStoredProc");
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = ApiLogin();
             var fields = new Dictionary<String, Object>
               {
                 {"@FirstName", minorContact.FirstName},
