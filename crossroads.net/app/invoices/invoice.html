@@ -7,11 +7,11 @@
         <div dynamic-content="$root.MESSAGES.invoiceAlreadyPaid.content | html"></div>
       </div>
       <div ng-if="!invoice.alreadyPaid">
-        <iframe
-          src="{{invoice.url}}"
+        <crds-embed
+          href="{{invoice.url}}"
           frameborder="0"
           class="invoice-payment-widget"
-          scrolling="no"> </iframe>
+          scrolling="no"> </crds-embed>
       </div>
     </div>
   </div>

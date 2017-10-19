@@ -1,1 +1,7 @@
-<iframe src="{{ ctrl.buildUrl() }}" frameborder="0" scrolling="no" width="100%"></iframe>
+<iframe 
+  src="{{ ctrl.buildUrl() }}"
+  frameborder="{{ ctrl.frameborder }}"
+  scrolling="{{ ctrl.scrolling }}"
+  width="{{ ctrl.width }}"
+  class="{{ ctrl.class }}">
+</iframe>
