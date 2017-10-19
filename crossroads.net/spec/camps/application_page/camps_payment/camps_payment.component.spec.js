@@ -55,7 +55,7 @@ describe('Camps Payment Component', () => {
 
       const url = 'https%3A%2F%2Fcrossroads.net%2Fmycamps';
 
-      expect(sce.trustAsResourceUrl).toHaveBeenCalledWith(`${fixture.baseUrl}?type=payment&min_payment=${fixture.depositPrice}&invoice_id=${invoiceId}&total_cost=${fixture.totalPrice}&title=${fixture.campsService.campTitle}&url=${url}`);
+      expect(sce.trustAsResourceUrl).toHaveBeenCalledWith(`/give?type=payment&min_payment=${fixture.depositPrice}&invoice_id=${invoiceId}&total_cost=${fixture.totalPrice}&title=${fixture.campsService.campTitle}&url=${url}`);
     });
 
     it('should redirect correctly to a custom page', () => {
@@ -66,7 +66,7 @@ describe('Camps Payment Component', () => {
 
       const url = `https%3A%2F%2Fcrossroads.net%2Fcamps%2F${state.toParams.campId}%2F${state.toParams.redirectTo}%2F${state.toParams.contactId}`;
 
-      expect(sce.trustAsResourceUrl).toHaveBeenCalledWith(`${fixture.baseUrl}?type=payment&min_payment=${fixture.depositPrice}&invoice_id=${invoiceId}&total_cost=${fixture.totalPrice}&title=${fixture.campsService.campTitle}&url=${url}`);
+      expect(sce.trustAsResourceUrl).toHaveBeenCalledWith(`/give?type=payment&min_payment=${fixture.depositPrice}&invoice_id=${invoiceId}&total_cost=${fixture.totalPrice}&title=${fixture.campsService.campTitle}&url=${url}`);
     });
 
     it('should redirect correctly to a the payment-confirmation page', () => {
@@ -77,7 +77,7 @@ describe('Camps Payment Component', () => {
 
       const url = `https%3A%2F%2Fcrossroads.net%2Fcamps%2F${state.toParams.campId}%2Fpayment-confirmation%2F${state.toParams.contactId}`;
 
-      expect(sce.trustAsResourceUrl).toHaveBeenCalledWith(`${fixture.baseUrl}?type=payment&min_payment=${fixture.depositPrice}&invoice_id=${invoiceId}&total_cost=${fixture.totalPrice}&title=${fixture.campsService.campTitle}&url=${url}`);
+      expect(sce.trustAsResourceUrl).toHaveBeenCalledWith(`/give?type=payment&min_payment=${fixture.depositPrice}&invoice_id=${invoiceId}&total_cost=${fixture.totalPrice}&title=${fixture.campsService.campTitle}&url=${url}`);
     });
   });
 
@@ -118,7 +118,7 @@ describe('Camps Payment Component', () => {
 
       const url = `https%3A%2F%2Fcrossroads.net%2Fcamps%2F${state.toParams.campId}%2Fconfirmation%2F${state.toParams.contactId}`;
 
-      expect(sce.trustAsResourceUrl).toHaveBeenCalledWith(`${fixture.baseUrl}?type=payment&min_payment=${fixture.depositPrice}&invoice_id=${invoiceId}&total_cost=${fixture.totalPrice}&title=${fixture.campsService.campTitle}&url=${url}`);
+      expect(sce.trustAsResourceUrl).toHaveBeenCalledWith(`/give?type=payment&min_payment=${fixture.depositPrice}&invoice_id=${invoiceId}&total_cost=${fixture.totalPrice}&title=${fixture.campsService.campTitle}&url=${url}`);
     });
   });
 });
