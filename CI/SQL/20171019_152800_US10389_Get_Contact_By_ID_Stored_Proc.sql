@@ -1,20 +1,27 @@
 USE [MinistryPlatform]
 GO
-/****** Object:  StoredProcedure [dbo].[api_crds_Get_Contact_By_ID]    Script Date: 10/19/2017 12:40:24 PM ******/
+/****** Object:  StoredProcedure [dbo].[api_crds_Get_Contact_By_ID]    Script Date: 10/19/2017 11:27:24 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+IF OBJECT_ID('dbo.api_crds_Get_Contact_By_ID') IS NULL -- Check if SP Exists
+        EXEC('CREATE PROCEDURE dbo.api_crds_Get_Contact_By_ID AS SET NOCOUNT ON;') -- Create dummy/empty SP
+GO
+
+
 -- =============================================
 -- Author:		Ken Baum
 -- Create date: 10/18/2017
--- Description:	Return data on a contact by ID
+-- Description:	Return contact data given a contact ID
 -- =============================================
 ALTER PROCEDURE [dbo].[api_crds_Get_Contact_By_ID]
 	@ContactID int
 AS
 BEGIN
+
+	SET NOCOUNT ON;
 
 	select  c.[__Age] AS [Age],
 			c.Contact_ID,
@@ -58,4 +65,41 @@ BEGIN
 		inner join dbo.Participants p on p.Contact_ID = c.Contact_ID
 	where c.Contact_ID = @ContactID
 
+
 END
+GO
+
+-- setup permissions for API User in MP
+
+DECLARE @procName nvarchar(100) = N'api_crds_Get_Contact_By_ID'
+DECLARE @procDescription nvarchar(100) = N'Retrieves information on a contact given the ID.'
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[dp_API_Procedures] WHERE [Procedure_Name] = @procName)
+BEGIN
+        INSERT INTO [dbo].[dp_API_Procedures] (
+                 Procedure_Name
+                ,Description
+        ) VALUES (
+                 @procName
+                ,@procDescription
+        )
+END
+
+DECLARE @API_ROLE_ID int = 62;
+DECLARE @API_ID int;
+
+SELECT @API_ID = API_Procedure_ID FROM [dbo].[dp_API_Procedures] WHERE [Procedure_Name] = @procName;
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[dp_Role_API_Procedures] WHERE [Role_ID] = @API_ROLE_ID AND [API_Procedure_ID] = @API_ID)
+BEGIN
+        INSERT INTO [dbo].[dp_Role_API_Procedures] (
+                 [Role_ID]
+                ,[API_Procedure_ID]
+                ,[Domain_ID]
+        ) VALUES (
+                 @API_ROLE_ID
+                ,@API_ID
+                ,1
+        )
+END
+GO
