@@ -23,9 +23,9 @@ BEGIN
 
 	SET NOCOUNT ON;
 
-	select  c.[__Age] AS [Age],
+	select  COALESCE(c.[__Age],0) AS [Age],
 			c.Contact_ID,
-			c.Date_of_Birth ,
+			CONVERT(varchar, c.Date_of_Birth, 101) as Date_Of_Birth,
 			c.Gender_ID,
 			c.Marital_Status_ID,
 			c.Display_Name , 
@@ -54,15 +54,15 @@ BEGIN
 			a.Postal_Code ,
 			a.[State/Region] AS State, 
 			h.Home_Phone ,
-			h.Household_ID ,
+			COALESCE(h.Household_ID,0) as Household_ID,
 			h.Household_Name ,
 			h.Congregation_ID,
 			p.Participant_Start_Date,
 			p.Attendance_Start_Date		
 	from dbo.Contacts c
-		inner join dbo.Households h on c.Household_ID = h.Household_ID
-		inner join dbo.Addresses a on h.Address_ID = a.Address_ID
-		inner join dbo.Participants p on p.Contact_ID = c.Contact_ID
+		left outer join dbo.Households h on c.Household_ID = h.Household_ID
+		left outer  join dbo.Addresses a on h.Address_ID = a.Address_ID
+		left outer  join dbo.Participants p on p.Contact_ID = c.Contact_ID
 	where c.Contact_ID = @ContactID
 
 
