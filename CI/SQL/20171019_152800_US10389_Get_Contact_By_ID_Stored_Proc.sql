@@ -25,7 +25,7 @@ BEGIN
 
 	select  COALESCE(c.[__Age],0) AS [Age],
 			c.Contact_ID,
-			CONVERT(varchar, c.Date_of_Birth, 101) as Date_Of_Birth,
+			COALESCE(CONVERT(varchar, c.Date_of_Birth, 101), '') as Date_Of_Birth,
 			c.Gender_ID,
 			c.Marital_Status_ID,
 			c.Display_Name , 
