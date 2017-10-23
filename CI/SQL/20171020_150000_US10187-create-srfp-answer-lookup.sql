@@ -1,0 +1,25 @@
+USE [MinistryPlatform]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES 
+           WHERE TABLE_NAME = N'cr_SRFP_Answer_Lookup')
+BEGIN
+	CREATE TABLE [dbo].[cr_SRFP_Answer_Lookup](
+		[SRFP_Answer_Lookup_ID] [int] IDENTITY(1,1) NOT NULL,
+		[Answer_Label] [nvarchar](20) NOT NULL,
+		[Answer_Value] [nvarchar](20) NOT NULL,
+		[Answer_Order] int NOT NULL,
+	 CONSTRAINT [PK_SRFP_Lookup] PRIMARY KEY CLUSTERED 
+	(
+		[SRFP_Answer_Lookup_ID] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY]
+
+END
+GO
