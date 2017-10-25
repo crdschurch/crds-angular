@@ -85,7 +85,7 @@ BEGIN
 END
 
 -- Current SRFP Category Weights VIEW
-DECLARE @SRFP_CatWeight_Page_ID INT = 640;
+-- DECLARE @SRFP_CatWeight_Page_ID INT = 640;
 DECLARE @Current_Weight_View_ID INT = 1129;
 
 SET IDENTITY_INSERT dp_page_views ON
