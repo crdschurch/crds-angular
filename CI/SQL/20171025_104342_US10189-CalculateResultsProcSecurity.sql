@@ -32,7 +32,7 @@ BEGIN
 END
 
 IF NOT EXISTS (SELECT 1 FROM [dbo].[dp_Role_API_Procedures] 
-			   WHERE ROLE_ID = (SELECT ROLE_ID from dp_roles where role_name = 'SRFP - CRDS') 
+			   WHERE ROLE_ID = (SELECT ROLE_ID from dp_roles where role_name = 'SRFP - CRDS')) 
 			   AND API_PROCEDURE_ID = (SELECT API_PROCEDURE_ID from dp_API_Procedures where procedure_name = 'api_crds_Calculate_Current_SRFP_Results'))
 BEGIN
 	INSERT INTO dp_Role_API_Procedures 
