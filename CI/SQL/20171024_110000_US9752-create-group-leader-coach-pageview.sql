@@ -13,7 +13,7 @@ IF NOT EXISTS(SELECT * FROM dp_Page_Views WHERE Page_View_ID = @PAGEVIEWID)
 BEGIN
 	SET IDENTITY_INSERT dp_Page_Views ON
 	INSERT INTO dp_Page_Views(Page_View_ID, View_Title, Page_ID, Field_List, View_Clause)
-				VALUES(@PAGEVIEWID, 'Leaders Coaches', @PAGEID, @FIELDLIST, @VIEWCLAUSE)
+				VALUES(@PAGEVIEWID, 'Group Leader Coaches', @PAGEID, @FIELDLIST, @VIEWCLAUSE)
 	SET IDENTITY_INSERT dp_Page_Views OFF
 END
 GO
