@@ -1,41 +1,46 @@
+<div class="crds-styles">
+
+
+
+
 <div class="sr-bg imgix-fluid-bg img-background" data-src="//crds-cms-uploads.imgix.net/content/images/register-bg.jpg">
-  <div class="sr-wrapper">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 text-center push-top">
-          <a href="#" ui-sref="content({link:'/'})">
-            <svg viewBox="0 0 45 45" class="icon icon-xxlarge icon-screwhead">
-              <use xlink:href="#screwhead"></use>
-            </svg>
-          </a>
+  <div class="container signin-container">
+    <div>
+      <h1 class="page-header text-lowercase text-white push-quarter-bottom">Sign In</h1>
 
-          <h1 class="white push-bottom">Login</h1>
-        </div>
+      <div class="panel animated fadeIn">
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-sm-6" ng-show="$root.username == undefined">
+              <login-form register-url="register"></login-form>
+            </div>
 
-        <div class="col-sm-12 col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
-          <div class="panel animated fadeIn">
-            <div class="panel-body">
-              <div class="row">
-                <div class="col-sm-6 hidden-xs">
-                  <div class="row">
-                    <div class="col-sm-10 col-sm-offset-1">
-                      <div dynamic-content="$root.MESSAGES.signinRegisterPromo.content | html"></div>
-                    </div>
-                  </div>
-                </div>
+            <div class="col-sm-6" ng-show="$root.username != undefined">
+              <preloader full-screen='true'> </preloader>
+            </div>
 
-                <div class="col-sm-6" ng-show="$root.username == undefined">
-                  <login-form register-url="register"></login-form>
-                </div>
+            <div class="col-sm-6 hidden-xs">
+                  <!-- <div dynamic-content="$root.MESSAGES.signinRegisterPromo.content | html"></div> -->
 
-                <div class="col-sm-6" ng-show="$root.username != undefined">
-                  <preloader full-screen='true'> </preloader>
-                </div>
-              </div>
+
+
+
+                  <h2 class="component-header push-quarter-bottom flush-top">Join the Community</h2>
+                  <p class="font-size-small">Get involved. Sign up to serve. Join a group. GO somewhere.</p>
+
+                  <h2 class="component-header push-quarter-bottom">Give to Crossroads</h2>
+                  <p class="font-size-small">Set up a recurring gift and view your financial history with Crossroads.</p>
+
+                  <h2 class="component-header push-quarter-bottom">Manage Your Profile</h2>
+                  <p class="font-size-small">We want to know who you are. Tell us about yourself.</p>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+
+
 </div>

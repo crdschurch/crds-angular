@@ -1,5 +1,47 @@
 .crds-styles {
   @import '~crds-styles/assets/stylesheets/bootstrap';
+
+
+
+  // Signin
+  .signin-container {
+    color: $cr-gray-dark;
+
+    .component-header {
+      @extend .font-size-h5;
+
+      color: $cr-gray-dark;
+    }
+
+    .page-header {
+      border-bottom: 0;
+    }
+
+    .panel {
+      border-radius: 0;
+      padding: 25px;
+
+      .panel-body {
+        padding: 0;
+
+        .col-sm-6 {
+          padding: 15px;
+        }
+
+        @media (min-width: $screen-sm) {
+          .col-sm-6:first-of-type {
+            border-right: 1px solid $cr-gray-lighter;
+            padding-right: 40px;
+          }
+        }
+
+        .col-sm-6:last-of-type {
+          padding-right: 15px;
+          padding-left: 40px;
+        }
+      }
+    }
+  }
 }
 
 /* Fix modal window backdrop regression in iOS - TCM 5/30/17 */
