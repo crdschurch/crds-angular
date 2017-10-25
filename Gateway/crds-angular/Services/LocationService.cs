@@ -50,7 +50,7 @@ namespace crds_angular.Services
                     Distance = distances?[i]
                 });
             }
-            return locationProximityList;
+            return locationProximityList.OrderBy(o => o.Distance).ToList();
         }
     }
 }

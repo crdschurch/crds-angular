@@ -69,6 +69,8 @@ namespace crds_angular.test.Services
         [Test]
         public void TestGetDistanceToCrossroadsLocations()
         {
+            var distance1 = 10;
+            var distance2 = 5;
             var locations = new List<OrgLocation> { _location1, _location2 };
             _organizationService.Setup(mocked => mocked.GetLocationsForOrganization(2)).Returns(locations);
             AddressDTO location1Address = new AddressDTO()
@@ -86,22 +88,22 @@ namespace crds_angular.test.Services
                 PostalCode = _location2.Zip
             };
             var addresses = new List<AddressDTO> {location1Address, location2Address};
-            _proximityService.Setup(mocked => mocked.GetProximity(origin, It.IsAny<List<AddressDTO>>(), null)).Returns(new List<decimal?> {1,2});
+            _proximityService.Setup(mocked => mocked.GetProximity(origin, It.IsAny<List<AddressDTO>>(), null)).Returns(new List<decimal?> { distance1, distance2 });
 
             LocationProximityDto locationProximityDto1 = new LocationProximityDto()
             {
                 Origin = origin,
-                Distance = 1,
+                Distance = distance1,
                 Location = _location1
             };
             LocationProximityDto locationProximityDto2 = new LocationProximityDto()
             {
                 Origin = origin,
-                Distance = 2,
+                Distance = distance2,
                 Location = _location2
             };
 
-            var expected = new List<LocationProximityDto> { locationProximityDto1, locationProximityDto2 };
+            var expected = new List<LocationProximityDto> { locationProximityDto2, locationProximityDto1 };
             var result = _fixture.GetDistanceToCrossroadsLocations(origin);
             _proximityService.VerifyAll();
             Assert.AreEqual(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(result)); 
