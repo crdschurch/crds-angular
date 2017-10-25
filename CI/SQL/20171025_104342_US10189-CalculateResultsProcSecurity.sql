@@ -32,3 +32,11 @@ BEGIN
 	(Role_ID                                                       ,API_Procedure_ID                                                                                                 ,Domain_ID) VALUES
 	((SELECT ROLE_ID from dp_roles where role_name = 'SRFP - CRDS'),(SELECT API_PROCEDURE_ID from dp_API_Procedures where procedure_name = 'api_crds_Calculate_Current_SRFP_Results'),1        )
 END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[forms] WHERE form_title = 'srfpassessment')
+BEGIN
+	INSERT INTO forms 
+	(Form_Title      ,Instructions,Standalone_Form_Use_Only,Get_Contact_Info,Get_Address_Info,Domain_ID,Form_GUID                             ,End_Date,Complete_Message,Primary_Contact,Notify) VALUES
+	('srfpassessment',null        ,null                    ,0           ,0           ,1        ,'F8A21573-0B11-4154-8639-4F01F716397D',null    ,null            ,null           ,0 )
+GO
+END
