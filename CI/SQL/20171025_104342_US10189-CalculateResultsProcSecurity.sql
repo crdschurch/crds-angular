@@ -1,6 +1,13 @@
 USE MinistryPlatform;
 GO
 
+IF NOT EXISTS (select 1 from [dbo].[dp_users] where user_name = 'crds_srfp')
+BEGIN
+	INSERT INTO dp_users 
+(User_Name  ,User_Email                   ,Display_Name,Password                   ,Domain_ID,Publications_Manager,Contact_ID,User_GUID                             ,Keep_For_Go_Live,Setup_Admin,Read_Permitted,Create_Permitted,Update_Permitted,Delete_Permitted) VALUES
+('crds_srfp','webteam+srfp@crossroads.net','crds_srfp' ,'adsfbasdf                ',1        ,0                   ,2562378   ,'03937A17-AFB8-49AC-8F73-A1F39D1208C2',0               ,0          ,0             ,0               ,0               ,0               )
+END
+
 IF NOT EXISTS (SELECT 1 FROM [dbo].[dp_Roles] 
 			   WHERE ROLE_NAME = 'SRFP - CRDS')
 BEGIN
