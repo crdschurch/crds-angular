@@ -14,7 +14,7 @@ BEGIN
 		[Form_Metadata_ID] [int] IDENTITY(1,1) NOT NULL,
 		[Form_ID] [int] NOT NULL,
 		[Form_Field_Name] [nvarchar](max) NOT NULL,
-		[Metadata_Key] [nvarchar](200) NOT NULL,
+		[Metadata_Label] [nvarchar](200) NOT NULL,
 		[Metadata_Value] [nvarchar](200) NOT NULL,
 		[Start_Date] [datetime] NOT NULL,
 		[End_Date] [datetime] NULL,
