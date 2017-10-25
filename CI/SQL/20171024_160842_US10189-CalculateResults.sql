@@ -23,23 +23,11 @@ ALTER PROCEDURE [dbo].api_crds_Calculate_Current_SRFP_Results
 AS
 BEGIN
 
-    DECLARE @CategoryWeights TABLE (
-        categoryID varchar(10),
-		CategoryName varchar(20),
-		CategoryMultiplier numeric(18, 8)
-    );
-
 	DECLARE @srfpAnswers TABLE(
 		answer_value  INT,
 		question_weight INT,
 		category varchar(20)
 		);
-
-	insert into @CategoryWeights values ('F', 'Financial', 1.705);
-	insert into @CategoryWeights values ('I', 'Intellectual', 1);
-	insert into @CategoryWeights values ('P', 'Physical', 1);
-	insert into @CategoryWeights values ('R', 'Relational', 1);
-	insert into @CategoryWeights values ('S', 'Spiritual', 0.667);
 
     insert into @srfpAnswers
 	select
@@ -61,5 +49,5 @@ and cmd.start_date <= fr.Response_Date
 and (cmd.end_date is null or cmd.end_date > fr.Response_Date)
 where fr.Form_Response_ID = (select top 1 form_response_id from FORM_RESPONSES where Contact_ID = @ContactID and form_id = @formID order by Response_Date);
 
-select cw.CategoryName, Floor(sum(CAST(answer_value as numeric(18, 8)) * CAST(question_weight as numeric(18,8)) * cw.CategoryMultiplier)) as Score from @srfpAnswers sa join @CategoryWeights cw on cw.categoryID = sa.category  group by cw.CategoryName;
+select cw.Category_Name, Floor(sum(CAST(answer_value as numeric(18, 8)) * CAST(question_weight as numeric(18,8)) * cw.Category_Multiplier)) as Score from @srfpAnswers sa join cr_Srfp_Category_Weight cw on cw.Category_Char = sa.category  group by cw.Category_Name;
 END
