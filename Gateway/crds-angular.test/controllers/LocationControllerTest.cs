@@ -59,7 +59,7 @@ namespace crds_angular.test.controllers
 
             _locationServiceMock.VerifyAll();
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkResult>(result);
+            Assert.IsInstanceOf<OkNegotiatedContentResult<List<OrgLocation>>>(result);
         }
 
         [Test]
@@ -82,7 +82,7 @@ namespace crds_angular.test.controllers
 
             _locationServiceMock.VerifyAll();
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkResult>(result);
+            Assert.IsInstanceOf<OkNegotiatedContentResult<List<LocationProximityDto>>>(result);
         }
 
     }
