@@ -1,3 +1,5 @@
+USE [MinistryPlatform]
+
 DECLARE @srfp_form_id int = 57;
 
 SET IDENTITY_INSERT forms ON
