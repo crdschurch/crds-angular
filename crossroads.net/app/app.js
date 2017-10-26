@@ -1,5 +1,5 @@
 // require('./group_finder');
-
+require('./group_tool');
 require('./childcare');
 require('./mp_tools');
 require('./live_stream');
@@ -18,6 +18,7 @@ require('./invoices/invoices.module');
     constants.MODULES.FORM_BUILDER,
     constants.MODULES.GIVE,
     constants.MODULES.GO_VOLUNTEER,
+    constants.MODULES.GROUP_TOOL,
     constants.MODULES.MEDIA,
     constants.MODULES.LIVE_STREAM,
     constants.MODULES.MPTOOLS,
