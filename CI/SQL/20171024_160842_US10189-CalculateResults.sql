@@ -28,6 +28,8 @@ BEGIN
 		question_weight INT,
 		category varchar(20)
 		);
+		
+	DECLARE @latest_response INT = (select top 1 form_response_id from FORM_RESPONSES where Contact_ID = @ContactID and form_id = @formID order by Response_Date);
 
     insert into @srfpAnswers
 	select
@@ -47,7 +49,9 @@ and cmd.Metadata_Label = 'category'
 and fr.Form_id = cmd.form_id
 and cmd.start_date <= fr.Response_Date
 and (cmd.end_date is null or cmd.end_date > fr.Response_Date)
-where fr.Form_Response_ID = (select top 1 form_response_id from FORM_RESPONSES where Contact_ID = @ContactID and form_id = @formID order by Response_Date);
+where fr.Form_Response_ID = @latest_response;
 
-select cw.Category_Name, Floor(sum(CAST(answer_value as numeric(18, 8)) * CAST(question_weight as numeric(18,8)) * cw.Category_Multiplier)) as Score from @srfpAnswers sa join cr_Srfp_Category_Weight cw on cw.Category_Char = sa.category  group by cw.Category_Name;
+DECLARE @response_date DATE = (select response_date from form_responses where form_response_id = @latest_response);
+
+select cw.Category_Name, Floor(sum(CAST(answer_value as numeric(18, 8)) * CAST(question_weight as numeric(18,8)) * cw.Category_Multiplier)) as Score from @srfpAnswers sa join cr_Srfp_Category_Weight cw on cw.Category_Char = sa.category and  @response_date BETWEEN cw.start_date and ISNULL(cw.End_Date, GETDATE()) group by cw.Category_Name;
 END
