@@ -4,7 +4,7 @@
 
 
   // Signin
-  .signin-container {
+  .auth-container {
     color: $cr-gray-dark;
 
     .component-header {
@@ -28,22 +28,34 @@
       .panel-body {
         padding: 0;
 
-        .col-sm-6 {
+        .auth-form,
+        .auth-details {
           padding: 15px;
+
+          @media screen and (min-width: $screen-sm) {
+            padding: 25px;
+          }
         }
 
         @media screen and (min-width: $screen-sm) {
-          .col-sm-6:first-of-type {
+          .auth-form {
             padding-right: 40px;
           }
         }
 
-        .col-sm-6:last-of-type {
+        .auth-details {
           padding-right: 15px;
           padding-left: 40px;
+        }
 
+        > .row {
           @media screen and (min-width: $screen-sm) {
-            border-left: 1px solid $cr-gray-lighter;
+            display: flex;
+
+            .divider {
+              background: $cr-gray-lighter;
+              width: 1px;
+            }
           }
         }
       }
