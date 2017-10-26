@@ -6,20 +6,21 @@
           <label class="sr-only" for="{{passwordPrefix}}-email">Email address</label>
           <input id="{{passwordPrefix}}-email" required class="form-control" ng-model-options="{ updateOn: 'blur', debounce: {'blur': 500} }" type="email" name="username" placeholder="Email" autocomplete="off" autocapitalize="off" ng-model="credentials.username" autofocus="">
 
-          <ng-messages for="navlogin['username'].$error" ng-if="navlogin.$submitted">
+          <ng-messages for="navlogin['username'].$error" ng-if="navlogin.$submitted" class="error help-block">
             <ng-messages-include src="on-submit-messages"></ng-messages-include>
           </ng-messages>
 
-          <ng-messages for="navlogin['username'].$error" ng-show="$root.username == undefined">
+          <ng-messages for="navlogin['username'].$error" ng-show="$root.username == undefined" class="error help-block">
             <ng-messages-include src="on-blur-messages"></ng-messages-include>
           </ng-messages>
         </div>
+      </div>
 
       <password-field required="true" min-length="0" passwd-strength="false" passwd="credentials.password" submitted="navlogin.$submitted" prefix="passwordPrefix"></password-field>
 
-        <div ng-show="loginFailed" ng-class="{'has-error': loginFailed }">
-          <span dynamic-content="$root.MESSAGES.loginFailed.content | html"></span>
-        </div>
+      <div ng-show="loginFailed" ng-class="{'has-error': loginFailed }" class="error help-block">
+        <span dynamic-content="$root.MESSAGES.loginFailed.content | html"></span>
+      </div>
 
       <div class="clearfix">
         <div ng-if="!modal && !processing" class="pull-right font-size-smaller">
