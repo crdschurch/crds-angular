@@ -3,6 +3,7 @@
     <form id="navlogin" name="navlogin" ng-submit="login()" role="form" ng-hide="processing" novalidate>
       <div class="form-group">
         <div ng-show="!modal" class="" ng-class="{'has-error': checkEmail() }">
+          <label class="sr-only" for="{{passwordPrefix}}-email">Email address</label>
           <input id="{{passwordPrefix}}-email" required class="form-control" ng-model-options="{ updateOn: 'blur', debounce: {'blur': 500} }" type="email" name="username" placeholder="Email" autocomplete="off" autocapitalize="off" ng-model="credentials.username" autofocus="">
 
           <ng-messages for="navlogin['username'].$error" ng-if="navlogin.$submitted">
@@ -14,7 +15,7 @@
           </ng-messages>
         </div>
 
-        <password-field required="true" min-length="0" passwd-strength="false" passwd="credentials.password" submitted="navlogin.$submitted" prefix="passwordPrefix"></password-field>
+      <password-field required="true" min-length="0" passwd-strength="false" passwd="credentials.password" submitted="navlogin.$submitted" prefix="passwordPrefix"></password-field>
 
         <div ng-show="loginFailed" ng-class="{'has-error': loginFailed }">
           <span dynamic-content="$root.MESSAGES.loginFailed.content | html"></span>
