@@ -1,5 +1,3 @@
-// require('./group_finder');
-
 require('./childcare');
 require('./mp_tools');
 require('./group_tool');

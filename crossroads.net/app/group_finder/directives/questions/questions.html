@@ -1,7 +1,0 @@
-<div class="question-wrapper" ng-repeat="(key, question) in questions track by $index" ng-show="(step-1)==$index">
-  <question definition="question" responses="responses"></question>
-  <div class="btns">
-    <a href="#" class="btn btn-previous-question pull-left" ng-hide="$index==0" ng-click="previousQuestion()">{{ question.previous || 'Back' }}</a>
-    <button type="submit" class="btn btn-next-question pull-right" ng-click="nextQuestion()">{{ nextBtn }}</button>
-  </div>
-</div>
