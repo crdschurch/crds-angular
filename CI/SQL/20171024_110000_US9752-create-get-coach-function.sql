@@ -21,10 +21,12 @@ AS
 BEGIN
 
 	DECLARE @CoachName AS NVARCHAR(MAX);
-	SET @CoachName = (select C.Display_Name
-			from cr_Coaches COACH
-			left join Contacts C ON C.Contact_ID = COACH.Coach_Contact_ID
-			where COACH.Leader_Contact_ID  = @CONTACTID)
+	SET @CoachName = (SELECT C.Display_Name
+			FROM cr_Coaches COACH
+			LEFT JOIN Contacts C ON C.Contact_ID = COACH.Coach_Contact_ID
+			WHERE COACH.Leader_Contact_ID  = @CONTACTID
+			AND GetDate() > COACH.Start_Date 
+			AND (COACH.End_Date IS NULL OR COACH.End_Date > GetDate()))
 
 	RETURN @CoachName;
 END

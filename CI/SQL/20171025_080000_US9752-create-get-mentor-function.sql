@@ -22,10 +22,14 @@ BEGIN
 
 	DECLARE @MentorName AS NVARCHAR(MAX);
 	SET @MentorName = (select C.Display_Name
-			from cr_Coaches COACH
-			left join cr_Mentors M ON M.Coach_Contact_ID = COACH.Coach_Contact_ID
-			left join Contacts C ON C.Contact_ID = M.Mentor_Contact_ID
-			where COACH.Leader_Contact_ID  = @CONTACTID)
+			FROM cr_Coaches COACH
+			LEFT JOIN cr_Mentors M ON M.Coach_Contact_ID = COACH.Coach_Contact_ID
+			LEFT JOIN Contacts C ON C.Contact_ID = M.Mentor_Contact_ID
+			WHERE COACH.Leader_Contact_ID  = @CONTACTID
+			AND GetDate() > COACH.Start_Date 
+			AND (COACH.End_Date IS NULL OR COACH.End_Date > GetDate())
+			AND GetDate() > M.Start_Date 
+			AND (M.End_Date IS NULL OR M.End_Date > GetDate()))
 
 	RETURN @MentorName;
 END

@@ -15,7 +15,7 @@ BEGIN
 			 'Coaches', 
 			 700, 
 			 'cr_Coaches', 
-			 'Leader_Contact_ID_Table.[Display_Name] AS Leader, Coach_Contact_ID_Table.[Display_Name] AS Coach, Start_Date, End_Date', 
+			 'Leader_Contact_ID_Table.[Display_Name] AS [Group_Leader], Coach_Contact_ID_Table.[Display_Name] AS Coach, Start_Date, End_Date', 
 			 'Coach_ID',  
 			 'Coach_ID',
 			 1);
