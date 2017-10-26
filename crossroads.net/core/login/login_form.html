@@ -20,24 +20,19 @@
           <span dynamic-content="$root.MESSAGES.loginFailed.content | html"></span>
         </div>
 
-        <div class="row">
-          <!-- <div class="push-bottom" ng-hide="true" checked>
-            <input type="checkbox"> Stay Signed In
-          </div> -->
-          <div ng-if="!modal && !processing" class="col-xs-6 col-xs-push-6 font-size-smaller">
-            <a class="block" ui-sref="forgotPassword">Forgot password?</a>
-            <a class="block" href="/help">Need Help?</a>
-          </div>
-
-          <div class="col-xs-12 push-quarter-top push-bottom">
-            <input type="submit" name="submit_nav" value="Sign in" ng-class="{disabled: processing }" id="submit_nav" class="btn btn-primary btn-block" />
-            <!-- <input ng-if="modal" ng-click="modal.dismiss('sign out')" name="sign_out" value="Sign Out" ng-class="{disabled: processing }" id="sign_out" class="btn btn-block" /> -->
-          </div>
+      <div class="clearfix">
+        <div ng-if="!modal && !processing" class="pull-right font-size-smaller">
+          <a class="block" ui-sref="forgotPassword">Forgot password?</a>
+          <a class="block" href="/help">Need Help?</a>
         </div>
+      </div>
+
+      <div class="push-half-top push-bottom">
+        <input type="submit" name="submit_nav" value="Sign in" ng-class="{disabled: processing }" id="submit_nav" class="btn btn-primary btn-block" />
       </div>
     </form>
 
-  <p class="text-center" ng-if="(showRegister || showRegisterCallback) && !processing">Or
+  <p class="text-center font-size-smaller" ng-if="(showRegister || showRegisterCallback) && !processing">Or
     <a class="link-secondary" ng-if="showRegister" ui-sref="{{registerUrl}}">register an account</a>
     <a class="link-secondary" ng-if="showRegisterCallback" ng-click="registerCallback()">register an account</a>
   </p>

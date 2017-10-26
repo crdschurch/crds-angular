@@ -19,7 +19,11 @@
 
     .panel {
       border-radius: 0;
-      padding: 25px;
+      padding: 10px 15px;
+
+      @media screen and (min-width: $screen-sm) {
+        padding: 25px;
+      }
 
       .panel-body {
         padding: 0;
@@ -28,9 +32,8 @@
           padding: 15px;
         }
 
-        @media (min-width: $screen-sm) {
+        @media screen and (min-width: $screen-sm) {
           .col-sm-6:first-of-type {
-            border-right: 1px solid $cr-gray-lighter;
             padding-right: 40px;
           }
         }
@@ -38,6 +41,10 @@
         .col-sm-6:last-of-type {
           padding-right: 15px;
           padding-left: 40px;
+
+          @media screen and (min-width: $screen-sm) {
+            border-left: 1px solid $cr-gray-lighter;
+          }
         }
       }
     }
