@@ -114,16 +114,16 @@ namespace crds_angular.test.Services
                 {
                     Requestor_Contact_ID = 1,
                     Room_Name = "My Room",
-                    Event_Start_Date = "2017-10-11 15:30:00:000",
+                    Event_Start_Date = new DateTime(2017, 10, 11, 15, 30, 0),
                     Event_Title = "Moose Tossing",
-                    Task_Rejection_Reason = "Can't toss a moose. Not in my house."
+                    Task_Rejection_Reason = "A record you submitted has been rejected.<br/><br/>Can't toss a moose. Not in my house."
                 }
             };
             string token = "1a2b3c4d5e6f7g8h";
             var mergeData = new Dictionary<string, object>
             {
                 {"Room_Name", "My Room"},
-                {"Event_Start_Date", "2017-10-11 15:30:00:000"},
+                {"Event_Start_Date", "10/11/2017 3:30 PM"},
                 {"Event_Title", "Moose Tossing"},
                 {"Task_Rejection_Reason","Can't toss a moose. Not in my house."},
             };
