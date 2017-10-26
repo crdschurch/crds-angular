@@ -32,7 +32,6 @@ ALTER TABLE [dbo].[cr_Mentors]  WITH CHECK ADD  CONSTRAINT [FK_Mentors_Domain] F
 	REFERENCES [dbo].[dp_Domains] ([Domain_ID])
 ALTER TABLE [dbo].[cr_Mentors] CHECK CONSTRAINT [FK_Mentors_Domain]
 
-ALTER TABLE cr_Mentors ADD UNIQUE (Coach_Contact_ID);
 GO
 
 
