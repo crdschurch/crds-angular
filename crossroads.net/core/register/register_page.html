@@ -1,21 +1,16 @@
 <div class="imgix-fluid-bg img-background" data-src="//crds-cms-uploads.imgix.net/content/images/register-bg.jpg">
     <div class="container auth-container">
       <div class="row">
-        <div class="col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 text-center push-top">
-          <a href="#" ui-sref="content({link:'/'})">
-            <svg viewBox="0 0 45 45" class="icon icon-xxlarge icon-screwhead">
-            	<use xlink:href="#screwhead"></use>
-            </svg>
-          </a>
-          <h1 class="white push-bottom">Register</h1>
-        </div>
-        <div class="col-sm-12 col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
-          <div class="panel animated fadeIn">
+        <div class="col-xs-12 col-md-8 col-md-offset-2">
+          <h1 class="page-header text-lowercase text-white push-quarter-bottom">Register</h1>
+
+          <div class="panel">
             <div class="panel-body">
               <div class="row">
                 <div class="col-sm-6 auth-form" ng-show="$root.username == undefined">
                   <register-form register-callback='register.redirectToGetStarted'> </register-form>
-                </div><!--/col-sm-12-->
+                </div>
+
                 <div class="col-sm-6" ng-show="$root.username != undefined">
                   <preloader full-screen='true'> </preloader>
                 </div>
