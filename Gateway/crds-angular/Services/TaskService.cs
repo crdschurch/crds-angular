@@ -95,12 +95,26 @@ namespace crds_angular.Services
 
                 foreach (var rejection in rejectedReservations)
                 {
+                    _logger.InfoFormat("Sending rejected room notification for Task_ID: {0}", rejection.Task_ID);
+
+                    // MP automatically prepends boilerplate text to the rejection reason that
+                    // we don't want to include in the email.  See @RejectedTaskDescription in
+                    // the dp_Complete_Task stored proc.
+                    var reason = "";
+                    if (rejection.Task_Rejection_Reason != null)
+                    {
+                        const string lineBreak = "<br/><br/>";
+                        int breakPos = rejection.Task_Rejection_Reason.IndexOf(lineBreak, StringComparison.OrdinalIgnoreCase);
+                        if (breakPos >= 0)
+                            reason = rejection.Task_Rejection_Reason.Substring(breakPos + lineBreak.Length);
+                    }
+
                     var mergeData = new Dictionary<string, object>
                     {
                         {"Room_Name", rejection.Room_Name},
-                        {"Event_Start_Date", rejection.Event_Start_Date},
+                        {"Event_Start_Date", rejection.Event_Start_Date.ToString("g")},
                         {"Event_Title", rejection.Event_Title},
-                        {"Task_Rejection_Reason", rejection.Task_Rejection_Reason},
+                        {"Task_Rejection_Reason", reason},
                     };
 
                     var email = new EmailCommunicationDTO
