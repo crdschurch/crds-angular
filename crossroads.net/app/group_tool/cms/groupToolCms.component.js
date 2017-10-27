@@ -1,4 +1,3 @@
-
 import controller  from './groupToolCms.controller';
 
 GroupToolCmsComponent.$inject = [ ];

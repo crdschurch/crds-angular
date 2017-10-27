@@ -6,8 +6,6 @@ describe('Embed Controller', () => {
       sce,
       attrs;
 
-  beforeEach(angular.mock.module(constants.MODULES.GROUP_TOOL));
-
   describe('just href no map', () => {
     beforeEach(inject(function ($injector) {
       element = angular.element('<crds-embed></crds-embed>');
