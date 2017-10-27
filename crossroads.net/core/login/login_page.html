@@ -1,25 +1,26 @@
 <div class="imgix-fluid-bg img-background" data-src="//crds-cms-uploads.imgix.net/content/images/register-bg.jpg">
-  <div class="container auth-container">
-    <div class="row">
-      <div class="col-xs-12 col-md-8 col-md-offset-2">
-        <h1 class="page-header text-lowercase text-white push-quarter-bottom">Sign In</h1>
+</div>
 
-        <div class="panel">
-          <div class="panel-body">
-            <div class="row">
-              <div class="col-sm-6 auth-form" ng-show="$root.username == undefined">
-                <login-form register-url="register"></login-form>
-              </div>
+<div class="container auth-container">
+  <div class="row">
+    <div class="col-xs-12 col-md-8 col-md-offset-2">
+      <h1 class="page-header text-lowercase text-white push-quarter-bottom">Sign In</h1>
 
-              <div class="col-sm-6" ng-show="$root.username != undefined">
-                <preloader full-screen='true'> </preloader>
-              </div>
+      <div class="panel">
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-sm-6 auth-form" ng-show="$root.username == undefined">
+              <login-form register-url="register"></login-form>
+            </div>
 
-              <div class="divider">&nbsp;</div>
+            <div class="col-sm-6" ng-show="$root.username != undefined">
+              <preloader full-screen='true'> </preloader>
+            </div>
 
-              <div class="col-sm-6 hidden-xs auth-details">
-                <div dynamic-content="$root.MESSAGES.signinRegisterPromo.content | html"></div>
-              </div>
+            <div class="divider">&nbsp;</div>
+
+            <div class="col-sm-6 hidden-xs auth-details">
+              <div dynamic-content="$root.MESSAGES.signinRegisterPromo.content | html"></div>
             </div>
           </div>
         </div>
