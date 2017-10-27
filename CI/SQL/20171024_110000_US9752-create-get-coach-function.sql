@@ -21,7 +21,7 @@ AS
 BEGIN
 
 	DECLARE @CoachName AS NVARCHAR(MAX);
-	SET @CoachName = (SELECT C.Display_Name
+	SET @CoachName = (SELECT top 1 C.Display_Name
 			FROM cr_Coaches COACH
 			LEFT JOIN Contacts C ON C.Contact_ID = COACH.Coach_Contact_ID
 			WHERE COACH.Leader_Contact_ID  = @CONTACTID
