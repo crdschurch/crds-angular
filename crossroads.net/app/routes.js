@@ -304,6 +304,7 @@
           controller: 'LoginController',
           data: {
             isProtected: false,
+            renderLegacyStyles: false,
             meta: {
               title: 'Sign In',
               description: ''
@@ -326,6 +327,7 @@
           url: '/register',
           templateUrl: 'register/register_page.html',
           data: {
+            renderLegacyStyles: false,
             meta: {
               title: 'Register',
               description: ''
@@ -338,6 +340,7 @@
           templateUrl: 'login/forgot_password.html',
           controller: 'PasswordController as pwController',
           data: {
+            renderLegacyStyles: false,
             isProtected: false
           }
         })
@@ -347,6 +350,7 @@
           templateUrl: 'login/reset_password.html',
           controller: 'ResetPasswordController as resetPwController',
           data: {
+            renderLegacyStyles: false,
             isProtected: false
           },
           resolve: {
