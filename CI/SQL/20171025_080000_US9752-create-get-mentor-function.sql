@@ -21,7 +21,7 @@ AS
 BEGIN
 
 	DECLARE @MentorName AS NVARCHAR(MAX);
-	SET @MentorName = (select C.Display_Name
+	SET @MentorName = (select top 1 C.Display_Name
 			FROM cr_Coaches COACH
 			LEFT JOIN cr_Mentors M ON M.Coach_Contact_ID = COACH.Coach_Contact_ID
 			LEFT JOIN Contacts C ON C.Contact_ID = M.Mentor_Contact_ID
