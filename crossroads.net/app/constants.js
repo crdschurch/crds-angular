@@ -15,7 +15,6 @@
       CROSSROADS: 'crossroads',
       FORM_BUILDER: 'crossroads.form_builder',
       FORMLY_BUILDER: 'crossroads.formly_builder',
-      GIVE: 'crossroads.give',
       GO_VOLUNTEER: 'crossroads.go_volunteer',
       MEDIA: 'crossroads.media',
       MY_SERVE: 'crossroads.my_serve',
