@@ -17,11 +17,12 @@
       </div>
     </div>
     <div class="push-top row">
-      <iframe
-        src="{{$ctrl.buildUrl()}}"
+      <crds-embed
+        href="{{ $ctrl.buildUrl() }}"
         frameborder="0"
         class="camp-payment-widget"
-        scrolling="no"> </iframe>
+        scrolling="no"
+        resizeInterval="-16"> </crds-embed>
     </div>
   </div>
 </div>

@@ -1,9 +1,0 @@
-<label ng-show="definition.label">{{definition.label}}</label>
-<div class="bordered">
-  <div class="checkbox" ng-repeat="answer in definition.answers track by answer.id">
-    <input type="checkbox" id="answer_{{definition.key}}_{{$index}}" name="{{definition.key}}" value="{{answer.id}}" checklist-value="answer.id" ng-model="responses[definition.key][answer.id]" />
-    <label for="answer_{{definition.key}}_{{$index}}">
-      {{answer.name}}
-    </label>
-  </div>
-</div>
