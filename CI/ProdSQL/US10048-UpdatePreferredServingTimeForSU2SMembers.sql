@@ -13,7 +13,8 @@ DECLARE @ServeData TABLE (
     Group_Name NVARCHAR(75),
     Email_Address NVARCHAR(255),
     Response_ID INT,
-    rn INT
+    rn INT,
+	Preferred_Serve_Time_ID INT
 );
 INSERT INTO @ServeData
 SELECT 
@@ -24,7 +25,8 @@ SELECT
     g.Group_Name,
     c.Email_Address,
     r.Response_ID,
-    rn = ROW_NUMBER() OVER (PARTITION BY p.Participant_ID, g.Group_ID, g.Congregation_ID ORDER BY r.Response_Date DESC)
+    rn = ROW_NUMBER() OVER (PARTITION BY p.Participant_ID, g.Group_ID, g.Congregation_ID ORDER BY r.Response_Date DESC),
+	NULL
 FROM participants p 
 INNER JOIN responses r ON p.Participant_ID = r.Participant_ID 
 INNER JOIN Contacts c ON c.Contact_ID = p.Contact_ID 
@@ -36,6 +38,7 @@ AND r.Response_Result_ID = 1 -- Positive Response
 AND p.Participant_End_Date IS NULL -- Paricipant record is still active
 AND (gp.End_Date IS NULL OR gp.End_Date > GETDATE()) -- Group participant is still active
 AND gp.Preferred_Serving_Time_ID IS NULL -- Does not have a current preferred serving time
+--AND p.Participant_ID in (7510185, 7544723)
 GROUP BY p.Participant_ID, 
     c.Display_Name,
     r.Response_Date,
@@ -56,12 +59,13 @@ DECLARE @EventTypes TABLE (
 
 DECLARE @ParticipantId INT
 DECLARE @GroupId INT
+DECLARE @GroupParticipantId INT
 DECLARE @PreferredServingTimeID INT
 DECLARE @CongregationId INT
 
-DECLARE participant_cursor CURSOR FOR SELECT Participant_ID, Group_ID FROM @ServeData WHERE rn = 1
+DECLARE participant_cursor CURSOR FOR SELECT Participant_ID, Group_ID, Group_Participant_ID FROM @ServeData WHERE rn = 1
 OPEN participant_cursor
-FETCH NEXT FROM participant_cursor INTO @ParticipantId, @GroupId
+FETCH NEXT FROM participant_cursor INTO @ParticipantId, @GroupId, @GroupParticipantId
 WHILE @@FETCH_STATUS = 0
 BEGIN
 	INSERT INTO @EventTypes
@@ -82,14 +86,29 @@ BEGIN
 	FROM @EventTypes
 	ORDER BY Num_Times_Of_Serve_Time DESC
 	
-	UPDATE Group_Participants 
-	SET Preferred_Serving_Time_ID = @PreferredServingTimeID
-	WHERE Participant_ID = @ParticipantId AND Group_ID = @GroupId
+	IF @PreferredServingTimeID IS NOT NULL
+	BEGIN
+		UPDATE Group_Participants 
+		SET Preferred_Serving_Time_ID = @PreferredServingTimeID
+		WHERE Participant_ID = @ParticipantId AND Group_ID = @GroupId
+
+		UPDATE @ServeData
+		SET Preferred_Serve_Time_ID = @PreferredServingTimeID
+		WHERE Participant_ID = @ParticipantId AND
+			Group_ID = @GroupId AND
+			Group_Participant_ID = @GroupParticipantId AND rn = 1
+	END
 		
 	DELETE From @EventTypes
-    FETCH NEXT FROM participant_cursor INTO @ParticipantId, @GroupId
+	SELECT @PreferredServingTimeID = NULL, @ParticipantId = NULL, @GroupId = NULL, @GroupParticipantId = NULL
+    FETCH NEXT FROM participant_cursor INTO @ParticipantId, @GroupId, @GroupParticipantId
 END
 CLOSE participant_cursor
 DEALLOCATE participant_cursor
 
-Rollback
+SELECT s.*, ps.Preferred_Serve_Time
+FROM @ServeData as s
+INNER JOIN cr_Preferred_Serve_Time ps ON ps.Preferred_Serving_Time_ID = s.Preferred_Serve_Time_ID
+WHERE s.rn = 1 AND s.Preferred_Serve_Time_ID IS NOT NULL
+
+ROLLBACK
