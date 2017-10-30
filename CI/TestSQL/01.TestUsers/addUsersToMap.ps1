@@ -1,14 +1,15 @@
 param (
-	[string]$loginEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Login',
-	[string]$participantEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Participant',
-	[string]$profileEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Profile',
-	
-	[string]$pinEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/pin',
+    [parameter(Mandatory=$true)] [string]$userCredentialsCSV,
+    [string]$loginEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Login',
+    [string]$participantEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Participant',
+    [string]$profileEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Profile',
+    [string]$pinEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/pin',
     [string]$deleteAwsEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/deleteallcloudsearchrecords',
     [string]$uploadAwsEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/uploadallcloudsearchrecords'
  )
 
-function addUsersToMap($userCredentialsCSV){
+function addUsersToMap
+{
 	$mapDataList = import-csv .\mapUserList.csv
 	$logFile = "log_creating_map_data.txt"
 	
@@ -17,7 +18,7 @@ function addUsersToMap($userCredentialsCSV){
 		if(!$mapUser.email.IsNullOrEmpty)
 		{
 			#find their password
-			$password = getPassword $mapUser.email $userCredentialsCSV
+			$password = getPassword $mapUser.email
 			if($password.IsNullOrEmpty)
 			{
 				Add-Content $logFile "User $($mapUser.email) could not be added to the map because their password could not be found"
@@ -107,14 +108,15 @@ function addUsersToMap($userCredentialsCSV){
 	}
 }
 
-function getPassword($email, $userCredentialsCSV){
+function getPassword($email){
 	$userList = import-csv $userCredentialsCSV
 	foreach($user in $userList)
 	{
 		if($($user.email).equals($email))
 		{
-			write-host "$($user.password) to $email"
 			return $user.password
 		}
 	}
 }
+
+addUsersToMap #run this function automatically
