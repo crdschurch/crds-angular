@@ -1,6 +1,3 @@
-// require('./group_finder');
-
-// require('./group_finder');
 require('./group_tool');
 require('./childcare');
 require('./mp_tools');
@@ -51,7 +48,6 @@ require('./invoices/invoices.module');
   require('./thedaily');
   require('./gotrips');
   require('./my_serve');
-  require('./brave_at_home');
   require('./volunteer_signup');
   require('./volunteer_application');
   require('./giving_history');
