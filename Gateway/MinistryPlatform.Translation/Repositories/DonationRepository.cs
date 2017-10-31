@@ -627,7 +627,8 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpGPExportDatum> GetGpExportData(int depositId, string token)
         {
-            var results = _ministryPlatformService.GetPageViewRecords(_gpExportPageView, token, depositId.ToString());
+            var searchStr = $"{depositId},";
+            var results = _ministryPlatformService.GetPageViewRecords(_gpExportPageView, token, searchStr);
 
 
             return (from result in results let amount = Convert.ToDecimal(result.ToString("Amount"))                
