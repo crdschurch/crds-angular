@@ -66,6 +66,9 @@
                   } else if (ContentPageService.page.pageType === "AngularRedirectPage") {
                     $state.go(ContentPageService.page.angularRoute);
                     return;
+                  } else if (ContentPageService.page.requiresAngular == "0") {
+                    $window.location.href = ContentPageService.page.link;
+                    return;
                   }
 
                   return originalPromise;
