@@ -230,11 +230,21 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             const int eventId = 1234;
             const int participantId = 5678;
-            const string pageKey = "EventParticipantByEventIdAndParticipantId";
-            var mockEventParticipants = MockEventParticipantsByEventIdAndParticipantId();
+            const string COLUMNS =
+                "Event_Participants.Event_Participant_ID";
+            string search = $"Event_Participants.Event_ID = {eventId} And Event_Participants.Participant_ID = {participantId}";
 
-            _ministryPlatformService.Setup(m => m.GetPageViewRecords(pageKey, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()))
-                .Returns(mockEventParticipants);
+            var eventParticipant = new List<MpEventParticipant>();
+            eventParticipant.Add(new MpEventParticipant()
+            {
+                EventParticipantId = 8634,
+                EventId = eventId,
+                ParticipantId = participantId
+            });
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
+
+            _ministryPlatformRestService.Setup(m => m.Search<MpEventParticipant>(search, COLUMNS, null, false))
+                .Returns(eventParticipant);
 
             var participant = _fixture.GetEventParticipantRecordId(eventId, participantId);
 
