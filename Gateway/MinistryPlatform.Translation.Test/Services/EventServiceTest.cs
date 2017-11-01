@@ -232,7 +232,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const int participantId = 5678;
             const string COLUMNS =
                 "Event_Participants.Event_Participant_ID";
-            string search = $"EventParticipants.Event_ID = {eventId} And EventParticipants.Participant_ID = {participantId}";
+            string search = $"Event_Participants.Event_ID = {eventId} And Event_Participants.Participant_ID = {participantId}";
 
             var eventParticipant = new List<MpEventParticipant>();
             eventParticipant.Add(new MpEventParticipant()
