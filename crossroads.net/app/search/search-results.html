@@ -1,4 +1,4 @@
-<div class="row search-results">
+<div class="row">
   <div class="col-md-8 col-md-offset-2 col-xs-12">
     <h1 class="font-family-base-light">search</h1>
     <!-- search box -->
@@ -16,7 +16,7 @@
     </form>
     <!-- /search box -->
 
-    <ul class="local-nav list-inline font-size-smaller" ng-if="search.showResults">
+    <ul class="list-inline font-size-smaller" ng-if="search.showResults">
       <li><a ng-class="{'text-gray-dark':!search.type}" ui-sref="search({type:'',tag:''})">All</a>
       </li>
       <li><a ng-class="{'text-gray-dark':search.type==='media'}" ui-sref="search({type:'media',tag:''})">Media</a>
@@ -54,6 +54,7 @@
         <div class="push-half-top font-size-small">
           <div class="row">
             <div ng-if="result.fields.image_path" class="col-md-4 col-xs-5">
+              {{ result.fields.image_path }}
               <img class="imgix-fluid img-responsive img-full-width mobile-push-bottom search-media-image" data-src="{{result.fields.image_path}}">
             </div>
             <div ng-class="{'col-md-8 col-xs-7 hard-left':result.fields.image_path, 'col-xs-12':!result.fields.image_path}">
