@@ -6,8 +6,14 @@ GO
 ------------------------------------------------------------------------------------------------------
 IF COL_LENGTH('Group_Participants', 'Preferred_Serving_Event_Type_ID') IS NULL
 BEGIN
-	ALTER TABLE Group_Participants
+	ALTER TABLE [dbo].[Group_Participants]
 	ADD Preferred_Serving_Event_Type_ID INT;
+
+	ALTER TABLE [dbo].[Group_Participants]  
+	WITH CHECK ADD  
+	CONSTRAINT [FK_Group_Participant_Event_Type] 
+	FOREIGN KEY(Preferred_Serving_Event_Type_ID)
+	REFERENCES [dbo].[Event_Types] ([Event_Type_ID])
 END
 
 ------------------------------------------------------------------------------------------------------
