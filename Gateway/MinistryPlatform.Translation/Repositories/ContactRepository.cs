@@ -18,6 +18,9 @@ namespace MinistryPlatform.Translation.Repositories
 {
     public class ContactRepository : BaseRepository, IContactRepository
     {
+
+        public const string GetContactByIdStoredProc = "api_crds_Get_Contact_By_ID";
+
         private readonly int _addressesPageId;
         private readonly int _congregationDefaultId;
         private readonly int _contactsPageId;
@@ -94,21 +97,15 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpMyContact GetContactById(int contactId)
         {
-            var searchString = string.Format(",\"{0}\"", contactId);
-
-            var pageViewRecords = _ministryPlatformService.GetPageViewRecords("AllIndividualsWithContactId", ApiLogin(), searchString);
-
-            if (pageViewRecords.Count > 1)
+            var parms = new Dictionary<string, object> { { "@ContactID", contactId } };
+            var contacts = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).GetFromStoredProc<MpMyContact>(GetContactByIdStoredProc, parms)?.FirstOrDefault();
+            if (contacts != null && contacts.Count > 1)
             {
                 throw new ApplicationException("GetContactById returned multiple records");
             }
+            var contact = contacts?.FirstOrDefault();
 
-            if (pageViewRecords.Count == 0)
-            {
-                return null;
-            }
-
-            return ParseProfileRecord(pageViewRecords[0]);
+            return contact;
         }
 
         public IObservable<MpSimpleContact> GetSimpleContact(int contactId)
@@ -457,7 +454,7 @@ namespace MinistryPlatform.Translation.Repositories
                                   Dictionary<string, object> householdDictionary,
                                   Dictionary<string, object> addressDictionary)
         {
-            string apiToken = _apiUserRepository.GetToken();
+            string apiToken = ApiLogin();
 
             if (addressDictionary != null)
             {
@@ -486,7 +483,7 @@ namespace MinistryPlatform.Translation.Repositories
         public List<MpRecordID> CreateContact(MpContact minorContact)
         {
             var storedProc = _configurationWrapper.GetConfigValue("CreateContactStoredProc");
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = ApiLogin();
             var fields = new Dictionary<String, Object>
               {
                 {"@FirstName", minorContact.FirstName},

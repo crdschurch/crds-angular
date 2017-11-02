@@ -1,4 +1,3 @@
-
 import groupToolCmsComponent from './groupToolCms.component';
 import CONSTANTS from 'crds-constants';
 import html from './groupToolCms.html';

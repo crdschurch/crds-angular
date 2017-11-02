@@ -1,8 +1,0 @@
-<label ng-show="definition.label">{{definition.label}}</label>
-<div class="text">
-  <label>
-    <select name="{{definition.key}}" ng-model="responses[definition.key]" class="form-control" ng-change="checkError()">
-      <option ng-repeat="answer in definition.answers">{{answer}}</option>
-    </select>
-  </label>
-</div>

@@ -1,8 +1,9 @@
 // require('./group_finder');
 
+// require('./group_finder');
+require('./group_tool');
 require('./childcare');
 require('./mp_tools');
-require('./group_tool');
 require('./live_stream');
 require('ui-select/dist/select.css');
 require('./invoices/invoices.module');
@@ -19,11 +20,11 @@ require('./invoices/invoices.module');
     constants.MODULES.FORM_BUILDER,
     constants.MODULES.GIVE,
     constants.MODULES.GO_VOLUNTEER,
+    constants.MODULES.GROUP_TOOL,
     constants.MODULES.MEDIA,
     constants.MODULES.LIVE_STREAM,
     constants.MODULES.MPTOOLS,
     constants.MODULES.MY_SERVE,
-    constants.MODULES.GROUP_TOOL,
     constants.MODULES.PROFILE,
     constants.MODULES.SEARCH,
     constants.MODULES.SIGNUP,

@@ -16,11 +16,27 @@ const iFrameResizer = require('iframe-resizer/js/iframeResizer.min.js'); // esli
  */
 
 export default class EmbedController {
-
   constructor($element, $sce, $attrs) {
     this.element = $element;
     this.sce = $sce;
     this.attrs = $attrs;
+
+    // iframe attributes
+    this.frameborder = $attrs.frameborder || 0;
+    this.scrolling = $attrs.scrolling || 'no';
+    this.width = $attrs.width || '100%';
+    this.class = $attrs.class || undefined;
+    this.iFrames = undefined;
+
+    // iframe auto-resize attributes
+    this.autoResize = $attrs.resize !== undefined ? Boolean($attrs.resize).valueOf() : true; // Default to auto-resizing, make template explicitly turn it off if desired
+    this.minHeight = $attrs.minHeight || 350;
+    this.resizeInterval = $attrs.resizeInterval || 32;
+  }
+
+  $onInit() {
+    // TODO Defaulting to /give if the 'href' attribute is not specified - maybe this should be an error instead
+    this.defaultPath = '/give/?type=donation';
 
     switch (__CRDS_ENV__) { // eslint-disable-line no-undef
       case 'int':
@@ -30,7 +46,7 @@ export default class EmbedController {
         this.baseUrl = 'https://embeddemo.crossroads.net';
         break;
       case 'local':
-        this.baseUrl = 'http://localhost:8080';
+        this.baseUrl = 'http://local.crossroads.net:8080';
         break;
       default:
         this.baseUrl = 'https://embed.crossroads.net';
@@ -40,23 +56,39 @@ export default class EmbedController {
     this.makeResizeable();
   }
 
+  $onDestroy() {
+    this.closeIframes();
+  }
+
   buildUrl() {
-    let path;
-    if (this.attrs.map === 'true') {
-      path = '/add-me-to-the-map?type=donation';
-    } else {
-      path = this.attrs.href || '/?type=donation';
-    }
+    const path = this.attrs.href || this.defaultPath;
+
     return this.sce.trustAsResourceUrl(`${this.baseUrl}${path}`);
   }
 
+  closeIframes() {
+    if (this.iFrames) {
+      this.iFrames.forEach((frame) => {
+        if (frame.iFrameResizer !== undefined) {
+          frame.iFrameResizer.close();
+        }
+      });
+    }
+  }
+
   makeResizeable() {
+    // Don't auto-resize the iframe if the template didn't ask for it
+    if (!this.autoResize) {
+      return;
+    }
+
     const el = angular.element(this.element).find('iframe')[0];
-    iFrameResizer({
+    this.iFrames = iFrameResizer({
       heightCalculationMethod: 'taggedElement',
-      minHeight: 350,
+      minHeight: this.minHeight,
       checkOrigin: false,
-      interval: 32
+      interval: this.resizeInterval
     }, el);
   }
+
 }
