@@ -54,7 +54,6 @@
         <div class="push-half-top font-size-small">
           <div class="row">
             <div ng-if="result.fields.image_path" class="col-md-4 col-xs-5">
-              {{ result.fields.image_path }}
               <img class="imgix-fluid img-responsive img-full-width mobile-push-bottom search-media-image" data-src="{{result.fields.image_path}}">
             </div>
             <div ng-class="{'col-md-8 col-xs-7 hard-left':result.fields.image_path, 'col-xs-12':!result.fields.image_path}">
