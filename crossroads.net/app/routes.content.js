@@ -184,6 +184,8 @@
                     return $templateFactory.fromUrl('templates/rightSideBar.html');
                   case 'ScreenWidth':
                     return $templateFactory.fromUrl('templates/screenWidth.html');
+                  case 'HeaderOnly':
+                    return $templateFactory.fromUrl('templates/headerOnly.html');
                   case 'HomePage':
                     return $templateFactory.fromUrl('templates/homePage.html');
                   case 'CenteredContentPage':

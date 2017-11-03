@@ -4,6 +4,7 @@ require('../templates/noSideBar.html');
 require('../templates/rightSideBar.html');
 require('../templates/leftSideBar.html');
 require('../templates/screenWidth.html');
+require('../templates/headerOnly.html');
 require('../templates/homePage.html');
 require('../templates/centeredContentPage.html');
 require('../templates/goCincinnati.html');

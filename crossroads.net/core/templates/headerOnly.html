@@ -1,0 +1,13 @@
+<div class="crds-styles">
+  <ng-include src="'templates/header.html'"></ng-include>
+</div>
+
+<div ng-class="{'crds-legacy-styles': renderLegacyStyles, 'crds-styles': !renderLegacyStyles}">
+  <div class="main animated fadeIn">
+    <preloader ng-if="app.resolving" full-screen='true'> </preloader>
+    <div ng-if="!app.resolving">
+      <div ui-view ng-if="!app.resolving"> </div>
+      <form-builder page="page"></form-builder>
+    </div>
+  </div>
+</div>

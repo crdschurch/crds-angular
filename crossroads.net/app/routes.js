@@ -75,6 +75,11 @@
           abstract: true,
           templateUrl: 'templates/screenWidth.html'
         })
+        .state('headerOnly', {
+          parent: 'root',
+          abstract: true,
+          templateUrl: 'templates/headerOnly.html'
+        })
         .state('centeredContentPage', {
           parent: 'root',
           abstract: true,
@@ -107,7 +112,7 @@
           }
         })
         .state('login', {
-          parent: 'noHeaderOrFooter',
+          parent: 'headerOnly',
           url: '/signin',
           templateUrl: 'login/login_page.html',
           controller: 'LoginController',
@@ -132,7 +137,7 @@
           }
         })
         .state('register', {
-          parent: 'noHeaderOrFooter',
+          parent: 'headerOnly',
           url: '/register',
           templateUrl: 'register/register_page.html',
           data: {
