@@ -1,0 +1,8 @@
+USE MinistryPlatform
+GO
+
+IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'Locations' AND COLUMN_NAME = 'Available_Online')
+BEGIN
+	ALTER TABLE dbo.Locations ADD Available_Online BIT NULL;
+END
+GO
