@@ -27,7 +27,7 @@ namespace crds_angular.Services
 
         public List<LocationDTO> GetAllCrossroadsLocations()
         {
-            var locations = _locationRepository.GetLocations();
+            var locations = _locationRepository.GetLocations("Available_Online=1");
             List<LocationDTO> locationDtos = locations.Select(Mapper.Map<MpLocation, LocationDTO>).ToList();
             return locationDtos;
         }

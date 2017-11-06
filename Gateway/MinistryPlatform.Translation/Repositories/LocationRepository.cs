@@ -12,7 +12,7 @@ using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace MinistryPlatform.Translation.Repositories
 {
-    class LocationRepository : BaseRepository, ILocationRepository
+    public class LocationRepository : BaseRepository, ILocationRepository
     {
         private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
 
@@ -21,12 +21,11 @@ namespace MinistryPlatform.Translation.Repositories
             _ministryPlatformRestRepository = ministryPlatformRestRepository;
         }
 
-        public List<MpLocation> GetLocations()
+        public List<MpLocation> GetLocations(string searchString = null)
         {
             var apiToken = ApiLogin();
-            Dictionary<string, object> filter = new Dictionary<string, object>();
             string columns = "Location_ID, Location_Name, Location_Type_ID, Address_ID_Table.*";
-            return _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).SearchTable<MpLocation>("Locations", null, columns);
+            return _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Search<MpLocation>(searchString, columns);
         }
     }
 }

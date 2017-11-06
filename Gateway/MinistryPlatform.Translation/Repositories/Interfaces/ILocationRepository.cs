@@ -9,6 +9,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
 {
     public interface ILocationRepository
     {
-        List<MpLocation> GetLocations();
+        List<MpLocation> GetLocations(string search = null);
     }
 }

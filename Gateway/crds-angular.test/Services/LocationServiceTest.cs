@@ -103,7 +103,7 @@ namespace crds_angular.test.Services
         public void TestGetAllCrossroadsLocations()
         {
             var locations = new List<MpLocation> { _location1, _location2 };
-            _locationRepository.Setup(mocked => mocked.GetLocations()).Returns(locations);
+            _locationRepository.Setup(mocked => mocked.GetLocations(It.IsAny<string>())).Returns(locations);
             var result = _fixture.GetAllCrossroadsLocations();
             _locationRepository.VerifyAll();
             var expected = new List<LocationDTO>() { _locationDto1, _locationDto2};
@@ -116,7 +116,7 @@ namespace crds_angular.test.Services
             var distance1 = 10;
             var distance2 = 5;
             var locations = new List<MpLocation> { _location1, _location2 };
-            _locationRepository.Setup(mocked => mocked.GetLocations()).Returns(locations);
+            _locationRepository.Setup(mocked => mocked.GetLocations(It.IsAny<string>())).Returns(locations);
             var addresses = new List<AddressDTO> {_address1, _address2};
             _proximityService.Setup(mocked => mocked.GetProximity(origin, It.IsAny<List<AddressDTO>>(), null)).Returns(new List<decimal?> { distance1, distance2 });
 
