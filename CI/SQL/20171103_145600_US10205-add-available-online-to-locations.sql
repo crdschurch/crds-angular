@@ -21,3 +21,7 @@ OR Location_Name = 'Richmond'
 OR Location_Name = 'Andover' 
 OR Location_Name = 'Columbus' 
 OR Location_Name = 'Downtown Lexington' 
+
+UPDATE dp_Pages
+SET Filter_Clause = 'Congregations.Available_Online=1'
+WHERE Filter_Clause = 'Available_Online=1'
