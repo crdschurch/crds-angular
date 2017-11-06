@@ -43,7 +43,6 @@ require('./invoices/invoices.module');
   require('./corkboard');
   require('./signup');
   require('./styleguide');
-  require('./superbowl');
   require('./thedaily');
   require('./gotrips');
   require('./my_serve');
