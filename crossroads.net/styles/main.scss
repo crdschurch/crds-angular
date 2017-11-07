@@ -76,6 +76,20 @@
     left: 0;
     height: 100%;
     width: 100%;
+    z-index: -1;
+
+    &.with-header {
+      top: 64px;
+      @media screen and (min-width: $screen-md) {
+        top: 72px;
+      }
+    }
+  }
+
+  .crds-shared-header header {
+    background: $cr-white;
+    position: relative;
+    z-index: 11;
   }
 }
 
