@@ -1,19 +1,19 @@
 param (
-    [parameter(Mandatory=$true)] [string]$userCredentialsCSV,
-    [string]$loginEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Login',
-    [string]$participantEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Participant',
-    [string]$profileEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Profile',
-    [string]$pinEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/pin',
-    [string]$deleteAwsEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/deleteallcloudsearchrecords',
+	[parameter(Mandatory=$true)] [string]$userCredentialsCSV,
+	[parameter(Mandatory=$true)] [string]$mapUserList,
+	[string]$loginEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Login',
+	[string]$participantEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Participant',
+	[string]$profileEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Profile',
+	[string]$pinEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/pin',
+	[string]$deleteAwsEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/deleteallcloudsearchrecords',
     [string]$uploadAwsEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/uploadallcloudsearchrecords'
  )
 
 function addUsersToMap
 {
-	$mapDataList = import-csv .\mapUserList.csv
 	$logFile = "log_creating_map_data.txt"
 	
-	foreach($mapUser in $mapDataList)
+	foreach($mapUser in $mapUserList)
 	{
 		if(!$mapUser.email.IsNullOrEmpty)
 		{

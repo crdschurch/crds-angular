@@ -30,11 +30,11 @@ namespace MinistryPlatform.Translation.Repositories
             return MapOrganizations(result);
         }
 
-        public List<MpLocation> GetLocationsForOrganization(int orgId, string token)
+        public List<MpOrgLocation> GetLocationsForOrganization(int orgId, string token)
         {
             var result = _ministryPlatformService.GetSubpageViewRecords(_configurationWrapper.GetConfigIntValue("LocationsForOrg"), orgId, token);
 
-            return result.Select(record => new MpLocation
+            return result.Select(record => new MpOrgLocation
             {
                 LocationId = record.ToInt("Location ID"),
                 LocationName = record.ToString("Location Name"),
