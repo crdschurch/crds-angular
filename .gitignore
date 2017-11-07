@@ -212,3 +212,4 @@ Gateway/Crossroads.AsyncJobs/Unity.config
 **/Crossroads.ClientApiKeys-Unity.config
 
 .DS_Store
+/CI/SQL/20171023_150300_US10195-calculate-srfp-sp.sql
