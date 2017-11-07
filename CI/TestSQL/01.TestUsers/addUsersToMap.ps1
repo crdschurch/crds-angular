@@ -1,16 +1,17 @@
 param (
 	[parameter(Mandatory=$true)] [string]$userCredentialsCSV,
-	[parameter(Mandatory=$true)] [string]$mapUserList,
+	[parameter(Mandatory=$true)] [string]$mapUserListCSV,
 	[string]$loginEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Login',
 	[string]$participantEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Participant',
 	[string]$profileEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Profile',
 	[string]$pinEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/pin',
 	[string]$deleteAwsEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/deleteallcloudsearchrecords',
-    [string]$uploadAwsEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/uploadallcloudsearchrecords'
+	[string]$uploadAwsEndpoint = 'https://gatewayint.crossroads.net/gateway/api/finder/uploadallcloudsearchrecords'
  )
 
 function addUsersToMap
 {
+	$mapUserList = import-csv $mapUserListCSV
 	$logFile = "log_creating_map_data.txt"
 	
 	foreach($mapUser in $mapUserList)
