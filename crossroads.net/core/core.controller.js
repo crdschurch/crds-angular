@@ -72,7 +72,7 @@
     });
 
     $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-      if(typeof $rootScope.doRenderLegacyStyles !== 'undefined') {
+      if (typeof $rootScope.doRenderLegacyStyles !== 'undefined') {
         $rootScope.renderLegacyStyles = $rootScope.doRenderLegacyStyles;
       } else {
         $rootScope.renderLegacyStyles = toState.data !== undefined ? toState.data.renderLegacyStyles !== false : true;
