@@ -29,8 +29,6 @@ import geolocation from './geolocation';
 import geolocationModal from './geolocation_modal';
 import landing from './landing';
 import stream from './stream';
-import streamVideojs from './stream_videojs';
 import streamingReminder from './streaming_reminder';
 import streamspotPlayer from './streamspot_player'
-import videojsPlayer from './videojs_player'
 import socialSharing from '../../core/components/social_sharing';

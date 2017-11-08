@@ -136,8 +136,6 @@
     "plangular-3": "^3.1.2",
     "script-loader": "^0.7.0",
     "ui-select": "^0.17.1",
-    "video.js": "5.14.1",
-    "videojs-chromecast": "^2.0.8",
     "webpack": "^1.15.0",
     "webpack-dev-server": "^1.16.5",
     "wow.js": "^1.2.0"

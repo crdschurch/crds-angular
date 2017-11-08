@@ -16,7 +16,7 @@ export default function LiveStreamRouter($httpProvider, $stateProvider) {
         }
       },
       resolve: {
-        preloadStreamStatus: (StreamStatusService, StreamspotService) => 
+        preloadStreamStatus: (StreamStatusService, StreamspotService) =>
             StreamStatusService.presetStreamStatus(StreamspotService.events)
       }
     })
@@ -32,17 +32,6 @@ export default function LiveStreamRouter($httpProvider, $stateProvider) {
       },
       resolve: {
         preloadStreamStatus: StreamspotService => StreamspotService.checkBroadcasting()
-      }
-    })
-    .state('livestream-videojs', {
-      parent: 'noHeaderOrFooter',
-      url: '/live/stream2',
-      template: '<stream-videojs></stream-videojs>',
-      data: {
-        meta: {
-          title: 'Live',
-          description: ''
-        }
       }
     })
   ;
