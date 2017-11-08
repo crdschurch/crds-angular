@@ -79,6 +79,7 @@
     z-index: -1;
 
     &.with-header {
+      position: absolute;
       top: 64px;
       @media screen and (min-width: $screen-md) {
         top: 72px;
