@@ -14,7 +14,8 @@
       controller: 'SearchController as search',
       templateUrl: 'search/search-results.html',
       data: {
-        type: ''
+        type: '',
+        renderLegacyStyles: false
       },
       resolve:{
         $stateParams: '$stateParams',

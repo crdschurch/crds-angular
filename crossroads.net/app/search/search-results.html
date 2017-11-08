@@ -1,29 +1,27 @@
 <div class="row">
   <div class="col-md-8 col-md-offset-2 col-xs-12">
+    <h1 class="font-family-base-light">search</h1>
     <!-- search box -->
-    <div class="push-ends">
-      <form>
-        <div class="input-group input-group-lg">
-          <input type="search" class="form-control input-lg" placeholder="Search" ng-model="searchString" autofocus>
-          <span class="input-group-btn">
-            <button type="submit" class="btn btn-default" ng-click="search.search()">
-              <svg viewBox="0 0 32 32" class="icon icon-large icon-search3">
-                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#search3"></use>
-              </svg>
-            </button>
-          </span>
-        </div>
-      </form>
-
-    </div>
-
+    <form class="searchbar ng-untouched ng-pristine ng-valid">
+      <div class="input-group">
+        <input type="search" class="form-control ng-touched" placeholder="Search" ng-model="searchString" autofocus>
+        <span class="input-group-btn">
+          <button class="btn btn-primary" type="submit" ng-click="search.search()">
+            <svg class="icon icon-1" viewBox="0 0 256 256">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/svgs/icons.svg#search"></use>
+            </svg>
+          </button>
+        </span>
+      </div>
+    </form>
     <!-- /search box -->
-    <ul class="local-nav" ng-if="search.showResults">
-      <li ng-class="{active:!search.type}"><a ui-sref="search({type:'',tag:''})">All</a>
+
+    <ul class="list-inline font-size-smaller" ng-if="search.showResults">
+      <li><a ng-class="{'text-gray-dark':!search.type}" ui-sref="search({type:'',tag:''})">All</a>
       </li>
-      <li ng-class="{active:search.type==='media'}"><a ui-sref="search({type:'media',tag:''})">Media</a>
+      <li><a ng-class="{'text-gray-dark':search.type==='media'}" ui-sref="search({type:'media',tag:''})">Media</a>
       </li>
-      <li ng-class="{active:search.type==='corkboard'}"><a ui-sref="search({type:'corkboard',tag:''})">Corkboard</a>
+      <li><a ng-class="{'text-gray-dark':search.type==='corkboard'}" ui-sref="search({type:'corkboard',tag:''})">Corkboard</a>
       </li>
     </ul>
   </div>
@@ -34,25 +32,26 @@
     <span>Invalid Search</span>
   </div>
 </div>
+
 <!-- results amount -->
 <div class="row animated fadeIn" ng-if="!search.loading && search.showResults">
   <div class="col-md-8 col-md-offset-2 col-xs-12 push-top ">
-    <div class="text-center text-muted">{{search.results.hits.found}} results found</div>
+    <div class="text-muted tagline">{{search.results.hits.found}} results found</div>
   </div>
 </div>
 <!-- /results amount -->
 
 <!-- results -->
 <div class="row animated fadeIn" ng-if="!search.loading">
-  <div class="col-md-8 col-md-offset-2 col-xs-12 push-ends">
+  <div class="col-md-8 col-md-offset-2 col-xs-12 push-bottom push-quarter-top">
     <!-- site result card -->
-    <div ng-repeat="result in search.results.hits.hit" class="card-item search-card clearfix" data-category="view">
-      <div class="card-content">
-        <div class="card-header">
-          <h3 class="flush-bottom text-ellipsis"><a href="{{search.getLink(result.fields)}}">{{result.fields.title}}</a></h3>
-          <a href="{{search.getLink(result.fields)}}" class="search-link text-ellipsis">{{search.getLink(result.fields)}}</a>
+    <div ng-repeat="result in search.results.hits.hit" class="card-item search-card clearfix push-bottom" data-category="view">
+      <div class="border-sides border-ends soft">
+        <div>
+          <h4 class="flush-top push-quarter-bottom text-ellipsis text-gray-dark"><a href="{{search.getLink(result.fields)}}">{{result.fields.title}}</a></h4>
+          <a href="{{search.getLink(result.fields)}}" class="search-link text-ellipsis font-size-small text-muted">{{search.getLink(result.fields)}}</a>
         </div>
-        <div class="card-body">
+        <div class="push-half-top font-size-small">
           <div class="row">
             <div ng-if="result.fields.image_path" class="col-md-4 col-xs-5">
               <img class="imgix-fluid img-responsive img-full-width mobile-push-bottom search-media-image" data-src="{{result.fields.image_path}}">
