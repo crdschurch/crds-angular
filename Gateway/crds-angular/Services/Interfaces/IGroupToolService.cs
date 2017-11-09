@@ -39,5 +39,6 @@ namespace crds_angular.Services.Interfaces
         void ArchivePendingGroupInquiriesOlderThan90Days();
         List<GroupDTO> GetGroupToolGroups(string token);
         Inquiry GetGroupInquiryForContactId(int groupId, int contactId);
+        string GetCurrentJourney();
     }
 }
