@@ -26,6 +26,7 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IMinistryPlatformRestRepository _mpRestRepository;
         private readonly IApiUserRepository _apiUserRepository;
+        private const int JourneyCategoryID = 51;
 
         public GroupToolRepository(IMinistryPlatformService ministryPlatformService,
                                IConfigurationWrapper configurationWrapper,
@@ -40,6 +41,14 @@ namespace MinistryPlatform.Translation.Repositories
             _groupInquiriesNotPlacedPageViewId = _configurationWrapper.GetConfigIntValue("GroupInquiriesNotPlacedPageView");
             _mpRestRepository = mpRestRepository;
             _apiUserRepository = apiUserRepository;
+        }
+
+        public string GetCurrentJourney()
+        {
+            var token = _apiUserRepository.GetDefaultApiUserToken();
+            var filter = $"ATTRIBUTE_CATEGORY_ID_TABLE.ATTRIBUTE_CATEGORY_ID = {JourneyCategoryID} AND GETDATE() BETWEEN START_DATE AND ISNULL(END_DATE, GETDATE())";
+            var attribute = _mpRestRepository.UsingAuthenticationToken(token).Search<MpAttribute>(filter, "Attribute_Name").FirstOrDefault();
+            return attribute?.Name;
         }
 
         public List<MpInvitation> GetInvitations(int sourceId, int invitationTypeId)
