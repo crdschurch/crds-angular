@@ -9,17 +9,17 @@
       <div class="panel">
         <div class="panel-body">
           <div class="row">
-            <div class="col-sm-6 auth-form" ng-show="$root.username == undefined">
+            <div class="col-sm-7 auth-form" ng-show="$root.username == undefined">
               <login-form register-url="register"></login-form>
             </div>
 
-            <div class="col-sm-6" ng-show="$root.username != undefined">
+            <div class="col-sm-7" ng-show="$root.username != undefined">
               <preloader full-screen='true'> </preloader>
             </div>
 
             <div class="divider">&nbsp;</div>
 
-            <div class="col-sm-6 hidden-xs auth-details">
+            <div class="col-sm-5 hidden-xs auth-details">
               <div dynamic-content="$root.MESSAGES.signinRegisterPromo.content | html"></div>
             </div>
           </div>
