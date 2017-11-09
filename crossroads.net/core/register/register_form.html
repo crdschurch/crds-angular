@@ -33,13 +33,13 @@
 
   <password-field min-length="8" passwd-strength="true" required="true" passwd="register.newuser.password" submitted="register.registerForm.$submitted" prefix="register.passwordPrefix"></password-field>
 
-  <input type="submit" class="btn btn-primary btn-block" value="Register an Account" ng-disabled="!register.showRegisterButton" >
+  <input type="submit" class="btn btn-primary btn-block" value="Register an account" ng-disabled="!register.showRegisterButton" >
 
   <span dynamic-content="$root.MESSAGES.registrationFooter.content | html"></span>
 </form>
 
 <hr>
 
-<p ng-if="!register.showLoginCallback">Already have an account? <a ui-sref="login">Sign In</a>.</p>
+<p class="font-size-smaller" ng-if="!register.showLoginCallback">Already have an account? <a ui-sref="login">Sign in</a>.</p>
 
-<p ng-if="register.showLoginCallback">Already have an account? <a ng-click="register.loginCallback()">Sign In</a>.</p>
+<p class="font-size-smaller" ng-if="register.showLoginCallback">Already have an account? <a ng-click="register.loginCallback()">Sign in</a>.</p>
