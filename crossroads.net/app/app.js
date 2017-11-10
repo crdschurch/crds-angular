@@ -42,7 +42,9 @@ require('./invoices/invoices.module');
 
   require('./corkboard');
   require('./signup');
+  /// #if INCLUDE_STYLEGUIDE
   require('./styleguide');
+  /// #endif
   require('./thedaily');
   require('./gotrips');
   require('./my_serve');

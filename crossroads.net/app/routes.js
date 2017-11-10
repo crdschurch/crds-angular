@@ -206,12 +206,14 @@
           url: '/event-registration-desired',
           templateUrl: 'my_serve/event_registration_mockup_desired.html'
         })
+/// #if INCLUDE_STYLEGUIDE
         .state('styleguide', {
           parent: 'noHeaderOrFooter',
           url: '/styleguide',
           controller: 'StyleguideCtrl as styleguide',
           templateUrl: 'styleguide/styleguide.html'
         })
+/// #endif
         .state('go_trip_giving_results', {
           parent: 'noSideBar',
           url: '/go_trip_giving_results',
