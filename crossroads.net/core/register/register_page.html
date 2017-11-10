@@ -1,26 +1,25 @@
 <div class="imgix-fluid-bg img-background with-header" data-src="//crds-cms-uploads.imgix.net/content/images/register-bg.jpg">
-</div>
+  <div class="container auth-container">
+    <div class="row">
+      <div class="col-xs-12 col-md-8 col-md-offset-2 mobile-hard-top soft-top">
+        <h1 class="page-header text-lowercase text-white push-quarter-bottom mobile-hard-top soft-top">Register</h1>
 
-<div class="container auth-container">
-  <div class="row">
-    <div class="col-xs-12 col-md-8 col-md-offset-2 mobile-hard-top soft-top">
-      <h1 class="page-header text-lowercase text-white push-quarter-bottom mobile-hard-top soft-top">Register</h1>
+        <div class="panel">
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-sm-7 auth-form" ng-show="$root.username == undefined">
+                <register-form register-callback='register.redirectToGetStarted'> </register-form>
+              </div>
 
-      <div class="panel">
-        <div class="panel-body">
-          <div class="row">
-            <div class="col-sm-7 auth-form" ng-show="$root.username == undefined">
-              <register-form register-callback='register.redirectToGetStarted'> </register-form>
-            </div>
+              <div class="col-sm-7" ng-show="$root.username != undefined">
+                <preloader full-screen='true'> </preloader>
+              </div>
 
-            <div class="col-sm-7" ng-show="$root.username != undefined">
-              <preloader full-screen='true'> </preloader>
-            </div>
+              <div class="hidden-xs divider">&nbsp;</div>
 
-            <div class="hidden-xs divider">&nbsp;</div>
-
-            <div class="col-sm-5 hidden-xs auth-details">
-              <div dynamic-content="$root.MESSAGES.signinRegisterPromo.content | html"></div>
+              <div class="col-sm-5 hidden-xs auth-details">
+                <div dynamic-content="$root.MESSAGES.signinRegisterPromo.content | html"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -28,3 +27,4 @@
     </div>
   </div>
 </div>
+

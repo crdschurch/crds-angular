@@ -79,6 +79,7 @@
     z-index: -1;
 
     &.with-header {
+      display: table;
       position: absolute;
       top: 70px;
     }
