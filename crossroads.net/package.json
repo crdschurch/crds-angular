@@ -53,6 +53,7 @@
     "gulp-util": "^3.0.6",
     "gulp-watch": "^4.3.4",
     "gulp-webpack": "^1.5.0",
+    "ifdef-loader": "2.0.3",
     "image-webpack-loader": "^1.6.1",
     "jasmine": "2.5.0",
     "jasmine-given": "^2.6.2",
