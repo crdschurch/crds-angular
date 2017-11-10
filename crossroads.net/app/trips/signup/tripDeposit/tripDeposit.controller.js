@@ -143,7 +143,7 @@ class TripDepositController {
   saveApplication(shouldSubmitBank = '') {
     this.dto.bankinfoSubmitted = true;
     if (!this.tripForm.$valid){
-      this.scope.$emit('notify', this.rootScope.MESSAGES.generalError);
+      this.rootscope.$emit('notify', this.rootScope.MESSAGES.generalError);
       return;
     }
 
