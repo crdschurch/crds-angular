@@ -301,16 +301,22 @@ namespace MinistryPlatform.Translation.Repositories
 
         public int GetEventParticipantRecordId(int eventId, int participantId)
         {
-            var search = "," + eventId + "," + participantId;
-            var participant = _ministryPlatformService.GetPageViewRecords("EventParticipantByEventIdAndParticipantId", ApiLogin(), search).FirstOrDefault();
-            return participant?.ToInt("Event_Participant_ID") ?? 0;
+            return GetEventParticipantId(eventId, participantId);
         }
 
         public bool EventHasParticipant(int eventId, int participantId)
         {
-            var searchString = "," + eventId + "," + participantId;
-            var records = _ministryPlatformService.GetPageViewRecords("EventParticipantByEventIdAndParticipantId", ApiLogin(), searchString);
-            return records.Count != 0;
+            return GetEventParticipantId(eventId, participantId) > 0;
+        }
+
+        private int GetEventParticipantId(int eventId, int participantId)
+        {
+            var apiToken = ApiLogin();
+            const string COLUMNS =
+                "Event_Participants.Event_Participant_ID";
+            string search = $"Event_Participants.Event_ID = {eventId} And Event_Participants.Participant_ID = {participantId}";
+            var eventParticipant = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Search<MpEventParticipant>(search, COLUMNS).FirstOrDefault();
+            return eventParticipant?.EventParticipantId ?? 0;
         }
 
         public List<MpEvent> GetEvents(string eventType, string token)

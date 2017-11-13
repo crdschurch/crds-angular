@@ -58,10 +58,6 @@ module.exports = function(config) {
               path.resolve(__dirname, 'core'),
               path.resolve(__dirname, './node_modules/angular-stripe')
             ],
-            exclude: [
-              /streamspotAnalytics\.js$/,
-              /videojs5-hlsjs-source-handler/
-            ],
             loader: 'babel-loader'
           },
           {
@@ -88,11 +84,6 @@ module.exports = function(config) {
            test: /\.json$/,
            loaders: ["json-loader"]
           }
-        ],
-        noParse: [
-            path.join(__dirname, "node_modules", "video.js","dist","video.js"),
-            /videojs5-hlsjs-source-handler/,
-            path.join(__dirname, "node_modules", "videojs-chromecast","dist","videojs-chromecast.js")
         ]
       },
       plugins: [new ExtractTextPlugin('[name].css'), definePlugin]

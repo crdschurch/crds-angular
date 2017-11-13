@@ -23,8 +23,9 @@ describe('PaymentService', function() {
   };
 
   beforeEach(function() {
-    angular.mock.module('crossroads.give');
-
+    angular.mock.module('crossroads.common');
+    angular.mock.module('crossroads.core');
+    
     angular.mock.module(function($provide) {
       $provide.value('stripe', {
         setPublishableKey: function() {},

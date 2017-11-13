@@ -358,6 +358,7 @@
     <Compile Include="Exceptions\PaymentTypeNotFoundException.cs" />
     <Compile Include="Exceptions\TripFullException.cs" />
     <Compile Include="Models\Crossroads\Events\Campaign\PledgeCampaignSummaryDto.cs" />
+    <Compile Include="Models\Crossroads\LocationDTO.cs" />
     <Compile Include="Models\Crossroads\LocationProximityDTO.cs" />
     <Compile Include="Models\Crossroads\Waivers\ContactInvitation.cs" />
     <Compile Include="Models\Crossroads\Waivers\WaiverDTO.cs" />

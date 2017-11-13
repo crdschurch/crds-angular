@@ -1,4 +1,6 @@
-<ng-include src="'templates/header.html'"></ng-include>
+<div class="crds-styles">
+  <ng-include src="'templates/header.html'"></ng-include>
+</div>
 
 <div ng-class="{'crds-legacy-styles': renderLegacyStyles, 'crds-styles': !renderLegacyStyles}">
   <div class="main animated fadeIn">
@@ -8,6 +10,4 @@
       <form-builder page="page"></form-builder>
     </div>
   </div>
-
-  <ng-include src="'templates/footer.html'"></ng-include>
 </div>

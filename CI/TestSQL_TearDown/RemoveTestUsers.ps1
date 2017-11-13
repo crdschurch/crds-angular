@@ -1,11 +1,12 @@
 param (
+    [string]$userListCSV = "..\TestSQL\01.TestUsers\userList.csv",
     [string]$DBServer = "mp-int-db.cloudapp.net",
     [string]$SQLcmd = "C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\sqlcmd.exe",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
  
- $userList = import-csv '..\TestSQL\01.TestUsers\userList.csv'
+ $userList = import-csv $userListCSV
  $exitCode = 0
  $SQLCommonParams = @("-U", $DBUser, "-P", $DBPassword, "-S", $DBServer, "-b")
  

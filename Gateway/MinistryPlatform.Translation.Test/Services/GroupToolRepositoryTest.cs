@@ -227,7 +227,48 @@ namespace MinistryPlatform.Translation.Test.Services
             Assert.AreEqual(inquiryResults[0]["Inquiry_Date"], results[0].RequestDate);
             Assert.AreEqual(inquiryResults[0]["Placed"], results[0].Placed);
             Assert.AreEqual(inquiryResults[0]["Contact_ID"], results[0].ContactId);
+        }
 
+        [Test]
+        public void GetCurrentyJourneyShouldReturnAttributeName()
+        {
+            var dto = new List<MpAttribute>
+            {
+                new MpAttribute
+                {
+                    Name = "This is not the best journey in the world"
+                }
+            };
+            _apiUserRepository.Setup(m => m.GetDefaultApiUserToken()).Returns("TheBestToken");
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("TheBestToken")).Returns(_ministryPlatformRestRepository.Object);
+            _ministryPlatformRestRepository.Setup(
+                m =>
+                    m.Search<MpAttribute>(
+                        "ATTRIBUTE_CATEGORY_ID_TABLE.ATTRIBUTE_CATEGORY_ID = 51 AND GETDATE() BETWEEN START_DATE AND ISNULL(END_DATE, GETDATE())",
+                        "Attribute_Name",(string) null, (bool) false)).Returns(dto);
+
+            var result = _fixture.GetCurrentJourney();
+
+            _ministryPlatformRestRepository.VerifyAll();
+            Assert.AreEqual(result, dto[0].Name);
+
+        }
+
+        [Test]
+        public void GetCurrentJourneyShouldReturnNull()
+        {
+            _apiUserRepository.Setup(m => m.GetDefaultApiUserToken()).Returns("TheBestToken");
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("TheBestToken")).Returns(_ministryPlatformRestRepository.Object);
+            _ministryPlatformRestRepository.Setup(
+                m =>
+                    m.Search<MpAttribute>(
+                        "ATTRIBUTE_CATEGORY_ID_TABLE.ATTRIBUTE_CATEGORY_ID = 51 AND GETDATE() BETWEEN START_DATE AND ISNULL(END_DATE, GETDATE())",
+                        "Attribute_Name", (string)null, (bool)false)).Returns(new List<MpAttribute>());
+
+            var result = _fixture.GetCurrentJourney();
+
+            _ministryPlatformRestRepository.VerifyAll();
+            Assert.IsNull(result);
         }
     }
 }

@@ -349,6 +349,20 @@ namespace crds_angular.App_Start
             Mapper.CreateMap<MpGroupSearchResult, GroupDTO>()
                 .ForMember(dest => dest.GroupName, opts => opts.MapFrom(src => src.Name));
 
+            Mapper.CreateMap<MpLocation, LocationDTO>()
+                .ForMember(dest => dest.Address,
+                           opts => opts.MapFrom(src => new AddressDTO(
+                                                    src.AddressLine1,
+                                                    src.AddressLine2,
+                                                    src.City,
+                                                    src.State,
+                                                    src.Zip,
+                                                    src.Longitude,
+                                                    src.Latitude)))
+                .ForMember(dest => dest.LocationId, opts => opts.MapFrom(src => src.LocationId))
+                .ForMember(dest => dest.LocationName, opts => opts.MapFrom(src => src.LocationName))
+                .ForMember(dest => dest.ImageUrl, opts => opts.MapFrom(src => src.ImageUrl));
+
             Mapper.CreateMap<MpAddress, AddressDTO>()
                 .ForMember(dest => dest.AddressLine1, opts => opts.MapFrom(src => src.Address_Line_1))
                 .ForMember(dest => dest.AddressLine2, opts => opts.MapFrom(src => src.Address_Line_2))

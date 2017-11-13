@@ -1,59 +1,40 @@
-<div class="dd_menu">
-    <div class="primary">
-        <div dynamic-content="$root.MESSAGES.loginFormTop.content | html"></div>
-        <div class="loading-spinner-container" ng-hide="!processing">
-            <svg viewBox="0 0 102 101" class="loading-spinner"><g fill="none" fill-rule="evenodd"><g transform="translate(1 1)" stroke-width="2"><ellipse stroke="#eee" cx="50" cy="49.421" rx="50" ry="49.421"></ellipse><path d="M50 98.842c27.614 0 50-22.127 50-49.42C100 22.125 77.614 0 50 0" stroke-opacity=".631" stroke="#3B6E8F"></path></g></g></svg>
-        </div>
-        <form id="navlogin" name="navlogin" ng-submit="login()" role="form" ng-hide="processing" novalidate>
-            <div class="form-group">
-                <div ng-show="!modal" class="navbar--login__input" ng-class="{'has-error': checkEmail() }">
-                    <input id="{{passwordPrefix}}-email" required class="form-control" ng-model-options="{ updateOn: 'blur', debounce: {'blur': 500} }" type="email" name="username" placeholder="Email" autocomplete="off" autocapitalize="off" ng-model="credentials.username" autofocus="">
-                    <ng-messages for="navlogin['username'].$error" ng-if="navlogin.$submitted">
-                      <ng-messages-include src="on-submit-messages"></ng-messages-include>
-                    </ng-messages>
-                    <ng-messages for="navlogin['username'].$error" ng-show="$root.username == undefined">
-                      <ng-messages-include src="on-blur-messages"></ng-messages-include>
-                    </ng-messages>
-                </div>
-                <div class="navbar--login__input" >
-                    <password-field required="true" min-length="0" passwd-strength="false" passwd="credentials.password" submitted="navlogin.$submitted" prefix="passwordPrefix"></password-field>
-                </div>
-                <div>
-                  <!-- TODO Update to use ngMessages and a validator -->
-                  <span ng-show="loginFailed" ng-class="{'has-error': loginFailed }">
-                      <span dynamic-content="$root.MESSAGES.loginFailed.content | html"></span>
-                  </span>
-                </div>
-                <div class="row">
-                  <!-- HTML for "keep me signed in feature" -->
-                  <div class="col-xs-12 push-bottom" ng-hide="true" checked>
-                    <input type="checkbox"> Stay Signed In
-                  </div>
-                  <div class="col-xs-12">
-                    <input type="submit" name="submit_nav" value="Sign In" ng-class="{disabled: processing }" id="submit_nav" class="btn btn-primary btn-block"/>
-                    <input ng-if="modal" ng-click="modal.dismiss('sign out')" name="sign_out" value="Sign Out" ng-class="{disabled: processing }" id="sign_out" class="btn btn-standard btn-block"/>
-                  </div>
-                </div>
-            </div>
-        </form>
+<div dynamic-content="$root.MESSAGES.loginFormTop.content | html"></div>
+
+<form id="navlogin" name="navlogin" ng-submit="login()" role="form" ng-hide="processing" novalidate>
+  <div class="form-group">
+    <div ng-show="!modal" class="" ng-class="{'has-error': checkEmail() }">
+      <label class="sr-only" for="{{passwordPrefix}}-email">Email address</label>
+      <input id="{{passwordPrefix}}-email" required class="form-control" ng-model-options="{ updateOn: 'blur', debounce: {'blur': 500} }" type="email" name="username" placeholder="Email" autocomplete="off" autocapitalize="off" ng-model="credentials.username" autofocus="">
+
+      <ng-messages for="navlogin['username'].$error" ng-if="navlogin.$submitted" class="error help-block">
+        <ng-messages-include src="on-submit-messages"></ng-messages-include>
+      </ng-messages>
+
+      <ng-messages for="navlogin['username'].$error" ng-show="$root.username == undefined" class="error help-block">
+        <ng-messages-include src="on-blur-messages"></ng-messages-include>
+      </ng-messages>
     </div>
+  </div>
 
-    <div ng-if="(showRegister || showRegisterCallback) && !processing" class="row">
-      <div class="col-xs-12">
-        <hr>
-        <div class="text-center or-divider">
-          <p><span> or </span></p>
-        </div>
-        <p ng-if="showRegister" class="text-center"><a class="link-secondary" ui-sref="{{registerUrl}}" >Register an account</a></p>
-        <p ng-if="showRegisterCallback" class="text-center"><a class="link-secondary" ng-click="registerCallback()" >Register an account</a></p>
-      </div>
-    </div><!--/row-->
-    <div ng-if="!modal && !processing" class="row">
-      <div class="col-xs-12 text-center small text-muted">
-          <p class="sr-help">
-              <a class="text-muted" href="/help">Need Help? </a>|<a class="text-muted" ui-sref="forgotPassword"> Forgot password?</a>
-          </p>
-      </div>
-    </div><!--/row-->
+  <password-field required="true" min-length="0" passwd-strength="false" passwd="credentials.password" submitted="navlogin.$submitted" prefix="passwordPrefix"></password-field>
 
-</div>
+  <div ng-show="loginFailed" ng-class="{'has-error': loginFailed }" class="error help-block">
+    <span dynamic-content="$root.MESSAGES.loginFailed.content | html"></span>
+  </div>
+
+  <div class="clearfix">
+    <div ng-if="!modal && !processing" class="pull-right font-size-smaller">
+      <a class="block" ui-sref="forgotPassword">Forgot password?</a>
+      <a class="block" href="/help">Need help?</a>
+    </div>
+  </div>
+
+  <div class="push-half-top push-bottom">
+    <input type="submit" name="submit_nav" value="Sign in" ng-class="{disabled: processing }" id="submit_nav" class="btn btn-primary btn-block" />
+  </div>
+</form>
+
+<p class="text-center font-size-smaller" ng-if="(showRegister || showRegisterCallback) && !processing">Or
+  <a class="link-secondary" ng-if="showRegister" ui-sref="{{registerUrl}}">register an account</a>
+  <a class="link-secondary" ng-if="showRegisterCallback" ng-click="registerCallback()">register an account</a>
+</p>

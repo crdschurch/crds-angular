@@ -70,57 +70,6 @@ namespace crds_angular.test.controllers
         }
 
         [Test]
-        public void GetPinsByAddressShouldCallAnalyticsForConnect()
-        {
-            var fakeQueryParams = new PinSearchQueryParams();
-            fakeQueryParams.CenterGeoCoords = new GeoCoordinates(39.123, -84.456);
-            fakeQueryParams.ContactId = 12345;
-            fakeQueryParams.FinderType = "CONNECT";
-            fakeQueryParams.UserLocationSearchString = "45039";
-            _finderService.Setup(m => m.areAllBoundingBoxParamsPresent(It.IsAny<MapBoundingBox>())).Returns(false);
-            _finderService.Setup(m => m.GetMapCenterForResults(It.IsAny<string>(), It.IsAny<GeoCoordinates>(), It.IsAny<string>()))
-                .Returns(new GeoCoordinate {Latitude = 1, Longitude = 3});
-            _finderService.Setup(m => m.GetPinsInBoundingBox(It.IsAny<GeoCoordinate>(), It.IsAny<string>(), It.IsAny<AwsBoundingBox>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
-                .Returns(new List<PinDto>());
-            _finderService.Setup(m => m.RandomizeLatLongForNonSitePins(It.IsAny <List<PinDto>>())).Returns(new List<PinDto>());
-            _analyticsService.Setup(
-                m =>
-                    m.Track(It.Is<string>(userId => userId == "Anonymous"),
-                            It.Is<string>(eventName => eventName == "ConnectSearch"),
-                            It.Is<EventProperties>(props => props["Location"] == "45039")));
-
-            _fixture.GetPinsByAddress(fakeQueryParams);
-
-            _analyticsService.VerifyAll();
-        }
-
-        [Test]
-        public void GetPinsByAddressShouldCallAnalyticsForGroups()
-        {
-            var fakeQueryParams = new PinSearchQueryParams();
-            fakeQueryParams.CenterGeoCoords = new GeoCoordinates(39.123, -84.456);
-            fakeQueryParams.ContactId = 12345;
-            fakeQueryParams.FinderType = "GROUPS";
-            fakeQueryParams.UserLocationSearchString = "45039";
-            fakeQueryParams.UserKeywordSearchString = "BEER";
-            _finderService.Setup(m => m.areAllBoundingBoxParamsPresent(It.IsAny<MapBoundingBox>())).Returns(false);
-            _finderService.Setup(m => m.GetMapCenterForResults(It.IsAny<string>(), It.IsAny<GeoCoordinates>(), It.IsAny<string>()))
-                .Returns(new GeoCoordinate { Latitude = 1, Longitude = 3 });
-            _finderService.Setup(m => m.GetPinsInBoundingBox(It.IsAny<GeoCoordinate>(), It.IsAny<string>(), It.IsAny<AwsBoundingBox>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()))
-                .Returns(new List<PinDto>());
-            _finderService.Setup(m => m.RandomizeLatLongForNonSitePins(It.IsAny<List<PinDto>>())).Returns(new List<PinDto>());
-            _analyticsService.Setup(
-                m =>
-                    m.Track(It.Is<string>(userId => userId == "Anonymous"),
-                            It.Is<string>(eventName => eventName == "GroupsSearch"),
-                            It.Is<EventProperties>(props => props["Location"] == "45039" && props["Keywords"] == "BEER")));
-
-            _fixture.GetPinsByAddress(fakeQueryParams);
-
-            _analyticsService.VerifyAll();
-        }
-
-        [Test]
         public void TestGetMyPinsByContactIdWithResults()
         {
             var fakeQueryParams = new PinSearchQueryParams();

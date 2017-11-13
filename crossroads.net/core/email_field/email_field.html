@@ -1,15 +1,22 @@
 ﻿<ng-form name="email_field">
-    <div class="form-group" ng-class="{'has-error': checkEmail()}">
-        <input type="email" ng-model="email" class="form-control" id="{{prefix}}-email" placeholder="Email Address" ng-required="true" name="email" ng-model-options="{ updateOn: 'blur', debounce: {'blur': 500}}">
-        <ng-messages for="email_field.email.$error" ng-if="submitted">
-          <ng-messages-include src="on-submit-messages"></ng-messages-include>
-        </ng-messages>
-        <ng-messages for="email_field.email.$error" ng-show="$root.username == undefined">
-            <ng-messages-include src="on-blur-messages"></ng-messages-include>
-            <span ng-message="unique">This email address is already in use by another account, try <a href="{{redirectTo}}" ng-click="$parent.openLogin()">logging in</a> or use <a href="#">forgot password</a></span>
-        </ng-messages>
-        <ng-messages for="email_field.email.$error" ng-show="$root.username != undefined">
-          <ng-messages-include src="on-blur-messages"></ng-messages-include>
-        </ng-messages>
-    </div>
+  <div class="form-group" ng-class="{'has-error': checkEmail()}">
+    <input type="email" ng-model="email" class="form-control" id="{{prefix}}-email" placeholder="Email Address" ng-required="true"
+      name="email" ng-model-options="{ updateOn: 'blur', debounce: {'blur': 500}}">
+
+    <ng-messages for="email_field.email.$error" ng-if="submitted" class="help-block error">
+      <ng-messages-include src="on-submit-messages"></ng-messages-include>
+    </ng-messages>
+
+    <ng-messages for="email_field.email.$error" ng-show="$root.username == undefined" class="help-block error">
+      <ng-messages-include src="on-blur-messages"></ng-messages-include>
+      <span ng-message="unique">This email address is already in use by another account, try
+        <a href="{{redirectTo}}" ng-click="$parent.openLogin()">logging in</a> or use
+        <a href="#">forgot password</a>
+      </span>
+    </ng-messages>
+
+    <ng-messages for="email_field.email.$error" ng-show="$root.username != undefined" class="help-block error">
+      <ng-messages-include src="on-blur-messages"></ng-messages-include>
+    </ng-messages>
+  </div>
 </ng-form>
