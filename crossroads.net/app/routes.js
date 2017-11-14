@@ -214,17 +214,6 @@
           templateUrl: 'styleguide/styleguide.html'
         })
 /// #endif
-        .state('go_trip_giving_results', {
-          parent: 'noSideBar',
-          url: '/go_trip_giving_results',
-          controller: 'TripGivingCtrl as gotripresults',
-          templateUrl: 'tripgiving/tripgivingresults.html'
-        })
-        .state('/demo/go-trip-giving', {
-          parent: 'noSideBar',
-          url: '/demo/go-trip-giving',
-          templateUrl: 'trip_giving/give.html'
-        })
         .state('volunteer-request', {
           parent: 'noSideBar',
           url: '{link:volunteerRouteType}',
