@@ -1,6 +1,3 @@
-// require('./group_finder');
-
-// require('./group_finder');
 require('./group_tool');
 require('./childcare');
 require('./mp_tools');
@@ -18,7 +15,6 @@ require('./invoices/invoices.module');
     constants.MODULES.COMMON,
     constants.MODULES.CORKBOARD,
     constants.MODULES.FORM_BUILDER,
-    constants.MODULES.GIVE,
     constants.MODULES.GO_VOLUNTEER,
     constants.MODULES.GROUP_TOOL,
     constants.MODULES.MEDIA,
@@ -46,12 +42,12 @@ require('./invoices/invoices.module');
 
   require('./corkboard');
   require('./signup');
+  /// #if INCLUDE_STYLEGUIDE
   require('./styleguide');
-  require('./superbowl');
+  /// #endif
   require('./thedaily');
   require('./gotrips');
   require('./my_serve');
-  require('./brave_at_home');
   require('./volunteer_signup');
   require('./volunteer_application');
   require('./giving_history');

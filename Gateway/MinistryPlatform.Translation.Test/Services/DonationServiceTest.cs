@@ -442,8 +442,8 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var mockGPExportData = MockGPExportDataTest2();
 
-            _ministryPlatformService.Setup(mock => mock.GetPageViewRecords(viewId, It.IsAny<string>(), depositId.ToString(), "", 0)).Returns(MockGPExport());
-            _ministryPlatformService.Setup(mock => mock.GetPageViewRecords(paymentViewId, It.IsAny<string>(), depositId.ToString(), "", 0)).Returns(MockGPPaymentExport());
+            _ministryPlatformService.Setup(mock => mock.GetPageViewRecords(viewId, It.IsAny<string>(), $"{depositId},", "", 0)).Returns(MockGPExport());
+            _ministryPlatformService.Setup(mock => mock.GetPageViewRecords(paymentViewId, It.IsAny<string>(), $"{depositId},", "", 0)).Returns(MockGPPaymentExport());
 
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRest.Object);
             _ministryPlatformRest.Setup(m => m.Search<int>("GL_Account_Mapping", $"GL_Account_Mapping.Program_ID={It.IsAny<int>()} AND GL_Account_Mapping.Congregation_ID={It.IsAny<int>()}", "Processor_Fee_Mapping_ID_Table.Program_ID", null, false))
@@ -567,7 +567,8 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var mockGPExportData = MockGPExportDataTest1(programId);            
             
-            _ministryPlatformService.Setup(mock => mock.GetPageViewRecords(viewId, It.IsAny<string>(), depositId.ToString(), "", 0)).Returns(returnedData);
+            var searchStr = $"{depositId},";
+            _ministryPlatformService.Setup(mock => mock.GetPageViewRecords(viewId, It.IsAny<string>(), searchStr, "", 0)).Returns(returnedData);
             
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRest.Object);
             _ministryPlatformRest.Setup(m => m.Search<int>("GL_Account_Mapping", $"GL_Account_Mapping.Program_ID={programId} AND GL_Account_Mapping.Congregation_ID={congregationId}", "Processor_Fee_Mapping_ID_Table.Program_ID", null, false))

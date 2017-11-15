@@ -21,30 +21,24 @@ namespace crds_angular.test.controllers
 
         private Mock<ILocationService> _locationServiceMock;
 
-        private OrgLocation _location1;
-        private OrgLocation _location2;
+        private LocationDTO _location1;
+        private LocationDTO _location2;
 
         [SetUp]
         public void Setup()
         {
             _locationServiceMock = new Mock<ILocationService>();
-            _location1 = new OrgLocation()
+            _location1 = new LocationDTO()
             {
                 LocationId = 1,
-                Address = "Address 1",
-                City = "City 1",
                 LocationName = "Location 1",
-                State = "State 1",
-                Zip = "Zip 1"
+                Address = new AddressDTO("Address 1", null, "City 1", "State 1", "Zip 1", 1, 1)
             };
-            _location2 = new OrgLocation()
+            _location2 = new LocationDTO()
             {
                 LocationId = 2,
-                Address = "Address 2",
-                City = "City 2",
                 LocationName = "Location 2",
-                State = "State 2",
-                Zip = "Zip 2"
+                Address = new AddressDTO("Address 2", null, "City 2", "State 2", "Zip 2", 2, 2)
             };
             _fixture = new LocationController(_locationServiceMock.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);
         }
@@ -52,14 +46,14 @@ namespace crds_angular.test.controllers
         [Test]
         public void TestGet()
         {
-            var locations = new List<OrgLocation> {_location1, _location2};
+            var locations = new List<LocationDTO> {_location1, _location2};
             _locationServiceMock.Setup(mocked => mocked.GetAllCrossroadsLocations()).Returns(locations);
 
             var result = _fixture.Get();
 
             _locationServiceMock.VerifyAll();
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkNegotiatedContentResult<List<OrgLocation>>>(result);
+            Assert.IsInstanceOf<OkNegotiatedContentResult<List<LocationDTO>>>(result);
         }
 
         [Test]

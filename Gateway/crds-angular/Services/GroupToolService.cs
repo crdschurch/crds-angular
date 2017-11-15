@@ -181,6 +181,11 @@ namespace crds_angular.Services
             return request;
         }
 
+        public string GetCurrentJourney()
+        {
+            return _groupToolRepository.GetCurrentJourney();
+        }
+
         public List<Inquiry> GetInquiries(int groupId, string token)
         {
             var requests = new List<Inquiry>();

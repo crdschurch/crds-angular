@@ -1801,6 +1801,26 @@ namespace crds_angular.test.Services
         }
 
         [Test]
+        public void ShouldReturnJourneyName()
+        {
+            const string journeyName = "This is not the greatest journey in the world no, this is just a tribute";
+            _groupToolRepository.Setup(m => m.GetCurrentJourney()).Returns(journeyName);
+
+            var result = _fixture.GetCurrentJourney();
+            _groupToolRepository.VerifyAll();
+            Assert.AreEqual(result, journeyName);
+        }
+
+        [Test]
+        public void ShouldReturnNullJourneyName()
+        {
+            _groupToolRepository.Setup(m => m.GetCurrentJourney()).Returns((string) null);
+            var result = _fixture.GetCurrentJourney();
+            _groupToolRepository.VerifyAll();
+            Assert.IsNull(result);
+        }
+
+        [Test]
         public void TestSendSmallGroupPendingInquiryReminderEmails()
         {
             var inquiries = new List<MpInquiry>

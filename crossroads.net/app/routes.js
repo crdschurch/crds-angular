@@ -75,6 +75,11 @@
           abstract: true,
           templateUrl: 'templates/screenWidth.html'
         })
+        .state('headerOnly', {
+          parent: 'root',
+          abstract: true,
+          templateUrl: 'templates/headerOnly.html'
+        })
         .state('centeredContentPage', {
           parent: 'root',
           abstract: true,
@@ -89,197 +94,6 @@
           parent: 'root',
           abstract: true,
           templateUrl: 'templates/goCincinnati.html'
-        })
-        .state('brave', {
-          parent: 'root',
-          abstract: true,
-          templateUrl: 'templates/brave.html',
-          controller: 'BraveHomeController as brave_home_controller',
-        })
-        .state('brave-at-home', {
-          parent: 'brave',
-          url: '/brave-at-home',
-          templateUrl: 'brave_at_home/braveAtHome.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          },
-        })
-        .state('braveathome', {
-          parent: 'brave',
-          url: '/braveathome',
-          templateUrl: 'brave_at_home/braveAtHome.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          },
-        })
-        .state('brave-intro-two', {
-          parent: 'brave',
-          url: '/brave-intro-two',
-          templateUrl: 'brave_at_home/braveIntro2.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
-        })
-        .state('brave-intro-three', {
-          parent: 'brave',
-          url: '/brave-intro-three',
-          templateUrl: 'brave_at_home/braveIntro3.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            isProtected: true,
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
-        })
-        .state('brave-intro-four', {
-          parent: 'brave',
-          url: '/brave-intro-four',
-          templateUrl: 'brave_at_home/braveIntro4.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            isProtected: true,
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
-        })
-        .state('brave-room-one', {
-          parent: 'brave',
-          url: '/brave-room-one',
-          templateUrl: 'brave_at_home/braveRoom1.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            bravePage: '1/5',
-            isProtected: true,
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
-        })
-        .state('brave-room-two', {
-          parent: 'brave',
-          url: '/brave-room-two',
-          templateUrl: 'brave_at_home/braveRoom2.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            bravePage: '2/5',
-            isProtected: true,
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
-        })
-        .state('brave-room-three', {
-          parent: 'brave',
-          url: '/brave-room-three',
-          templateUrl: 'brave_at_home/braveRoom3.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            bravePage: '3/5',
-            isProtected: true,
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
-        })
-        .state('brave-room-four', {
-          parent: 'brave',
-          url: '/brave-room-four',
-          templateUrl: 'brave_at_home/braveRoom4.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            bravePage: '4/5',
-            isProtected: true,
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
-        })
-        .state('brave-room-five', {
-          parent: 'brave',
-          url: '/brave-room-five',
-          templateUrl: 'brave_at_home/braveRoom5.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            bravePage: '5/5',
-            isProtected: true,
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
-        })
-        .state('brave-room-six', {
-          parent: 'brave',
-          url: '/brave-room-six',
-          templateUrl: 'brave_at_home/braveRoom6.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            bravePage: '6/6',
-            isProtected: true,
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
-        })
-        .state('brave-reflect', {
-          parent: 'brave',
-          url: '/brave-reflect',
-          templateUrl: 'brave_at_home/braveReflect.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            isProtected: true,
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
-        })
-        .state('brave-hope', {
-          parent: 'brave',
-          url: '/brave-hope',
-          templateUrl: 'brave_at_home/braveHope.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            isProtected: true,
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
-        })
-        .state('brave-share', {
-          parent: 'brave',
-          url: '/brave-share',
-          templateUrl: 'brave_at_home/braveShare.html',
-          controller: 'BraveHomeController as brave_home_controller',
-          data: {
-            isProtected: true,
-            meta: {
-              title: 'Brave at Home',
-              description: ''
-            }
-          }
         })
         .state('giving_history', {
           parent: 'noSideBar',
@@ -298,12 +112,13 @@
           }
         })
         .state('login', {
-          parent: 'noHeaderOrFooter',
+          parent: 'headerOnly',
           url: '/signin',
           templateUrl: 'login/login_page.html',
           controller: 'LoginController',
           data: {
             isProtected: false,
+            renderLegacyStyles: false,
             meta: {
               title: 'Sign In',
               description: ''
@@ -322,10 +137,11 @@
           }
         })
         .state('register', {
-          parent: 'noHeaderOrFooter',
+          parent: 'headerOnly',
           url: '/register',
           templateUrl: 'register/register_page.html',
           data: {
+            renderLegacyStyles: false,
             meta: {
               title: 'Register',
               description: ''
@@ -338,6 +154,7 @@
           templateUrl: 'login/forgot_password.html',
           controller: 'PasswordController as pwController',
           data: {
+            renderLegacyStyles: false,
             isProtected: false
           }
         })
@@ -347,6 +164,7 @@
           templateUrl: 'login/reset_password.html',
           controller: 'ResetPasswordController as resetPwController',
           data: {
+            renderLegacyStyles: false,
             isProtected: false
           },
           resolve: {
@@ -365,18 +183,6 @@
           controller: 'ImpersonateController as impersonate',
           data: {
             isProtected: true
-          }
-        })
-        .state('superbowl', {
-          parent: 'screenWidth',
-          url: '/superbowl',
-          controller: 'SuperbowlCtrl as superbowl',
-          templateUrl: 'superbowl/superbowl.html',
-          data: {
-            meta: {
-              title: 'Super Bowl of Preaching',
-              description: ''
-            }
           }
         })
         .state('adbox', {
@@ -400,12 +206,14 @@
           url: '/event-registration-desired',
           templateUrl: 'my_serve/event_registration_mockup_desired.html'
         })
+/// #if INCLUDE_STYLEGUIDE
         .state('styleguide', {
           parent: 'noHeaderOrFooter',
           url: '/styleguide',
           controller: 'StyleguideCtrl as styleguide',
           templateUrl: 'styleguide/styleguide.html'
         })
+/// #endif
         .state('go_trip_giving_results', {
           parent: 'noSideBar',
           url: '/go_trip_giving_results',

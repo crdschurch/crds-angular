@@ -26,7 +26,7 @@ namespace crds_angular.Models.Crossroads.GoVolunteer
         [JsonProperty(PropertyName = "imageUrl")]
         public string ImageUrl { get; set; }
 
-        public OrgLocation FromMpLocation(MpLocation loc)
+        public OrgLocation FromMpLocation(MpOrgLocation loc)
         {
             return new OrgLocation
             {

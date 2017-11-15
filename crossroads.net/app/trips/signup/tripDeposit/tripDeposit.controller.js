@@ -1,10 +1,11 @@
 /*ngInject*/
 class TripDepositController {
-  constructor($rootScope, $state,
+  constructor($scope, $rootScope, $state,
               DonationService, GiveTransferService,
               GiveFlow, AUTH_EVENTS,
               TripDeposit, TripsSignupService, $stateParams, $window){
     this.viewReady = false;
+    this.scope = $scope;
     this.rootScope = $rootScope;
     this.state = $state;
     this.donationService = DonationService;
@@ -38,7 +39,7 @@ class TripDepositController {
     }
 
     /*jshint unused:false */
-    this.rootScope.$on('$stateChangeStart', (event, toState, toParams) => {
+    this.scope.$on('$stateChangeStart', (event, toState, toParams) => {
 
       if (toState && !/^tripdeposit.*/.test(toState.name)) {
         return;
@@ -59,12 +60,13 @@ class TripDepositController {
     });
 
     /*jshint unused:false */
-    this.rootScope.$on(this.AUTH_EVENTS.logoutSuccess, (event) =>  {
+    this.scope.$on(this.AUTH_EVENTS.logoutSuccess, (event) =>  {
       this.dto.reset();
       this.state.go('home');
     });
 
-    this.rootScope.$on('$stateChangeSuccess', (event, toState, toParams, fromState, fromParams) => {
+    this.scope.$on('$stateChangeSuccess', (event, toState, toParams, fromState, fromParams) => {
+
       if (toState && !/^tripdeposit.*/.test(toState.name)) {
         return;
       }
@@ -97,7 +99,7 @@ class TripDepositController {
       }
     });
 
-    this.rootScope.$on('$stateChangeError', (event, toState, toParams) => {
+    this.scope.$on('$stateChangeError', (event, toState, toParams) => {
       this.dto.processing = false;
     });
 

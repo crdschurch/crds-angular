@@ -410,13 +410,7 @@ namespace crds_angular.Controllers.API
                 var pinsInRadius = _finderService.GetPinsInBoundingBox(originCoords, queryParams.UserKeywordSearchString, awsBoundingBox, queryParams.FinderType, queryParams.ContactId, queryParams.UserFilterString);
                 pinsInRadius = _finderService.RandomizeLatLongForNonSitePins(pinsInRadius);
                 var result = new PinSearchResultsDto(new GeoCoordinates(originCoords.Latitude, originCoords.Longitude), pinsInRadius);
-                var eventName = (queryParams.FinderType == "CONNECT") ? "ConnectSearch" : "GroupsSearch";
-                var props = new EventProperties
-                {
-                    {"Location", queryParams.UserLocationSearchString},
-                    {"Keywords", queryParams.UserKeywordSearchString}
-                };
-                _analyticsService.Track("Anonymous", eventName, props);
+           
                 return Ok(result);
             }
             catch (InvalidAddressException ex)
