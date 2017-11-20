@@ -56,11 +56,7 @@
           vm.pwprocessing = 'SHOW';
           vm.inputType = 'password';
         }
-
-        $log.debug(vm.pwprocessing);
       }
-
     }
-
   }
 })();
