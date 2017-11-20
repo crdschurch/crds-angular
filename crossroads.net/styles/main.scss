@@ -11,6 +11,10 @@
     }
   }
 
+  .form-group .input-group-flex {
+    min-width: auto;
+  }
+
   // Signin
   .auth-container {
     color: $cr-gray-dark;
