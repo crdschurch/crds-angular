@@ -209,7 +209,7 @@ class CamperInfoForm {
             key: 'crossroadsSite',
             type: 'crdsSelect',
             templateOptions: {
-              label: 'Student’s Crossroads Site',
+              label: 'Usually Attend Services at',
               required: true,
               valueProp: 'dp_RecordID',
               labelProp: 'dp_RecordName',
@@ -230,7 +230,7 @@ class CamperInfoForm {
             key: 'roommate',
             type: 'crdsInput',
             templateOptions: {
-              label: 'Preferred Roommate First and Last Name',
+              label: 'Preferred Small Group Leader or Friend',
               required: false
             }
           }
