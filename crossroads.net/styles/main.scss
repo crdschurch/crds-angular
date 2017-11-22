@@ -11,6 +11,43 @@
     }
   }
 
+  .password-field {
+    .input-group-flex {
+      .with-icon-btn {
+        input.form-control {
+          &.ng-valid,
+          &.ng-invalid {
+            border-color: transparent;
+            box-shadow: none;
+          }
+
+          &.ng-valid.ng-untouched + .icon-btn-wrapper,
+          &.ng-invalid.ng-untouched + .icon-btn-wrapper {
+            border-color: transparent;
+          }
+
+          &.ng-valid + .icon-btn-wrapper {
+            border: 1px solid $alert-success;
+          }
+
+          &.ng-valid:focus + .icon-btn-wrapper {
+            border: 1px solid $alert-success;
+            box-shadow: inset 0 0 0 1px rgba($alert-success, .5);
+          }
+
+          &.ng-invalid + .icon-btn-wrapper {
+            border: 1px solid $alert-danger;
+          }
+
+          &.ng-invalid:focus + .icon-btn-wrapper {
+            border: 1px solid $alert-danger;
+            box-shadow: inset 0 0 0 1px rgba($alert-danger, .5);
+          }
+        }
+      }
+    }
+  }
+
   .form-group .input-group-flex {
     min-width: auto;
   }
