@@ -21,6 +21,11 @@
             box-shadow: none;
           }
 
+          &.ng-valid.ng-untouched + .icon-btn-wrapper,
+          &.ng-invalid.ng-untouched + .icon-btn-wrapper {
+            border-color: transparent;
+          }
+
           &.ng-valid + .icon-btn-wrapper {
             border: 1px solid $alert-success;
           }
