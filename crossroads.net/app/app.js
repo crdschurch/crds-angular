@@ -46,7 +46,6 @@ require('./invoices/invoices.module');
   require('./styleguide');
   /// #endif
   require('./thedaily');
-  require('./gotrips');
   require('./my_serve');
   require('./volunteer_signup');
   require('./volunteer_application');

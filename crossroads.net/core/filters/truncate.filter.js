@@ -17,7 +17,7 @@
                 length = 10;
             }
 
-            var ellipses = '&hellip;';
+            var ellipses = '...';
             if (text.length <= length || text.length - ellipses.length <= length) {
                 return text;
             }
