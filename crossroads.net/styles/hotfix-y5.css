@@ -1,25 +1,30 @@
 /* Crossroads GoTrips - New - Adam G in progress */
 
-.crds-styles .nav-trips .nav >li:not(:last-child)> a:hover,
-#goTripsNav .navbar-nav >li:not(:last-child)> a:focus,
-#goTripsNav .navbar-nav >li:not(:last-child)> a:active {
+.crds-styles .nav-trips .nav >li:not(:last-child)> a:hover {
     background-color: transparent;
     color: #fff;
-    border-color: #fff;
 }
 .crds-styles .nav-trips .nav >li:not(:last-child)> a:focus {
     background-color: transparent;
     color: #fff;
 }
 .crds-legacy-styles .nav-trips .navbar-nav>li>a {
-  padding: 10px 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 .crds-styles .nav-trips .navbar-nav>li>a {
-  padding: 10px 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 #goTripsNav .navbar-nav >li> a {
   color: #fff;
+}
+#goTripsNav .navbar-nav >li:not(:last-child)> a:hover,
+#goTripsNav .navbar-nav >li:not(:last-child)> a:focus,
+#goTripsNav .navbar-nav >li:not(:last-child)> a:active {
+  background-color: transparent;
+  border-color: #fff;
 }
 #goTripsNav .navbar-nav >li:last-child> a:hover,
 #goTripsNav .navbar-nav >li:last-child> a:focus {
@@ -33,6 +38,7 @@
   #goTripsNav .navbar-nav >li:not(:last-child)> a:hover,
   #goTripsNav .navbar-nav >li:not(:last-child)> a:focus,
   #goTripsNav .navbar-nav >li:not(:last-child)> a:active {
+    background-color: transparent;
     border-color: transparent;
   }
   #goTripsNav .navbar-nav >li:last-child> a,
@@ -51,4 +57,350 @@
     color: #4D4D4D;
     font-size: 1em;
   }
+}
+
+
+/* Groups Content - New - Adam G in progress */
+
+.crds-styles .group-content-active {
+  background-color: #b9b9b9;
+  padding: 4px 0px 5px 10px;
+  border-radius: 50%;
+  display: inline-flex;
+  font-size: 12px;
+  width: 28px;
+  font-weight: bold;
+}
+.crds-styles .group-content-inactive {
+  background-color: #e7e7e7;
+  padding: 4px 0px 5px 10px;
+  border-radius: 50%;
+  display: inline-flex;
+  font-size: 12px;
+  width: 28px;
+  font-weight: bold;
+  color: #8a8a8a;
+}
+
+.crds-styles .allgroupcontent > .grid-item {
+  min-width: 173px;
+}
+
+
+/* Tate - /groups fix for Brian M. - 09/20/17 */
+.crds-legacy-styles #groups-landing-20160826 #groups-landing-get-in .aspect-content {
+  padding-top: 0 !important;
+  position: relative !important;
+}
+
+.crds-legacy-styles #groups-landing-20160826 #groups-landing-get-in:before {
+  padding-top: 5% !important;
+}
+
+@media (min-width: 768px) {
+  .crds-legacy-styles #groups-landing-20160826 #groups-landing-get-in:before {
+    padding-top: 10% !important;
+  }
+}
+
+/* Real Encounters - Tate - 09/08/17 */
+
+.crds-legacy-styles .real-encounters {
+  background: #222;
+  margin-bottom: -50px;
+}
+.crds-legacy-styles .real-encounters .re-logo {
+  max-width: 150px;
+}
+.crds-legacy-styles .real-encounters .real-encounters-nav .btn {
+  font-family: "acumin-pro-extra-condensed", sans-serif;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+}
+@media (min-width: 768px) {
+  .crds-legacy-styles .real-encounters .real-encounters-nav .re-btns {
+    text-align: right;
+  }
+}
+.crds-legacy-styles .real-encounters h1, .crds-legacy-styles .real-encounters h2, .crds-legacy-styles .real-encounters h3 {
+  font-family: "acumin-pro-extra-condensed", sans-serif;
+  text-transform: uppercase;
+}
+.crds-legacy-styles .real-encounters .at-icon-wrapper {
+  width: 24px;
+  height: 24px;
+}
+.crds-legacy-styles .real-encounters .btn-standard-dark {
+  color: #FFF;
+  background-color: #151515;
+  border-color: #151515;
+}
+.crds-legacy-styles .real-encounters .btn-standard-dark:hover, .crds-legacy-styles .real-encounters .btn-standard-dark:focus, .crds-legacy-styles .real-encounters .btn-standard-dark.focus, .crds-legacy-styles .real-encounters .btn-standard-dark:active, .crds-legacy-styles .real-encounters .btn-standard-dark.active, .open > .crds-legacy-styles .real-encounters .btn-standard-dark.dropdown-toggle {
+  color: #FFF;
+  background-color: black;
+  border-color: black;
+}
+.crds-legacy-styles .real-encounters .btn-standard-dark:active, .crds-legacy-styles .real-encounters .btn-standard-dark.active, .open > .crds-legacy-styles .real-encounters .btn-standard-dark.dropdown-toggle {
+  background-image: none;
+}
+.crds-legacy-styles .real-encounters .btn-standard-dark.disabled, .crds-legacy-styles .real-encounters .btn-standard-dark.disabled:hover, .crds-legacy-styles .real-encounters .btn-standard-dark.disabled:focus, .crds-legacy-styles .real-encounters .btn-standard-dark.disabled.focus, .crds-legacy-styles .real-encounters .btn-standard-dark.disabled:active, .crds-legacy-styles .real-encounters .btn-standard-dark.disabled.active, .crds-legacy-styles .real-encounters .btn-standard-dark[disabled], .crds-legacy-styles .real-encounters .btn-standard-dark[disabled]:hover, .crds-legacy-styles .real-encounters .btn-standard-dark[disabled]:focus, .crds-legacy-styles .real-encounters .btn-standard-dark[disabled].focus, .crds-legacy-styles .real-encounters .btn-standard-dark[disabled]:active, .crds-legacy-styles .real-encounters .btn-standard-dark[disabled].active, fieldset[disabled] .crds-legacy-styles .real-encounters .btn-standard-dark, fieldset[disabled] .crds-legacy-styles .real-encounters .btn-standard-dark:hover, fieldset[disabled] .crds-legacy-styles .real-encounters .btn-standard-dark:focus, fieldset[disabled] .crds-legacy-styles .real-encounters .btn-standard-dark.focus, fieldset[disabled] .crds-legacy-styles .real-encounters .btn-standard-dark:active, fieldset[disabled] .crds-legacy-styles .real-encounters .btn-standard-dark.active {
+  background-color: #151515;
+  border-color: #151515;
+}
+.crds-legacy-styles .real-encounters .btn-standard-dark .badge {
+  color: #151515;
+  background-color: #FFF;
+}
+.crds-legacy-styles .real-encounters .btn-standard-dark.inactive {
+  opacity: .65;
+}
+.crds-legacy-styles .real-encounters .addthis_crossroads_sharing a .at4-icon,
+.crds-legacy-styles .real-encounters .addthis_crossroads_sharing a .at-icon-wrapper,
+.crds-legacy-styles .real-encounters .addthis_crossroads_sharing a .at-icon {
+  background: transparent !important;
+  color: #eee;
+}
+.crds-legacy-styles .real-encounters .addthis_crossroads_sharing a .at4-icon:hover,
+.crds-legacy-styles .real-encounters .addthis_crossroads_sharing a .at-icon-wrapper:hover,
+.crds-legacy-styles .real-encounters .addthis_crossroads_sharing a .at-icon:hover {
+  color: #d5d5d5;
+}
+.crds-legacy-styles .real-encounters .real-encounters-blur {
+  background: url(https://crds-cms-uploads.imgix.net/content/images/re-season-2-blur.jpg) center bottom no-repeat;
+  background-size: cover;
+}
+.crds-legacy-styles .real-encounters .re-desc,
+.crds-legacy-styles .real-encounters .re-video {
+  float: none;
+  margin-bottom: 11px;
+}
+@media (min-width: 992px) {
+  .crds-legacy-styles .real-encounters .re-desc,
+  .crds-legacy-styles .real-encounters .re-video {
+    float: right;
+    margin-bottom: 0;
+  }
+}
+.crds-legacy-styles .real-encounters .re-newsletter-block > div {
+  background: #0A0A0A;
+  min-height: 350px;
+  -webkit-box-shadow: 0px 0px 50px -9px rgba(0, 0, 0, 0.89);
+  -moz-box-shadow: 0px 0px 50px -9px rgba(0, 0, 0, 0.89);
+  box-shadow: 0px 0px 50px -9px rgba(0, 0, 0, 0.89);
+}
+.crds-legacy-styles .real-encounters #mc_embed_signup {
+  font-family: "acumin-pro", helvetica, arial, sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+}
+.crds-legacy-styles .real-encounters #mc_embed_signup form {
+  padding-left: 0;
+  padding-right: 0;
+}
+.crds-legacy-styles .real-encounters #mc_embed_signup input {
+  margin: 0;
+  color: #000;
+}
+.crds-legacy-styles .real-encounters #mc_embed_signup div#mce-responses {
+  margin: 0;
+  width: 100%;
+  padding: 0;
+}
+.crds-legacy-styles .real-encounters #mc_embed_signup div.response {
+  width: 96% !important;
+  padding: 11px;
+  margin: 0 0 22px;
+}
+.crds-legacy-styles .real-encounters .re-newsletter {
+  background: url(https://crds-cms-uploads.imgix.net/content/images/re-newsletter2.jpg) center bottom no-repeat;
+  background-size: cover;
+}
+
+
+/* Music page updates - Tate */
+
+
+.crds-legacy-styles .jumbotron.music-jumbotron {
+  padding: 22px;
+  background: url(//crds-cms-uploads.imgix.net/content/images/music-intro-bg.jpg) top center no-repeat;
+  background-size: cover;
+}
+.crds-legacy-styles .music-intro {
+  background: #eee;
+}
+@media (max-width: 992px) {
+  .crds-legacy-styles .music-intro {
+    padding-bottom: 0 !important;
+    height: auto !important;
+    margin-bottom: 22px;
+  }
+  .crds-legacy-styles .music-intro .embed-responsive-item {
+    position: relative !important;
+  }
+}
+.crds-legacy-styles .album-card a {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+.crds-legacy-styles .album-page {
+  margin-bottom: -40px;
+}
+.crds-legacy-styles .album-page h1, .crds-legacy-styles .album-page h2, .crds-legacy-styles .album-page h3 {
+  font-family: "acumin-pro-extra-condensed", sans-serif;
+  text-transform: uppercase;
+}
+.crds-legacy-styles .album-page .wpy-blur {
+  background: url(http://crossroads-media.s3.amazonaws.com/images/wpy-land-bg.jpg) no-repeat;
+  background-size: cover;
+}
+.crds-legacy-styles .album-page .camp-blur {
+  background: url(http://crossroads-media.s3.amazonaws.com/images/bloobrothers-bg.jpg) no-repeat;
+  background-size: cover;
+}
+.crds-legacy-styles .album-page .album-cover {
+  border: 5px solid rgba(0, 0, 0, 0.3);
+}
+.crds-legacy-styles .dark-bg .crds-shared-header .header li > a:not(.cta) {
+  color: #fff;
+}
+.crds-legacy-styles .dark-bg .crds-shared-header .header .dropdown-menu ul li a {
+  color: #4d4d4d;
+}
+.crds-legacy-styles .dark-bg .crds-shared-header .navbar-brand.logo svg {
+  color: #fff;
+}
+.crds-legacy-styles .dark-bg .crds-shared-header .header ul.nav-pills > li:not(.open) > a:focus:not(.cta) {
+  background: transparent;
+}
+.crds-legacy-styles .dark-bg .music-spotify {
+  margin-top: 22px;
+}
+.crds-legacy-styles .dark-bg .music-itunes {
+  margin-top: 13px;
+}
+.crds-legacy-styles .dark-bg .music-youtube {
+  margin-top: 27px;
+}
+.crds-legacy-styles .dark-bg .music-play {
+  margin-top: 30px;
+}
+.crds-legacy-styles .cr-music-logo {
+  max-width: 250px;
+}
+.crds-legacy-styles .media-index > .col-sm-7:first-of-type {
+  display: none;
+}
+
+/* Explore Page - Adam */
+
+.crds-styles .explore-content {
+  overflow-x: hidden;
+  position: relative;
+}
+
+.crds-styles .explore-content h1 {
+  font-size: 1050%;
+  line-height: 0.8em;
+}
+
+.crds-styles .explore-content h4 {
+  font-size: 1050%;
+  line-height: 0.8em;
+}
+
+.crds-styles .explore-content .vertical-centered  {
+  position: absolute;
+  left: 50%;
+  top: .5%;
+  transform: translate(-50%,.5%);
+  width: 100%;
+}
+
+.crds-styles .explore-content #religion {
+  padding-top: 120px;
+  padding-bottom: 120px;
+  margin-top: 100px;
+  height: 100vh;
+  background-color: #000;
+}
+
+.crds-styles .explore-content #super-margin {
+  margin-top:330px;
+}
+
+
+@media only screen and (max-width:768px) {
+
+  .crds-styles .explore-content h1 {
+    font-size: 700%;
+    line-height: 0.8em;
+  }
+  .crds-styles .explore-content h4 {
+    font-size: 700%;
+    line-height: 0.8em;
+  }
+  .crds-styles .explore-content p {
+    font-size: 16px;
+  }
+
+  .crds-styles .explore-content .vertical-centered  {
+    position: absolute;
+    left: 50%;
+    top: 1%;
+    transform: translate(-50%,1%);
+    width: 100%;
+  }
+
+  .crds-styles .explore-content #super-margin {
+    margin-top:0px;
+  }
+
+
+}
+
+@media only screen and (min-width:420px) and (max-width:768) {
+
+  .crds-styles .explore-content .vertical-centered  {
+    position: absolute;
+    left: 50%;
+    top: 1%;
+    transform: translate(-50%,1%);
+    width: 100%;
+  }
+
+}
+
+@media (min-width:768px) and (max-width:992) {
+  .crds-styles .explore-content #explore3 .copy {
+    margin-top: 50px;
+  }
+}
+
+
+@media only screen and (max-width:991px) {
+
+  .crds-styles .explore-content #religion {
+    margin-top: 0px;
+    height: auto;
+    background-color: #000;
+  }
+
+  .crds-styles .explore-content .vertical-centered  {
+    position: absolute;
+    left: 50%;
+    top: .5%;
+    transform: translate(-50%,.5%);
+    width: 100%;
+  }
+
+}
+
+/* Jumbotron Z-Index - Luke M - 11/16/17 */
+
+.crds-styles .jumbotron-overlay {
+  z-index: -1;
 }
