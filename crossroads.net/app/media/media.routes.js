@@ -33,58 +33,6 @@
           }
         }
       })
-      .state('media.all', {
-        url: '/media',
-        templateUrl: 'templates/viewAll.html',
-        resolve: {
-          //Empty Resolve to ensure loading spinner works
-        }
-      })
-      .state('media.music', {
-        url: '/music',
-        templateUrl: 'templates/viewAllMusic.html',
-        data: {
-          meta: {
-            title: 'Music',
-            description: '',
-            type: 'website',
-            card: 'summary'
-          }
-        },
-        resolve: {
-          //Empty Resolve to ensure loading spinner works
-        }
-      })
-      .state('media.series', {
-        url: '/series',
-        templateUrl: 'templates/viewAllSeries.html',
-        data: {
-          meta: {
-            title: 'Series',
-            description: '',
-            type: 'website',
-            card: 'summary'
-          }
-        },
-        resolve: {
-          //Empty Resolve to ensure loading spinner works
-        }
-      })
-      .state('media.videos', {
-        url: '/videos',
-        templateUrl: 'templates/viewAllVideos.html',
-        data: {
-          meta: {
-            title: 'Videos',
-            description: '',
-            type: 'website',
-            card: 'summary'
-          }
-        },
-        resolve: {
-          //Empty Resolve to ensure loading spinner works
-        }
-      })
       .state('media.seriesSingle', {
         url: '/series/{id:int}/:title?',
         controller: 'SingleSeriesController as series',
