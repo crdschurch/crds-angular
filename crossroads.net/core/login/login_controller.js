@@ -79,6 +79,10 @@
     }
 
     $scope.login = function () {
+
+      $scope.navlogin.username.$setTouched();
+      $scope.navlogin['passwd.passwordForm'].password.$setTouched();
+
       if (($scope.credentials === undefined) ||
         ($scope.credentials.username === undefined ||
           $scope.credentials.password === undefined)) {
