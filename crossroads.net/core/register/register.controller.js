@@ -1,6 +1,6 @@
 ﻿(function() {
   'use strict';
- 
+
   module.exports = RegisterController;
 
   RegisterController.$inject = [
@@ -38,6 +38,11 @@
     function register() {
       vm.showRegisterButton = false;
 
+      form.firstname.$setTouched();
+      form.lastname.$setTouched();
+      form['email_field'].email.$setTouched();
+      form['passwd.passwordForm'].password.$setTouched();
+
       if (!vm.registerForm.$valid) {
         $rootScope.$emit('notify', $rootScope.MESSAGES.generalError);
         vm.showRegisterButton = true;
@@ -56,9 +61,9 @@
       vm.showRegisterButton = true;
       if (error.data && error.data.message === 'Duplicate User') {
         $rootScope.$emit('notify', $rootScope.MESSAGES.emailInUse);
-      } else if (error.status === 409) { 
+      } else if (error.status === 409) {
         var message = $rootScope.MESSAGES.registrationContactError;
-        message.content = message.content.replace('[contactId]', error.data.message); 
+        message.content = message.content.replace('[contactId]', error.data.message);
         $rootScope.$emit('notify', message);
       } else {
         $rootScope.$emit('notify', $rootScope.MESSAGES.failedResponse);
