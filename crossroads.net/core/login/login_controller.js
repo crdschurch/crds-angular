@@ -80,8 +80,10 @@
 
     $scope.login = function () {
 
-      $scope.navlogin.username.$setTouched();
-      $scope.navlogin['passwd.passwordForm'].password.$setTouched();
+      if ($scope.navlogin && $scope.navlogin.username) {
+        $scope.navlogin.username.$setTouched();
+        $scope.navlogin['passwd.passwordForm'].password.$setTouched();
+      }
 
       if (($scope.credentials === undefined) ||
         ($scope.credentials.username === undefined ||

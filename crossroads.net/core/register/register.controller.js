@@ -38,10 +38,12 @@
     function register() {
       vm.showRegisterButton = false;
 
-      form.firstname.$setTouched();
-      form.lastname.$setTouched();
-      form['email_field'].email.$setTouched();
-      form['passwd.passwordForm'].password.$setTouched();
+      if (vm.registerForm && vm.registerForm.firstname) {
+        vm.registerForm.firstname.$setTouched();
+        vm.registerForm.lastname.$setTouched();
+        vm.registerForm['email_field'].email.$setTouched();
+        vm.registerForm['passwd.passwordForm'].password.$setTouched();
+      }
 
       if (!vm.registerForm.$valid) {
         $rootScope.$emit('notify', $rootScope.MESSAGES.generalError);
