@@ -48,7 +48,7 @@
 
               link = addTrailingSlashIfNecessary(link);
 
-              promise = Page.get({ url: link }).$promise;
+              promise = Page.get({ url: link, requiresAngular: 1 }).$promise;
 
               var childPromise = promise.then(function (originalPromise) {
 
