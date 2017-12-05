@@ -13,7 +13,6 @@ cms_services_module.factory('SystemPage', function ($resource) {
 });
 
 cms_services_module.factory('Page', function ($resource, $location) {
-  let url = `${__CMS_CLIENT_ENDPOINT__}api/Page?link=:url`;
   let cache = true;
   let params = { };
 
@@ -23,26 +22,8 @@ cms_services_module.factory('Page', function ($resource, $location) {
     cache = false;
   }
 
-  return $resource(url, params, { cache });
+  return $resource(__CMS_CLIENT_ENDPOINT__ + 'api/Page?link=:url', params, { cache });
 });
-
-// cms_services_module.factory('Page', function ($resource, $location) {
-//   var stageParam = $location.search()['stage'];
-//   if (stageParam) {
-//       return $resource(__CMS_CLIENT_ENDPOINT__ + '/api/Page/?link=:url&STAGE=:stage', { url: '@_url', stage: stageParam }, { cache: false });
-//   }
-
-//   return $resource(__CMS_CLIENT_ENDPOINT__ + '/api/Page/?link=:url', { url: '@_url' }, { cache: true });
-// });
-
-// cms_services_module.factory('AngularPage', function ($resource, $location) {
-//   var stageParam = $location.search()['stage'];
-//   if (stageParam) {
-//       return $resource(__CMS_CLIENT_ENDPOINT__ + '/api/Page/?link=:url&STAGE=:stage&requiresAngular=1', { url: '@_url', stage: stageParam }, { cache: false });
-//   }
-
-//   return $resource(__CMS_CLIENT_ENDPOINT__ + '/api/Page/?link=:url&requiresAngular=1', { url: '@_url' }, { cache: true });
-// });
 
 cms_services_module.factory('PageById', function ($resource, $location) {
     var stageParam = $location.search()['stage'];
