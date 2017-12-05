@@ -30,9 +30,9 @@ BEGIN
 			e.Primary_Contact as [Requestor_Contact_ID],
 		   r.Room_Name,
 		   e.Event_Start_Date,
-           e.Event_Title,
 		   er.Event_Room_ID,
-		   e.Event_Title,
+		   er._Approved,
+           e.Event_Title,
 		   t.Description as [Task_Rejection_Reason]
 	INTO #Temp
 	FROM
