@@ -809,6 +809,43 @@ namespace crds_angular.test.Services
         }
 
         [Test]
+        public void ShouldAddMetaData()
+        {
+            var a = new AddressDTO
+            {
+                Longitude = 0,
+                Latitude = 0,
+                City = "Cincinnati",
+                State = "OH",
+                PostalCode = "45202"
+            };
+
+            var f = new FinderGroupDto
+            {
+                GroupName = "Test",
+                Address = a
+            };
+            
+            var pin = new PinDto {PinType = PinType.SMALL_GROUP, Address = a, Gathering = f};
+            var pinlist = new List<PinDto> {pin};
+            var coords = new GeoCoordinate(36,-84);
+
+            //_addressService.SetGroupPinGeoCoordinates(pin); _addressService.SetGroupPinGeoCoordinates(pin);
+            _addressService.Setup(mocked => mocked.SetGroupPinGeoCoordinates(It.IsAny<PinDto>())).Callback<PinDto>(AddCoords);
+
+            var result = _fixture.AddPinMetaData(pinlist, coords, 0);
+
+            Assert.IsTrue(result[0].Address.Latitude != 0);
+            Assert.IsTrue(result[0].Address.Longitude != 0);
+        }
+
+        private static void AddCoords(PinDto pin)
+        {
+            pin.Address.Latitude = 37;
+            pin.Address.Longitude = -85;
+        }
+
+        [Test]
         public void ShouldSayHi()
         {
             _mpConfigurationWrapper.Setup(x => x.GetConfigIntValue(It.IsAny<string>())).Returns(1);
