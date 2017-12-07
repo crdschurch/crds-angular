@@ -8,7 +8,7 @@ END
 GO
 
 -- Start with full list to match current state; manual tuning will happen later
-UPDATE Programs SET Show_On_Event_Tool = 1 WHERE End_Date IS NOT NULL;
+UPDATE Programs SET Show_On_Event_Tool = 1 WHERE End_Date IS NULL OR End_Date > GETDATE();
 GO
 
 

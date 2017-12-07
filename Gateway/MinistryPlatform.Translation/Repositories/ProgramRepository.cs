@@ -62,7 +62,7 @@ namespace MinistryPlatform.Translation.Repositories
         public List<MpProgram> GetProgramsForEventTool()
         {
             const string columns = "Program_ID,Program_Name,Communication_ID,Program_Type_ID,Allow_Recurring_Giving";
-            const string filter = "Show_On_Event_Tool=1";
+            const string filter = "Show_On_Event_Tool=1 AND (End_Date IS NULL OR End_Date > GETDATE())";
             const string orderBy = "Program_Name";
 
             var token = ApiLogin();
