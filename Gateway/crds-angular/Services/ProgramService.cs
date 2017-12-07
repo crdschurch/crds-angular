@@ -28,6 +28,12 @@ namespace crds_angular.Services
             return programs == null ? (null) : (Enumerable.ToList(programs.Select(Mapper.Map<ProgramDTO>)));
         }
 
+        public List<ProgramDTO> GetProgramsForEventTool()
+        {
+            var programs = _programService.GetProgramsForEventTool();
+            return programs == null ? (null) : (Enumerable.ToList(programs.Select(Mapper.Map<ProgramDTO>)));
+        }
+
         public ProgramDTO GetProgramById(int programId)
         {
             var program = _programService.GetProgramById(programId);
