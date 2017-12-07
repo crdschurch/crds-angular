@@ -4,6 +4,7 @@ using System.Linq;
 using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
+using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models.Lookups;
@@ -14,11 +15,16 @@ namespace MinistryPlatform.Translation.Repositories
     public class LookupRepository : BaseRepository, ILookupRepository
     {
         private readonly IMinistryPlatformService _ministryPlatformServiceImpl;
+        private readonly IMinistryPlatformRestRepository _ministryPlatformRest;
 
-        public LookupRepository(IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper, IMinistryPlatformService ministryPlatformServiceImpl)
+        public LookupRepository(IAuthenticationRepository authenticationService,
+                                IConfigurationWrapper configurationWrapper,
+                                IMinistryPlatformService ministryPlatformServiceImpl,
+                                IMinistryPlatformRestRepository ministryPlatformRest)
             : base(authenticationService, configurationWrapper)
         {
             _ministryPlatformServiceImpl = ministryPlatformServiceImpl;
+            _ministryPlatformRest = ministryPlatformRest;
         }
 
         public Dictionary<string, object> EmailSearch(string email, string token)
@@ -30,6 +36,19 @@ namespace MinistryPlatform.Translation.Repositories
         {
             token = ApiLogonIfNotAuthenticated(token);
             return Enumerable.OrderBy(_ministryPlatformServiceImpl.GetRecordsDict(AppSettings("EventTypesLookup"), token), x => x["dp_RecordName"].ToString()).ToList();
+        }
+
+        public List<Dictionary<string, object>> EventTypesForEventTool(string token)
+        {
+            const string columns = "Event_Type_ID AS dp_RecordID,Event_Type AS dp_RecordName,Allow_Multiday_Event";
+            const string filter = "Show_On_Event_Tool=1";
+            const string orderBy = "Event_Type";
+
+            token = ApiLogonIfNotAuthenticated(token);
+            var records = _ministryPlatformRest.UsingAuthenticationToken(token)
+                .SearchTable<Dictionary<string, object>>("Event_Types", filter, columns, orderBy);
+
+            return records;
         }
 
         public List<Dictionary<string, object>> Genders(string token = "")

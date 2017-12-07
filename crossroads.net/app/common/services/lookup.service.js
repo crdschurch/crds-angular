@@ -13,7 +13,8 @@
       ChildcareTimes: $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/lookup/childcaretimes/:congregationId`),
       Sites: $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/lookup/sites`),
       Genders: $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/lookup/genders`),
-      EventTypes: $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/lookup/eventtypes`),
+      // ***12/7/2017 not currently used*** EventTypes: $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/lookup/eventtypes`),
+      EventTypesForEventTool: $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/lookup/eventtypes?filter=event-tool`),
       DaysOfTheWeek: $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/lookup/meetingdays`),
       MeetingFrequencies: $resource(`${__GATEWAY_CLIENT_ENDPOINT__}api/lookup/meetingdays`)
     };
