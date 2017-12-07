@@ -9,34 +9,34 @@ namespace crds_angular.Services
 {
     public class ProgramService : IProgramService
     {
-        private readonly MPServices.IProgramRepository _programService;
+        private readonly MPServices.IProgramRepository _programRepository;
 
-        public ProgramService(MPServices.IProgramRepository programService)
+        public ProgramService(MPServices.IProgramRepository programRepository)
         {
-            _programService = programService;
+            _programRepository = programRepository;
         }
 
         public List<ProgramDTO> GetAllProgramsForReal()
         {
-            var programs = _programService.GetAllPrograms();
+            var programs = _programRepository.GetAllPrograms();
             return programs == null ? (null) : (Enumerable.OrderBy(programs.Select(Mapper.Map<ProgramDTO>), x => x.Name).ToList());
         }
 
         public List<ProgramDTO> GetOnlineGivingPrograms(int? programType = null)
         {
-            var programs = _programService.GetOnlineGivingPrograms(programType);
+            var programs = _programRepository.GetOnlineGivingPrograms(programType);
             return programs == null ? (null) : (Enumerable.ToList(programs.Select(Mapper.Map<ProgramDTO>)));
         }
 
         public List<ProgramDTO> GetProgramsForEventTool()
         {
-            var programs = _programService.GetProgramsForEventTool();
+            var programs = _programRepository.GetProgramsForEventTool();
             return programs == null ? (null) : (Enumerable.ToList(programs.Select(Mapper.Map<ProgramDTO>)));
         }
 
         public ProgramDTO GetProgramById(int programId)
         {
-            var program = _programService.GetProgramById(programId);
+            var program = _programRepository.GetProgramById(programId);
             return program == null ? (null) : Mapper.Map<ProgramDTO>(program);
         }
     }
