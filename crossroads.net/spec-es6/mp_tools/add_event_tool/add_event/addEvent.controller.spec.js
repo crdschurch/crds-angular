@@ -21,7 +21,7 @@ describe('component: addEvent controller', () => {
     lookupService = $injector.get('LookupService');
     spyOn(lookupService.ChildcareLocations, 'query').and.returnValue([{ dp_RecordID: 5, dp_RecordName: 'ChildCare1' }, { dp_RecordID: 6, dp_RecordName: 'childCare2' }]);
     
-    spyOn(lookupService.EventTypes, 'query').and.returnValue([{
+    spyOn(lookupService.EventTypesForEventTool, 'query').and.returnValue([{
       dp_RecordID: 1,
       dp_RecordName: 'EventsYo',
       Allow_Multiday_Event: true
@@ -42,8 +42,8 @@ describe('component: addEvent controller', () => {
       }
     }
     );
-    programs = { AllPrograms: jasmine.createSpyObj('programs.AllPrograms', ['query']) };
-    programs.AllPrograms.query.and.returnValue([{ programId: 1, programName: 'Program1' }, { programid: 2, programName: 'Program2' }]);
+    programs = { ProgramsForEventTool: jasmine.createSpyObj('programs.ProgramsForEventTool', ['query']) };
+    programs.ProgramsForEventTool.query.and.returnValue([{ programId: 1, programName: 'Program1' }, { programid: 2, programName: 'Program2' }]);
     staffContact = jasmine.createSpyObj('staffContact', ['query']);
     staffContact.query.and.callFake((obj, callback) => {
       callback([{ contactId: 1, displayName: 'Nukem, Duke', email: 'daduke@compuserve.net' },

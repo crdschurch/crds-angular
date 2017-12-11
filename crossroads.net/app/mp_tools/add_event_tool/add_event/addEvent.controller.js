@@ -18,7 +18,7 @@ export default class AddEventcontroller {
   }
 
   $onInit() {
-    this.eventTypes = this.lookupService.EventTypes.query({}, (types) => {
+    this.eventTypes = this.lookupService.EventTypesForEventTool.query({}, (types) => {
       if (this.eventData && this.eventData.eventType && this.eventData.eventType.dp_RecordID) {
         this.eventData.eventType = _.find(types, (type) => {
           return type.dp_RecordID === this.eventData.eventType.dp_RecordID;
@@ -28,7 +28,7 @@ export default class AddEventcontroller {
       }
     });
     this.reminderDays = this.lookup.query({ table: 'reminderdays' });
-    this.programs = this.programsLookup.AllPrograms.query();
+    this.programs = this.programsLookup.ProgramsForEventTool.query();
     // Get the congregations
     this.lookup.query({ table: 'crossroadslocations' }, (locations) => {
       this.crossroadsLocations = locations;

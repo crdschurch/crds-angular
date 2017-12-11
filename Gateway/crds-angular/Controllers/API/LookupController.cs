@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -9,10 +8,8 @@ using System.Web.Http.Results;
 using crds_angular.Models.Json;
 using crds_angular.Security;
 using crds_angular.Services.Interfaces;
-using Crossroads.Utilities.Interfaces;
 using MinistryPlatform.Translation.Repositories;
 using Crossroads.ApiVersioning;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Repositories.Interfaces;
@@ -21,7 +18,7 @@ namespace crds_angular.Controllers.API
 {
     public class LookupController : MPAuth
     {
-        private IConfigurationWrapper _configurationWrapper;
+        private readonly IConfigurationWrapper _configurationWrapper;
         private readonly LookupRepository _lookupRepository;
         private readonly IAuthenticationRepository _authenticationRepository;
         private readonly IUserRepository _userService;
@@ -85,6 +82,9 @@ namespace crds_angular.Controllers.API
                 case "eventtypes":
                     ret = _lookupRepository.EventTypes(token);
                     break;
+                case "eventtypes-eventtool":
+                    ret = _lookupRepository.EventTypesForEventTool(token);
+                    break;
                 case "reminderdays":
                     ret = _lookupRepository.ReminderDays(token);
                     break;
@@ -130,9 +130,10 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "lookup/event-types", minimumVersion: "1.0.0")]
         [Route("lookup/eventtypes")]
         [HttpGet]
-        public IHttpActionResult LookupEventTypes()
+        public IHttpActionResult LookupEventTypes(string filter = null)
         {
-            return LookupValues("eventtypes", "");
+            var table = (filter == "event-tool") ? "eventtypes-eventtool" : "eventtypes";
+            return LookupValues(table, "");
         }
 
         /// <summary>
