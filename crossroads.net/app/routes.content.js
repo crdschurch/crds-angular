@@ -37,7 +37,8 @@
               FormBuilderResolverService,
               $location,
               $httpParamSerializer,
-              $window) {
+              $window,
+              $cookies) {
               var promise;
               var redirectFlag = false;
               var link = $stateParams.link;
@@ -71,9 +72,10 @@
                   return originalPromise;
                 }
 
-                const qs = $location.search();
+                const notlegacy = $cookies.get('notlegacy');
 
-                if (qs.resolve !== undefined && qs.resolve === 'true') {
+                if (notlegacy !== undefined && notlegacy === link) {
+                  $cookies.remove('fwd');
                   var notFoundPromise = Page.get({ url: '/page-not-found/' }).$promise;
 
                   notFoundPromise.then(function (promise) {
@@ -91,11 +93,13 @@
                   return notFoundPromise;
 
                 } else {
+                  $cookies.put('notlegacy', link);
+
                   // page not found....
                   // remove the previous link from the history?
-                  const query_params = Object.assign({}, $location.search(), { resolve: true });
+                  const queryParams = $location.search();
                   link = removeTrailingSlashIfNecessary($stateParams.link);
-                  const query_params_string = $httpParamSerializer(query_params);
+                  const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
 
                   // code below prevents console errors during redirect
                   ContentPageService.page = {
@@ -105,7 +109,9 @@
                     title: ''
                   };
 
-                  $window.location.replace(`${link}?${query_params_string}`)
+                  $window.location.replace(`${link}${queryParamsString}`);                    
+
+                  $rootScope.$destroy();
                   return;
                 }
               });
