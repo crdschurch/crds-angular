@@ -72,9 +72,9 @@
                   return originalPromise;
                 }
 
-                const notlegacy = $cookies.get('notlegacy');
+                const unmatchedLegacyRoute = $cookies.get('unmatchedLegacyRoute');
 
-                if (notlegacy !== undefined && notlegacy === link) {
+                if (unmatchedLegacyRoute !== undefined && unmatchedLegacyRoute === link) {
                   var notFoundPromise = Page.get({ url: '/page-not-found/' }).$promise;
 
                   notFoundPromise.then(function (promise) {
@@ -92,7 +92,7 @@
                   return notFoundPromise;
 
                 } else {
-                  $cookies.put('notlegacy', link);
+                  $cookies.put('unmatchedLegacyRoute', link);
 
                   // page not found....
                   // remove the previous link from the history?
