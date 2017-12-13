@@ -1283,15 +1283,10 @@ namespace crds_angular.Services
                 pin.Title = GetPinTitle(pin, contactId);
                 pin.IconUrl = GetPinUrl(pin.PinType);
 
-                // Have GROUP address, but no coordinates, get geocordinates and save in MP
-                if ((pin.PinType == PinType.GATHERING || pin.PinType == PinType.SMALL_GROUP) && pin.Address.PostalCode != null && pin.Address.Longitude == null)
+                if ((pin.PinType == PinType.GATHERING || pin.PinType == PinType.SMALL_GROUP) && pin.Address.PostalCode != null && pin.Address.Longitude == 0)
                 {
                     // Everything will go to a state level with bad address - because state is required select control
                     _addressService.SetGroupPinGeoCoordinates(pin);
-
-                    // TODO check error handling here - I did an update on non-existant group and hosed up AWS
-                    // TODO uncomment when small groups are in AWS
-                    // _awsCloudsearchService.UploadNewPinToAws(pin);
                 }
 
                 //calculate proximity for all pins to origin

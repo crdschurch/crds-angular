@@ -13,12 +13,16 @@ cms_services_module.factory('SystemPage', function ($resource) {
 });
 
 cms_services_module.factory('Page', function ($resource, $location) {
-    var stageParam = $location.search()['stage'];
-    if (stageParam) {
-        return $resource(__CMS_CLIENT_ENDPOINT__ + '/api/Page/?link=:url&STAGE=:stage', { url: '@_url', stage: stageParam }, { cache: false });
-    }
+  let cache = true;
+  let params = { };
 
-    return $resource(__CMS_CLIENT_ENDPOINT__ + '/api/Page/?link=:url', { url: '@_url' }, { cache: true });
+  const stageParam = $location.search().stage;
+  if (stageParam) {
+    params.stage = stageParam;
+    cache = false;
+  }
+
+  return $resource(__CMS_CLIENT_ENDPOINT__ + 'api/Page?link=:url', params, { cache });
 });
 
 cms_services_module.factory('PageById', function ($resource, $location) {

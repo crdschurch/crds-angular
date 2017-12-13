@@ -66,5 +66,14 @@ namespace crds_angular.Controllers.API
         {
             return Ok(_programService.GetOnlineGivingPrograms(programType));
         }
+
+        [VersionedRoute(template: "programs/event-tool", minimumVersion: "1.0.0")]
+        [Route("programs/event-tool")]
+        [HttpGet]
+        public IHttpActionResult GetProgramsForEventTool()
+        {
+            var programs = _programService.GetProgramsForEventTool();
+            return Ok(programs);
+        }
     }
 }

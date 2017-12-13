@@ -8,6 +8,8 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
 
         List<Dictionary<string, object>> EventTypes(string token);
 
+        List<Dictionary<string, object>> EventTypesForEventTool(string token);
+
         List<Dictionary<string, object>> Genders(string token);
 
         List<Dictionary<string, object>> MaritalStatus(string token);
