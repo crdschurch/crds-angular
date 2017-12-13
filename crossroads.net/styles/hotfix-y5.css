@@ -216,85 +216,6 @@
   background-size: cover;
 }
 
-
-/* Music page updates - Tate */
-
-
-.crds-legacy-styles .jumbotron.music-jumbotron {
-  padding: 22px;
-  background: url(//crds-cms-uploads.imgix.net/content/images/music-intro-bg.jpg) top center no-repeat;
-  background-size: cover;
-}
-.crds-legacy-styles .music-intro {
-  background: #eee;
-}
-@media (max-width: 992px) {
-  .crds-legacy-styles .music-intro {
-    padding-bottom: 0 !important;
-    height: auto !important;
-    margin-bottom: 22px;
-  }
-  .crds-legacy-styles .music-intro .embed-responsive-item {
-    position: relative !important;
-  }
-}
-.crds-legacy-styles .album-card a {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-}
-.crds-legacy-styles .album-page {
-  margin-bottom: -40px;
-}
-.crds-legacy-styles .album-page h1, .crds-legacy-styles .album-page h2, .crds-legacy-styles .album-page h3 {
-  font-family: "acumin-pro-extra-condensed", sans-serif;
-  text-transform: uppercase;
-}
-.crds-legacy-styles .album-page .wpy-blur {
-  background: url(http://crossroads-media.s3.amazonaws.com/images/wpy-land-bg.jpg) no-repeat;
-  background-size: cover;
-}
-.crds-legacy-styles .album-page .camp-blur {
-  background: url(http://crossroads-media.s3.amazonaws.com/images/bloobrothers-bg.jpg) no-repeat;
-  background-size: cover;
-}
-.crds-legacy-styles .album-page .album-cover {
-  border: 5px solid rgba(0, 0, 0, 0.3);
-}
-.crds-legacy-styles .dark-bg .crds-shared-header .header li > a:not(.cta) {
-  color: #fff;
-}
-.crds-legacy-styles .dark-bg .crds-shared-header .header .dropdown-menu ul li a {
-  color: #4d4d4d;
-}
-.crds-legacy-styles .dark-bg .crds-shared-header .navbar-brand.logo svg {
-  color: #fff;
-}
-.crds-legacy-styles .dark-bg .crds-shared-header .header ul.nav-pills > li:not(.open) > a:focus:not(.cta) {
-  background: transparent;
-}
-.crds-legacy-styles .dark-bg .music-spotify {
-  margin-top: 22px;
-}
-.crds-legacy-styles .dark-bg .music-itunes {
-  margin-top: 13px;
-}
-.crds-legacy-styles .dark-bg .music-youtube {
-  margin-top: 27px;
-}
-.crds-legacy-styles .dark-bg .music-play {
-  margin-top: 30px;
-}
-.crds-legacy-styles .cr-music-logo {
-  max-width: 250px;
-}
-.crds-legacy-styles .media-index > .col-sm-7:first-of-type {
-  display: none;
-}
-
 /* Explore Page - Adam */
 
 .crds-styles .explore-content {
@@ -397,10 +318,4 @@
     width: 100%;
   }
 
-}
-
-/* Jumbotron Z-Index - Luke M - 11/16/17 */
-
-.crds-styles .jumbotron-overlay {
-  z-index: -1;
 }
