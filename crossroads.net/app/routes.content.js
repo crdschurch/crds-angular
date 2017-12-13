@@ -75,7 +75,6 @@
                 const notlegacy = $cookies.get('notlegacy');
 
                 if (notlegacy !== undefined && notlegacy === link) {
-                  $cookies.remove('fwd');
                   var notFoundPromise = Page.get({ url: '/page-not-found/' }).$promise;
 
                   notFoundPromise.then(function (promise) {
