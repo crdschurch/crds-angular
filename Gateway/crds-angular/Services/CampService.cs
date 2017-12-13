@@ -110,17 +110,21 @@ namespace crds_angular.Services
         {
             var formId = _configurationWrapper.GetConfigIntValue("SummerCampFormID");
             var formFieldId = _configurationWrapper.GetConfigIntValue("SummerCampForm.FinancialAssistance");
-            var me = _contactRepository.GetMyProfile(token);
             var campEvent = _eventRepository.GetEvent(eventId);
             var eventProduct = _productRepository.GetProductForEvent(eventId);
+
+            var invoiceDetails = _invoiceRepository.GetInvoiceDetailsForProductAndCamper(eventProduct.ProductId, camperContactId, eventId);
+            if (!invoiceDetails.Status)
+            {
+              throw new Exception(invoiceDetails.ErrorMessage);
+            }
             var eventProductOptionPrices = _productRepository.GetProductOptionPricesForProduct(eventProduct.ProductId).OrderByDescending(m => m.DaysOutToHide).ToList();
-            var invoiceDetails = _invoiceRepository.GetInvoiceDetailsForProductAndCamper(eventProduct.ProductId, camperContactId);
             var answer = _formSubmissionRepository.GetFormResponseAnswer(formId, camperContactId, formFieldId, eventId);
             var financialAssistance = (!string.IsNullOrEmpty(answer) && Convert.ToBoolean(answer));
             var paymentDetail = invoiceDetails.Status ? _paymentService.GetPaymentDetails(0, invoiceDetails.Value.InvoiceId, token) : null;
             var campProductInfo = new ProductDTO
             {
-                InvoiceId = invoiceDetails.Status ? invoiceDetails.Value.InvoiceId : 0,
+                InvoiceId = invoiceDetails.Value.InvoiceId,
                 ProductId = eventProduct.ProductId,
                 ProductName = eventProduct.ProductName,
                 BasePrice = eventProduct.BasePrice,
@@ -444,9 +448,7 @@ namespace crds_angular.Services
             var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
             family.AddRange(_contactRepository.GetOtherHouseholdMembers(loggedInContact.Household_ID));
 
-            // US8846: show camps for 60 days beyond the end date so that users can continue to
-            // make payments even after the camp is completed.
-            DateTime cutoffDate = DateTime.Today.AddDays(-60);
+            var cutoffDate = DateTime.Today.AddDays(-60);
 
             var camps = _eventRepository.GetEvents(campType, apiToken);
             foreach (var camp in camps.Where(c => c.EventEndDate >= cutoffDate))
@@ -456,26 +458,23 @@ namespace crds_angular.Services
                 {
                     foreach (var member in family)
                     {
-                        if (campers.Any(c => c.ContactId == member.ContactId))
-                        {
-                            var product = _productRepository.GetProductForEvent(camp.EventId);
-                            var invoiceDetails = _invoiceRepository.GetInvoiceDetailsForProductAndCamper(product.ProductId, member.ContactId);
-                            PaymentDetailDTO paymentDetail;
-                            paymentDetail = invoiceDetails.Value == null ? null : _paymentService.GetPaymentDetails(0, invoiceDetails.Value.InvoiceId, token);
+                      if (campers.All(c => c.ContactId != member.ContactId)) continue;
+                      var product = _productRepository.GetProductForEvent(camp.EventId);
+                      var invoiceDetails = _invoiceRepository.GetInvoiceDetailsForProductAndCamper(product.ProductId, member.ContactId, camp.EventId);
+                      var paymentDetail = !invoiceDetails.Status ? null : _paymentService.GetPaymentDetails(0, invoiceDetails.Value.InvoiceId, token);
 
-                            dashboardData.Add(new MyCampDTO
-                            {
-                                CamperContactId = member.ContactId,
-                                CamperNickName = member.Nickname ?? member.FirstName,
-                                CamperLastName = member.LastName,
-                                CampName = camp.EventTitle,
-                                CampStartDate = camp.EventStartDate,
-                                CampEndDate = camp.EventEndDate,
-                                EventId = camp.EventId,
-                                CampPrimaryContactEmail = _eventRepository.GetEvent(camp.EventId).PrimaryContact.EmailAddress,
-                                CamperInvoice = paymentDetail
-                            });
-                        }
+                      dashboardData.Add(new MyCampDTO
+                      {
+                        CamperContactId = member.ContactId,
+                        CamperNickName = member.Nickname ?? member.FirstName,
+                        CamperLastName = member.LastName,
+                        CampName = camp.EventTitle,
+                        CampStartDate = camp.EventStartDate,
+                        CampEndDate = camp.EventEndDate,
+                        EventId = camp.EventId,
+                        CampPrimaryContactEmail = _eventRepository.GetEvent(camp.EventId).PrimaryContact.EmailAddress,
+                        CamperInvoice = paymentDetail
+                      });
                     }
                 }
             }

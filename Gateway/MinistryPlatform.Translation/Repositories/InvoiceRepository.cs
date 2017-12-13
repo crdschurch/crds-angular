@@ -92,18 +92,20 @@ namespace MinistryPlatform.Translation.Repositories
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Post(new List<MpNestedInvoiceDetail>(new List<MpNestedInvoiceDetail> { invoice })) == 200;
         }
 
-        public Result<MpInvoiceDetail> GetInvoiceDetailsForProductAndCamper(int productId, int camperId)
+        public Result<MpInvoiceDetail> GetInvoiceDetailsForProductAndCamper(int productId, int camperId, int eventId)
         {
-            var apiToken = _apiUserRepository.GetToken();
-            var invoiceDetails = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpInvoiceDetail>($"Recipient_Contact_ID_Table.[Contact_ID]={camperId} AND Product_ID_Table.[Product_ID]={productId} AND Invoice_Status_ID!={_invoiceCancelled}", "Invoice_ID_Table.[Invoice_ID]");
-            if (invoiceDetails.Any())
+            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+            var invoiceDetails = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpInvoiceDetail>($"Recipient_Contact_ID_Table.[Contact_ID]={camperId} AND Product_ID_Table.[Product_ID]={productId} AND Event_Participant_ID_Table_Event_ID_Table.[Event_ID]={eventId} AND Invoice_Status_ID!={_invoiceCancelled}", "Invoice_ID_Table.[Invoice_ID]");            
+            if (!invoiceDetails.Any())
             {
-                if (invoiceDetails.First() != null)
-                {
-                    return new Result<MpInvoiceDetail>(true, invoiceDetails.First());
-                }
+              return new Result<MpInvoiceDetail>(false, $"No invoice details for camper: {camperId}, product: {productId} and event: {eventId}");
             }
-            return new Result<MpInvoiceDetail>(false, "no invoice details for that user and product");
+            if (invoiceDetails.Count > 1)
+            {
+              return new Result<MpInvoiceDetail>(false, $"Found multiple invoices for camper: {camperId}, product: {productId} and event: {eventId}");
+            }
+            
+            return new Result<MpInvoiceDetail>(true, invoiceDetails.First());                                    
         }
 
         public int GetInvoiceIdForPayment(int paymentId)
