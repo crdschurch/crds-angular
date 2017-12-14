@@ -1139,12 +1139,12 @@ namespace crds_angular.test.Services
             Assert.IsTrue(result.Options.Count == 2);
             Assert.IsTrue(result.ProductId == 111);
             Assert.IsTrue(result.PaymentDetail.TotalToPay == 1000);
-        }
+        }      
 
       [Test]
-      public void ShouldHandleInvoiceFailureWhenGettingProductInfo()
+      public void ShouldGetProductInfoWhenThereIsNoInvoiceYet()
       {
-        const int eventId = 1234;
+      const int eventId = 1234;
         const string token = "1aaaa";
         var product = new MpProduct
         {
@@ -1186,16 +1186,24 @@ namespace crds_angular.test.Services
           DaysOutToHide = 90
         };
 
+        
 
-        var mpInvoiceResult = new Result<MpInvoiceDetail>(false, $"No invoices found for event, camper and product");
-
+        var mpInvoiceResult = new Result<MpInvoiceDetail>(false, "No invoice");
+        var mpoptionlist = new List<MpProductOptionPrice>() { mpprodoption1, mpprodoption2 };
         const int contactid = 12345;
+
         _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpevent);
         _productRepository.Setup(m => m.GetProductForEvent(eventId)).Returns(product);
+        _productRepository.Setup(m => m.GetProductOptionPricesForProduct(product.ProductId)).Returns(mpoptionlist);
+        _formSubmissionRepository.Setup(m => m.GetFormResponseAnswer(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns("true");
         _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(product.ProductId, contactid, eventId))
           .Returns(mpInvoiceResult);
-        Assert.Throws<Exception>(() => _fixture.GetCampProductDetails(eventId, contactid, token));        
-      }
+        
+        var result = _fixture.GetCampProductDetails(eventId, contactid, token);
+        Assert.IsTrue(result.Options.Count == 2);
+        Assert.IsTrue(result.ProductId == 111);
+        Assert.IsNull(result.PaymentDetail);
+    }
 
     [Test]
         public void shouldSendConfirmationEmail()
