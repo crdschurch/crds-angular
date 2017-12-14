@@ -8,12 +8,9 @@ using crds_angular.Services;
 using crds_angular.Services.Interfaces;
 using crds_angular.test.Helpers;
 using Crossroads.Utilities.FunctionalHelpers;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
-using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
@@ -597,11 +594,11 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldGetMyCampInfo()
         {
-            var token = "asdfasdfasdfasdf";
-            var apiToken = "apiToken";
-            var myContactId = 2187211;
+            const string token = "asdfasdfasdfasdf";
+            const string apiToken = "apiToken";
+            const int myContactId = 2187211;
             var myContact = getFakeContact(myContactId);
-            var campType = "Camp";
+            const string campType = "Camp";
             var product = new MpProduct
             {
                 ProductId = 111,
@@ -616,7 +613,6 @@ namespace crds_angular.test.Services
                 RecipientEmail = "x@x.com",
                 TotalToPay = 1000
             };
-
 
             var mpInvoiceResult = new Result<MpInvoiceDetail>(true, new MpInvoiceDetail() { InvoiceId = 1234 });
             var camps = new List<MpEvent>
@@ -635,9 +631,9 @@ namespace crds_angular.test.Services
                 }
             };
 
-            IEnumerable<MinistryPlatform.Translation.Models.MpParticipant> campers = new List<MinistryPlatform.Translation.Models.MpParticipant>
+            IEnumerable<MpParticipant> campers = new List<MpParticipant>
             {
-                new MinistryPlatform.Translation.Models.MpParticipant
+                new MpParticipant
                 {
                     ContactId = 123,
                     ParticipantId = 77777,
@@ -647,8 +643,6 @@ namespace crds_angular.test.Services
                     GroupName = ""
                 }
             };
-                  
-
 
             // Get a family list with only me in it i.e. no family
             var family = getFakeHouseholdMembers(myContact).ToList();
@@ -664,7 +658,7 @@ namespace crds_angular.test.Services
             _eventRepository.Setup(m => m.GetEvent(camps.First().EventId)).Returns(camps.First());
 
             _productRepository.Setup(m => m.GetProductForEvent(camps.First().EventId)).Returns(product);
-            _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(product.ProductId, family[0].ContactId))
+            _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(product.ProductId, family[0].ContactId, camps.First().EventId))
                 .Returns(mpInvoiceResult);
             _paymentService.Setup(m => m.GetPaymentDetails(0, mpInvoiceResult.Value.InvoiceId, token, false)).Returns(paymentDetail);
 
@@ -950,7 +944,7 @@ namespace crds_angular.test.Services
         }
 
         [Test]
-        public void shouldGetCamperInfo()
+        public void ShouldGetCamperInfo()
         {
             const int eventId = 123;
             const string token = "asdf";
@@ -1080,7 +1074,6 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldGetProductInfo()
         {
-            var me = this.getFakeContact(1);
             const int eventId = 1234;
             const string token = "1aaaa";
             var product = new MpProduct
@@ -1130,18 +1123,15 @@ namespace crds_angular.test.Services
                 TotalToPay = 1000
             };
 
-            
             var mpInvoiceResult = new Result<MpInvoiceDetail>(true, new MpInvoiceDetail() { InvoiceId = 1234 });
-
             var mpoptionlist = new List<MpProductOptionPrice>() {mpprodoption1, mpprodoption2};
-            int contactid = 12345;
+            const int contactid = 12345;
 
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(me);
             _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpevent);
             _productRepository.Setup(m => m.GetProductForEvent(eventId)).Returns(product);
             _productRepository.Setup(m => m.GetProductOptionPricesForProduct(product.ProductId)).Returns(mpoptionlist);
             _formSubmissionRepository.Setup(m => m.GetFormResponseAnswer(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns("true");
-            _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(product.ProductId, contactid))
+            _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(product.ProductId, contactid, eventId))
                 .Returns(mpInvoiceResult);
             _paymentService.Setup(m => m.GetPaymentDetails(0, mpInvoiceResult.Value.InvoiceId, token, false)).Returns(paymentDetail);
 
@@ -1151,7 +1141,63 @@ namespace crds_angular.test.Services
             Assert.IsTrue(result.PaymentDetail.TotalToPay == 1000);
         }
 
-        [Test]
+      [Test]
+      public void ShouldHandleInvoiceFailureWhenGettingProductInfo()
+      {
+        const int eventId = 1234;
+        const string token = "1aaaa";
+        var product = new MpProduct
+        {
+          ProductId = 111,
+          BasePrice = 1000,
+          DepositPrice = 200,
+          ProductName = "Hipster Beard Wax"
+        };
+
+        var mpevent = new MpEvent
+        {
+          EventId = 999,
+          EventTitle = "Hipster Beard Training",
+          EventType = "event-type-100",
+          EventStartDate = new DateTime(2017, 3, 28, 8, 30, 0),
+          EventEndDate = new DateTime(2017, 4, 28, 8, 30, 0),
+          PrimaryContact = new MpContact { ContactId = 12345, EmailAddress = "thedude@beautifulbeards.com" },
+          ParentEventId = 6543219,
+          CongregationId = 2,
+          ReminderDaysPriorId = 2,
+          RegistrationStartDate = new DateTime(2017, 1, 1, 8, 30, 0),
+          RegistrationEndDate = new DateTime(2017, 3, 15, 8, 30, 0),
+          Cancelled = false
+        };
+
+        var mpprodoption1 = new MpProductOptionPrice
+        {
+          ProductOptionPriceId = 1,
+          OptionTitle = "Option 1",
+          OptionPrice = 20,
+          DaysOutToHide = 90
+        };
+
+        var mpprodoption2 = new MpProductOptionPrice
+        {
+          ProductOptionPriceId = 1,
+          OptionTitle = "Option 1",
+          OptionPrice = 20,
+          DaysOutToHide = 90
+        };
+
+
+        var mpInvoiceResult = new Result<MpInvoiceDetail>(false, $"No invoices found for event, camper and product");
+
+        const int contactid = 12345;
+        _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpevent);
+        _productRepository.Setup(m => m.GetProductForEvent(eventId)).Returns(product);
+        _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(product.ProductId, contactid, eventId))
+          .Returns(mpInvoiceResult);
+        Assert.Throws<Exception>(() => _fixture.GetCampProductDetails(eventId, contactid, token));        
+      }
+
+    [Test]
         public void shouldSendConfirmationEmail()
         {
             const int eventId = 1234554;
