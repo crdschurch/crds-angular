@@ -100,12 +100,7 @@ namespace MinistryPlatform.Translation.Repositories
             {
               return new Result<MpInvoiceDetail>(false, $"No invoice details for camper: {camperId}, product: {productId} and event: {eventId}");
             }
-            if (invoiceDetails.Count > 1)
-            {
-              return new Result<MpInvoiceDetail>(false, $"Found multiple invoices for camper: {camperId}, product: {productId} and event: {eventId}");
-            }
-            
-            return new Result<MpInvoiceDetail>(true, invoiceDetails.First());                                    
+            return invoiceDetails.Count > 1 ? new Result<MpInvoiceDetail>(false, $"Found multiple invoices for camper: {camperId}, product: {productId} and event: {eventId}") : new Result<MpInvoiceDetail>(true, invoiceDetails.First());
         }
 
         public int GetInvoiceIdForPayment(int paymentId)
