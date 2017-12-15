@@ -11,7 +11,7 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         void SetInvoiceStatus(int invoiceId, int statusId);
         MpInvoiceDetail GetInvoiceDetailForInvoice(int invoiceId);
         bool CreateInvoiceAndDetail(int productId, int? productOptionPriceId, int purchaserContactId, int recipientContactId, int eventParticiapntId);
-        Result<MpInvoiceDetail> GetInvoiceDetailsForProductAndCamper(int productId, int camperId);
+        Result<MpInvoiceDetail> GetInvoiceDetailsForProductAndCamper(int productId, int camperId, int eventId);
         int GetInvoiceIdForPayment(int paymentId);
     }
 }
