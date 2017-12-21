@@ -6,7 +6,7 @@
   VolunteerApplication.$inject = ['Page', 'Opportunity'];
 
   function VolunteerApplication(Page, Opportunity){
-    
+
     return {
 
       /**
@@ -15,7 +15,7 @@
        */
       show : function(type, person){
         if (person.age >= 16 && type === 'adult') {
-          return true; 
+          return true;
         } else if ((person.age >= 10) && (person.age <= 15) && (type === 'student')) {
           return true;
         } else if (type === 'error') {
@@ -34,13 +34,13 @@
         return person.middleName;
       },
       /**
-       * Get the Opportunity Response 
-       */ 
+       * Get the Opportunity Response
+       */
       getResponse: function(opportunityId, contactId){
         return Opportunity.GetResponse.get({
           id: opportunityId,
           contactId: contactId
-        }).$promise; 
+        }).$promise;
       },
       /**
        * Gets the kids club application from the CMS

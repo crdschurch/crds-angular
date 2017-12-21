@@ -84,7 +84,7 @@ describe('Refine List Directive', function() {
 
   beforeEach(function() {
     angular.mock.module('crossroads');
-    beforeEach(angular.mock.module(CONSTANTS.MODULES.MY_SERVE));
+    beforeEach(() => angular.mock.module(CONSTANTS.MODULES.MY_SERVE));
   });
 
   beforeEach(inject(function(_$compile_, _$rootScope_, _$q_, _ServeTeamFilterState_, _$httpBackend_) {
