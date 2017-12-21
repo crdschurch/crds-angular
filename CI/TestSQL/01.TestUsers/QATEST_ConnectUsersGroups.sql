@@ -533,3 +533,38 @@ INSERT INTO dbo.Group_Participants
 VALUES
 ( @groupID, @participantID, 16           , 1        , {d '2015-11-01'}, 0            , 1            );
 
+----------------------------------------------------------------------------------------------------------
+---------Add connect leader for automation
+
+USE [MinistryPlatform]
+GO
+
+ UPDATE  [dbo].Households
+ SET Address_ID = @addressID
+ WHERE Household_ID = @houseHoldID
+
+ -- Create Group
+-- For new group, Change Group_name
+-- Group_type_ID 1 = small group
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: select * from dbo.Ministries
+
+DECLARE @groupIdSG   AS INT
+SET IDENTITY_INSERT [dbo].[Groups] ON;
+SET @groupIdSG = (SELECT IDENT_CURRENT('Groups')) + 1 ;
+
+-- Set up Albert as leader of the group
+-- change group name
+INSERT INTO Groups
+( Group_ID  , Group_Name    , Group_Type_ID, Ministry_ID, Congregation_ID, Primary_Contact, Description                    , Start_Date      , Offsite_Meeting_Address, Group_Is_Full, Available_Online, Domain_ID, Deadline_Passed_Message_ID , Send_Attendance_Notification , Send_Service_Notification , Child_Care_Available) 
+VALUES
+( @groupIdSG, 'Albert, E'   , 30           , 8          ,  1             ,  @contactID    , 'connect group for automation' , {d '2015-11-01'},  @addressID            ,0             , 1               , 1        , 58                         ,  0                           , 0                         , 0                   ) ;
+
+SET IDENTITY_INSERT [dbo].[Groups] OFF;
+
+INSERT INTO dbo.Group_Participants
+( Group_ID  , Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
+VALUES
+( @groupIdSG, @participantID, 22           , 1        , {d '2015-11-01'}, 0            , 1            );
+
+GO
+

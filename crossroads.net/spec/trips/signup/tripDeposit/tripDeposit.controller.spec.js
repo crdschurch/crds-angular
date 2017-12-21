@@ -4,6 +4,7 @@ require('../../../../app/trips/trips.module');
 describe('Trip Deposit Controller', () => {
 
   let rootScope,
+      scope,
       state,
       timeout,
       session,
@@ -31,11 +32,12 @@ describe('Trip Deposit Controller', () => {
 
   const endpoint = window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api';
 
-  beforeEach(angular.mock.module('crossroads.trips'));
+  beforeEach(() => angular.mock.module('crossroads.trips'));
 
   // injections
   beforeEach(inject((_$componentController_, _$rootScope_, $injector) => {
     rootScope = _$rootScope_;
+    scope = _$rootScope_.$new();
     log = $injector.get('$log');
     state = $injector.get('$state');
     timeout = $injector.get('$timeout');
@@ -64,12 +66,12 @@ describe('Trip Deposit Controller', () => {
     tripsSignup.pledgeId = pledgeId;
     tripsSignup.depositAmount = depositAmount;
     tripsSignup.campaign = {name: pledgeCampaignName, id: pledgeCampaignId};
-    controller = componentController('tripDeposit', null, {});
+    controller = componentController('tripDeposit', { $scope: scope }, {});
   });
 
   // setup spies
   beforeEach( () => {
-    spyOn(rootScope, '$on').and.callThrough();
+    spyOn(scope, '$on').and.callThrough();
     spyOn(tripDeposit, 'initDefaultState');
     spyOn(state, 'go');
     spyOn(session, 'isActive').and.returnValue(true);
@@ -103,7 +105,7 @@ describe('Trip Deposit Controller', () => {
     });
 
     it('should redirect if application was not filled out before reaching deposit page', () => {
-      expect(state.go).toHaveBeenCalledWith('tripsignup', {campaignId: pledgeCampaignId}); 
+      expect(state.go).toHaveBeenCalledWith('tripsignup', {campaignId: pledgeCampaignId});
     });
 
   });
@@ -121,10 +123,7 @@ describe('Trip Deposit Controller', () => {
       },
       depositAmount
     );
-    expect(rootScope.$on).toHaveBeenCalled();
-    expect(rootScope.$on).toHaveBeenCalled();
-    expect(rootScope.$on).toHaveBeenCalled();
-    expect(rootScope.$on).toHaveBeenCalled();
+    expect(scope.$on).toHaveBeenCalled();
     expect(state.go).toHaveBeenCalledWith('tripdeposit.account', {contactId, campaignId: pledgeCampaignId });
   }
 
