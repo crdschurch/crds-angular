@@ -40,7 +40,7 @@ namespace MinistryPlatform.Translation.Models
         public string Passport_Middlename { get; set; }
         public string Passport_Country { get; set; }
         public string Passport_Number { get; set; }
-        public string Passport_Expiration { get; set; }
+        public DateTime? Passport_Expiration { get; set; }
         public DateTime? Participant_Start_Date { get; set; }
         public DateTime? Attendance_Start_Date { get; set; }
     }
