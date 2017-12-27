@@ -25,8 +25,9 @@ describe('Volunteer Application Factory', function() {
 
   it('should fetch the page object', function(){
     VolunteerApplication.getPageInfo();
-    $httpBackend.expectGET( window.__env__['CRDS_CMS_CLIENT_ENDPOINT'] +
-        '/api/Page/?link=%2Fvolunteer-application%2Fkids-club%2F').respond(200, mockPageInfo );
+    let url = window.__env__['CRDS_CMS_CLIENT_ENDPOINT'] +
+        'api/Page?link=%2Fvolunteer-application%2Fkids-club%2F';
+    $httpBackend.expectGET(url).respond(200, mockPageInfo );
     $httpBackend.flush();
   });
 

@@ -97,7 +97,7 @@ describe('Stream Status Service', () => {
     streamStatusService = $injector.get('StreamStatusService');
   }));
 
-  beforeEach(jasmine.clock().mockDate(baseTime));
+  beforeEach(() => jasmine.clock().mockDate(baseTime));
 
   describe('Stream Status Service', () => {
 
