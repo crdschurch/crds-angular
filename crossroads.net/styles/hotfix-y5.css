@@ -1,95 +1,5 @@
-/* Crossroads GoTrips - New - Adam G in progress */
-/* https://www.crossroads.net/reachout/go */
-
-.crds-styles .nav-trips .nav >li:not(:last-child)> a:hover {
-    background-color: transparent;
-    color: #fff;
-}
-.crds-styles .nav-trips .nav >li:not(:last-child)> a:focus {
-    background-color: transparent;
-    color: #fff;
-}
-.crds-legacy-styles .nav-trips .navbar-nav>li>a {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-.crds-styles .nav-trips .navbar-nav>li>a {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-#goTripsNav .navbar-nav >li> a {
-  color: #fff;
-}
-#goTripsNav .navbar-nav >li:not(:last-child)> a:hover,
-#goTripsNav .navbar-nav >li:not(:last-child)> a:focus,
-#goTripsNav .navbar-nav >li:not(:last-child)> a:active {
-  background-color: transparent;
-  border-color: #fff;
-}
-#goTripsNav .navbar-nav >li:last-child> a:hover,
-#goTripsNav .navbar-nav >li:last-child> a:focus {
-  background-color: #0095D9;
-  border-color: #0095D9;
-}
-@media only screen and (max-width:768px){
-  #goTripsNav {
-    background-color: #fff;
-  }
-  #goTripsNav .navbar-nav >li:not(:last-child)> a:hover,
-  #goTripsNav .navbar-nav >li:not(:last-child)> a:focus,
-  #goTripsNav .navbar-nav >li:not(:last-child)> a:active {
-    background-color: transparent;
-    border-color: transparent;
-  }
-  #goTripsNav .navbar-nav >li:last-child> a,
-  #goTripsNav .navbar-nav >li:last-child> a:hover,
-  #goTripsNav .navbar-nav >li:last-child> a:focus,
-  #goTripsNav .navbar-nav >li:last-child> a:active {
-    color: #fff;
-  }
-  #goTripsNav .navbar-nav>.open>a,
-  #goTripsNav .navbar-nav>.open>a:focus,
-  #goTripsNav .navbar-nav>.open>a:hover {
-    background-color: transparent;
-    border-color: transparent;
-  }
-  #goTripsNav .navbar-nav >li> a {
-    color: #4D4D4D;
-    font-size: 1em;
-  }
-}
-
-
-/* Groups Content - New - Adam G in progress */
-/* https://www.crossroads.net/groups/groups-up/ */
-
-.crds-styles .group-content-active {
-  background-color: #b9b9b9;
-  padding: 4px 0px 5px 10px;
-  border-radius: 50%;
-  display: inline-flex;
-  font-size: 12px;
-  width: 28px;
-  font-weight: bold;
-}
-.crds-styles .group-content-inactive {
-  background-color: #e7e7e7;
-  padding: 4px 0px 5px 10px;
-  border-radius: 50%;
-  display: inline-flex;
-  font-size: 12px;
-  width: 28px;
-  font-weight: bold;
-  color: #8a8a8a;
-}
-
-.crds-styles .allgroupcontent > .grid-item {
-  min-width: 173px;
-}
-
-
 /* Tate - /groups fix for Brian M. - 09/20/17 */
+/*
 .crds-legacy-styles #groups-landing-20160826 #groups-landing-get-in .aspect-content {
   padding-top: 0 !important;
   position: relative !important;
@@ -104,6 +14,7 @@
     padding-top: 10% !important;
   }
 }
+*/
 
 /* Real Encounters - Tate - 09/08/17 */
 
