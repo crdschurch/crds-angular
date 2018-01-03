@@ -70,7 +70,7 @@ namespace crds_angular.test.Services
             
             _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email, "1234567890")).Returns(new Dictionary<string, object> { {"dp_RecordID", 123}});
 
-            _fixture.RegisterPerson(newUserData);
+            _fixture.RegisterPerson(newUserData, null);
 
             _ministryPlatformService.VerifyAll();
         }
@@ -108,7 +108,100 @@ namespace crds_angular.test.Services
 
             _subscriptionService.Setup(mocked => mocked.SetSubscriptions(It.IsAny<Dictionary<string, object>>(), 654, "1234567890")).Returns(999);
 
-            _fixture.RegisterPerson(newUserData);
+            _fixture.RegisterPerson(newUserData, null);
+
+            _ministryPlatformService.VerifyAll();
+            _participantService.VerifyAll();
+            _subscriptionService.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldRegisterWithDefaultHouseholdSource()
+        {
+            var newUserData = new User
+            {
+                firstName = "Automated",
+                lastName = "Test",
+                email = "auto02@crossroads.net",
+                password = "password"
+            };
+
+            var expectedHouseholdDict = new Dictionary<string, object>
+            {
+                {"Household_Name", newUserData.lastName},
+                {"Congregation_ID", 321},
+                {"Household_Source_ID", 654}
+            };
+
+            _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("user");
+            _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
+
+            _apiUserService.Setup(mocked => mocked.GetToken()).Returns("1234567890");
+            _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email, "1234567890")).Returns(new Dictionary<string, object>());
+
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Congregation_Default_ID")).Returns(321);
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Household_Default_Source_ID")).Returns(654);
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Households")).Returns(123);
+            _ministryPlatformService.Setup(mocked => mocked.CreateRecord(123, expectedHouseholdDict, "1234567890", false)).Returns(321);
+
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Contacts")).Returns(456);
+            _ministryPlatformService.Setup(mocked => mocked.CreateRecord(456, It.IsAny<Dictionary<string, object>>(), "1234567890", false)).Returns(654);
+
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Users")).Returns(789);
+            _ministryPlatformService.Setup(mocked => mocked.CreateRecord(789, It.IsAny<Dictionary<string, object>>(), "1234567890", true)).Returns(987);
+
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Users_Roles")).Returns(345);
+            _ministryPlatformService.Setup(mocked => mocked.CreateSubRecord(345, 987, It.IsAny<Dictionary<string, object>>(), "1234567890", false)).Returns(543);
+
+            _fixture.RegisterPerson(newUserData, null);
+
+            _ministryPlatformService.VerifyAll();
+            _participantService.VerifyAll();
+            _subscriptionService.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldRegisterWithSpecificHouseholdSource()
+        {
+            var newUserData = new User
+            {
+                firstName = "Automated",
+                lastName = "Test",
+                email = "auto02@crossroads.net",
+                password = "password"
+            };
+
+            var expectedHouseholdDict = new Dictionary<string, object>
+            {
+                {"Household_Name", newUserData.lastName},
+                {"Congregation_ID", 321},
+                {"Household_Source_ID", 51}
+            };
+
+            _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("user");
+            _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
+
+            _apiUserService.Setup(mocked => mocked.GetToken()).Returns("1234567890");
+            _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email, "1234567890")).Returns(new Dictionary<string, object>());
+
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Congregation_Default_ID")).Returns(321);
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Household_Default_Source_ID")).Callback(() =>
+                                                                                                                    {
+                                                                                                                        Assert.Fail();
+                                                                                                                    });
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Households")).Returns(123);
+            _ministryPlatformService.Setup(mocked => mocked.CreateRecord(123, It.IsAny<Dictionary<string, object>>(), "1234567890", false)).Returns(321);
+
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Contacts")).Returns(456);
+            _ministryPlatformService.Setup(mocked => mocked.CreateRecord(456, It.IsAny<Dictionary<string, object>>(), "1234567890", false)).Returns(654);
+
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Users")).Returns(789);
+            _ministryPlatformService.Setup(mocked => mocked.CreateRecord(789, It.IsAny<Dictionary<string, object>>(), "1234567890", true)).Returns(987);
+
+            _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Users_Roles")).Returns(345);
+            _ministryPlatformService.Setup(mocked => mocked.CreateSubRecord(345, 987, It.IsAny<Dictionary<string, object>>(), "1234567890", false)).Returns(543);
+
+            _fixture.RegisterPerson(newUserData, 51);
 
             _ministryPlatformService.VerifyAll();
             _participantService.VerifyAll();
