@@ -33,44 +33,6 @@
           }
         }
       })
-      .state('media.seriesSingle', {
-        url: '/series/{id:int}/:title?',
-        controller: 'SingleSeriesController as series',
-        templateUrl: 'templates/seriesSingle.html',
-        resolve: {
-          $stateParams: '$stateParams',
-          $state: '$state',
-          Selected: function(Media, Series, $stateParams, $state) {
-            var singleSeries = _.find(Series.series, function(obj) {
-              return (obj.id === $stateParams.id);
-            });
-
-            if (!singleSeries) {
-              // Doing this here instead of controller to prevent flicker of unbound page
-              $state.go('content', {link: '/page-not-found/'}, {location: 'replace'});
-              return;
-            }
-
-            return singleSeries;
-          },
-
-          Meta: function(Selected, $state) {
-            $state.next.data.meta = {
-             title: Selected.title,
-             description: Selected.description,
-             type: 'article',
-             card: 'summary',
-             image: Selected.image
-           };
-            return $state.next.data.meta;
-          },
-
-          Messages: function(Media, Selected) {
-            var item = Media.Messages({seriesId: Selected.id}).get().$promise;
-            return item;
-          }
-        }
-      })
       .state('media-single', {
         parent: 'screenWidth',
         url: '/media/single',
