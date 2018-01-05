@@ -165,6 +165,7 @@
     <Compile Include="Models\MpBatch.cs" />
     <Compile Include="Models\MpCamp.cs" />
     <Compile Include="Models\MpContactHousehold.cs" />
+    <Compile Include="Models\MpDirectEmailCommunication.cs" />
     <Compile Include="Models\MpEventParticipantWaiver.cs" />
     <Compile Include="Models\MpEventParticipantDocument.cs" />
     <Compile Include="Models\MpLocation.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="Models\MpMedication.cs" />
     <Compile Include="Models\MpEventWaivers.cs" />
     <Compile Include="Models\MpSimpleContact.cs" />
+    <Compile Include="Models\MpSmtpClient.cs" />
     <Compile Include="Models\MpWaivers.cs" />
     <Compile Include="Models\MpMedicalInformation.cs" />
     <Compile Include="Models\MpRecordID.cs" />

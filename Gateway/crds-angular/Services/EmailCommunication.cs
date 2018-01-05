@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Messaging;
+using System.Net.Mail;
 using crds_angular.Models.Crossroads;
 using crds_angular.Services.Interfaces;
 using Crossroads.Utilities.Interfaces;
+using Crossroads.Utilities.Messaging.Interfaces;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models;
@@ -17,6 +20,9 @@ namespace crds_angular.Services
         private readonly IPersonService _personService;
         private readonly IContactRepository _contactService;
         private readonly IConfigurationWrapper _configurationWrapper;
+        private readonly MessageQueue _directEmailQueue;
+        private readonly IMessageFactory _messageFactory;
+
         private readonly int DefaultContactEmailId;
         private readonly int DomainID;
         private readonly int DefaultAuthorUserId;
@@ -24,7 +30,9 @@ namespace crds_angular.Services
         public EmailCommunication(ICommunicationRepository communicationService, 
             IPersonService personService, 
             IContactRepository contactService,
-            IConfigurationWrapper configurationWrapper)
+            IConfigurationWrapper configurationWrapper,
+            IMessageQueueFactory messageQueueFactory = null,
+            IMessageFactory messageFactory = null)
         {
             _communicationService = communicationService;
             _personService = personService;
@@ -33,6 +41,39 @@ namespace crds_angular.Services
             DefaultContactEmailId = _configurationWrapper.GetConfigIntValue("DefaultContactEmailId");
             DomainID = _configurationWrapper.GetConfigIntValue("DomainId");
             DefaultAuthorUserId = _configurationWrapper.GetConfigIntValue("DefaultAuthorUser");
+
+            var directEmailQueueName = _configurationWrapper.GetConfigValue("DirectEmailQueueName");
+            // ReSharper disable once PossibleNullReferenceException
+            _directEmailQueue = messageQueueFactory.CreateQueue(directEmailQueueName, QueueAccessMode.Send);
+            _messageFactory = messageFactory;
+        }
+
+
+        public DirectEmailCommunication GetDirectEmailMessage(int communicationId)
+        {
+            var mpDirectEmail = _communicationService.GetDirectEmail(communicationId);
+            var directEmail = new DirectEmailCommunication()
+            {
+                CommunicationMessageId = mpDirectEmail.CommunicationMessageId,
+                From = mpDirectEmail.From,
+                To = mpDirectEmail.To,
+                ReplyTo = mpDirectEmail.ReplyTo,
+                Subject = mpDirectEmail.Subject,
+                Body = mpDirectEmail.Body
+            };
+            return directEmail;
+        }
+
+        public bool UpdateDirectEmailMessagesToSent(int communicationId, int communicationMessageId)
+        {
+            var updated = _communicationService.UpdateDirectEmailMessagesToSent(communicationId, communicationMessageId);
+            return updated;
+        }
+
+        public SmtpClient GetSmtpCredentials()
+        {
+            var client = _communicationService.GetSmtpCredentials();
+            return client;
         }
 
         public void SendEmail(EmailCommunicationDTO email, string token)
@@ -72,8 +113,16 @@ namespace crds_angular.Services
                 communication.MergeData.Add("BaseUrl", _configurationWrapper.GetConfigValue("BaseUrl"));
             }
 
-            _communicationService.SendMessage(communication);
+            var communicationId = _communicationService.SendMessage(communication, true);
+            var directEmailId = new DirectEmailCommunication()
+            {
+                CommunicationId = communicationId
+            };
+            var message = _messageFactory.CreateMessage(directEmailId);
+
+            _directEmailQueue.Send(message);
         }
+
 
         private MpContact GetMpContactFromEmailCommunicationDto(EmailCommunicationDTO email)
         {
