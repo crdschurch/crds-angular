@@ -50,8 +50,6 @@ namespace MinistryPlatform.Translation.Repositories
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRestRepository;
             _apiUserRepository = apiUserRepository;
-            EMAIL_USERNAME = _configurationWrapper.GetEnvironmentVarAsString("DIRECT_EMAIL_USERNAME");
-            EMAIL_PASSWORD = _configurationWrapper.GetEnvironmentVarAsString("DIRECT_EMAIL_PASSWORD");
         }
 		
         public int GetUserIdFromContactId(string token, int contactId)
@@ -77,6 +75,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public SmtpClient GetSmtpCredentials()
         {
+            FetchEnvironmentVariables();
             var apiToken = _apiUserRepository.GetApiClientToken("CRDS.DirectEmail");
             var searchString = $"dp_Domains.[Domain_ID]='1'";
             string selectColumns = GetColumns();
@@ -85,6 +84,15 @@ namespace MinistryPlatform.Translation.Repositories
             client.EnableSsl = mpClient.EnableSsl;
             client.Credentials = new NetworkCredential(EMAIL_USERNAME, EMAIL_PASSWORD);
             return client;
+        }
+
+        private void FetchEnvironmentVariables()
+        {
+            if (String.IsNullOrEmpty(EMAIL_USERNAME) || String.IsNullOrEmpty(EMAIL_PASSWORD))
+            {
+                EMAIL_USERNAME = _configurationWrapper.GetEnvironmentVarAsString("DIRECT_EMAIL_USERNAME");
+                EMAIL_PASSWORD = _configurationWrapper.GetEnvironmentVarAsString("DIRECT_EMAIL_PASSWORD");
+            }          
         }
 
         private string GetColumns()
