@@ -8,7 +8,7 @@ namespace crds_angular.Services.Interfaces
         bool ChangePassword(string token, string newPassword);
         bool SaveCommunicationPrefs(string token, AccountInfo accountInfo);
         AccountInfo getAccountInfo(string token);
-        User RegisterPerson(User newUserData);
+        User RegisterPerson(User newUserData, int? householdSourceId);
         int RegisterPersonWithoutUserAccount(User newUserData);
     }
 }

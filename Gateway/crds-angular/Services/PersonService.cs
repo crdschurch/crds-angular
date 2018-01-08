@@ -11,8 +11,6 @@ using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.Repositories;
-using RestSharp.Extensions;
-using Segment.Model;
 using MPServices = MinistryPlatform.Translation.Repositories.Interfaces;
 
 

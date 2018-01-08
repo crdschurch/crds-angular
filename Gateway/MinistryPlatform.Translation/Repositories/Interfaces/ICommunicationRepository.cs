@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 using MinistryPlatform.Translation.Models;
 
 namespace MinistryPlatform.Translation.Repositories.Interfaces
@@ -10,6 +11,8 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         bool SetEmailSMSPreferences(String token, Dictionary<string, object> prefs);
         bool SetMailPreferences(string token, Dictionary<string, object> prefs);
         int SendMessage(MpCommunication communication, bool isDraft = false);
+        MpDirectEmailCommunication GetDirectEmail(int communicationId);
+        bool UpdateDirectEmailMessagesToSent(int communicationId, int communicationMessageId);
         MpMessageTemplate GetTemplate(int templateId);
         MpCommunication GetTemplateAsCommunication(int templateId,                                                 
                                                  int toContactId,
@@ -28,5 +31,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         int GetUserIdFromContactId(string token, int contactId);
         int GetUserIdFromContactId(int contactId);
         string GetEmailFromContactId(int contactId);
+        SmtpClient GetSmtpCredentials();
     }
 }

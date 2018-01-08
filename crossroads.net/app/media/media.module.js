@@ -13,7 +13,6 @@ require('./templates/viewAll.html');
 require('./templates/viewAllMusic.html');
 require('./templates/viewAllSeries.html');
 require('./templates/viewAllVideos.html');
-require('./templates/seriesSingle.html');
 require('./templates/mediaSingle.html');
 require('./templates/subscribeButtonMessages.html');
 require('./templates/subscribeButtonMusic.html');
@@ -30,7 +29,6 @@ require('./templates/rssFeed.html');
 
 app.controller('MediaController', require('./media.controller'));
 app.controller('SingleMediaController', require('./singleMedia.controller'));
-app.controller('SingleSeriesController', require('./singleSeries.controller.js'));
 app.filter('replaceNonAlphaNumeric', require('./filters/replaceNonAlphaNumeric.filter.js'));
 
 app.directive('mediaListCard', require('./directives/mediaListCard.directive'));

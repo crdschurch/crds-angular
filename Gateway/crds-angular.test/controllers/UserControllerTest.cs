@@ -52,9 +52,9 @@ namespace crds_angular.test.controllers
         public void ShouldRegisterNewUser()
         {
             var user = new User();
-            _accountService.Setup(mocked => mocked.RegisterPerson(user)).Returns(user);
+            _accountService.Setup(mocked => mocked.RegisterPerson(user, null)).Returns(user);
 
-            var response = _fixture.Post(user);
+            var response = _fixture.Post(user, null);
             _accountService.VerifyAll();
             _mockAnalyticService.Verify(x => x.Track(It.IsAny<string>(), "SignedUp"), Times.Once);
 
@@ -70,11 +70,11 @@ namespace crds_angular.test.controllers
         public void ShouldReturnBadResponseForDuplicateUser()
         {
             var user = new User();
-            _accountService.Setup(mocked => mocked.RegisterPerson(user)).Throws(new DuplicateUserException("me@here.com"));
+            _accountService.Setup(mocked => mocked.RegisterPerson(user, null)).Throws(new DuplicateUserException("me@here.com"));
 
             try
             {
-                _fixture.Post(user);
+                _fixture.Post(user, null);
                 Assert.Fail("Expected exception was not thrown");
             }
             catch (HttpResponseException e)

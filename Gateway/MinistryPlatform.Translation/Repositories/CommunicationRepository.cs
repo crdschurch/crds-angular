@@ -2,17 +2,22 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Web.Configuration;
 using Crossroads.Utilities.Interfaces;
 using log4net;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
+using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Exceptions;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -28,11 +33,23 @@ namespace MinistryPlatform.Translation.Repositories
 
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IMinistryPlatformService _ministryPlatformService;
+        private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
+        private readonly IApiUserRepository _apiUserRepository;
 
-        public CommunicationRepository(IMinistryPlatformService ministryPlatformService, IAuthenticationRepository authenticationService,IConfigurationWrapper configurationWrapper)
+        private string EMAIL_USERNAME = String.Empty;
+        private string EMAIL_PASSWORD = String.Empty;
+
+        public CommunicationRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IMinistryPlatformRestRepository ministryPlatformRestRepository,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IApiUserRepository apiUserRepository)
             : base(authenticationService, configurationWrapper)
         {
             _ministryPlatformService = ministryPlatformService;
+            _ministryPlatformRestRepository = ministryPlatformRestRepository;
+            _apiUserRepository = apiUserRepository;
         }
 		
         public int GetUserIdFromContactId(string token, int contactId)
@@ -54,6 +71,71 @@ namespace MinistryPlatform.Translation.Repositories
         {
             var contact = _ministryPlatformService.GetRecordDict(_contactPageId, contactId, ApiLogin());
             return contact["Email_Address"].ToString();
+        }
+
+        public SmtpClient GetSmtpCredentials()
+        {
+            FetchEnvironmentVariables();
+            var apiToken = _apiUserRepository.GetApiClientToken("CRDS.DirectEmail");
+            var searchString = $"dp_Domains.[Domain_ID]='1'";
+            string selectColumns = GetColumns();
+            var mpClient = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Search<MpSmtpClient>(searchString, selectColumns, null, true).FirstOrDefault();
+            var client = new SmtpClient(mpClient.Host, mpClient.Port);
+            client.EnableSsl = mpClient.EnableSsl;
+            client.Credentials = new NetworkCredential(EMAIL_USERNAME, EMAIL_PASSWORD);
+            return client;
+        }
+
+        private void FetchEnvironmentVariables()
+        {
+            if (String.IsNullOrEmpty(EMAIL_USERNAME) || String.IsNullOrEmpty(EMAIL_PASSWORD))
+            {
+                EMAIL_USERNAME = _configurationWrapper.GetEnvironmentVarAsString("DIRECT_EMAIL_USERNAME");
+                EMAIL_PASSWORD = _configurationWrapper.GetEnvironmentVarAsString("DIRECT_EMAIL_PASSWORD");
+            }          
+        }
+
+        private string GetColumns()
+        {
+            var columns = "dp_Domains.[SMTP_Server_Port], dp_Domains.[SMTP_Server_Name], dp_Domains.[SMTP_Enable_SSL]";
+            return columns;
+        }
+
+        public MpDirectEmailCommunication GetDirectEmail(int communicationId)
+        {
+            try
+            {
+                var apiToken = _apiUserRepository.GetApiClientToken("CRDS.DirectEmail");
+                var searchString = $"dp_Communication_Messages.[Communication_ID]='{communicationId}'";
+                const string selectColumns = "dp_Communication_Messages.[Communication_Message_ID], dp_Communication_Messages.[From], dp_Communication_Messages.[To], dp_Communication_Messages.[Reply_To], dp_Communication_Messages.[Subject], dp_Communication_Messages.[Body]";
+                var email = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Search<MpDirectEmailCommunication>(searchString, selectColumns, null, true);
+                return email.FirstOrDefault();
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Could not retrieve record from dp_Communication_Messages.", e);
+            }
+            return null;
+        }
+
+        public bool UpdateDirectEmailMessagesToSent(int communicationId, int communicationMessageId)
+        {
+            try
+            {
+                var apiToken = _apiUserRepository.GetApiClientToken("CRDS.DirectEmail");
+
+                var parms = new Dictionary<string, object>
+                {
+                    { "@Communication_ID", communicationId },
+                    { "@Communication_Message_ID", communicationMessageId }
+                };
+                _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).PostStoredProc(_configurationWrapper.GetConfigValue("MarkEmailAsSentProc"), parms);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
 
         public MpCommunicationPreferences GetPreferences(String token, int userId)

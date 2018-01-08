@@ -44,6 +44,8 @@ namespace MinistryPlatform.Translation.Repositories
             return (token);
         }
 
+
+
         protected static int AppSetting(string key)
         {
             int value;

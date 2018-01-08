@@ -44,25 +44,52 @@ VALUES
  -- Create Group
 -- For new group, Change Group_name
 -- Group_type_ID 1 = small group
--- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: select * from dbo.Ministries
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupIdSG   AS INT
 SET IDENTITY_INSERT [dbo].[Groups] ON;
 SET @groupIdSG = (SELECT IDENT_CURRENT('Groups')) + 1 ;
 
--- Set up Albert as leader of the group
+-- Set up Jean-Luc as leader of the group
 -- change group name
 INSERT INTO Groups
-( Group_ID  , Group_Name                       , Group_Type_ID, Ministry_ID, Congregation_ID, Primary_Contact, Description                   , Start_Date      , Offsite_Meeting_Address, Group_Is_Full, Available_Online, Domain_ID, Deadline_Passed_Message_ID , Send_Attendance_Notification , Send_Service_Notification , Child_Care_Available) 
+( Group_ID  , Group_Name                       , Group_Type_ID, Ministry_ID, Congregation_ID, Primary_Contact, Description                   , Start_Date      , Offsite_Meeting_Address, Group_Is_Full, Available_Online, Meeting_Time, Meeting_Day_ID, Domain_ID, Deadline_Passed_Message_ID , Send_Attendance_Notification , Send_Service_Notification , Child_Care_Available) 
 VALUES
-( @groupIdSG, '(t+auto) The Next Generation'   , 1            , 8          ,  1             ,  @contactID    , 'Finder group for automation' , {d '2015-11-01'},  @addressID            ,0             , 1                , 1        , 58                         ,  0                           , 0                         , 0                   ) ;
-
+( @groupIdSG, '(t+auto) The Next Generation'   , 1            , 8          ,  1             ,  @contactID    , 'Finder group for automation' , {d '2015-11-01'},  @addressID            ,0             , 1               , '17:00:00'  , 1             , 1        , 58                         ,  0                           , 0                         , 0                   ) ;
 SET IDENTITY_INSERT [dbo].[Groups] OFF;
 
-INSERT INTO dbo.Group_Participants
-( Group_ID  , Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
+-- Add Interest to group
+DECLARE @AttributeID   AS INT
+SET IDENTITY_INSERT [dbo].Attributes ON;
+SET @AttributeID = (SELECT IDENT_CURRENT('Attributes')) + 1 ;
+INSERT INTO Attributes
+(  [Attribute_ID], [Attribute_Name]     , [Attribute_Type_ID], [Attribute_Category_ID], [Domain_ID], [Sort_Order] )
 VALUES
-( @groupIdSG, @participantID, 22           , 1        , {d '2015-11-01'}, 0            , 1            );
+(  @AttributeID  , 'Automation testing' , 90                 , 20                     , 1          , 0            )
+
+-- Add existing attributes to group
+INSERT INTO [dbo].[Group_Attributes]
+(  [Attribute_ID]                                                                  , [Group_ID] , [Domain_ID], [Start_Date] )
+VALUES
+(  (SELECT attribute_id FROM Attributes WHERE Attribute_Name='Automation testing') , @groupIdSG , 1          , {d '2015-11-01'} )
+
+
+INSERT INTO [dbo].[Group_Attributes]
+(  [Attribute_ID]                                                                       , [Group_ID]      , [Domain_ID], [Start_Date]     )
+VALUES
+(  (SELECT attribute_id FROM Attributes WHERE [Description]='(men and women together)') , @groupIdSG      , 1          , {d '2015-11-01'} )
+
+INSERT INTO [dbo].[Group_Attributes]
+(  [Attribute_ID]                                                                                           , [Group_ID]    , [Domain_ID], [Start_Date]     )
+VALUES
+(  (SELECT attribute_id FROM Attributes WHERE Attribute_Name='College Students' AND Attribute_Type_ID = 91) ,  @groupIdSG   , 1          , {d '2015-11-01'} )
+
+
+INSERT INTO dbo.Group_Participants
+(  Group_ID  , Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
+VALUES
+(  @groupIdSG, @participantID, 22           , 1        , {d '2015-11-01'}, 0            , 1            );
+
 
 GO
 
@@ -113,7 +140,7 @@ WHERE Household_ID = @houseHoldID
  -- Create Group
 -- For new group, Change Group_name
 -- Group_type_ID 1 = small group
--- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: select * from dbo.Ministries
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
 SET @groupID =        (SELECT Group_ID 
@@ -170,7 +197,7 @@ VALUES
  -- Create Group
 -- For new group, Change Group_name
 -- Group_type_ID 1 = small group
--- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: select * from dbo.Ministries
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
 SET @groupID =        (SELECT Group_ID 
@@ -227,7 +254,7 @@ VALUES
  -- Create Group
 -- For new group, Change Group_name
 -- Group_type_ID 1 = small group
--- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: select * from dbo.Ministries
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
 SET @groupID =        (SELECT Group_ID 
@@ -286,7 +313,7 @@ VALUES
  -- Create Group
 -- For new group, Change Group_name
 -- Group_type_ID 1 = small group
--- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: select * from dbo.Ministries
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
 SET @groupID =        (SELECT Group_ID 
@@ -308,7 +335,7 @@ GO
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
 				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+laforge@gmail' and Last_Name = 'La Forge');
+				       WHERE Email_Address = 'mpcrds+laforge@gmail.com' and Last_Name = 'La Forge');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -346,7 +373,7 @@ VALUES
  -- Create Group
 -- For new group, Change Group_name
 -- Group_type_ID 1 = small group
--- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: select * from dbo.Ministries
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
 SET @groupID =        (SELECT Group_ID 
@@ -405,7 +432,7 @@ VALUES
  -- Create Group
 -- For new group, Change Group_name
 -- Group_type_ID 1 = small group
--- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: select * from dbo.Ministries
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
 SET @groupID =        (SELECT Group_ID 
@@ -462,7 +489,7 @@ VALUES
 -- For new group, Change Group_name
 
 -- Group_type_ID 1 = small group
--- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: select * from dbo.Ministries
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
 SET @groupID =        (SELECT Group_ID 
@@ -521,7 +548,7 @@ VALUES
 -- For new group, Change Group_name
 
 -- Group_type_ID 1 = small group
--- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: select * from dbo.Ministries
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
 SET @groupID =        (SELECT Group_ID 
@@ -532,13 +559,47 @@ INSERT INTO dbo.Group_Participants
 ( Group_ID, Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
 VALUES
 ( @groupID, @participantID, 16           , 1        , {d '2015-11-01'}, 0            , 1            );
+GO
 
-----------------------------------------------------------------------------------------------------------
----------Add connect leader for automation
+---------Add connect Albert Einstein as connect leader for automation
 
 USE [MinistryPlatform]
 GO
 
+DECLARE @contactID     AS INT
+SET @contactID =      (SELECT Contact_ID 
+				       FROM Contacts 
+				       WHERE Email_Address = 'mpcrds+ae@gmail.com' and Last_Name = 'Einstein');
+
+DECLARE @houseHoldID   AS INT
+SET @houseHoldID =    (SELECT Household_ID 
+					   FROM   Contacts 
+					   WHERE  Contact_ID = @contactID);
+				  
+ 
+ -- Update partcipant record.
+-- NOTE..For a test user that you only want to be in a group and not a connect user, change Host_Status_ID = 0
+-- Group_Leader_Status_ID 4 = approved, 1 = not applied
+
+DECLARE @participantID AS INT
+SET @participantID =  (SELECT Participant_ID 
+					   FROM   Participants 
+					   WHERE  Contact_ID = @contactID);
+
+UPDATE [dbo].Participants
+SET   Participant_Type_ID = 1, Domain_ID = 1, Show_On_Map = 1, Host_Status_ID = 3, Group_Leader_Status_ID = 4 
+WHERE Participant_ID = @participantID 
+
+SET IDENTITY_INSERT [dbo].[Addresses] ON;
+DECLARE @addressID AS INT
+SET @addressId = IDENT_CURRENT('Addresses')+1
+INSERT INTO [dbo].Addresses 
+(Address_ID, Address_Line_1  , City        ,[State/Region],Postal_Code,Foreign_Country,Country_Code,Domain_ID,Latitude    ,Longitude  ) 
+VALUES
+(@addressID, '5144 Rybolt Rd', 'Cincinnati','OH'          ,'45248'    ,'United States','USA'       ,1        ,'39.185298' ,'-84.665607' );
+ 
+ SET IDENTITY_INSERT [dbo].[Addresses] OFF;
+ 
  UPDATE  [dbo].Households
  SET Address_ID = @addressID
  WHERE Household_ID = @houseHoldID
@@ -546,7 +607,7 @@ GO
  -- Create Group
 -- For new group, Change Group_name
 -- Group_type_ID 1 = small group
--- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: select * from dbo.Ministries
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupIdSG   AS INT
 SET IDENTITY_INSERT [dbo].[Groups] ON;
@@ -568,3 +629,70 @@ VALUES
 
 GO
 
+---------Add connect Stephen Hawking as connect leader for automation
+
+USE [MinistryPlatform]
+GO
+
+DECLARE @contactID     AS INT
+SET @contactID =      (SELECT Contact_ID 
+				       FROM Contacts 
+				       WHERE Email_Address = 'mpcrds+sh@gmail.com' and Last_Name = 'Hawking');
+
+DECLARE @houseHoldID   AS INT
+SET @houseHoldID =    (SELECT Household_ID 
+					   FROM   Contacts 
+					   WHERE  Contact_ID = @contactID);
+				  
+ 
+ -- Update partcipant record.
+-- NOTE..For a test user that you only want to be in a group and not a connect user, change Host_Status_ID = 0
+-- Group_Leader_Status_ID 4 = approved, 1 = not applied
+
+DECLARE @participantID AS INT
+SET @participantID =  (SELECT Participant_ID 
+					   FROM   Participants 
+					   WHERE  Contact_ID = @contactID);
+
+UPDATE [dbo].Participants
+SET   Participant_Type_ID = 1, Domain_ID = 1, Show_On_Map = 1, Host_Status_ID = 3, Group_Leader_Status_ID = 4 
+WHERE Participant_ID = @participantID 
+
+SET IDENTITY_INSERT [dbo].[Addresses] ON;
+DECLARE @addressID AS INT
+SET @addressId = IDENT_CURRENT('Addresses')+1
+INSERT INTO [dbo].Addresses 
+(Address_ID, Address_Line_1  , City        ,[State/Region],Postal_Code,Foreign_Country,Country_Code,Domain_ID,Latitude    ,Longitude  ) 
+VALUES
+(@addressID, '5117 Rybolt Rd', 'Cincinnati','OH'          ,'45248'    ,'United States','USA'       ,1        ,'39.184144' ,'-84.666359' );
+ 
+ SET IDENTITY_INSERT [dbo].[Addresses] OFF;
+ 
+ UPDATE  [dbo].Households
+ SET Address_ID = @addressID
+ WHERE Household_ID = @houseHoldID
+
+ -- Create Group
+-- For new group, Change Group_name
+-- Group_type_ID 1 = small group
+-- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
+
+DECLARE @groupIdSG   AS INT
+SET IDENTITY_INSERT [dbo].[Groups] ON;
+SET @groupIdSG = (SELECT IDENT_CURRENT('Groups')) + 1 ;
+
+-- Set up Stephen as leader of the group
+-- change group name
+INSERT INTO Groups
+( Group_ID  , Group_Name    , Group_Type_ID, Ministry_ID, Congregation_ID, Primary_Contact, Description                    , Start_Date      , Offsite_Meeting_Address, Group_Is_Full, Available_Online, Domain_ID, Deadline_Passed_Message_ID , Send_Attendance_Notification , Send_Service_Notification , Child_Care_Available) 
+VALUES
+( @groupIdSG, 'Stephen, H'   , 30           , 8          ,  1             ,  @contactID    , 'connect group for automation' , {d '2015-11-01'},  @addressID            ,0             , 1               , 1        , 58                         ,  0                           , 0                         , 0                   ) ;
+
+SET IDENTITY_INSERT [dbo].[Groups] OFF;
+
+INSERT INTO dbo.Group_Participants
+( Group_ID  , Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
+VALUES
+( @groupIdSG, @participantID, 22           , 1        , {d '2015-11-01'}, 0            , 1            );
+
+GO
