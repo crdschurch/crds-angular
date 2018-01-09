@@ -1,4 +1,4 @@
---Registered Account - Connect Users
+--Registered Account - Connect Users 
 
 USE [MinistryPlatform]
 GO
