@@ -36,7 +36,7 @@ namespace crds_angular.Services
             _authenticationService = authenticationService;
         }
 
-        public bool PasswordResetRequest(string username)
+        public bool PasswordResetRequest(string username, bool isMobile)
         {
             int user_ID = 0;
             int contact_Id = 0;

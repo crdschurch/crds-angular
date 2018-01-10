@@ -53,7 +53,25 @@ namespace crds_angular.Controllers.API
         {
             try
             {
-                _loginService.PasswordResetRequest(request.Email);
+                var isMobile = false;
+                _loginService.PasswordResetRequest(request.Email, isMobile);
+                return this.Ok();
+            }
+            catch (Exception ex)
+            {
+                return this.InternalServerError();
+            }
+        }
+
+        [VersionedRoute(template: "request-password-reset-mobile", minimumVersion: "1.0.0")]
+        [Route("requestpasswordreset/mobile")]
+        [HttpPost]
+        public IHttpActionResult RequestPasswordResetMoblie(PasswordResetRequest request)
+        {
+            try
+            {
+                var isMobile = true;
+                _loginService.PasswordResetRequest(request.Email, isMobile);
                 return this.Ok();
             }
             catch (Exception ex)
