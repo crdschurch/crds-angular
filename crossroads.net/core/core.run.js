@@ -99,7 +99,7 @@
         return;
       }
 
-      if (toState.name === 'login' && fromState.name !== '' && !Session.hasRedirectionInfo()) {
+      if (toState.name === 'login' && fromState.name !== '') {
         Session.addRedirectRoute(fromState.name, fromParams);
       }
 
