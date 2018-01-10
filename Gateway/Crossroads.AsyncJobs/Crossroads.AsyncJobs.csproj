@@ -24,6 +24,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -225,6 +226,7 @@
     <Compile Include="Interfaces\IJobExecutor.cs" />
     <Compile Include="Models\JobDetails.cs" />
     <Compile Include="Processors\CheckScannerBatchProcessor.cs" />
+    <Compile Include="Processors\DirectEmailProcessor.cs" />
     <Compile Include="Processors\ScheduledJobProcessor.cs" />
     <Compile Include="Processors\SignupToServeProcessor.cs" />
     <Compile Include="Processors\StripeEventProcessor.cs" />
