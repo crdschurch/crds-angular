@@ -11,7 +11,7 @@ describe('Countdown Service', () => {
 
   let baseTime = new Date("October 1, 2016 12:00:00"); // set to 10/1/2016 - month appears to be 0 based index however
 
-  beforeEach(jasmine.clock().mockDate(baseTime));
+  beforeEach(() => jasmine.clock().mockDate(baseTime));
 
   beforeEach(inject(function ($injector) {
     rootScope = $injector.get('$rootScope');
@@ -25,8 +25,8 @@ describe('Countdown Service', () => {
   })
 
   it('should populate the countdown object', () => {
-    let start = moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss');
-    let end = moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss');
+    let start = moment().add(2, 'days').subtract(1, 'second').format('YYYY-MM-DD HH:mm:ss');
+    let end = moment().add(2, 'days').subtract(1, 'second').format('YYYY-MM-DD HH:mm:ss');
 
     fixture.event = new Event('title', start, end);
     fixture.parseEvent();

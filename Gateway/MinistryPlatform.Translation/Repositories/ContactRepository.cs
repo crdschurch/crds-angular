@@ -587,11 +587,11 @@ namespace MinistryPlatform.Translation.Repositories
             return contact;
         }
 
-        private static string ParseExpirationDate(DateTime? date)
+        private static DateTime? ParseExpirationDate(DateTime? date)
         {
             if (date != null)
             {
-                return String.Format("{0:MM/dd/yyyy}", date);
+                return date;
             }
             return null;
         }

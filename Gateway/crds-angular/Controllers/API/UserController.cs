@@ -42,11 +42,11 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "user", minimumVersion: "1.0.0")]
         [Route("user")]
         [HttpPost]
-        public IHttpActionResult Post([FromBody] User user)
+        public IHttpActionResult Post([FromBody] User user, int? householdSourceId = null)
         {
             try
             {
-                var userRecord = _accountService.RegisterPerson(user);
+                var userRecord = _accountService.RegisterPerson(user, householdSourceId);
                 var contact_Id = _contactRepository.GetContactIdByEmail(user.email);
 
                 _analyticsService.Track(contact_Id.ToString(), "SignedUp");

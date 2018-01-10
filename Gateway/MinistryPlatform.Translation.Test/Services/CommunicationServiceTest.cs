@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
+using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Exceptions;
 using MinistryPlatform.Translation.Models;
@@ -10,6 +11,8 @@ using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
+
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -18,22 +21,26 @@ namespace MinistryPlatform.Translation.Test.Services
     {
         private CommunicationRepository _fixture;
         private Mock<IMinistryPlatformService> _ministryPlatformService;
+        private Mock<IMinistryPlatformRestRepository> _ministryPlatformRestRepository;
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
+        private Mock<IApiUserRepository> _apiUserRepository;
 
         [SetUp]
         public void SetUp()
         {
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
+            _ministryPlatformRestRepository = new Mock<IMinistryPlatformRestRepository>();
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
+            _apiUserRepository = new Mock<IApiUserRepository>();
 
             _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
             });
-            _fixture = new CommunicationRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object);
+            _fixture = new CommunicationRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authService.Object, _configWrapper.Object, _apiUserRepository.Object);
         }
 
         [Test]

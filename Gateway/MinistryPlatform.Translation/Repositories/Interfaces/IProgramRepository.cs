@@ -6,6 +6,7 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
     public interface IProgramRepository
     {
         List<MpProgram> GetOnlineGivingPrograms(int? programType);
+        List<MpProgram> GetProgramsForEventTool();
         MpProgram GetProgramById(int programId);
         List<MpProgram> GetAllPrograms();
     }
