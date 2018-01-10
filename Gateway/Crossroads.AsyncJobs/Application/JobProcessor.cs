@@ -37,7 +37,7 @@ namespace Crossroads.AsyncJobs.Application
                     p.Start();
                 }
 
-                _scheduler.Start();
+               _scheduler.Start();
             }
         }
 

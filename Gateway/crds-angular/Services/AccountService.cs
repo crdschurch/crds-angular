@@ -100,11 +100,12 @@ namespace crds_angular.Services
 
         // TODO  Create a PageIdManager that wraps ConfigurationManager and does the convert for us.
 
-        private int CreateHouseholdRecord(User newUserData, string token){
+        private int CreateHouseholdRecord(User newUserData, string token, int? householdSourceId = null)
+        {
             var householdDictionary = new Dictionary<string, object>();
             householdDictionary["Household_Name"] = newUserData.lastName;
             householdDictionary["Congregation_ID"] = _configurationWrapper.GetConfigIntValue("Congregation_Default_ID");
-            householdDictionary["Household_Source_ID"] = _configurationWrapper.GetConfigIntValue("Household_Default_Source_ID");
+            householdDictionary["Household_Source_ID"] = householdSourceId ?? _configurationWrapper.GetConfigIntValue("Household_Default_Source_ID");
 
             var recordId = _ministryPlatformService.CreateRecord(_configurationWrapper.GetConfigIntValue("Households"), householdDictionary, token);
 
@@ -167,7 +168,7 @@ namespace crds_angular.Services
             _ministryPlatformService.UpdateRecord(_configurationWrapper.GetConfigIntValue("Contacts"), contactDictionary, token);
         }
 
-        public User RegisterPerson(User newUserData)
+        public User RegisterPerson(User newUserData, int? householdSourceId = null)
         {
             var token = _apiUserService.GetToken();
             var exists = _lookupService.EmailSearch(newUserData.email, token);
@@ -175,7 +176,7 @@ namespace crds_angular.Services
             {
                 throw (new DuplicateUserException(newUserData.email));
             }
-            var householdRecordId = CreateHouseholdRecord(newUserData, token);
+            var householdRecordId = CreateHouseholdRecord(newUserData, token, householdSourceId);
             var contactRecordId = CreateContactRecord(newUserData, token, householdRecordId);
             var userRecordId = CreateUserRecord(newUserData, token, contactRecordId);
             CreateUserRoleSubRecord(token, userRecordId);
@@ -183,14 +184,14 @@ namespace crds_angular.Services
             CreateNewUserSubscriptions(contactRecordId, token);
 
             //TODO Contingent on cascading delete via contact
-            //TODO Conisder encrypting the password on the user model
+            //TODO Consider encrypting the password on the user model
             return newUserData;
         }
 
         public int RegisterPersonWithoutUserAccount(User newUserData)
         {
             var token = _apiUserService.GetToken();
-            var householdRecordId = CreateHouseholdRecord(newUserData, token);
+            var householdRecordId = CreateHouseholdRecord(newUserData, token, null);
             var contactRecordId = CreateContactRecord(newUserData, token, householdRecordId);
            
             _participantService.CreateParticipantRecord(contactRecordId);
