@@ -45,23 +45,17 @@ angular.module('angular-growl').directive('growl', [function () {
           };
           $scope.alertClasses = function (message) {
             return {
-              'alert-success': message.severity === 'success',
-              'alert-error': message.severity === 'error',
-              'alert-danger': message.severity === 'error',
-              'alert-info': message.severity === 'info',
-              'alert-warning': message.severity === 'warning',
+              'toast-success': message.severity === 'success',
+              'toast-error': message.severity === 'error',
+              'toast-danger': message.severity === 'error',
+              'toast-info': message.severity === 'info',
+              'toast-warning': message.severity === 'warning',
               'icon': message.disableIcons === false,
-              'alert-dismissable': !message.disableCloseButton
+              'toast-dismissable': !message.disableCloseButton
             };
           };
           $scope.showCountDown = function (message) {
             return !message.disableCountDown && message.ttl > 0;
-          };
-          $scope.wrapperClasses = function () {
-            var classes = {};
-            classes['growl-fixed'] = !$scope.inlineMessage;
-            classes[growl.position()] = true;
-            return classes;
           };
           $scope.computeTitle = function (message) {
             var ret = {
@@ -81,7 +75,17 @@ angular.module('angular-growl').run([
   function ($templateCache) {
     'use strict';
     if ($templateCache.get('templates/growl/growl.html') === undefined) {
-      $templateCache.put('templates/growl/growl.html', '<div class="growl-container" ng-class="wrapperClasses()">' + '<div class="growl-item alert" ng-repeat="message in growlMessages.directives[referenceId].messages" ng-class="alertClasses(message)" ng-click="stopTimeoutClose(message)">' + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true" ng-click="growlMessages.deleteMessage(message)" ng-show="!message.disableCloseButton">&times;</button>' + '<button type="button" class="close" aria-hidden="true" ng-show="showCountDown(message)">{{message.countdown}}</button>' + '<h4 class="growl-title" ng-show="message.title" ng-bind="message.title"></h4>' + '<div class="growl-message" ng-bind-html="message.text"></div>' + '</div>' + '</div>');
+      $templateCache.put(
+        'templates/growl/growl.html',
+        '<div id="toast-container">' +
+          '<div class="alert toast" ng-repeat="message in growlMessages.directives[referenceId].messages" ng-class="alertClasses(message)" ng-click="stopTimeoutClose(message)">' +
+            '<a href="#" class="toast-close-button" data-dismiss="alert" aria-hidden="true" ng-click="growlMessages.deleteMessage(message)" ng-show="!message.disableCloseButton">&times;</a>' +
+            '<a href="#" class="toast-close-button" aria-hidden="true" ng-show="showCountDown(message)">{{message.countdown}}</a>' +
+            '<h4 class="toast-title" ng-show="message.title" ng-bind="message.title"></h4>' +
+            '<div><span ng-bind-html="message.text"></span></div>' +
+          '</div>' +
+        '</div>'
+      );
     }
   }
 ]);
