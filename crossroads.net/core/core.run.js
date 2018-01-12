@@ -87,7 +87,6 @@
     doc.setAttribute('data-platform', navigator.platform);
 
     $rootScope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
-      console.log(`redirectUrl=${$cookies.get('redirectUrl')}`);
       ContentPageService.reset();
       if (toState.name === 'logout') {
         if ((fromState.data === undefined || !fromState.data.isProtected) &&
