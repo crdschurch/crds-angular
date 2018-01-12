@@ -5,8 +5,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+picard@gmail.com' and Last_Name = 'Picard');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+picard@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -101,8 +101,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+data@gmail.com' and Last_Name = 'Data');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+data@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -158,8 +158,8 @@ USE [MinistryPlatform]
 GO
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+worf@gmail.com' and Last_Name = 'Worf');
+				       FROM dp_Users 
+				       WHERE User_Email = 'mpcrds+worf@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -215,8 +215,8 @@ USE [MinistryPlatform]
 GO
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+riker@gmail.com' and Last_Name = 'Riker');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+riker@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -274,8 +274,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+troi@gmail.com' and Last_Name = 'Troi');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+troi@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -334,8 +334,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+laforge@gmail.com' and Last_Name = 'La Forge');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+laforge@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -393,8 +393,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+guinan@gmail.com' and Last_Name = 'Guinan');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+guinan@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -508,8 +508,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+crusher@gmail.com' and Last_Name = 'Crusher');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+crusher@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -568,8 +568,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+ae@gmail.com' and Last_Name = 'Einstein');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+ae@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -636,8 +636,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+sh@gmail.com' and Last_Name = 'Hawking');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+sh@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
