@@ -87,6 +87,7 @@
     doc.setAttribute('data-platform', navigator.platform);
 
     $rootScope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
+      console.log(`redirectUrl=${$cookies.get('redirectUrl')}`);
       ContentPageService.reset();
       if (toState.name === 'logout') {
         if ((fromState.data === undefined || !fromState.data.isProtected) &&
@@ -99,7 +100,15 @@
         return;
       }
 
-      if (toState.name === 'login' && fromState.name !== '') {
+      // Navigated here from outside the app
+      // Remove redirect info if it's not going to be used
+      if (toState.name !== 'login' && fromState.name === '' && Session.hasRedirectionInfo()) {
+        Session.removeRedirectRoute();
+      }
+
+      // Only set redirect if we're going to login from an angular route
+      // and only if there is not already a protected route in the redirect cookie
+      if (toState.name === 'login' && fromState.name !== '' && !Session.hasRedirectionInfo()) {
         Session.addRedirectRoute(fromState.name, fromParams);
       }
 
