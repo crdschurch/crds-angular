@@ -80,8 +80,11 @@ namespace crds_angular.Services
                 ToContactId = contact_Id,
                 TemplateId = isMobile?2034:13356,
                 MergeData = new Dictionary<string, object>
-                    {
-                        { "resetlink", resetLink }
+                    {   
+                        { "resetlink", resetLink },
+                        { "baseURL", baseURL},
+                        { "token",  cleanToken },
+                        { "email", username }
                     }
             };
 

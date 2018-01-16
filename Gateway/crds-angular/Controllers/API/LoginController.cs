@@ -66,7 +66,7 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "request-password-reset-mobile", minimumVersion: "1.0.0")]
         [Route("requestpasswordreset/mobile")]
         [HttpPost]
-        public IHttpActionResult RequestPasswordResetMoblie(PasswordResetRequest request)
+        public IHttpActionResult RequestPasswordResetMobile(PasswordResetRequest request)
         {
             try
             {
