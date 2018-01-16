@@ -32,7 +32,6 @@
   @import 'modules/dropdowns.scss';
   @import 'modules/FormlyBuilder.scss';
   @import 'modules/grid.scss';
-  @import 'modules/growl.scss';
   @import 'modules/menu-icon.scss';
   @import 'modules/mock-controls.scss';
   @import 'modules/modal.scss';
@@ -95,6 +94,7 @@
   @import 'pages/go-trip-mytrips.scss';
   @import 'pages/group-search-results.scss';
   @import 'pages/profile.scss';
+  @import 'pages/real-encounters.scss';
   @import 'animate/animate.scss';
   @import 'pages/my-trip.scss';
   @import 'pages/search.scss';
@@ -103,9 +103,8 @@
   @import 'pages/worship-training.scss';
   @import 'helpers/utilities.scss';
   @import 'lib/angular-aside.scss';
-  @import 'lib/angular-growl.scss';
   @import 'lib/ng-img-crop.scss';
-  @import url('//crossroads-media.s3.amazonaws.com/documents/styles/hotfix-y5.css');
+  @import url('//crossroads-media.s3.amazonaws.com/documents/styles/hotfix-sixties-3.css');
   @import '../node_modules/ng-table/dist/ng-table.css';
 }
 
