@@ -36,7 +36,7 @@ namespace crds_angular.Services
             _authenticationService = authenticationService;
         }
 
-        public bool PasswordResetRequest(string username)
+        public bool PasswordResetRequest(string username, bool isMobile)
         {
             int user_ID = 0;
             int contact_Id = 0;
@@ -66,7 +66,11 @@ namespace crds_angular.Services
             _userService.UpdateUser(userUpdateValues);
 
             string baseURL = _configurationWrapper.GetConfigValue("BaseURL");
-            string resetLink = (@"https://" + baseURL + "/reset-password?token=" + cleanToken);
+            string resetLink = $"https://{baseURL}/reset-password?token={cleanToken}";
+            if (isMobile)
+            {
+                resetLink += $"&email={username}";
+            }
 
             // add the email here...
             var emailCommunication = new EmailCommunicationDTO
@@ -74,10 +78,13 @@ namespace crds_angular.Services
                 FromContactId = 7, // church admin contact id
                 FromUserId = 5, // church admin user id
                 ToContactId = contact_Id,
-                TemplateId = 13356,
+                TemplateId = isMobile?2034:13356,
                 MergeData = new Dictionary<string, object>
-                    {
-                        { "resetlink", resetLink }
+                    {   
+                        { "resetlink", resetLink },
+                        { "baseURL", baseURL},
+                        { "token",  cleanToken },
+                        { "email", username }
                     }
             };
 
