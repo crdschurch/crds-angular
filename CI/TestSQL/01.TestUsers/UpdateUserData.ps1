@@ -1,8 +1,9 @@
 param (
     [string]$contactDataCSV = "UpdateContact.csv",
+	[string]$donorDataCSV = "UpdateDonor.csv",
     [string]$DBServer = "mp-demo-db.centralus.cloudapp.azure.com",
-    [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
-    [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
+    [string]$DBUser = 'MigrateUser',  #$(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
+    [string]$DBPassword = 'Aw@!ted2014' #$(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
  
  #Helpers to reformat/convert from csv input 
@@ -104,7 +105,52 @@ function UpdateContact($DBConnection){
 	exit $exitCode
 }
 
+#Update all donors in list
+function UpdateDonor($DBConnection){
+	$donorDataList = import-csv $donorDataCSV
+	$exitCode = 0
 
-#Execute the contact update function
+	foreach($userRow in $donorDataList)
+	{
+		if(![string]::IsNullOrEmpty($userRow.User_Email))
+		{
+			#Create command to be executed
+			$command = CreateCommand($DBConnection)
+			$command.CommandText = "cr_QA_Update_Donor_on_Contact" #Set name of stored procedure
+			
+			#Get data in correct format
+			$email = $userRow.User_Email
+			$setup_date = StringToDate($userRow.Setup_Date)
+			$statement_type = StringToInt($userRow.Statement_Type_ID)
+			
+			#Pick processor ID by environment
+			if ($DBServer -match 'demo') {
+				$stripe_pid = StringToInt($userRow.DEMO_Stripe_Processor_ID)
+			} else {
+				$stripe_pid = StringToInt($userRow.INT_Stripe_Processor_ID)
+			}
+			
+			#Add parameters to command - parameter names must match stored proc parameter names
+			$command.Parameters.AddWithValue("@contact_email", $email) | Out-Null
+			$command.Parameters.AddWithValue("@setup_date", $setup_date) | Out-Null
+			$command.Parameters.AddWithValue("@statement_type_id", $statement_type) | Out-Null
+			$command.Parameters.AddWithValue("@processor_id", $stripe_pid) | Out-Null
+				
+			#Execute query
+			ExecuteCommand($command)
+					
+			if($LASTEXITCODE -ne 0){
+					write-host "There was an error updating donor on : "$email
+					$exitCode = $LASTEXITCODE
+			}
+		}
+	}
+	exit $exitCode
+}
+
+
+
+#Execute all the update functions
 $DBConnection = OpenConnection
-UpdateContact($DBConnection)
+#UpdateContact($DBConnection)
+UpdateDonor($DBConnection)
