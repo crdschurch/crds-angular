@@ -25,7 +25,7 @@ param (
 		
 		$command.Parameters.AddWithValue("@email", $email) | Out-Null
 		$command.Parameters.AddWithValue("@middle_name", $user.Middle_Name) | Out-Null
-		$command.Parameters.AddWithValue("@dob", [datetime]::parseexact($user.Date_of_Birth, 'dd-mm-yyyy', $null) | Out-Null
+		$command.Parameters.AddWithValue("@dob", [datetime]::parseexact($user.Date_of_Birth, 'dd-mm-yyyy', $null)) | Out-Null
 		$command.Parameters.AddWithValue("@gender", [int]$user.Gender_ID) | Out-Null
 		$command.Parameters.AddWithValue("@marital_status", [int]$user.Marital_Status_ID) | Out-Null
 		$command.Parameters.AddWithValue("@household_position", [int]$user.Household_Position_ID) | Out-Null
