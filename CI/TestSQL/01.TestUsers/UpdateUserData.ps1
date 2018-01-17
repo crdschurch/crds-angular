@@ -11,7 +11,7 @@ param (
  $SQLCommonParams = @("-U", $DBUser, "-P", $DBPassword, "-S", $DBServer, "-b")
  
  $connection = new-object System.Data.SqlClient.SqlConnection
- $connection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;User_Id=$DBUser;Password=$DBPassword"
+ $connection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;User Id=$DBUser;Password=$DBPassword"
  
  #this may need to be done in the loop
  $command = $connection.CreateCommand()
