@@ -53,7 +53,7 @@ namespace crds_angular.test.controllers
             _fixture.RequestContext = new HttpRequestContext();
 
             _loginServiceMock = new Mock<ILoginService>();
-            _loginServiceMock.Setup(m => m.PasswordResetRequest(It.IsAny<string>())).Returns(true);
+            _loginServiceMock.Setup(m => m.PasswordResetRequest(It.IsAny<string>(), It.IsAny<bool>())).Returns(true);
         }
 
         [Test]
