@@ -1,51 +1,110 @@
 param (
-    [string]$contactDataCSV = "..\TestSQL\01.TestUsers\contactData.csv",
-    [string]$DBServer = "mp-int-db.cloudapp.net",
-    [string]$SQLcmd = "C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\sqlcmd.exe",
+    [string]$contactDataCSV = "UpdateContact.csv",
+    [string]$DBServer = "mp-demo-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
  
- $contactDataList = import-csv $contactDataCSV
- $exitCode = 0
- $SQLCommonParams = @("-U", $DBUser, "-P", $DBPassword, "-S", $DBServer, "-b")
- 
- $connection = new-object System.Data.SqlClient.SqlConnection
- $connection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;User Id=$DBUser;Password=$DBPassword"
- 
- #this may need to be done in the loop
- $command = $connection.CreateCommand()
- $command.CommandText = "EXEC [MinistryPlatform].[dbo].[cr_QA_Update_Contact] @email, @middle_name, @dob, @gender, @marital_status, @household_position, @mobile_phone, @company_phone, @prefix"
- 
- foreach($user in $contactDataList)
-{
-	if(![string]::IsNullOrEmpty($user.User_Email))
-	{
-        $email = $user.User_Email
-		
-		$command.Parameters.AddWithValue("@email", $email) | Out-Null
-		$command.Parameters.AddWithValue("@middle_name", $user.Middle_Name) | Out-Null
-		$command.Parameters.AddWithValue("@dob", [datetime]::parseexact($user.Date_of_Birth, 'dd-mm-yyyy', $null)) | Out-Null
-		$command.Parameters.AddWithValue("@gender", [int]$user.Gender_ID) | Out-Null
-		$command.Parameters.AddWithValue("@marital_status", [int]$user.Marital_Status_ID) | Out-Null
-		$command.Parameters.AddWithValue("@household_position", [int]$user.Household_Position_ID) | Out-Null
-		$command.Parameters.AddWithValue("@mobile_phone", $user.Mobile_Phone) | Out-Null
-		$command.Parameters.AddWithValue("@company_phone", $user.Company_Phone) | Out-Null
-		$command.Parameters.AddWithValue("@prefix", [int]$user.Prefix_ID) | Out-Null
-		
-		$adapter = new-object System.Data.SqlClient.SqlDataAdapter $command
-		$dataset = new-object System.Data.Dataset
-		
-		Write-Host $adapter.Fill($dataset) ' contact data has been added.'#debug
-		
-		#$output = & $SQLcmd @SQLCommonParams -Q """EXEC [MinistryPlatform].[dbo].[cr_QA_Update_Contact] '$email', '$middle', $dob, $gender, $marital_status, $household_position, '$mobile_phone', '$company_phone', $prefix"""
-		
-		
-		if($LASTEXITCODE -ne 0){
-				write-host "There was an error updating user: "$email
-				#write-host "Error: "$output
-				$exitCode = $LASTEXITCODE
-			}
+ #Helpers to reformat/convert from csv input 
+ function CatchNullString([string]$s){
+	$s = $s.replace('null', '').replace('Null', '')
+	if ([string]::IsNullOrEmpty($s)){
+		return [DBNull]::Value
+	} else {
+		return $s
 	}
 }
-exit $exitCode
+
+function StringToInt([string]$s){	
+	$s = CatchNullString($s)
+	if ([string]::IsNullOrEmpty($s)){
+		return [DBNull]::Value
+	} else {
+		return [int]$s
+	}
+}
+
+function StringToDate([string]$s){
+	$s = CatchNullString($s)
+	if ([string]::IsNullOrEmpty($s)){
+		return [DBNull]::Value
+	} else {
+		$s = $s.replace('/', '-') #parseexact is really picky
+		return [datetime]::parseexact($s, 'd-M-yyyy', $null)
+	}
+}
+
+#Helper functions for DB and queries
+function OpenConnection(){
+	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
+	$DBConnection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;User Id=$DBUser;Password=$DBPassword"
+	return $DBConnection
+}
+
+function CreateCommand($DBConnection){
+	$command = New-Object System.Data.SqlClient.SqlCommand
+	$command.CommandType = [System.Data.CommandType]'StoredProcedure'
+	$command.Connection = $DBConnection
+	return $command
+}
+
+function ExecuteCommand($command){
+	$adapter = new-object System.Data.SqlClient.SqlDataAdapter
+	$adapter.SelectCommand = $command
+	
+	$dataset = new-object System.Data.Dataset
+	$adapter.Fill($dataset)
+}
+
+
+#Update all contacts in list
+function UpdateContact($DBConnection){
+	$contactDataList = import-csv $contactDataCSV
+	$exitCode = 0
+
+	foreach($userRow in $contactDataList)
+	{
+		if(![string]::IsNullOrEmpty($userRow.User_Email))
+		{
+			#Create command to be executed
+			$command = CreateCommand($DBConnection)
+			$command.CommandText = "cr_QA_Update_Contact" #Set name of stored procedure
+			
+			#Get data in correct format
+			$email = $userRow.User_Email
+			$middle = CatchNullString($userRow.Middle_Name)
+			$dob = StringToDate($userRow.Date_of_Birth)
+			$gender = StringToInt($userRow.Gender_ID)
+			$marital_status = StringToInt($userRow.Marital_Status_ID)
+			$household_position = StringToInt($userRow.Household_Position_ID)
+			$mobile_phone = CatchNullString($userRow.Mobile_Phone)
+			$company_phone = CatchNullString($userRow.Company_Phone)
+			$prefix = StringToInt($userRow.Prefix_ID)
+			
+			#Add parameters to command - parameter names must match stored proc parameter names
+			$command.Parameters.AddWithValue("@contact_email", $email) | Out-Null
+			$command.Parameters.AddWithValue("@middle_name", $middle) | Out-Null
+			$command.Parameters.AddWithValue("@birthdate", $dob) | Out-Null
+			$command.Parameters.AddWithValue("@gender_id", $gender) | Out-Null
+			$command.Parameters.AddWithValue("@marital_status_id", $marital_status) | Out-Null
+			$command.Parameters.AddWithValue("@prefix_id", $prefix) | Out-Null
+			$command.Parameters.AddWithValue("@household_position_id", $household_position) | Out-Null
+			$command.Parameters.AddWithValue("@mobile_phone_number", $mobile_phone) | Out-Null
+			$command.Parameters.AddWithValue("@company_phone_number", $company_phone) | Out-Null
+				
+			#Execute query
+			ExecuteCommand($command)
+					
+			if($LASTEXITCODE -ne 0){
+					write-host "There was an error updating user: "$email
+					$exitCode = $LASTEXITCODE
+			}
+		}
+	}
+	exit $exitCode
+}
+
+
+#Execute the contact update function
+$DBConnection = OpenConnection
+UpdateContact($DBConnection)
