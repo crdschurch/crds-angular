@@ -25,7 +25,7 @@ foreach($user in $userList)
 		$command.CommandText = "cr_QADeleteData" #Set name of stored procedure
 		
 		#Add variables for stored proc
-		$command.Parameters.AddWithValue("@email", $email) | Out-Null
+		$command.Parameters.AddWithValue("@Email_Address", $email) | Out-Null
 		
 		write-host "Removing User" $user.first $user.last "with email" $email;
 		
