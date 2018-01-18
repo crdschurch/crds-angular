@@ -53,7 +53,7 @@ function CreateCommand($DBConnection){
 	return $command
 }
 
-function ExecuteCommand($command, $email){
+function ExecuteCommand($command){
 	$exitCode = 0
 	$adapter = new-object System.Data.SqlClient.SqlDataAdapter
 	$adapter.SelectCommand = $command
@@ -62,7 +62,6 @@ function ExecuteCommand($command, $email){
 	try { $adapter.Fill($dataset) }
 	catch {
 		#Catches issues when running query
-		write-host "There was an error modifying data related to user "$email
 		write-host "Error: " $Error
 		$exitCode = 1
 	}
@@ -106,10 +105,12 @@ function UpdateContact($DBConnection){
 			$command.Parameters.AddWithValue("@company_phone_number", $company_phone) | Out-Null
 				
 			#Execute query
-			$exitCode = ExecuteCommand($command, $email)			
+			$exitCode = ExecuteCommand($command)
+			if($exitCode -ne 0){
+				write-host "There was an error updating contact info for user "$email
+			}			
 		}
 	}
-	exit $exitCode
 }
 
 #Update all donors in list
@@ -144,10 +145,12 @@ function UpdateDonor($DBConnection){
 			$command.Parameters.AddWithValue("@processor_id", $stripe_pid) | Out-Null
 				
 			#Execute query
-			$exitCode = ExecuteCommand($command, $email)
+			$exitCode = ExecuteCommand($command)
+			if($exitCode -ne 0){
+				write-host "There was an error updating donor account related to user "$email
+			}
 		}
 	}
-	exit $exitCode
 }
 
 #Update all households in list
@@ -174,10 +177,12 @@ function UpdateHousehold($DBConnection){
 			$command.Parameters.AddWithValue("@congregation_id", $congregation) | Out-Null
 				
 			#Execute query
-			$exitCode = ExecuteCommand($command, $email)
+			$exitCode = ExecuteCommand($command)
+			if($exitCode -ne 0){
+				write-host "There was an error updating household for to user "$email
+			}
 		}
 	}
-	exit $exitCode
 }
 
 #Update all household addresses in list
@@ -216,10 +221,12 @@ function UpdateHouseholdAddress($DBConnection){
 			$command.Parameters.AddWithValue("@county", $county) | Out-Null
 				
 			#Execute query
-			$exitCode = ExecuteCommand($command, $email)
+			$exitCode = ExecuteCommand($command)
+			if($exitCode -ne 0){
+				write-host "There was an error updating household address of user "$email
+			}
 		}
 	}
-	exit $exitCode
 }
 
 #Add contacts to households
@@ -244,10 +251,12 @@ function AddContactsToHouseholds($DBConnection){
 			$command.Parameters.AddWithValue("@new_contact_email", $new_member_email) | Out-Null
 				
 			#Execute query
-			$exitCode = ExecuteCommand($command, $email)
+			$exitCode = ExecuteCommand($command)
+			if($exitCode -ne 0){
+				write-host "There was an error adding $new_member_email to $email household"
+			}
 		}
 	}
-	exit $exitCode
 }
 
 #Add contact relationships
@@ -276,10 +285,12 @@ function AddContactRelationships($DBConnection){
 			$command.Parameters.AddWithValue("@start_date", $start_date) | Out-Null
 				
 			#Execute query
-			$exitCode = ExecuteCommand($command, $email)
+			$exitCode = ExecuteCommand($command)
+			if($exitCode -ne 0){
+				write-host "There was an error adding contact relationships for user "$email
+			}
 		}
 	}
-	exit $exitCode
 }
 
 #Add contacts to households
@@ -308,10 +319,12 @@ function AddResponses($DBConnection){
 			$command.Parameters.AddWithValue("@comments", $comments) | Out-Null
 				
 			#Execute query
-			$exitCode = ExecuteCommand($command, $email)
+			$exitCode = ExecuteCommand($command)
+			if($exitCode -ne 0){
+				write-host "There was an error adding a response to user "$email
+			}
 		}
 	}
-	exit $exitCode
 }
 
 #Execute all the update functions
