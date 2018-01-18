@@ -33,13 +33,13 @@ foreach($user in $userList)
 		$adapter = new-object System.Data.SqlClient.SqlDataAdapter
 		$adapter.SelectCommand = $command		
 		$dataset = new-object System.Data.Dataset
-		$adapter.Fill($dataset)
-		
-		if($LASTEXITCODE -ne 0){
-				write-host "There was an error deleting data related to user "$email
-				write-host $LASTEXITCODE #debug 
-				$exitCode = $LASTEXITCODE
-			}
+		try { $adapter.Fill($dataset) }
+		catch {
+			#Catches issues when running query
+			write-host "There was an error deleting data related to user "$email
+			write-host "Error: " $Error
+			$exitCode = 1
+		}
 	}
 }
 exit $exitCode
