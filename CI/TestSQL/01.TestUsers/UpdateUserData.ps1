@@ -1,11 +1,11 @@
 param (
     [string]$contactDataCSV = "UpdateContact.csv",
-	[string]$donorDataCSV = "UpdateDonor.csv",
-	[string]$householdDataCSV = "UpdateHousehold.csv",
-	[string]$householdAddressDataCSV = "UpdateHouseholdAddress.csv",
-	[string]$contactsInHouseholdDataCSV = "UpdateContactsInHousehold.csv",
-	[string]$contactRelationshipsDataCSV = "UpdateContactRelationship.csv",
-	[string]$responseDataCSV = "UpdateResponse.csv",
+    [string]$donorDataCSV = "UpdateDonor.csv",
+    [string]$householdDataCSV = "UpdateHousehold.csv",
+    [string]$householdAddressDataCSV = "UpdateHouseholdAddress.csv",
+    [string]$contactsInHouseholdDataCSV = "UpdateContactsInHousehold.csv",
+    [string]$contactRelationshipsDataCSV = "UpdateContactRelationship.csv",
+    [string]$responseDataCSV = "UpdateResponse.csv",
     [string]$DBServer = "mp-demo-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
