@@ -1,8 +1,8 @@
 ﻿User_Email,Related_User_Email,Relationship_ID,Start_Date,,
-,,,,,
-,,,,,Contact with User_Email will be related to contact with Related_User_Email by Relationship_ID type of relationship
-,,,,,"Required: User_Email, Related_User_Email, Relationship_ID"
-,,,,,Optional: Start_Date
-,,,,,
-,,,,,Do NOT add reciprocal relationships - MP adds them automatically
+kcradduck+testing@crossroads.net,kcradduck+kid14@crossroads.net,6,,,
+kcradduck+testing@crossroads.net,kcradduck+kid17@crossroads.net,6,,,Contact with User_Email will be related to contact with Related_User_Email by Relationship_ID type of relationship
+kcradduck+husband@crossroads.net,kcradduck+testing@crossroads.net,1,7/2/2015,,"Required: User_Email, Related_User_Email, Relationship_ID"
+kcradduck+husband@crossroads.net,kcradduck+kid14@crossroads.net,6,,,Optional: Start_Date
+kcradduck+husband@crossroads.net,kcradduck+kid17@crossroads.net,6,,,
+kcradduck+kid14@crossroads.net,kcradduck+kid17@crossroads.net,2,,,Do NOT add reciprocal relationships - MP adds them automatically
 ,,,,,"If cell is empty, Null will be entered in the DB"

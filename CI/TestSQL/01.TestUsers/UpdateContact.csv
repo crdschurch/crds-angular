@@ -1,5 +1,5 @@
 ﻿User_Email,Middle_Name,Date_of_Birth,Gender_ID,Marital_Status_ID,Household_Position_ID,Mobile_Phone,Company_Phone,Prefix_ID,,
-,,,,,,,,,,Updates contact record for user with User_Email
-,,,,,,,,,,Required: User_Email
-,,,,,,,,,,
-,,,,,,,,,,"If cell is empty, Null will be entered in the DB"
+kcradduck+testing@crossroads.net,Ann,1/1/1983,1,2,1,513-654-8745,555-365-4125,1,,Updates contact record for user with User_Email
+kcradduck+husband@crossroads.net,A,1/1/1975,2,2,1,321-654-8184,,2,,Required: User_Email
+kcradduck+kid14@crossroads.net,,1/1/2001,2,1,2,321-548-6154,,,,
+kcradduck+kid17@crossroads.net,D,1/1/1998,2,1,4,654-818-1425,,,,"If cell is empty, Null will be entered in the DB"

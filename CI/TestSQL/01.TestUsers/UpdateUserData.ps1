@@ -7,8 +7,8 @@ param (
 	[string]$contactRelationshipsDataCSV = "UpdateContactRelationship.csv",
 	[string]$responseDataCSV = "UpdateResponse.csv",
     [string]$DBServer = "mp-demo-db.centralus.cloudapp.azure.com",
-    [string]$DBUser = 'MigrateUser',  #$(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
-    [string]$DBPassword = 'Aw@!ted2014' #$(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
+    [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
+    [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
  
  #Helpers to reformat/convert from csv input 

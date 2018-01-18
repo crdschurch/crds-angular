@@ -1,6 +1,6 @@
 ﻿User_Email,Statement_Type_ID,Setup_Date,INT_Stripe_Processor_ID,DEMO_Stripe_Processor_ID,,
-,,,,,,
-,,,,,,Donor account will be updated for user with User_Email
+kcradduck+testing@crossroads.net,1,8/5/2015,cus_7I3CcWLFnecIAV,,,
+kcradduck+husband@crossroads.net,1,8/5/2015,,,,Donor account will be updated for user with User_Email
 ,,,,,,"Required: User_Email, Statement_Type_ID, Setup_Date"
 ,,,,,,"Optional: INT_Stripe_Processor_ID, DEMO_Stripe_Processor_ID"
 ,,,,,,
