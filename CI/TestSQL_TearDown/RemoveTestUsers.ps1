@@ -37,6 +37,7 @@ foreach($user in $userList)
 		
 		if($LASTEXITCODE -ne 0){
 				write-host "There was an error deleting data related to user "$email
+				write-host $LASTEXITCODE #debug 
 				$exitCode = $LASTEXITCODE
 			}
 	}
