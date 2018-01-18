@@ -6,7 +6,7 @@ param (
     [string]$contactsInHouseholdDataCSV = "UpdateContactsInHousehold.csv",
     [string]$contactRelationshipsDataCSV = "UpdateContactRelationship.csv",
     [string]$responseDataCSV = "UpdateResponse.csv",
-    [string]$DBServer = "mp-demo-db.centralus.cloudapp.azure.com",
+    [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
@@ -101,7 +101,7 @@ function UpdateContact($DBConnection){
 			ExecuteCommand($command)
 					
 			if($LASTEXITCODE -ne 0){
-					write-host "There was an error updating contact informaion for "$email
+					write-host "There was an error updating contact information for "$email
 					$exitCode = $LASTEXITCODE
 			}
 		}
