@@ -1,3 +1,7 @@
 ﻿User_Email,Statement_Type_ID,Setup_Date,INT_Stripe_Processor_ID,DEMO_Stripe_Processor_ID,,
 ,,,,,,
-,,,,,,Donor is found by user's email address
+,,,,,,Donor account will be updated for user with User_Email
+,,,,,,"Required: User_Email, Statement_Type_ID, Setup_Date"
+,,,,,,"Optional: INT_Stripe_Processor_ID, DEMO_Stripe_Processor_ID"
+,,,,,,
+,,,,,,"If cell is empty, Null will be entered in the DB"

@@ -1,1 +1,7 @@
-﻿User_Email,Opportunity_ID,Response_Date,Comments
+﻿User_Email,Opportunity_ID,Response_Date,Comments,,
+,,,,,
+,,,,,Response for the Opportunity_ID will be added to participant record for User_Email
+,,,,,"Required: User_Email, Opportunity_ID, Response_Date"
+,,,,,Optional: Comments
+,,,,,
+,,,,,"If cell is empty, Null will be entered in the DB"

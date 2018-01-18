@@ -1,3 +1,6 @@
-﻿User_Email,Address_Line_1,Address_Line_2,City,State,Zip_Code,Country,Country_Code,County,
-,,,,,,,,,
-,,,,,,,,,Will update the address on a contact's household. Contact is found by their email adress.
+﻿User_Email,Address_Line_1,Address_Line_2,City,State,Zip_Code,Country,Country_Code,County,,
+,,,,,,,,,,
+,,,,,,,,,,Will update the Address on the Household of the user with with User_Email
+,,,,,,,,,,"Required: User_Email, Address_Line_1"
+,,,,,,,,,,
+,,,,,,,,,,"If cell is empty, Null will be entered in the DB"

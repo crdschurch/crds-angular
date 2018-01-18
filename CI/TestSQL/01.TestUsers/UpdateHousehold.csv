@@ -1,3 +1,7 @@
 ﻿User_Email,Home_Phone,Congregation_ID,,
 ,,,,
-,,,,Household is found by Contact's email address
+,,,,Household will be updated for user with User_Email
+,,,,Required: User_Email
+,,,,"Optional: Home_Phone, Congregation_ID"
+,,,,
+,,,,"If cell is empty, Null will be entered in the DB"

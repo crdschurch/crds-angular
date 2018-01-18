@@ -1,4 +1,8 @@
 ﻿User_Email,Related_User_Email,Relationship_ID,Start_Date,,
 ,,,,,
 ,,,,,Contact with User_Email will be related to contact with Related_User_Email by Relationship_ID type of relationship
+,,,,,"Required: User_Email, Related_User_Email, Relationship_ID"
+,,,,,Optional: Start_Date
+,,,,,
 ,,,,,Do NOT add reciprocal relationships - MP adds them automatically
+,,,,,"If cell is empty, Null will be entered in the DB"
