@@ -22,6 +22,7 @@ foreach($user in $userList)
 		$command = New-Object System.Data.SqlClient.SqlCommand
 		$command.CommandType = [System.Data.CommandType]'StoredProcedure'
 		$command.Connection = $DBConnection
+		$command.CommandTimeout = 300 #Set command timeout to 5 minutes
 		$command.CommandText = "cr_QADeleteData" #Set name of stored procedure
 		
 		#Add variables for stored proc
