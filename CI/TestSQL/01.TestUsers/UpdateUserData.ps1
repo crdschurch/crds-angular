@@ -133,9 +133,9 @@ function UpdateDonor($DBConnection){
 			
 			#Pick processor ID by environment
 			if ($DBServer -match 'demo') {
-				$stripe_pid = StringToInt($userRow.DEMO_Stripe_Processor_ID)
+				$stripe_pid = CatchNullString($userRow.DEMO_Stripe_Processor_ID)
 			} else {
-				$stripe_pid = StringToInt($userRow.INT_Stripe_Processor_ID)
+				$stripe_pid = CatchNullString($userRow.INT_Stripe_Processor_ID)
 			}
 			
 			#Add parameters to command - parameter names must match stored proc parameter names
