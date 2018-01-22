@@ -133,16 +133,17 @@ function UpdateDonor($DBConnection){
 			
 			#Pick processor ID by environment
 			if ($DBServer -match 'demo') {
-				$stripe_pid = CatchNullString($userRow.DEMO_Stripe_Processor_ID)
+				$demo_pid = CatchNullString($userRow.DEMO_Stripe_Processor_ID)
+				$command.Parameters.AddWithValue("@processor_id", $demo_pid) | Out-Null
 			} else {
-				$stripe_pid = CatchNullString($userRow.INT_Stripe_Processor_ID)
+				$int_pid = CatchNullString($userRow.INT_Stripe_Processor_ID)
+				$command.Parameters.AddWithValue("@processor_id", $int_pid) | Out-Null
 			}
 			
 			#Add parameters to command - parameter names must match stored proc parameter names
 			$command.Parameters.AddWithValue("@contact_email", $email) | Out-Null
 			$command.Parameters.AddWithValue("@setup_date", $setup_date) | Out-Null
 			$command.Parameters.AddWithValue("@statement_type_id", $statement_type) | Out-Null
-			$command.Parameters.AddWithValue("@processor_id", $stripe_pid) | Out-Null
 				
 			#Execute query
 			$exitCode = ExecuteCommand($command)
