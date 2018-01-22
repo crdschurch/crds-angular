@@ -47,7 +47,7 @@ namespace crds_angular.test.Services
         {
             string email = "someone@someone.com";
 
-            var result = _loginService.PasswordResetRequest(email);
+            var result = _loginService.PasswordResetRequest(email, false);
             Assert.AreEqual(true, result);
         }
     }

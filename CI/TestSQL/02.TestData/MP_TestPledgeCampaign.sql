@@ -4,7 +4,9 @@ GO
 DECLARE @startDate as VARCHAR(19)
 set @startDate = CONVERT(VARCHAR(4), datepart(year, getdate()))+'0101';
 DECLARE @endDate as VARCHAR(19)
-set @endDate = CONVERT(VARCHAR(4), datepart(year, getdate()))+'1231';
+DECLARE @endDateTime as Date
+set @endDateTime = dateadd(year, 2, getdate())
+set @endDate = CONVERT(VARCHAR(4), datepart(year,@endDateTime) )+'1231';
 DECLARE @curr_pledgeCampaign_id AS INT
 DECLARE @pledgeCampaignId AS INT
 DECLARE @programId AS INT

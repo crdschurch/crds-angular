@@ -53,7 +53,6 @@
 
     .config(function(growlProvider) {
       growlProvider.globalPosition('top-center');
-      growlProvider.globalTimeToLive(6000);
       growlProvider.globalDisableIcons(true);
       growlProvider.globalDisableCountDown(true);
     })

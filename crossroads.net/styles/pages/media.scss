@@ -251,6 +251,65 @@
 	}
 }
 
+/* Music Ads */
+.jumbotron.music-jumbotron {
+  padding: 22px;
+  background: url(//crds-cms-uploads.imgix.net/content/images/music-intro-bg.jpg) top center no-repeat;
+  background-size: cover;
+}
+
+.music-intro {
+  background: #eee;
+
+	@media (max-width: 992px) {
+	    padding-bottom: 0 !important;
+	    height: auto !important;
+	    margin-bottom: 22px;
+
+	  .embed-responsive-item {
+	    position: relative !important;
+	  }
+	}
+}
+
+.album-card a {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.album-page {
+  margin-bottom: -40px;
+
+	h1,
+	h2,
+	h3 {
+	  font-family: "acumin-pro-extra-condensed", sans-serif;
+	  text-transform: uppercase;
+	}
+
+	.wpy-blur {
+	  background: url(http://crossroads-media.s3.amazonaws.com/images/wpy-land-bg.jpg) no-repeat;
+	  background-size: cover;
+	}
+
+	.camp-blur {
+	  background: url(http://crossroads-media.s3.amazonaws.com/images/bloobrothers-bg.jpg) no-repeat;
+	  background-size: cover;
+	}
+
+	.album-cover {
+	  border: 5px solid rgba(0, 0, 0, 0.3);
+	}
+}
+
+.cr-music-logo {
+  max-width: 250px;
+}
+
 /***************************************************************************************
 * Message Preview Include - used on _includes/media/message_preview.html
 ***************************************************************************************/

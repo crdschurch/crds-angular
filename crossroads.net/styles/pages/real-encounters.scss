@@ -1,0 +1,113 @@
+.real-encounters {
+  background: $gray-darker;
+  margin-bottom: -50px;
+
+  .re-logo {
+    max-width: 150px;
+  }
+
+  .real-encounters-nav {
+    .btn {
+      font-family: $cr-streaming-font-extra-cond;
+      text-transform: uppercase;
+      font-size: 1.2rem;
+    }
+
+    @media (min-width: $screen-sm-min) {
+      .re-btns {
+        text-align: right;
+      }
+
+    }
+  }
+
+  h1, h2, h3 {
+    font-family: $cr-streaming-font-extra-cond;
+    text-transform: uppercase;
+  }
+
+  .at-icon-wrapper {
+    width: 24px;
+    height: 24px;
+  }
+
+  .btn-standard-dark {
+    @include button-variant(#FFF, #151515, #151515);
+
+    &.inactive {
+      opacity: .65;
+    }
+  }
+
+  .addthis_crossroads_sharing a .at4-icon,
+  .addthis_crossroads_sharing a .at-icon-wrapper,
+  .addthis_crossroads_sharing a .at-icon {
+    background: transparent !important;
+    color: $gray-lighter;
+
+    &:hover {
+      color: #d5d5d5;
+    }
+  }
+
+  .real-encounters-blur {
+    background: url(https://crds-cms-uploads.imgix.net/content/images/re-season-2-blur.jpg) center bottom no-repeat;
+    background-size: cover;
+  }
+
+  .re-desc,
+  .re-video {
+    float: none;
+    margin-bottom: $line-height-computed/2;
+
+    @media (min-width: $screen-md-min) {
+      float: right;
+      margin-bottom: 0;
+    }
+  }
+
+  .re-newsletter-block {
+
+
+    > div {
+      background: #0A0A0A;
+      min-height: 350px;
+      -webkit-box-shadow: 0px 0px 50px -9px rgba(0,0,0,0.89);
+      -moz-box-shadow: 0px 0px 50px -9px rgba(0,0,0,0.89);
+      box-shadow: 0px 0px 50px -9px rgba(0,0,0,0.89);
+    }
+  }
+
+  #mc_embed_signup {
+    font-family: "acumin-pro", helvetica, arial, sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+
+    form {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    input {
+      margin: 0;
+      color: #000;
+    }
+
+    div#mce-responses {
+      margin: 0;
+      width: 100%;
+      padding: 0;
+    }
+
+    div.response {
+      width: 96% !important;
+      padding: $line-height-computed/2;
+      margin: 0 0 $line-height-computed;
+    }
+  }
+
+  .re-newsletter {
+    background: url(https://crds-cms-uploads.imgix.net/content/images/re-newsletter2.jpg) center bottom no-repeat;
+    background-size: cover;
+  }
+}
