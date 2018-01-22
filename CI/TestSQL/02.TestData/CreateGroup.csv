@@ -1,0 +1,8 @@
+Group_Name,Group_Type_ID,Ministry_ID,Congregation_ID,Primary_Contact,Start_Date,Target_Size,Description,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,,,,,,Creates a new group if a group with Group_Name does not already exist
+,,,,,,,,,"Optional parameters: Target_Size, Description"
+,,,,,,,,,All other parameters are required
+,,,,,,,,,
+,,,,,,,,,"If cell is left blank, Null will be inserted into MP"
