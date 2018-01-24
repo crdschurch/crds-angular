@@ -263,6 +263,7 @@ namespace crds_angular.Services
                 awsPinObject.GroupTypeId = pin.Gathering.GroupTypeId;
                 awsPinObject.GroupDescription = pin.Gathering.GroupDescription;
                 awsPinObject.GroupName = pin.Gathering.GroupName;
+                awsPinObject.GroupAvailableOnline = (pin.Gathering.AvailableOnline.HasValue && pin.Gathering.AvailableOnline.Value == true) ? 1 : 0;
             }
 
             AwsCloudsearchDto awsPostPinObject = new AwsCloudsearchDto("add", GenerateAwsPinId(pin), awsPinObject);
