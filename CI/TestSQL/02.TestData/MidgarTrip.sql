@@ -4,34 +4,20 @@ GO
 
 --Declaring variables to use for the Name and start of trips/pledging. 
 --The trip will always be the last week of whatever year the script was run in. 
-DECLARE @thisyear as VARCHAR(4)
-set @thisyear = CONVERT(VARCHAR(4), datepart(year, getdate()));
-
 DECLARE @tripName AS VARCHAR(50)
-set @tripName = '(t) GO Midgar '+@thisyear;
+set @tripName = '(t) GO Midgar 2018';
+
+DECLARE @tripParticipantName AS VARCHAR(75)
+set @tripParticipantName = '(t) GO Midgar 2018 (Trip Participants)';
 
 DECLARE @startYear as VARCHAR(19)
-set @startYear = @thisyear+'0101';
+set @startYear = '20180101';
 
 DECLARE @endYear as varchar(19)
-set @endYear = @thisyear+'1231';
+set @endYear = '20181231';
 
 DECLARE @tripStart as varchar(19)
-set @tripStart = @thisyear+'1225';
-
---Group for (t) GO Midgar
---http://crossroads.knowledgeowl.com/help/create-edit-go-trip-groups 
-INSERT INTO [dbo].groups 
-(Group_Name,Group_Type_ID,Ministry_ID,Congregation_ID,Primary_Contact,[Description],[Start_Date]                     ,End_Date,Target_Size,Parent_Group,Priority_ID,Enable_Waiting_List,Small_Group_Information,Offsite_Meeting_Address,Group_Is_Full,Available_Online,Life_Stage_ID,Group_Focus_ID,Meeting_Time,Meeting_Day_ID,Descended_From,Reason_Ended,Domain_ID,Check_in_Information,[Secure_Check-in],Suppress_Nametag,Suppress_Care_Note,On_Classroom_Manager,Promotion_Information,Promote_to_Group,Age_in_Months_to_Promote,Promote_Weekly,__ExternalGroupID,__ExternalParentGroupID,__IsPublic,__ISBlogEnabled,__ISWebEnabled,Group_Notes,Sign_Up_To_Serve,Deadline_Passed_Message_ID) VALUES
-(@tripName ,6            ,20         ,5              ,2562378        ,null         ,CAST(@startYear as smalldatetime),null    ,null       ,null        ,null       ,null               ,null                   ,null                   ,0            ,1               ,null         ,null          ,null        ,null          ,null          ,null        ,1        ,null                ,0                ,null            ,0                 ,null                ,null                 ,null            ,null                    ,null          ,null             ,null                   ,null      ,null           ,null          ,null       ,null            ,null                      );
-
---Group for (t) GO Midgar Participants, Go Midgar Group as parent
-declare @parentGroup as int
-set @parentGroup = (select Group_ID from Groups where Group_Name = @tripName);
-
-INSERT INTO [dbo].groups 
-(Group_Name                         ,Group_Type_ID,Ministry_ID,Congregation_ID,Primary_Contact,[Description],[Start_Date]                     ,End_Date,Target_Size,Parent_Group,Priority_ID,Enable_Waiting_List,Small_Group_Information,Offsite_Meeting_Address,Group_Is_Full,Available_Online,Life_Stage_ID,Group_Focus_ID,Meeting_Time,Meeting_Day_ID,Descended_From,Reason_Ended,Domain_ID,Check_in_Information,[Secure_Check-in],Suppress_Nametag,Suppress_Care_Note,On_Classroom_Manager,Promotion_Information,Promote_to_Group,Age_in_Months_to_Promote,Promote_Weekly,__ExternalGroupID,__ExternalParentGroupID,__IsPublic,__ISBlogEnabled,__ISWebEnabled,Group_Notes,Sign_Up_To_Serve,Deadline_Passed_Message_ID) VALUES
-(@tripName + ' (Trip Participants)' ,6            ,20         ,5              ,2562378        ,null         ,CAST(@startYear as smalldatetime),null    ,null       ,@parentGroup,null       ,null               ,null                   ,null                   ,0            ,1               ,null         ,null          ,null        ,null          ,null          ,null        ,1        ,null                ,0                ,null            ,0                 ,null                ,null                 ,null            ,null                    ,null          ,null             ,null                   ,null      ,null           ,null          ,null       ,null            ,null                      );
+set @tripStart = '20181225';
 
 --Pledge Campaign for (t) GO Midgar
 SET IDENTITY_INSERT [dbo].[Pledge_Campaigns] ON;
@@ -79,7 +65,7 @@ update [dbo].Pledge_Campaigns set Event_ID = (select Event_ID from Events where 
 
 --link the group to the event.
 DECLARE @subGroupID as int
-SET @subGroupID = (select GROUP_ID from groups where group_name = @tripName + ' (Trip Participants)');
+SET @subGroupID = (select top 1 GROUP_ID from groups where group_name = @tripParticipantName);
 
 INSERT INTO [dbo].EVENT_GROUPS
 (EVENT_ID                                                   , GROUP_ID   ,Room_ID, Domain_ID) VALUES

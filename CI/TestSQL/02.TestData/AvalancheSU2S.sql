@@ -1,13 +1,9 @@
 USE [MinistryPlatform]
 GO
 
-INSERT INTO Groups 
-(Group_Name           ,Group_Type_ID,Ministry_ID ,Congregation_ID,Primary_Contact,Description,Start_Date                 ,Target_Size,Group_Is_Full,Available_Online,Domain_ID,[Secure_Check-in],Suppress_Nametag,Suppress_Care_Note,On_Classroom_Manager,Promote_Weekly,__IsPublic,__ISBlogEnabled,__ISWebEnabled,Group_Notes,Sign_Up_To_Serve,Deadline_Passed_Message_ID,Send_Attendance_Notification,Send_Service_Notification,Child_Care_Available,Kids_Welcome) VALUES
-('(t+auto) Avalanche',9            ,11          ,1              ,7654100         ,'Test data' ,{ts '2015-11-21 00:00:00'},0          ,0            ,1               ,1        ,0                ,0               ,0                 ,0                   ,0             ,'N'       ,'Y'            ,'Y'           ,''         ,null            ,null                      ,0                           ,0                        ,0                   ,0           );
-
 -- getting the ID for the group
 declare @GroupID as int
-set @GroupID = (select group_id from Groups where Group_Name = '(t+auto) Avalanche');
+set @GroupID = (select top 1 group_id from Groups where Group_Name = '(t+auto) Avalanche');
 
 --Saturday Attack Shinra Mako reactor 1
 --Setup

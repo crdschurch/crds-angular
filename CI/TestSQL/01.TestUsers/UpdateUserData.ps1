@@ -209,7 +209,9 @@ function UpdateHouseholdAddress($DBConnection){
 			$country = CatchNullString($userRow.Country)
 			$country_code = CatchNullString($userRow.Country_Code)
 			$county = CatchNullString($userRow.County)
-						
+			$latitude = CatchNullString($userRow.Latitude)
+			$longitude = CatchNullString($userRow.Longitude)			
+			
 			#Add parameters to command - parameter names must match stored proc parameter names
 			$command.Parameters.AddWithValue("@contact_email", $email) | Out-Null
 			$command.Parameters.AddWithValue("@line_1", $address_1) | Out-Null
@@ -220,7 +222,9 @@ function UpdateHouseholdAddress($DBConnection){
 			$command.Parameters.AddWithValue("@country", $country) | Out-Null
 			$command.Parameters.AddWithValue("@country_code", $country_code) | Out-Null
 			$command.Parameters.AddWithValue("@county", $county) | Out-Null
-				
+			$command.Parameters.AddWithValue("@latitude", $latitude) | Out-Null
+			$command.Parameters.AddWithValue("@longitude", $longitude) | Out-Null
+			
 			#Execute query
 			$exitCode = ExecuteCommand($command)
 			if($exitCode -ne 0){
