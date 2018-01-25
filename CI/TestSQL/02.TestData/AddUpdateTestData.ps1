@@ -31,8 +31,13 @@ function StringToBit([string]$s){
 	$s = CatchNullString($s)
 	if ([string]::IsNullOrEmpty($s)){
 		return 0
-	} else {
-		return [int]$s
+	} else { #guarantee bit returned
+		$b = [int]$s
+		if ($b -lt 1){
+			return 0
+		} else {
+			return 1
+		}
 	}
 }
 
@@ -133,7 +138,7 @@ function UpdateGroup($DBConnection){
 			#Get data in correct format
 			$name = $groupRow.Group_Name
 			$waiting_list = StringToBit($groupRow. Enable_Waiting_List)			
-			$childcare = StringToBit($groupRow. Child_Care_Available )
+			$childcare = StringToBit($groupRow.Child_Care_Available )
 			$is_public = CatchNullString($groupRow.__IsPublic)
 			$is_blog_enabled = CatchNullString($groupRow.__ISBlogEnabled)
 			$is_web_enabled = CatchNullString($groupRow.__ISWebEnabled)

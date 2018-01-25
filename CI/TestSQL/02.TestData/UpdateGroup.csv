@@ -1,15 +1,15 @@
-﻿Group_Name,Enable_Waiting_List,Child_Care_Available ,__IsPublic,__ISBlogEnabled,__ISWebEnabled,Deadline_Passed_Message_ID,Meeting_Time,,
-(t+auto) Avalanche,0,0,N,Y,Y,,,,
-(t) FI Oakley Coffee Team,0,0,N,Y,Y,,,,
-(t) Fathers Oakley CG,1,0,,,,58,,,Updates group with Group_Name
-(t) Fathers Oakley CG - Waitlist,0,0,,,,58,,,"Group_Name is required, all else is optional"
-(t) KC Oakley Kindergarten,0,0,N,Y,Y,58,,,
-(t) KC Oakley Nursery,0,0,N,Y,Y,58,,,"If cell is left blank, Null will be inserted into MP"
-(t+auto) Serve Shinra Electric Power Company,0,0,N,Y,Y,,,,
-(t) Superbowl Oakley Group,0,0,,,,58,,,
-(t) KidsClub Oakley Group,0,0,,,,58,,,
-(t) 1Time Mason Group with ChildCare,0,1,,,,58,,,
-(t+auto) Band of the Red Hand,0,0,,,,58,,,
-(t+auto) The Next Generation,0,0,,,,58,17:00:00,,
-(t) Albert E,0,0,,,,58,,,
-(t) Stephen H,0,0,,,,58,,,
+﻿Group_Name,Deadline_Passed_Message_ID,__IsPublic,__ISBlogEnabled,__ISWebEnabled,Enable_Waiting_List,Child_Care_Available,Meeting_Time,,
+(t+auto) Avalanche,,N,Y,Y,,,,,
+(t) FI Oakley Coffee Team,,N,Y,Y,,,,,
+(t) Fathers Oakley CG,58,,,,1,,,,
+(t) Fathers Oakley CG - Waitlist,58,,,,,,,,Updates group with Group_Name
+(t) KC Oakley Kindergarten,58,N,Y,Y,,,,,"Group_Name is required, all else is optional"
+(t) KC Oakley Nursery,58,N,Y,Y,,,,,
+(t+auto) Serve Shinra Electric Power Company,,N,Y,Y,,,,,"If cell is left blank, Null will be inserted into MP"
+(t) Superbowl Oakley Group,58,,,,,,,,
+(t) KidsClub Oakley Group,58,,,,,,,,
+(t) 1Time Mason Group with ChildCare,59,,,,,1,,,
+(t+auto) Band of the Red Hand,58,,,,,,,,
+(t+auto) The Next Generation,58,,,,,,17:00:00,,
+(t) Albert E,58,,,,,,,,
+(t) Stephen H,58,,,,,,,,
