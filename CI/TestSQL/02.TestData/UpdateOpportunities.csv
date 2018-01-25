@@ -1,0 +1,45 @@
+﻿Group_Name,Opportunity_Title,Contact_Email,Group_Role_ID,Program_ID,Description,Publish_Date,Minimum_Needed,Maximum_Needed,Shift_Sart,Shift_End,Event_Type,Sign_Up_Deadline_ID,Room
+(t+auto) Avalanche,(t+auto) Attack Shinra Mako reactor 1,lizett.trujillo@ingagepartners.com,16,106,Test Data,11/27/2015,1,250,14:00:00,16:00:00,Service - Oakley Sunday at 8:30am,7,Oakley Atrium
+(t+auto) Avalanche,(t+auto) Attack Shinra Mako reactor 5,lizett.trujillo@ingagepartners.com,16,106,Test Data,11/27/2015,1,250,16:00:00,18:00:00,Service - Oakley Saturday at 4:30pm,7,Main Coffee Station Alpha
+(t) FI Oakley Coffee Team,(t) Coffee Setup Sat 2:00,lizett.trujillo@ingagepartners.com,16,106,Test Data,10/27/2015,1,1,14:00:00,16:00:00,Service - Oakley Saturday at 4:30pm,7,Oakley Atrium
+(t) FI Oakley Coffee Team,(t) Coffee Team Sat 4:00,lizett.trujillo@ingagepartners.com,16,106,Test Data,10/27/2015,1,1,16:00:00,18:00:00,Service - Oakley Saturday at 4:30pm,7,Main Coffee Station Alpha
+(t) KC Oakley Kindergarten,(t) Kindergarten K213 Sun 11:45,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,10,11:20:00,13:20:00,Service - Oakley Sunday at 11:45am,7,OAK KC Room 213
+(t) KC Oakley Kindergarten,(t) Kindergarten K213 Sun 10:05,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,10,9:40:00,11:20:00,Service - Oakley Sunday at 10:05am,7,OAK KC Room 213
+(t) KC Oakley Kindergarten,(t) Kindergarten K213 Sun 8:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,10,8:05:00,9:50:00,Service - Oakley Sunday at 8:30am,7,OAK KC Room 213
+(t) KC Oakley Kindergarten,(t) Kindergarten K213 Sat 4:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,10,16:05:00,17:50:00,Service - Oakley Saturday at 4:30pm,7,OAK KC Room 213
+(t) KC Oakley Kindergarten,(t) Kindergarten K213 Sat 6:15,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,10,17:50:00,19:30:00,Service - Oakley Saturday at 6:15pm,7,OAK KC Room 213
+(t) KC Oakley Nursery,(t) Nursery A K112 Sun 11:45,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,11:20:00,13:20:00,Service - Oakley Sunday at 11:45am,7,OAK KC Room 112
+(t) KC Oakley Nursery,(t) Nursery A K112 Sun 10:05,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,9:40:00,11:20:00,Service - Oakley Sunday at 10:05am,7,OAK KC Room 112
+(t) KC Oakley Nursery,(t) Nursery A K112 Sun 8:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,8:05:00,9:50:00,Service - Oakley Sunday at 8:30am,7,OAK KC Room 112
+(t) KC Oakley Nursery,(t) Nursery A K112 Sat 4:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,16:05:00,17:50:00,Service - Oakley Saturday at 4:30pm,7,OAK KC Room 112
+(t) KC Oakley Nursery,(t) Nursery A K112 Sat 6:15,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,17:50:00,19:30:00,Service - Oakley Saturday at 6:15pm,7,OAK KC Room 112
+(t) KC Oakley Nursery,(t) Nursery B K114 Sun 11:45,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,11:20:00,13:20:00,Service - Oakley Sunday at 11:45am,7,OAK KC Room 114
+(t) KC Oakley Nursery,(t) Nursery B K114 Sun 10:05,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,9:40:00,11:20:00,Service - Oakley Sunday at 10:05am,7,OAK KC Room 114
+(t) KC Oakley Nursery,(t) Nursery B K114 Sun 8:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,8:05:00,9:50:00,Service - Oakley Sunday at 8:30am,7,OAK KC Room 114
+(t) KC Oakley Nursery,(t) Nursery B K114 Sat 4:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,16:05:00,17:50:00,Service - Oakley Saturday at 4:30pm,7,OAK KC Room 114
+(t) KC Oakley Nursery,(t) Nursery B K114 Sat 6:15,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,17:50:00,19:30:00,Service - Oakley Saturday at 6:15pm,7,OAK KC Room 114
+(t) KC Oakley Nursery,(t) Nursery C K116 Sun 11:45,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,11:20:00,13:20:00,Service - Oakley Sunday at 11:45am,7,OAK KC Room 116
+(t) KC Oakley Nursery,(t) Nursery C K116 Sun 10:05,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,9:40:00,11:20:00,Service - Oakley Sunday at 10:05am,7,OAK KC Room 116
+(t) KC Oakley Nursery,(t) Nursery C K116 Sun 8:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,8:05:00,9:50:00,Service - Oakley Sunday at 8:30am,7,OAK KC Room 116
+(t) KC Oakley Nursery,(t) Nursery C K116 Sat 4:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,16:05:00,17:50:00,Service - Oakley Saturday at 4:30pm,7,OAK KC Room 116
+(t) KC Oakley Nursery,(t) Nursery C K116 Sat 6:15,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,17:50:00,19:30:00,Service - Oakley Saturday at 6:15pm,7,OAK KC Room 116
+(t) KC Oakley Nursery,(t) Nursery D K126 Sun 11:45,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,11:20:00,13:20:00,Service - Oakley Sunday at 11:45am,7,OAK KC Room 126
+(t) KC Oakley Nursery,(t) Nursery D K126 Sun 10:05,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,9:40:00,11:20:00,Service - Oakley Sunday at 10:05am,7,OAK KC Room 126
+(t) KC Oakley Nursery,(t) Nursery D K126 Sun 8:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,8:05:00,9:50:00,Service - Oakley Sunday at 8:30am,7,OAK KC Room 126
+(t) KC Oakley Nursery,(t) Nursery D K126 Sat 4:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,16:05:00,17:50:00,Service - Oakley Saturday at 4:30pm,7,OAK KC Room 126
+(t) KC Oakley Nursery,(t) Nursery D K126 Sat 6:15,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,17:50:00,19:30:00,Service - Oakley Saturday at 6:15pm,7,OAK KC Room 126
+(t) KC Oakley Nursery,(t) Nursery E K124 Sun 11:45,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,11:20:00,13:20:00,Service - Oakley Sunday at 11:45am,7,OAK KC Room 124
+(t) KC Oakley Nursery,(t) Nursery E K124 Sun 10:05,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,9:40:00,11:20:00,Service - Oakley Sunday at 10:05am,7,OAK KC Room 124
+(t) KC Oakley Nursery,(t) Nursery E K124 Sun 8:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,8:05:00,9:50:00,Service - Oakley Sunday at 8:30am,7,OAK KC Room 124
+(t) KC Oakley Nursery,(t) Nursery E K124 Sat 4:30,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,16:05:00,17:50:00,Service - Oakley Saturday at 4:30pm,7,OAK KC Room 124
+(t) KC Oakley Nursery,(t) Nursery E K124 Sat 6:15,nadide.camur@thrivecincinnati.com,16,83,Test Data,10/27/2015,3,5,17:50:00,19:30:00,Service - Oakley Saturday at 6:15pm,7,OAK KC Room 124
+(t+auto) Serve Shinra Electric Power Company,(t+auto) Guard Shinra Mako reactor 1,lizett.trujillo@ingagepartners.com,16,106,Test Data,11/27/2015,1,250,14:00:00,16:00:00,Service - Oakley Saturday at 4:30pm,7,Oakley Atrium
+(t+auto) Serve Shinra Electric Power Company,(t+auto) Guard Shinra Mako reactor 5,lizett.trujillo@ingagepartners.com,16,106,Test Data,11/27/2015,1,250,16:00:00,18:00:00,Service - Oakley Saturday at 4:30pm,7,Main Coffee Station Alpha
+(t) KidsClub Oakley Group,(t) KC Oakley Leader 11:00,lakshmi.nair@ingagepartners.com,22,109,,11/1/2015,1,1,10:45:00,12:15:00,(t) KC Nursery Oakley weekly 11:00,3,
+(t) KidsClub Oakley Group,(t) KC Oakley 11:00,lakshmi.nair@ingagepartners.com,16,109,,11/1/2015,5,10,10:45:00,12:15:00,(t) KC Nursery Oakley weekly 11:00,3,
+(t) KidsClub Oakley Group,(t) KC Oakley Leader 1:00,lakshmi.nair@ingagepartners.com,22,109,,11/1/2015,1,1,12:45:00,15:15:00,(t) KC Nursery Oakley weekly 1:00,3,
+(t) KidsClub Oakley Group,(t) KC Oakley 1:00,lakshmi.nair@ingagepartners.com,16,109,,11/1/2015,5,10,12:45:00,15:15:00,(t) KC Nursery Oakley weekly 1:00,3,
+(t) Superbowl Oakley Group,(t) Superbowl Leader Oakley 10:00,lakshmi.nair@ingagepartners.com,22,111,,11/1/2015,1,1,9:45:00,12:15:00,(t) Superbowl Oakley daily 10:00,3,
+(t) Superbowl Oakley Group,(t) Superbowl Oakley 10:00,lakshmi.nair@ingagepartners.com,16,111,,11/1/2015,5,10,9:45:00,15:15:00,(t) Superbowl Oakley daily 10:00,3,
+(t) Superbowl Oakley Group,(t) Superbowl Leader Oakley 3:00,lakshmi.nair@ingagepartners.com,22,111,,11/1/2015,1,1,14:45:00,16:15:00,(t) Superbowl Oakley daily 3:00,3,
+(t) Superbowl Oakley Group,(t) Superbowl Oakley 3:00,lakshmi.nair@ingagepartners.com,16,111,,11/1/2015,5,10,14:45:00,16:15:00,(t) Superbowl Oakley daily 3:00,3,

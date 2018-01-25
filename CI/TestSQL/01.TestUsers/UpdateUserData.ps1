@@ -7,9 +7,9 @@ param (
     [string]$contactsInHouseholdDataCSV = "UpdateContactsInHousehold.csv",
     [string]$contactRelationshipsDataCSV = "UpdateContactRelationship.csv",
     [string]$responseDataCSV = "UpdateResponse.csv",
-    [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
-    [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
-    [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
+    [string]$DBServer = "mp-demo-db.centralus.cloudapp.azure.com",
+    [string]$DBUser = 'MigrateUser', #$(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
+    [string]$DBPassword = 'Aw@!ted2014' #$(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
  
  #Helpers to reformat/convert from csv input 
@@ -28,6 +28,15 @@ function StringToInt([string]$s){
 		return [DBNull]::Value
 	} else {
 		return [int]$s
+	}
+}
+
+function StringToBit([string]$s){	
+	$s = StringToInt($s)
+	if ($s -ne 0){
+		return 0
+	} else {
+		return 1
 	}
 }
 
@@ -175,10 +184,10 @@ function UpdateParticipant($DBConnection){
 			$email = $userRow.User_Email
 			$participant_type = StringToInt($userRow.Participant_Type_ID)
 			$start_date = StringToDate($userRow.Participant_Start_Date)			
-			$show_on_map = StringToInt($userRow.Show_On_Map)			
+			$show_on_map = StringToBit($userRow.Show_On_Map)			
 			$host_status = StringToInt($userRow.Host_Status_ID)
 			$group_leader_status = StringToInt($userRow.Group_Leader_Status_ID)
-			
+						
 			#Add parameters to command - parameter names must match stored proc parameter names
 			$command.Parameters.AddWithValue("@contact_email", $email) | Out-Null
 			$command.Parameters.AddWithValue("@participant_type_id", $participant_type) | Out-Null

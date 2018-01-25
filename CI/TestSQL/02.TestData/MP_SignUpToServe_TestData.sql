@@ -28,87 +28,13 @@ SET @groupIdSB = (SELECT top 1 group_id from Groups where group_name = '(t) Supe
 SET @groupIdKC = (SELECT top 1 group_id from Groups where group_name = '(t) KidsClub Oakley Group');
 
 --Create new Sign Up to Serve Evet Types
-SET IDENTITY_INSERT [dbo].[Event_Types] ON;
+SET @eventTypeIdSB1 = (SELECT top 1 Event_Type_ID FROM Event_Types where Event_Type = '(t) Superbowl Oakley daily 10:00');
 
-SET @eventTypeIdSB1 = (SELECT MAX(Event_Type_ID) FROM Event_Types) + 1 ;
+SET @eventTypeIdSB2 = (SELECT top 1 Event_Type_ID FROM Event_Types where Event_Type = '(t) Superbowl Oakley daily 3:00');
 
-INSERT INTO Event_Types
-(Event_Type_ID, Event_Type                       , Description, Domain_ID , __ExternalEventTypeID , __ExternalSiteServiceTimeID ) VALUES
-(@eventTypeIdSB1 , '(t) Superbowl Oakley daily 10:00', null       , 1          ,  null                , null) ;
+SET @eventTypeIdKC1 = (SELECT top 1 Event_Type_ID FROM Event_Types where Event_Type = '(t) KC Nursery Oakley weekly 11:00');
 
-SET @eventTypeIdSB2 = (SELECT MAX(Event_Type_ID) FROM Event_Types) + 1 ;
-
-INSERT INTO Event_Types
-(Event_Type_ID, Event_Type                           , Description, Domain_ID  , __ExternalEventTypeID , __ExternalSiteServiceTimeID ) VALUES
-(@eventTypeIdSB2 , '(t) Superbowl Oakley daily 3:00' , null       , 1          ,  null                 , null) ;
-
-SET @eventTypeIdKC1 = (SELECT MAX(Event_Type_ID) FROM Event_Types) + 1 ;
-
-INSERT INTO Event_Types
-(Event_Type_ID, Event_Type                             , Description, Domain_ID , __ExternalEventTypeID , __ExternalSiteServiceTimeID ) VALUES
-(@eventTypeIdKC1, '(t) KC Nursery Oakley weekly 11:00' , null       , 1          ,  null                , null) ;
-
-SET @eventTypeIdKC2 = (SELECT MAX(Event_Type_ID) FROM Event_Types) + 1 ;
-
-INSERT INTO Event_Types
-(Event_Type_ID, Event_Type                            , Description, Domain_ID  , __ExternalEventTypeID , __ExternalSiteServiceTimeID ) VALUES
-(@eventTypeIdKC2, '(t) KC Nursery Oakley weekly 1:00' , null       , 1          ,  null                 , null) ;
-
-SET IDENTITY_INSERT [dbo].[Event_Types] OFF;
-
---Create new Sign Up to Serve Opportunities
-
-SET IDENTITY_INSERT [dbo].[Opportunities] ON;
-
-SET @opportunityIdKC1 = (SELECT MAX(Opportunity_ID) FROM Opportunities) + 1 ;
-
-INSERT INTO Opportunities
-(Opportunity_ID   , Opportunity_Title    ,Description, Group_Role_ID, Program_ID, Visibility_Level_ID, Contact_Person, Publish_Date    , Opportunity_Date, Duration_in_Hours, Add_to_Group, Add_to_Event, Required_Gender, Minimum_Age, Minimum_Needed, Maximum_Needed, Domain_ID, Letter_Body, Letter_From, On_Connection_Card, Shift_Start       , Shift_End         , Custom_Form, Event_Type_ID, Sign_Up_Deadline_ID, Room, __ExternalCalendarEventServingTimeID, __ExternalRecurrenceSubsetCode) VALUES
-(@opportunityIdKC1, '(t) KC Oakley 11:00',null       , 22           , 109       , 4                  , 2562428       , {d '2015-11-01'}, null            , null             , @groupIdKC   , null        , null           , null       , 1             , 1             , 1        , null       , null       , null              , '10:45:00.1234567', '12:15:00.1234567', null       , @eventTypeIdKC1, 3                  , null, null                                , null     );                             
-
-SET @opportunityIdKC2 = (SELECT MAX(Opportunity_ID) FROM Opportunities) + 1 ;
-
-INSERT INTO Opportunities
-(Opportunity_ID   , Opportunity_Title    ,Description, Group_Role_ID, Program_ID, Visibility_Level_ID, Contact_Person, Publish_Date    , Opportunity_Date, Duration_in_Hours, Add_to_Group, Add_to_Event, Required_Gender, Minimum_Age, Minimum_Needed, Maximum_Needed, Domain_ID, Letter_Body, Letter_From, On_Connection_Card, Shift_Start       , Shift_End         , Custom_Form, Event_Type_ID, Sign_Up_Deadline_ID, Room, __ExternalCalendarEventServingTimeID, __ExternalRecurrenceSubsetCode) VALUES
-(@opportunityIdKC2, '(t) KC Oakley 1:00' ,null       , 16           , 109       , 4                  , 2562428       , {d '2015-11-01'}, null            , null             , @groupIdKC   , null        , null           , null       , 5             , 10             , 1        , null       , null       , null              , '12:45:00.1234567', '15:15:00.1234567', null       , @eventTypeIdKC1, 3                  , null, null                                , null     );                             
-
-SET @opportunityIdKC3 = (SELECT MAX(Opportunity_ID) FROM Opportunities) + 1 ;
-
-INSERT INTO Opportunities
-(Opportunity_ID   , Opportunity_Title    ,Description, Group_Role_ID, Program_ID, Visibility_Level_ID, Contact_Person, Publish_Date    , Opportunity_Date, Duration_in_Hours, Add_to_Group, Add_to_Event, Required_Gender, Minimum_Age, Minimum_Needed, Maximum_Needed, Domain_ID, Letter_Body, Letter_From, On_Connection_Card, Shift_Start       , Shift_End         , Custom_Form, Event_Type_ID, Sign_Up_Deadline_ID, Room, __ExternalCalendarEventServingTimeID, __ExternalRecurrenceSubsetCode) VALUES
-(@opportunityIdKC3, '(t) KC Oakley 11:00',null       , 22           , 109       , 4                  , 2562428       , {d '2015-11-01'}, null            , null             , @groupIdKC    , null        , null           , null       , 1            , 1             , 1        , null       , null       , null              , '10:45:00.1234567', '12:15:00.1234567', null       , @eventTypeIdKC2, 3                  , null, null                                , null     );                             
-
-SET @opportunityIdKC4 = (SELECT MAX(Opportunity_ID) FROM Opportunities) + 1 ;
-
-INSERT INTO Opportunities
-(Opportunity_ID   , Opportunity_Title     ,Description, Group_Role_ID, Program_ID, Visibility_Level_ID, Contact_Person, Publish_Date    , Opportunity_Date, Duration_in_Hours, Add_to_Group, Add_to_Event, Required_Gender, Minimum_Age, Minimum_Needed, Maximum_Needed, Domain_ID, Letter_Body, Letter_From, On_Connection_Card, Shift_Start       , Shift_End         , Custom_Form, Event_Type_ID, Sign_Up_Deadline_ID, Room, __ExternalCalendarEventServingTimeID, __ExternalRecurrenceSubsetCode) VALUES
-(@opportunityIdKC4, '(t) KC Oakley 1:00'  ,null       , 16           , 109       , 4                  , 2562428       , {d '2015-11-01'}, null            , null             , @groupIdKC    , null        , null           , null       , 5             , 10            , 1        , null       , null       , null             ,'12:45:00.1234567', '15:15:00.1234567', null     , @eventTypeIdKC2, 3                  , null, null                                , null     );                             
-
-SET @opportunityIdSB1 = (SELECT MAX(Opportunity_ID) FROM Opportunities) + 1 ;
-
-INSERT INTO Opportunities
-(Opportunity_ID   , Opportunity_Title           ,Description, Group_Role_ID, Program_ID, Visibility_Level_ID, Contact_Person, Publish_Date    , Opportunity_Date, Duration_in_Hours, Add_to_Group, Add_to_Event, Required_Gender, Minimum_Age, Minimum_Needed, Maximum_Needed, Domain_ID, Letter_Body, Letter_From, On_Connection_Card, Shift_Start       , Shift_End         , Custom_Form, Event_Type_ID, Sign_Up_Deadline_ID, Room, __ExternalCalendarEventServingTimeID, __ExternalRecurrenceSubsetCode) VALUES
-(@opportunityIdSB1, '(t) Superbowl Oakley 10:00',null       , 22           , 111       , 4                  , 2562428       , {d '2015-11-01'}, null            , null             , @groupIdSB   , null        , null           , null       , 1             , 1             , 1        , null       , null       , null             , '9:45:00.1234567', '12:15:00.1234567', null      , @eventTypeIdSB1, 3                  , null, null                                , null     );                             
-
-SET @opportunityIdSB2 = (SELECT MAX(Opportunity_ID) FROM Opportunities) + 1 ;
-
-INSERT INTO Opportunities
-(Opportunity_ID   , Opportunity_Title           ,Description, Group_Role_ID, Program_ID, Visibility_Level_ID, Contact_Person, Publish_Date    , Opportunity_Date, Duration_in_Hours, Add_to_Group, Add_to_Event, Required_Gender, Minimum_Age, Minimum_Needed, Maximum_Needed, Domain_ID, Letter_Body, Letter_From, On_Connection_Card, Shift_Start       , Shift_End         , Custom_Form, Event_Type_ID, Sign_Up_Deadline_ID, Room, __ExternalCalendarEventServingTimeID, __ExternalRecurrenceSubsetCode) VALUES
-(@opportunityIdSB2, '(t) Superbowl Oakley 3:00' ,null       , 16           , 111       , 4                  , 2562428       , {d '2015-11-01'}, null            , null             , @groupIdSB   , null        , null           , null       , 5             , 10             , 1        , null       , null       , null              , '14:45:00.1234567', '16:15:00.1234567', null     , @eventTypeIdSB1, 3                  , null, null                                , null     );                             
-
-SET @opportunityIdSB3 = (SELECT MAX(Opportunity_ID) FROM Opportunities) + 1 ;
-
-INSERT INTO Opportunities
-(Opportunity_ID   , Opportunity_Title           ,Description, Group_Role_ID, Program_ID, Visibility_Level_ID, Contact_Person, Publish_Date    , Opportunity_Date, Duration_in_Hours, Add_to_Group, Add_to_Event, Required_Gender, Minimum_Age, Minimum_Needed, Maximum_Needed, Domain_ID, Letter_Body, Letter_From, On_Connection_Card, Shift_Start       , Shift_End         , Custom_Form, Event_Type_ID, Sign_Up_Deadline_ID, Room, __ExternalCalendarEventServingTimeID, __ExternalRecurrenceSubsetCode) VALUES
-(@opportunityIdSB3, '(t) Superbowl Oakley 10:00',null       , 22           , 111       , 4                  , 2562428       , {d '2015-11-01'}, null            , null             , @groupIdSB    , null        , null           , null       , 1            , 1             , 1        , null       , null       , null              , '9:45:00.1234567', '15:15:00.1234567', null      , @eventTypeIdSB2, 3                  , null, null                                , null     );                             
-
-SET @opportunityIdSB4 = (SELECT MAX(Opportunity_ID) FROM Opportunities) + 1 ;
-
-INSERT INTO Opportunities
-(Opportunity_ID   , Opportunity_Title             ,Description, Group_Role_ID, Program_ID, Visibility_Level_ID, Contact_Person, Publish_Date    , Opportunity_Date, Duration_in_Hours, Add_to_Group, Add_to_Event, Required_Gender, Minimum_Age, Minimum_Needed, Maximum_Needed, Domain_ID, Letter_Body, Letter_From, On_Connection_Card, Shift_Start       , Shift_End         , Custom_Form, Event_Type_ID, Sign_Up_Deadline_ID, Room, __ExternalCalendarEventServingTimeID, __ExternalRecurrenceSubsetCode) VALUES
-(@opportunityIdSB4, '(t) Superbowl Oakley 3:00'   ,null       , 16           , 111       , 4                  , 2562428       , {d '2015-11-01'}, null            , null             , @groupIdSB    , null        , null           , null       , 5             , 10            , 1        , null       , null       , null              , '14:45:00.1234567', '16:15:00.1234567', null     , @eventTypeIdSB2, 3                  , null, null                                , null     );                             
- 
-SET IDENTITY_INSERT [dbo].[Opportunities] OFF;
+SET @eventTypeIdKC2 = (SELECT top 1 Event_Type_ID FROM Event_Types where Event_Type = '(t) KC Nursery Oakley weekly 1:00');
 
 --Create new Sign Up to Serve Events
 

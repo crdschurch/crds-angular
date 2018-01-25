@@ -3,6 +3,7 @@ param (
 	[string]$updateGroupDataCSV = "UpdateGroup.csv",
 	[string]$addChildGroupDataCSV = "AddChildGroup.csv",
 	[string]$updateGroupAddressDataCSV = "UpdateGroupAddressFromHost.csv",
+	[string]$updateOpportunityDataCSV = "UpdateOpportunities.csv",
     [string]$DBServer = "mp-demo-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -28,16 +29,11 @@ function StringToInt([string]$s){
 }
 
 function StringToBit([string]$s){	
-	$s = CatchNullString($s)
-	if ([string]::IsNullOrEmpty($s)){
+	$s = StringToInt($s)
+	if ($s -lt 1){
 		return 0
-	} else { #guarantee bit returned
-		$b = [int]$s
-		if ($b -lt 1){
-			return 0
-		} else {
-			return 1
-		}
+	} else {
+		return 1
 	}
 }
 
@@ -81,26 +77,26 @@ function ExecuteCommand($command){
 
 #Create Groups in list
 function CreateGroup($DBConnection){
-	$groupDataList = import-csv $createGroupDataCSV
+	$dataList = import-csv $createGroupDataCSV
 	$errorCount = 0
 
-	foreach($groupRow in $groupDataList)
+	foreach($row in $dataList)
 	{
-		if(![string]::IsNullOrEmpty($groupRow.Group_Name))
+		if(![string]::IsNullOrEmpty($row.Group_Name))
 		{
 			#Create command to be executed
 			$command = CreateCommand($DBConnection)
 			$command.CommandText = "cr_QA_Create_Group" #Set name of stored procedure
 			
 			#Get data in correct format
-			$name = $groupRow.Group_Name
-			$type = StringToInt($groupRow.Group_Type_ID)
-			$ministry = StringToInt($groupRow.Ministry_ID)
-			$congregation = StringToInt($groupRow.Congregation_ID)
-			$contact_email = CatchNullString($groupRow.Primary_Contact)
-			$start_date = StringToDate($groupRow.Start_Date)
-			$size = StringToInt($groupRow.Target_Size)
-			$description = CatchNullString($groupRow.Description)
+			$name = $row.Group_Name
+			$type = StringToInt($row.Group_Type_ID)
+			$ministry = StringToInt($row.Ministry_ID)
+			$congregation = StringToInt($row.Congregation_ID)
+			$contact_email = CatchNullString($row.Primary_Contact)
+			$start_date = StringToDate($row.Start_Date)
+			$size = StringToInt($row.Target_Size)
+			$description = CatchNullString($row.Description)
 			
 			#Add parameters to command - parameter names must match stored proc parameter names
 			$command.Parameters.AddWithValue("@group_name", $name) | Out-Null
@@ -125,26 +121,26 @@ function CreateGroup($DBConnection){
 
 #Updates groups in list
 function UpdateGroup($DBConnection){
-	$groupDataList = import-csv $updateGroupDataCSV
+	$dataList = import-csv $updateGroupDataCSV
 	$errorCount = 0
 
-	foreach($groupRow in $groupDataList)
+	foreach($row in $dataList)
 	{
-		if(![string]::IsNullOrEmpty($groupRow.Group_Name))
+		if(![string]::IsNullOrEmpty($row.Group_Name))
 		{
 			#Create command to be executed
 			$command = CreateCommand($DBConnection)
 			$command.CommandText = "cr_QA_Update_Group" #Set name of stored procedure
 			
 			#Get data in correct format
-			$name = $groupRow.Group_Name
-			$waiting_list = StringToBit($groupRow. Enable_Waiting_List)			
-			$childcare = StringToBit($groupRow.Child_Care_Available )
-			$is_public = CatchNullString($groupRow.__IsPublic)
-			$is_blog_enabled = CatchNullString($groupRow.__ISBlogEnabled)
-			$is_web_enabled = CatchNullString($groupRow.__ISWebEnabled)
-			$message_id = StringToInt($groupRow.Deadline_Passed_Message_ID)
-			$meeting_time = CatchNullString($groupRow.Meeting_Time) #TODO probs need to convert to time
+			$name = $row.Group_Name
+			$waiting_list = StringToBit($row. Enable_Waiting_List)			
+			$childcare = StringToBit($row.Child_Care_Available )
+			$is_public = CatchNullString($row.__IsPublic)
+			$is_blog_enabled = CatchNullString($row.__ISBlogEnabled)
+			$is_web_enabled = CatchNullString($row.__ISWebEnabled)
+			$message_id = StringToInt($row.Deadline_Passed_Message_ID)
+			$meeting_time = CatchNullString($row.Meeting_Time) #TODO verify time format?
 			
 			#Add parameters to command - parameter names must match stored proc parameter names
 			$command.Parameters.AddWithValue("@group_name", $name) | Out-Null
@@ -169,20 +165,20 @@ function UpdateGroup($DBConnection){
 
 #Add child groups
 function AddChildGroup($DBConnection){
-	$groupDataList = import-csv $addChildGroupDataCSV
+	$dataList = import-csv $addChildGroupDataCSV
 	$errorCount = 0
 
-	foreach($groupRow in $groupDataList)
+	foreach($row in $dataList)
 	{
-		if(![string]::IsNullOrEmpty($groupRow.Parent_Group_Name))
+		if(![string]::IsNullOrEmpty($row.Parent_Group_Name))
 		{
 			#Create command to be executed
 			$command = CreateCommand($DBConnection)
 			$command.CommandText = "cr_QA_Add_Child_Group" #Set name of stored procedure
 			
 			#Get data in correct format
-			$parent_group = $groupRow.Parent_Group_Name
-			$child_group = CatchNullString($groupRow.Child_Group_Name)
+			$parent_group = $row.Parent_Group_Name
+			$child_group = CatchNullString($row.Child_Group_Name)
 			
 			#Add parameters to command - parameter names must match stored proc parameter names
 			$command.Parameters.AddWithValue("@parent_group_name", $parent_group) | Out-Null
@@ -201,20 +197,20 @@ function AddChildGroup($DBConnection){
 
 #Set Group address to host's address
 function UpdateGroupFromHost($DBConnection){
-	$groupDataList = import-csv $updateGroupAddressDataCSV
+	$dataList = import-csv $updateGroupAddressDataCSV
 	$errorCount = 0
 
-	foreach($groupRow in $groupDataList)
+	foreach($row in $dataList)
 	{
-		if(![string]::IsNullOrEmpty($groupRow.Group_Name))
+		if(![string]::IsNullOrEmpty($row.Group_Name))
 		{
 			#Create command to be executed
 			$command = CreateCommand($DBConnection)
 			$command.CommandText = "cr_QA_Update_Group_Address_From_Host" #Set name of stored procedure
 			
 			#Get data in correct format
-			$group_name = $groupRow.Group_Name
-			$contact_email = CatchNullString($groupRow.Host_Email)
+			$group_name = $row.Group_Name
+			$contact_email = CatchNullString($row.Host_Email)
 			
 			#Add parameters to command - parameter names must match stored proc parameter names
 			$command.Parameters.AddWithValue("@group_name", $group_name) | Out-Null
@@ -231,6 +227,62 @@ function UpdateGroupFromHost($DBConnection){
 	return $errorCount
 }
 
+#Updates opportunities in list
+function UpdateOpportunities($DBConnection){
+	$dataList = import-csv $updateOpportunityDataCSV
+	$errorCount = 0
+
+	foreach($row in $dataList)
+	{
+		if(![string]::IsNullOrEmpty($row.Group_Name))
+		{
+			#Create command to be executed
+			$command = CreateCommand($DBConnection)
+			$command.CommandText = "cr_QA_Update_Opportunity" #Set name of stored procedure
+			
+			#Get data in correct format
+			$name = $row.Group_Name
+			$opportunity_name = CatchNullString($row.Opportunity_Title)
+			$contact_email = CatchNullString($row.Contact_Email)
+			$group_role_id = StringToInt($row.Group_Role_ID)
+			$program_id = StringToInt($row.Program_ID)
+			$description = CatchNullString($row.Description)
+			$publish_date = StringToDate($row.Publish_Date)
+			$min_participants = StringToInt($row.Minimum_Needed)
+			$max_participants = StringToInt($row.Maximum_Needed)			
+			$shift_start = CatchNullString($row.Shift_Sart) #TODO verify time format?
+			$shift_end = CatchNullString($row.Shift_End) #TODO verify time format?
+			$event_type = CatchNullString($row.Event_Type)
+			$signup_deadline = StringToInt($row.Sign_Up_Deadline_ID)			
+			$room_name = CatchNullString($row.Room)
+			
+			#Add parameters to command - parameter names must match stored proc parameter names
+			$command.Parameters.AddWithValue("@group_name", $name) | Out-Null
+			$command.Parameters.AddWithValue("@opportunity_name", $opportunity_name) | Out-Null
+			$command.Parameters.AddWithValue("@contact_email", $contact_email) | Out-Null
+			$command.Parameters.AddWithValue("@role_id", $group_role_id) | Out-Null
+			$command.Parameters.AddWithValue("@program_id", $program_id) | Out-Null
+			$command.Parameters.AddWithValue("@description", $description) | Out-Null
+			$command.Parameters.AddWithValue("@publish_date", $publish_date) | Out-Null
+			$command.Parameters.AddWithValue("@minimum_participants", $min_participants) | Out-Null
+			$command.Parameters.AddWithValue("@maximum_participants", $max_participants) | Out-Null
+			$command.Parameters.AddWithValue("@shift_start", $shift_start) | Out-Null
+			$command.Parameters.AddWithValue("@shift_end", $shift_end) | Out-Null
+			$command.Parameters.AddWithValue("@event_type", $event_type) | Out-Null
+			$command.Parameters.AddWithValue("@signup_deadline", $signup_deadline) | Out-Null
+			$command.Parameters.AddWithValue("@room_name", $room_name) | Out-Null
+			
+			#Execute query
+			$result = ExecuteCommand($command)
+			if($result -ne 0){
+				write-host "There was an error updating opportunity $opportunity_name in group $name"
+				$error_count += 1
+			}			
+		}
+	}
+	return $errorCount
+}
+
 
 #Execute all the update functions
 $DBConnection = OpenConnection
@@ -239,4 +291,5 @@ $error_count += CreateGroup($DBConnection)
 $error_count += UpdateGroup($DBConnection)
 $error_count += AddChildGroup($DBConnection)
 $error_count += UpdateGroupFromHost($DBConnection)
+$error_count += UpdateOpportunities($DBConnection)
 exit $errorCount
