@@ -18,11 +18,6 @@ SET @participantID =  (SELECT Participant_ID
 					   FROM   Participants 
 					   WHERE  Contact_ID = @contactID);
 
-UPDATE [dbo].Participants
-SET   Participant_Type_ID = 1, Domain_ID = 1, Show_On_Map = 1, Host_Status_ID = 3, Group_Leader_Status_ID = 4 
-WHERE Participant_ID = @participantID 
-
-
  -- Create Group
 -- For new group, Change Group_name
 -- Group_type_ID 1 = small group
@@ -59,10 +54,6 @@ SET @participantID =  (SELECT Participant_ID
 					   FROM   Participants 
 					   WHERE  Contact_ID = @contactID);
 
-UPDATE [dbo].Participants
-SET   Participant_Type_ID = 1, Domain_ID = 1, Show_On_Map = 1, Host_Status_ID = 3, Group_Leader_Status_ID = 1 
-WHERE Participant_ID = @participantID 
-
  -- Create Group
 -- For new group, Change Group_name
 -- Group_type_ID 1 = small group
@@ -98,10 +89,6 @@ DECLARE @participantID AS INT
 SET @participantID =  (SELECT Participant_ID 
 					   FROM   Participants 
 					   WHERE  Contact_ID = @contactID);
-
-UPDATE [dbo].Participants
-SET   Participant_Type_ID = 1, Domain_ID = 1, Show_On_Map = 1, Host_Status_ID = 3, Group_Leader_Status_ID = 1 
-WHERE Participant_ID = @participantID 
 
  -- Create Group
 -- For new group, Change Group_name

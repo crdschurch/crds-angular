@@ -1,6 +1,7 @@
 param (
     [string]$contactDataCSV = "UpdateContact.csv",
     [string]$donorDataCSV = "UpdateDonor.csv",
+	[string]$particpantDataCSV = "UpdateParticipant.csv",
     [string]$householdDataCSV = "UpdateHousehold.csv",
     [string]$householdAddressDataCSV = "UpdateHouseholdAddress.csv",
     [string]$contactsInHouseholdDataCSV = "UpdateContactsInHousehold.csv",
@@ -152,6 +153,46 @@ function UpdateDonor($DBConnection){
 				write-host "There was an error updating donor account related to user "$email
 				$errorCount += $result
 			}
+		}
+	}
+	return $errorCount
+}
+
+#Update all participants in list
+function UpdateParticipant($DBConnection){
+	$participantDataList = import-csv $particpantDataCSV
+	$errorCount = 0
+	
+	foreach($userRow in $participantDataList)
+	{
+		if(![string]::IsNullOrEmpty($userRow.User_Email))
+		{
+			#Create command to be executed
+			$command = CreateCommand($DBConnection)
+			$command.CommandText = "cr_QA_Update_Participant_on_Contact" #Set name of stored procedure
+			
+			#Get data in correct format
+			$email = $userRow.User_Email
+			$participant_type = StringToInt($userRow.Participant_Type_ID)
+			$start_date = StringToDate($userRow.Participant_Start_Date)			
+			$show_on_map = StringToInt($userRow.Show_On_Map)			
+			$host_status = StringToInt($userRow.Host_Status_ID)
+			$group_leader_status = StringToInt($userRow.Group_Leader_Status_ID)
+			
+			#Add parameters to command - parameter names must match stored proc parameter names
+			$command.Parameters.AddWithValue("@contact_email", $email) | Out-Null
+			$command.Parameters.AddWithValue("@participant_type_id", $participant_type) | Out-Null
+			$command.Parameters.AddWithValue("@start_date", $start_date) | Out-Null
+			$command.Parameters.AddWithValue("@show_on_map", $show_on_map) | Out-Null
+			$command.Parameters.AddWithValue("@host_status", $host_status) | Out-Null
+			$command.Parameters.AddWithValue("@group_leader_status", $group_leader_status) | Out-Null
+				
+			#Execute query
+			$result = ExecuteCommand($command)
+			if($result -ne 0){
+				write-host "There was an error updating participant info for user "$email
+				$errorCount += $result
+			}			
 		}
 	}
 	return $errorCount
@@ -354,4 +395,5 @@ $errorCount += UpdateHouseholdAddress($DBConnection)
 $errorCount += AddContactsToHouseholds($DBConnection)
 $errorCount += AddContactRelationships($DBConnection)
 $errorCount += AddResponses($DBConnection)
+$errorCount += UpdateParticipant($DBConnection)
 exit $errorCount
