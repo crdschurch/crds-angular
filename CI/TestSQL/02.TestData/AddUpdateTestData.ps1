@@ -65,7 +65,6 @@ function CreateCommand($DBConnection){
 }
 
 function ExecuteCommand($command){
-	$exitCode = 0
 	$adapter = new-object System.Data.SqlClient.SqlDataAdapter
 	$adapter.SelectCommand = $command
 	
@@ -74,16 +73,16 @@ function ExecuteCommand($command){
 	catch {
 		#Catches issues when running query
 		write-host "Error: " $Error
-		$exitCode = 1
+		return 1
 	}
-	return $exitCode
+	return 0
 }
 
 
 #Create Groups in list
 function CreateGroup($DBConnection){
 	$groupDataList = import-csv $createGroupDataCSV
-	$exitCode = 0
+	$errorCount = 0
 
 	foreach($groupRow in $groupDataList)
 	{
@@ -114,18 +113,20 @@ function CreateGroup($DBConnection){
 			$command.Parameters.AddWithValue("@description", $description) | Out-Null
 				
 			#Execute query
-			$exitCode = ExecuteCommand($command)
-			if($exitCode -ne 0){
+			$result = ExecuteCommand($command)
+			if($result -ne 0){
 				write-host "There was an error creating group "$name
+				$error_count += 1
 			}			
 		}
 	}
+	return $errorCount
 }
 
 #Updates groups in list
 function UpdateGroup($DBConnection){
 	$groupDataList = import-csv $updateGroupDataCSV
-	$exitCode = 0
+	$errorCount = 0
 
 	foreach($groupRow in $groupDataList)
 	{
@@ -156,18 +157,20 @@ function UpdateGroup($DBConnection){
 			$command.Parameters.AddWithValue("@meeting_time", $meeting_time) | Out-Null
 			
 			#Execute query
-			$exitCode = ExecuteCommand($command)
-			if($exitCode -ne 0){
+			$result = ExecuteCommand($command)
+			if($result -ne 0){
 				write-host "There was an error updating group "$name
+				$error_count += 1
 			}			
 		}
 	}
+	return $errorCount
 }
 
 #Add child groups
 function AddChildGroup($DBConnection){
 	$groupDataList = import-csv $addChildGroupDataCSV
-	$exitCode = 0
+	$errorCount = 0
 
 	foreach($groupRow in $groupDataList)
 	{
@@ -186,18 +189,20 @@ function AddChildGroup($DBConnection){
 			$command.Parameters.AddWithValue("@child_group_name", $child_group) | Out-Null
 				
 			#Execute query
-			$exitCode = ExecuteCommand($command)
-			if($exitCode -ne 0){
+			$result = ExecuteCommand($command)
+			if($result -ne 0){
 				write-host "There was an error adding $child_group to $parent_group"
+				$error_count += 1
 			}			
 		}
 	}
+	return $errorCount
 }
 
 #Set Group address to host's address
 function UpdateGroupFromHost($DBConnection){
 	$groupDataList = import-csv $updateGroupAddressDataCSV
-	$exitCode = 0
+	$errorCount = 0
 
 	foreach($groupRow in $groupDataList)
 	{
@@ -216,18 +221,22 @@ function UpdateGroupFromHost($DBConnection){
 			$command.Parameters.AddWithValue("@contact_email", $contact_email) | Out-Null
 				
 			#Execute query
-			$exitCode = ExecuteCommand($command)
-			if($exitCode -ne 0){
+			$result = ExecuteCommand($command)
+			if($result -ne 0){
 				write-host "There was an error adding $child_group to $parent_group"
+				$error_count += 1
 			}			
 		}
 	}
+	return $errorCount
 }
 
 
 #Execute all the update functions
 $DBConnection = OpenConnection
-CreateGroup($DBConnection)
-UpdateGroup($DBConnection)
-AddChildGroup($DBConnection)
-UpdateGroupFromHost($DBConnection)
+$errorCount = 0
+$error_count += CreateGroup($DBConnection)
+$error_count += UpdateGroup($DBConnection)
+$error_count += AddChildGroup($DBConnection)
+$error_count += UpdateGroupFromHost($DBConnection)
+exit $errorCount

@@ -13,6 +13,7 @@ function addUsersToMap
 {
 	$mapUserList = import-csv $userListCSV
 	$logFile = "log_creating_map_data.txt"
+	$errorCount = 0
 	
 	foreach($mapUser in $mapUserList)
 	{
@@ -23,6 +24,7 @@ function addUsersToMap
 			if($password.IsNullOrEmpty)
 			{
 				Add-Content $logFile "User $($mapUser.email) could not be added to the map because their password could not be found"
+				$errorCount += 1
 				break
 			}
 			
@@ -39,7 +41,8 @@ function addUsersToMap
 				Add-Content $logFile "Logged in as $($mapUser.email)"
 			}
 			catch{
-				Add-Content $logFile "An error occurred logging in as $($mapUser.email)" 
+				Add-Content $logFile "An error occurred logging in as $($mapUser.email)"
+				$errorCount += 1
 				break
 			}
 			
@@ -54,6 +57,7 @@ function addUsersToMap
 			}
 			catch{
 				Add-Content $logFile "An error occurred retrieving the user's participant record"
+				$errorCount += 1
 				break
 			}
 
@@ -63,6 +67,7 @@ function addUsersToMap
 			}
 			catch{
 				Add-Content $logFile "An error occurred retrieving the user's profile"
+				$errorCount += 1
 				break
 			}
 			
@@ -104,9 +109,11 @@ function addUsersToMap
 			}
 			catch{
 				Add-Content $logFile "An error occurred trying to add the user $($mapUser.email) to the map"
+				$errorCount += 1
 			}
 		}
 	}
+	return $errorCount
 }
 
 function getPassword($email){
@@ -120,4 +127,5 @@ function getPassword($email){
 	}
 }
 
-addUsersToMap #run this function automatically
+$errorCount = addUsersToMap #run this function automatically
+exit $errorCount
