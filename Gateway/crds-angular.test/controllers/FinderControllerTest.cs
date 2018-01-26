@@ -208,53 +208,6 @@ namespace crds_angular.test.controllers
             _fixture.EditGatheringPin(GetListOfPinDto()[0]);
         }
 
-        [Test]
-        public void TestApproveDenyInquiryFromMyGroupWithGroupParticipantRemovalException()
-        {
-            var ex = new GroupParticipantRemovalException("message");
-            const int groupTypeId = 1;
-            const int groupId = 2;
-            const bool approve = true;
-            var inquiry = new Inquiry();
-            inquiry.Message = "message";
-
-            _finderService.Setup(mocked => mocked.ApproveDenyGroupInquiry("abc", approve, inquiry)).Throws(ex);
-            try
-            {
-                _fixture.ApproveDenyInquiryFromMyGroup(groupTypeId, groupId, approve, inquiry);
-                Assert.Fail("Expected exception was not thrown");
-            }
-            catch (HttpResponseException e)
-            {
-                Assert.AreEqual(ex.StatusCode, e.Response.StatusCode);
-            }
-
-            _finderService.VerifyAll();
-        }
-
-        [Test]
-        public void TestApproveDenyInquiryFromMyGroupWithOtherException()
-        {
-            var ex = new Exception();
-            const int groupTypeId = 1;
-            const int groupId = 2;
-            const bool approve = true;
-            var inquiry = new Inquiry();
-
-            _finderService.Setup(mocked => mocked.ApproveDenyGroupInquiry("abc", approve, inquiry)).Throws(ex);
-            try
-            {
-                _fixture.ApproveDenyInquiryFromMyGroup(groupTypeId, groupId, approve, inquiry);
-                Assert.Fail("Expected exception was not thrown");
-            }
-            catch (HttpResponseException e)
-            {
-                Assert.AreEqual(HttpStatusCode.BadRequest, e.Response.StatusCode);
-            }
-
-            _finderService.VerifyAll();
-        }
-
         private static List<PinDto> GetListOfPinDto()
         {
             var list = new List<PinDto>();

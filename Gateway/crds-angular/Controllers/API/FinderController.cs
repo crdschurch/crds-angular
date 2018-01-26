@@ -839,7 +839,8 @@ namespace crds_angular.Controllers.API
                 }
                 catch (Exception ex)
                 {
-                    var apiError = new ApiErrorDto(string.Format("Error {0} group inquiry {1} from group {2}", approve, inquiry.InquiryId, groupId), ex);
+                    var apiError = new ApiErrorDto(
+                        $"Error {approve} group inquiry {inquiry.InquiryId} from group {groupId}", ex);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
             });
