@@ -61,8 +61,6 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpInvoiceDetail GetInvoiceDetailForInvoice(int invoiceId)
         {
-            var filter = new Dictionary<string, object> {{"Invoice_ID", invoiceId}};
-
             var apiToken = _apiUserRepository.GetToken();
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Get<MpInvoiceDetail>("Invoice_Detail", invoiceId, $"Recipient_Contact_ID_Table.[Contact_ID], Event_Participant_ID_Table_Event_ID_Table.[Event_ID], Invoice_Detail.[Item_Quantity], Invoice_Detail.[Line_Total], Product_ID_Table.[Product_ID], Product_Option_Price_ID_Table.[Product_Option_Price_ID], Invoice_Detail.[Item_Note], Recipient_Contact_ID_Table.[Display_Name] as [Recipient_Name]");
         }
