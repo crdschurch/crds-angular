@@ -1584,6 +1584,40 @@ namespace crds_angular.test.Services
 
         [Test]
         [ExpectedException(typeof(DuplicateGroupParticipantException), ExpectedMessage = "User is already a group member")]
+        public void AcceptDenyInquiryShouldThrowWhenUserInGroup()
+        {
+            const string token = "token";
+            const int groupId = 123;
+            const int participantId = 7777;
+            const int contactId = 9999;
+
+            var inquiry = new Inquiry
+            {
+                ContactId = contactId,
+                GroupId = groupId,
+                EmailAddress = "bob@b.com",
+                FirstName = "bob",
+                LastName = "smith",
+                RequestDate = new DateTime(2017, 10, 11),
+                InquiryId = 990722
+            };
+
+            var groupParticipant = new MpGroupParticipant
+            {
+                ContactId = contactId,
+                ParticipantId = participantId
+            };
+            var groupParticipantList = new List<MpGroupParticipant> { groupParticipant };
+            _mpGroupRepository.Setup(x => x.UpdateGroupInquiry(inquiry.GroupId, inquiry.InquiryId, true));
+            _mpContactRepository.Setup(x => x.GetContactIdByParticipantId(participantId)).Returns(contactId);
+            _mpGroupToolService.Setup(x => x.GetGroupInquiryForContactId(groupId, contactId)).Returns(inquiry);
+            _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(groupParticipantList);
+            _fixture.ApproveDenyGroupInquiry(token, true, inquiry);
+            _mpGroupRepository.VerifyAll();
+        }
+
+        [Test]
+        [ExpectedException(typeof(DuplicateGroupParticipantException), ExpectedMessage = "User is already a group member")]
         public void TryAGroupAcceptDenyShouldThrowWhenUserInGroup()
         {
             const string token = "token";

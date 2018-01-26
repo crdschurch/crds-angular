@@ -832,6 +832,10 @@ namespace crds_angular.Controllers.API
                     _finderService.ApproveDenyGroupInquiry(token, approve, inquiry);
                     return Ok();
                 }
+                catch (DuplicateGroupParticipantException)
+                {
+                    throw new HttpResponseException(HttpStatusCode.Conflict);
+                }
                 catch (GroupParticipantRemovalException e)
                 {
                     var apiError = new ApiErrorDto(e.Message, null, e.StatusCode);

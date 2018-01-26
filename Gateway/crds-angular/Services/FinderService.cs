@@ -1343,9 +1343,11 @@ namespace crds_angular.Services
             {
                 _groupToolService.VerifyCurrentUserIsGroupLeader(token, inquiry.GroupId);
                 if (
-                    _groupRepository.GetGroupParticipants(inquiry.GroupId, true)
+                _groupRepository.GetGroupParticipants(inquiry.GroupId, true)
                         .Exists(p => p.ContactId == inquiry.ContactId) || inquiry.Placed != null)
                 {
+                    // Update the inquiry
+                    _groupRepository.UpdateGroupInquiry(inquiry.GroupId, inquiry.InquiryId, approve);
                     var e = new DuplicateGroupParticipantException("User is already a group member");
                     throw e;
                 }
