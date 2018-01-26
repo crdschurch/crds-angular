@@ -64,7 +64,7 @@ namespace MinistryPlatform.Translation.Repositories
             var filter = new Dictionary<string, object> {{"Invoice_ID", invoiceId}};
 
             var apiToken = _apiUserRepository.GetToken();
-            return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Get<MpInvoiceDetail>($"Recipient_Contact_ID_Table.[Contact_ID] AND Event_Participant_ID_Table_Event_ID_Table.[Event_ID] AND Item_Quantity_Table.[Quantity] AND Line_Total_Table.[Line_Total] AND Product_ID_Table.[Product_ID] AND Product_Option_Price_ID_Table.[Product_Option_Price_ID] AND Item_Note_Table.[Item_Note] AND Recipient_Name_Table[Recipient_Name]", filter).FirstOrDefault();
+            return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Get<MpInvoiceDetail>($"Recipient_Contact_ID_Table.[Contact_ID], Event_Participant_ID_Table_Event_ID_Table.[Event_ID], Invoice_Detail.[Item_Quantity], Invoice_Detail.[Line_Total], Product_ID_Table.[Product_ID], Product_Option_Price_ID_Table.[Product_Option_Price_ID], Invoice_Detail.[Item_Note], Recipient_Contact_ID_Table.[Display_Name]", filter).FirstOrDefault();
         }
 
         public bool CreateInvoiceAndDetail(int productId, int? productOptionPriceId, int purchaserContactId, int recipientContactId, int eventParticipantId)
