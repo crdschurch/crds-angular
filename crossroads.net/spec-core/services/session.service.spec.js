@@ -174,7 +174,7 @@ describe('Session Service', function () {
           isProtected: true
         };
         Session.verifyAuthentication(undefined, state.current.name, state.current.data, state.current.params);
-        expect(state.go).toHaveBeenCalledWith('login');
+        expect(state.go).toHaveBeenCalledWith('login', {}, { location: 'replace' });
       });
 
       it('should stay on non protected pages when not logged in', function () {
