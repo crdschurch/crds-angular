@@ -278,39 +278,6 @@ namespace crds_angular.Controllers.API
         }
 
         /// <summary>
-        /// Allows a group leader to accept or deny a group inquirier.
-        /// </summary>
-        /// <param name="groupTypeId">An integer identifying the type of group.</param>
-        /// <param name="groupId">An integer identifying the group that the inquiry is associated to.</param>
-        /// <param name="approve">A boolean showing if the inquiry is being approved or denied. It defaults to approved</param>
-        /// <param name="inquiry">An Inquiry JSON Object.</param>
-        [RequiresAuthorization]
-        [VersionedRoute(template: "group-tool/group-type/{groupTypeId}/group/{groupId}/inquiry/approve/{approve}", minimumVersion: "1.0.0")]
-        [Route("grouptool/grouptype/{groupTypeId:int}/group/{groupId:int}/inquiry/approve/{approve:bool}")]
-        [HttpPost]
-        public IHttpActionResult ApproveDenyInquiryFromMyGroup([FromUri] int groupTypeId, [FromUri] int groupId, [FromUri] bool approve, [FromBody] Inquiry inquiry)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    _groupToolService.ApproveDenyInquiryFromMyGroup(token, groupId, approve, inquiry, inquiry.Message, _defaultRoleId);
-                    return Ok();
-                }
-                catch (GroupParticipantRemovalException e)
-                {
-                    var apiError = new ApiErrorDto(e.Message, null, e.StatusCode);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-                catch (Exception ex)
-                {
-                    var apiError = new ApiErrorDto(string.Format("Error {0} group inquiry {1} from group {2}", approve, inquiry.InquiryId, groupId), ex);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-            });
-        }
-
-        /// <summary>
         /// Allows an invitee to accept or deny a group invitation.
         /// DEPRICATED -- Use the function in the finder controller.
         /// </summary>
