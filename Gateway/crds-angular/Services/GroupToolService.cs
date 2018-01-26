@@ -35,7 +35,6 @@ namespace crds_angular.Services
         private readonly IAddressProximityService _addressMatrixService;
         private readonly IEmailCommunication _emailCommunicationService;
         private readonly IAttributeService _attributeService;
-        private readonly IAddressService _addressService;
         private readonly IFinderRepository _finderRepository;
         private readonly IAnalyticsService _analyticsService;
 
@@ -44,10 +43,7 @@ namespace crds_angular.Services
         private readonly int _defaultAuthorUserId;
         private readonly int _defaultGroupRoleId;
         private readonly int _groupRoleLeaderId;
-        private readonly int _groupRoleTrialMemberId;
         private readonly int _groupsTryAGroupAcceptedNotificationTemplateId;
-        private readonly int _gatheringHostAcceptTemplate;
-        private readonly int _gatheringHostDenyTemplate;
         private readonly int _connectCommunicationTypeEmailSmallGroupLeader; 
         private readonly int _connectCommunicationStatusNA; 
         private readonly int _domainId;
@@ -62,18 +58,10 @@ namespace crds_angular.Services
         private readonly int _smallGroupTypeId;
         private readonly int _onsiteGroupTypeId;
         private readonly int _anywhereGroupType;
-        private readonly int _connectGatheringStatusAccept;
-        private readonly int _connectGatheringStatusDeny;
-        private readonly int _connectGatheringRequestToJoin;
-        private readonly int _connectCommunicationTypeRequestToJoinSmallGroup;
         private readonly int _emailAuthorId;
 
         private const string GroupToolRemoveParticipantEmailTemplateTextTitle = "groupToolRemoveParticipantEmailTemplateText";
         private const string GroupToolRemoveParticipantSubjectTemplateText = "groupToolRemoveParticipantSubjectTemplateText";
-        private const string GroupToolApproveInquiryEmailTemplateText = "groupToolApproveInquiryEmailTemplateText";
-        private const string GroupToolApproveInquirySubjectTemplateText = "groupToolApproveInquirySubjectTemplateText";
-        private const string GroupToolDenyInquiryEmailTemplateText = "groupToolDenyInquiryEmailTemplateText";
-        private const string GroupToolDenyInquirySubjectTemplateText = "groupToolDenyInquirySubjectTemplateText";
 
         private readonly ILog _logger = LogManager.GetLogger(typeof(GroupToolService));
 
@@ -110,7 +98,6 @@ namespace crds_angular.Services
             _addressMatrixService = addressMatrixService;
             _emailCommunicationService = emailCommunicationService;
             _attributeService = attributeService;
-            _addressService = addressService;
             _analyticsService = analyticsService;
             _finderRepository = finderRepository;
 
@@ -128,8 +115,6 @@ namespace crds_angular.Services
             _connectCommunicationStatusNA = configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusNA");
             _domainId = configurationWrapper.GetConfigIntValue("DomainId");
             _groupEndedParticipantEmailTemplate = configurationWrapper.GetConfigIntValue("GroupEndedParticipantEmailTemplate");
-            _gatheringHostAcceptTemplate = configurationWrapper.GetConfigIntValue("GatheringHostAcceptTemplate");
-            _gatheringHostDenyTemplate = configurationWrapper.GetConfigIntValue("GatheringHostDenyTemplate");
             _groupRequestToJoinEmailTemplate = configurationWrapper.GetConfigIntValue("GroupRequestToJoinEmailTemplate");
             _anywhereGroupRequestToJoinEmailTemplate = configurationWrapper.GetConfigIntValue("AnywhereGroupRequestToJoinEmailTemplate");
             _baseUrl = configurationWrapper.GetConfigValue("BaseURL");
@@ -138,12 +123,7 @@ namespace crds_angular.Services
             _smallGroupTypeId = configurationWrapper.GetConfigIntValue("SmallGroupTypeId");
             _onsiteGroupTypeId = configurationWrapper.GetConfigIntValue("OnsiteGroupTypeId");
             _anywhereGroupType = configurationWrapper.GetConfigIntValue("AnywhereGroupTypeId");
-            _connectGatheringStatusAccept = configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusAccepted");
-            _connectGatheringStatusDeny = configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusDeclined");
-            _connectGatheringRequestToJoin = configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeRequestToJoinGathering");
-            _connectCommunicationTypeRequestToJoinSmallGroup = configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeRequestToJoinSmallGroup");
             _emailAuthorId = configurationWrapper.GetConfigIntValue("EmailAuthorId");
-            _groupRoleTrialMemberId = configurationWrapper.GetConfigIntValue("GroupsTrialMemberRoleId");
         }
 
         public List<Invitation> GetInvitations(int sourceId, int invitationTypeId, string token)

@@ -51,8 +51,14 @@ namespace crds_angular.test.Services
         private Mock<IAnalyticsService> _analyticsService;
 
         private int _memberRoleId = 16;
+        private int _trialMemberRoldId = 39;
         private int _anywhereGatheringInvitationTypeId = 3;
         private int _groupInvitationTypeId = 1;
+        private int _tryAGroupAcceptTemplateID = 5;
+        private int _tryAGroupDenyTemplateID = 6;
+        private int _gatheringHostAcceptTemplateId = 7;
+        private int _gatheringHostDenyTemplateId = 8;
+        private int _anywhereGroupTypeId = 30;
 
         [SetUp]
         public void SetUp()
@@ -81,13 +87,24 @@ namespace crds_angular.test.Services
 
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("GroupRoleLeader")).Returns(22);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("ApprovedHostStatus")).Returns(3);
-            _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("AnywhereGroupTypeId")).Returns(30);
+            _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("AnywhereGroupTypeId")).Returns(_anywhereGroupTypeId);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("SmallGroupTypeId")).Returns(1);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigValue("FinderConnectFlag")).Returns("CONNECT");
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigValue("FinderGroupToolFlag")).Returns("SMALL_GROUPS");
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Group_Role_Default_ID")).Returns(_memberRoleId);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("AnywhereGatheringInvitationType")).Returns(_anywhereGatheringInvitationTypeId);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("GroupInvitationType")).Returns(_groupInvitationTypeId);
+            _mpConfigurationWrapper.Setup(
+                    mocked => mocked.GetConfigIntValue("GroupsTryAGroupParticipantAcceptedNotificationTemplateId"))
+                .Returns(_tryAGroupAcceptTemplateID);
+            _mpConfigurationWrapper.Setup(
+                    mocked => mocked.GetConfigIntValue("GroupsTryAGroupParticipantDeclinedNotificationTemplateId"))
+                .Returns(_tryAGroupDenyTemplateID);
+            _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("GatheringHostAcceptTemplate"))
+                .Returns(_gatheringHostAcceptTemplateId);
+            _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("GatheringHostDenyTemplate"))
+                .Returns(_gatheringHostDenyTemplateId);
+            _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("GroupsTrialMemberRoleId")).Returns(_trialMemberRoldId);
 
             _fixture = new FinderService(_addressGeocodingService.Object,
                                          _mpFinderRepository.Object,
@@ -1143,13 +1160,12 @@ namespace crds_angular.test.Services
         }
 
         [Test]
-        public void ShouldAcceptInquiry()
+        public void ShouldAcceptInquiryIntoGathering()
         {
             const string token = "token";
             const int groupId = 123;
             const int participantId = 7777;
             const int contactId = 9999;
-            const int roleId = 0;
 
             var inquiry = new Inquiry
             {
@@ -1173,11 +1189,229 @@ namespace crds_angular.test.Services
             var group = new GroupDTO();
             group.GroupName = "Fake Group";
             group.GroupId = groupId;
+            group.GroupTypeId = _anywhereGroupTypeId;
             group.ContactId = contactId;
             group.MeetingDayId = 1;
             group.MeetingFrequencyID = 1;
             group.MeetingTime = "0001-01-01T05:25:00.000Z";
             group.Address = groupAddress;
+            group.Participants = new List<GroupParticipantDTO>
+            {
+                new GroupParticipantDTO()
+                {
+                    DisplayName = "Duke Nukem",
+                    GroupRoleId = 22
+                }
+            };
+
+            const int primaryContactParticipantId = 98765;
+
+            var primaryContactContactInfo = new MpMyContact
+            {
+                Contact_ID = 4444,
+                First_Name = "Great",
+                Last_Name = "Leader",
+                Email_Address = "great@leader.com",
+                Mobile_Phone = "123-456-7890"
+            };
+
+            var newMemberContact = new MpMyContact
+            {
+                Contact_ID = contactId,
+                First_Name = "bob",
+                Last_Name = "smith",
+                Email_Address = "bob@bob.com",
+                Mobile_Phone = "555-555-5555"
+            };
+
+            var newMemberParticipant = new MpParticipant
+            {
+                ContactId = contactId,
+                ParticipantId = participantId
+            };
+
+            var emailTemplate = new MpMessageTemplate
+            {
+                FromContactId = 234,
+                FromEmailAddress = "ae@g.com",
+                ReplyToContactId = 456,
+                ReplyToEmailAddress = "ss@g.com"
+            };
+
+            _mpGroupToolService.Setup(x => x.VerifyCurrentUserIsGroupLeader(token, groupId));
+            _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(new List<MpGroupParticipant>());
+            _groupService.Setup(x => x.GetGroupDetails(groupId)).Returns(group);
+            _lookupService.Setup(x => x.GetMeetingDayFromId(group.MeetingDayId)).Returns("Friday");
+            _groupService.Setup(x => x.GetPrimaryContactParticipantId(groupId)).Returns(primaryContactParticipantId);
+            _mpContactRepository.Setup(x => x.GetContactByParticipantId(primaryContactParticipantId)).Returns(primaryContactContactInfo);
+            _mpContactRepository.Setup(x => x.GetContactById(contactId)).Returns(newMemberContact);
+            _mpParticipantRepository.Setup(x => x.GetParticipant(contactId)).Returns(newMemberParticipant);
+            _mpConfigurationWrapper.Setup(x => x.GetConfigValue("BaseUrl")).Returns("www.somesite.com");
+            _mpConfigurationWrapper.Setup(x => x.GetConfigValue("GroupsTryAGroupPathFragment")).Returns("/g/2/");
+            _communicationRepository.Setup(x => x.GetTemplate(_gatheringHostAcceptTemplateId)).Returns(emailTemplate);
+            _communicationRepository.Setup(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
+            _analyticsService.Setup(
+                x => x.Track(inquiry.ContactId.ToString(), "AcceptedIntoGroup", It.IsAny<EventProperties>()));
+            _groupService.Setup(x => x.addContactToGroup(group.GroupId, inquiry.ContactId, _memberRoleId));
+            _fixture.ApproveDenyGroupInquiry(token, true, inquiry);
+
+            _mpContactRepository.VerifyAll();
+            _mpGroupToolService.VerifyAll();
+            _groupService.VerifyAll();
+            _lookupService.VerifyAll();
+            _mpParticipantRepository.VerifyAll();
+            _communicationRepository.VerifyAll();
+            _analyticsService.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldDenyInquiryIntoGathering()
+        {
+            const string token = "token";
+            const int groupId = 123;
+            const int participantId = 7777;
+            const int contactId = 9999;
+
+            var inquiry = new Inquiry
+            {
+                ContactId = contactId,
+                GroupId = groupId,
+                EmailAddress = "bob@b.com",
+                FirstName = "bob",
+                LastName = "smith",
+                RequestDate = new DateTime(2017, 10, 11),
+                InquiryId = 990722
+            };
+
+            var groupAddress = new AddressDTO
+            {
+                AddressLine1 = "123 Main Street",
+                City = "Dayton",
+                State = "OH",
+                PostalCode = "34551"
+            };
+
+            var group = new GroupDTO();
+            group.GroupName = "Fake Group";
+            group.GroupId = groupId;
+            group.GroupTypeId = _anywhereGroupTypeId;
+            group.ContactId = contactId;
+            group.MeetingDayId = 1;
+            group.MeetingFrequencyID = 1;
+            group.MeetingTime = "0001-01-01T05:25:00.000Z";
+            group.Address = groupAddress;
+            group.Participants = new List<GroupParticipantDTO>
+            {
+                new GroupParticipantDTO()
+                {
+                    DisplayName = "Duke Nukem",
+                    GroupRoleId = 22
+                }
+            };
+
+            const int primaryContactParticipantId = 98765;
+
+            var primaryContactContactInfo = new MpMyContact
+            {
+                Contact_ID = 4444,
+                First_Name = "Great",
+                Last_Name = "Leader",
+                Email_Address = "great@leader.com",
+                Mobile_Phone = "123-456-7890"
+            };
+
+            var newMemberContact = new MpMyContact
+            {
+                Contact_ID = contactId,
+                First_Name = "bob",
+                Last_Name = "smith",
+                Email_Address = "bob@bob.com",
+                Mobile_Phone = "555-555-5555"
+            };
+
+            var newMemberParticipant = new MpParticipant
+            {
+                ContactId = contactId,
+                ParticipantId = participantId
+            };
+
+            var emailTemplate = new MpMessageTemplate
+            {
+                FromContactId = 234,
+                FromEmailAddress = "ae@g.com",
+                ReplyToContactId = 456,
+                ReplyToEmailAddress = "ss@g.com"
+            };
+
+            _mpGroupToolService.Setup(x => x.VerifyCurrentUserIsGroupLeader(token, groupId));
+            _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(new List<MpGroupParticipant>());
+            _groupService.Setup(x => x.GetGroupDetails(groupId)).Returns(group);
+            _lookupService.Setup(x => x.GetMeetingDayFromId(group.MeetingDayId)).Returns("Friday");
+            _groupService.Setup(x => x.GetPrimaryContactParticipantId(groupId)).Returns(primaryContactParticipantId);
+            _mpContactRepository.Setup(x => x.GetContactByParticipantId(primaryContactParticipantId)).Returns(primaryContactContactInfo);
+            _mpContactRepository.Setup(x => x.GetContactById(contactId)).Returns(newMemberContact);
+            _mpParticipantRepository.Setup(x => x.GetParticipant(contactId)).Returns(newMemberParticipant);
+            _mpConfigurationWrapper.Setup(x => x.GetConfigValue("BaseUrl")).Returns("www.somesite.com");
+            _mpConfigurationWrapper.Setup(x => x.GetConfigValue("GroupsTryAGroupPathFragment")).Returns("/g/2/");
+            _communicationRepository.Setup(x => x.GetTemplate(_gatheringHostDenyTemplateId)).Returns(emailTemplate);
+            _communicationRepository.Setup(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
+            _analyticsService.Setup(
+                x => x.Track(inquiry.ContactId.ToString(), "DeniedIntoGroup", It.IsAny<EventProperties>()));
+            _fixture.ApproveDenyGroupInquiry(token, false, inquiry);
+
+            _mpContactRepository.VerifyAll();
+            _mpGroupToolService.VerifyAll();
+            _groupService.VerifyAll();
+            _lookupService.VerifyAll();
+            _mpParticipantRepository.VerifyAll();
+            _communicationRepository.VerifyAll();
+            _analyticsService.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldAcceptInquiryIntoSmallGroup()
+        {
+            const string token = "token";
+            const int groupId = 123;
+            const int participantId = 7777;
+            const int contactId = 9999;
+
+            var inquiry = new Inquiry
+            {
+                ContactId = contactId,
+                GroupId = groupId,
+                EmailAddress = "bob@b.com",
+                FirstName = "bob",
+                LastName = "smith",
+                RequestDate = new DateTime(2017, 10, 11),
+                InquiryId = 990722
+            };
+
+            var groupAddress = new AddressDTO
+            {
+                AddressLine1 = "123 Main Street",
+                City = "Dayton",
+                State = "OH",
+                PostalCode = "34551"
+            };
+
+            var group = new GroupDTO();
+            group.GroupName = "Fake Group";
+            group.GroupId = groupId;
+            group.GroupTypeId = 1;
+            group.ContactId = contactId;
+            group.MeetingDayId = 1;
+            group.MeetingFrequencyID = 1;
+            group.MeetingTime = "0001-01-01T05:25:00.000Z";
+            group.Address = groupAddress;
+            group.Participants = new List<GroupParticipantDTO>
+            {
+                new GroupParticipantDTO()
+                {
+                    DisplayName = "Duke Nukem",
+                    GroupRoleId = 22
+                }
+            };
 
             const int primaryContactParticipantId = 98765;
 
@@ -1215,8 +1449,8 @@ namespace crds_angular.test.Services
 
             _mpContactRepository.Setup(x => x.GetContactIdByParticipantId(participantId)).Returns(contactId);
             _mpGroupToolService.Setup(x => x.GetGroupInquiryForContactId(groupId, contactId)).Returns(inquiry);
+            _mpGroupToolService.Setup(x => x.VerifyCurrentUserIsGroupLeader(token, groupId));
             _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(new List<MpGroupParticipant>());
-            _mpGroupToolService.Setup(x => x.ApproveDenyInquiryFromMyGroup(token, groupId, true, inquiry, It.IsAny<string>(), roleId));
             _groupService.Setup(x => x.GetGroupDetails(groupId)).Returns(group);
             _lookupService.Setup(x => x.GetMeetingDayFromId(group.MeetingDayId)).Returns("Friday");
             _groupService.Setup(x => x.GetPrimaryContactParticipantId(groupId)).Returns(primaryContactParticipantId);
@@ -1225,10 +1459,130 @@ namespace crds_angular.test.Services
             _mpParticipantRepository.Setup(x => x.GetParticipant(contactId)).Returns(newMemberParticipant);
             _mpConfigurationWrapper.Setup(x => x.GetConfigValue("BaseUrl")).Returns("www.somesite.com");
             _mpConfigurationWrapper.Setup(x => x.GetConfigValue("GroupsTryAGroupPathFragment")).Returns("/g/2/");
-            _communicationRepository.Setup(x => x.GetTemplate(It.IsAny<int>())).Returns(emailTemplate);
+            _communicationRepository.Setup(x => x.GetTemplate(_tryAGroupAcceptTemplateID)).Returns(emailTemplate);
             _communicationRepository.Setup(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
-
+            _analyticsService.Setup(
+                x => x.Track(inquiry.ContactId.ToString(), "AcceptedIntoGroup", It.IsAny<EventProperties>()));
+            _groupService.Setup(x => x.addContactToGroup(group.GroupId, inquiry.ContactId, _trialMemberRoldId));
             _fixture.TryAGroupAcceptDeny(token, groupId, participantId, true);
+            
+            _mpContactRepository.VerifyAll();
+            _mpGroupToolService.VerifyAll();
+            _mpGroupRepository.VerifyAll();
+            _groupService.VerifyAll();
+            _lookupService.VerifyAll();
+            _mpParticipantRepository.VerifyAll();
+            _communicationRepository.VerifyAll();
+            _analyticsService.VerifyAll();
+        }
+
+        [Test]
+        public void ShouldDenyInquiryIntoSmallGroup()
+        {
+            const string token = "token";
+            const int groupId = 123;
+            const int participantId = 7777;
+            const int contactId = 9999;
+
+            var inquiry = new Inquiry
+            {
+                ContactId = contactId,
+                GroupId = groupId,
+                EmailAddress = "bob@b.com",
+                FirstName = "bob",
+                LastName = "smith",
+                RequestDate = new DateTime(2017, 10, 11),
+                InquiryId = 990722
+            };
+
+            var groupAddress = new AddressDTO
+            {
+                AddressLine1 = "123 Main Street",
+                City = "Dayton",
+                State = "OH",
+                PostalCode = "34551"
+            };
+
+            var group = new GroupDTO();
+            group.GroupName = "Fake Group";
+            group.GroupId = groupId;
+            group.GroupTypeId = 1;
+            group.ContactId = contactId;
+            group.MeetingDayId = 1;
+            group.MeetingFrequencyID = 1;
+            group.MeetingTime = "0001-01-01T05:25:00.000Z";
+            group.Address = groupAddress;
+            group.Participants = new List<GroupParticipantDTO>
+            {
+                new GroupParticipantDTO()
+                {
+                    DisplayName = "Duke Nukem",
+                    GroupRoleId = 22
+                }
+            };
+
+            const int primaryContactParticipantId = 98765;
+
+            var primaryContactContactInfo = new MpMyContact
+            {
+                Contact_ID = 4444,
+                First_Name = "Great",
+                Last_Name = "Leader",
+                Email_Address = "great@leader.com",
+                Mobile_Phone = "123-456-7890"
+            };
+
+            var newMemberContact = new MpMyContact
+            {
+                Contact_ID = contactId,
+                First_Name = "bob",
+                Last_Name = "smith",
+                Email_Address = "bob@bob.com",
+                Mobile_Phone = "555-555-5555"
+            };
+
+            var newMemberParticipant = new MpParticipant
+            {
+                ContactId = contactId,
+                ParticipantId = participantId
+            };
+
+            var emailTemplate = new MpMessageTemplate
+            {
+                FromContactId = 234,
+                FromEmailAddress = "ae@g.com",
+                ReplyToContactId = 456,
+                ReplyToEmailAddress = "ss@g.com"
+            };
+
+            _mpContactRepository.Setup(x => x.GetContactIdByParticipantId(participantId)).Returns(contactId);
+            _mpGroupToolService.Setup(x => x.GetGroupInquiryForContactId(groupId, contactId)).Returns(inquiry);
+            _mpGroupToolService.Setup(x => x.VerifyCurrentUserIsGroupLeader(token, groupId));
+            _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(new List<MpGroupParticipant>());
+            _groupService.Setup(x => x.GetGroupDetails(groupId)).Returns(group);
+            _lookupService.Setup(x => x.GetMeetingDayFromId(group.MeetingDayId)).Returns("Friday");
+            _groupService.Setup(x => x.GetPrimaryContactParticipantId(groupId)).Returns(primaryContactParticipantId);
+            _mpContactRepository.Setup(x => x.GetContactByParticipantId(primaryContactParticipantId))
+                .Returns(primaryContactContactInfo);
+            _mpContactRepository.Setup(x => x.GetContactById(contactId)).Returns(newMemberContact);
+            _mpParticipantRepository.Setup(x => x.GetParticipant(contactId)).Returns(newMemberParticipant);
+            _mpConfigurationWrapper.Setup(x => x.GetConfigValue("BaseUrl")).Returns("www.somesite.com");
+            _mpConfigurationWrapper.Setup(x => x.GetConfigValue("GroupsTryAGroupPathFragment")).Returns("/g/2/");
+            _communicationRepository.Setup(x => x.GetTemplate(_tryAGroupDenyTemplateID)).Returns(emailTemplate);
+            _communicationRepository.Setup(
+                x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
+            _analyticsService.Setup(
+                x => x.Track(inquiry.ContactId.ToString(), "DeniedIntoGroup", It.IsAny<EventProperties>()));
+            _fixture.TryAGroupAcceptDeny(token, groupId, participantId, false);
+
+            _mpContactRepository.VerifyAll();
+            _mpGroupToolService.VerifyAll();
+            _mpGroupRepository.VerifyAll();
+            _groupService.VerifyAll();
+            _lookupService.VerifyAll();
+            _mpParticipantRepository.VerifyAll();
+            _communicationRepository.VerifyAll();
+            _analyticsService.VerifyAll();
         }
 
         [Test]
