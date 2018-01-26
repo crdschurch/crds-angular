@@ -39,7 +39,6 @@ namespace crds_angular.test.Services
         private Mock<IAddressProximityService> _addressMatrixService;
         private Mock<IEmailCommunication> _emailCommunicationService;
         private Mock<IAttributeService> _attributeService;
-        private Mock<IAddressService> _addressService;
         private Mock<MPServices.IFinderRepository> _finderRepository;
         private Mock<IAnalyticsService> _mockAnalyticService;
 
@@ -1293,7 +1292,6 @@ namespace crds_angular.test.Services
             var geoResults = new List<decimal?> { null, 9, 3 };
             var distanceMatrixResults = new List<decimal?> { 2, 5 };
             _groupToolRepository.Setup(mocked => mocked.SearchGroups(groupTypeId, It.IsAny<string[]>(), null)).Returns(searchResults);
-            _addressService.Setup(mocked => mocked.FindOrCreateAddress(It.IsAny<AddressDTO>(), true));
             _addressProximityService.Setup(mocked => mocked.GetProximity(location, It.IsAny<List<AddressDTO>>(), null)).Returns(geoResults);
             _addressMatrixService.Setup(mocked => mocked.GetProximity(location, It.IsAny<List<AddressDTO>>(), null)).Returns(distanceMatrixResults);
 
