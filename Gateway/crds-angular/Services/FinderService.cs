@@ -1342,9 +1342,11 @@ namespace crds_angular.Services
             try
             {
                 _groupToolService.VerifyCurrentUserIsGroupLeader(token, inquiry.GroupId);
-                if (_groupRepository.GetGroupParticipants(inquiry.GroupId, true).Exists(p => p.ContactId == inquiry.ContactId) || inquiry.Placed != null)
+                if (
+                    _groupRepository.GetGroupParticipants(inquiry.GroupId, true)
+                        .Exists(p => p.ContactId == inquiry.ContactId) || inquiry.Placed != null)
                 {
-                    var e = new Exception("User is already a group member");
+                    var e = new DuplicateGroupParticipantException("User is already a group member");
                     throw e;
                 }
                 var group = _groupService.GetGroupDetails(inquiry.GroupId);
@@ -1352,22 +1354,27 @@ namespace crds_angular.Services
                 ApproveOrDenyGroupInquiry(inquiry, group, participant, approve);
 
                 // Record Analytics
-                var leader = ((List<GroupParticipantDTO>)group.Participants).FirstOrDefault(p => p.GroupRoleId == _groupRoleLeaderId);
+                var leader =
+                    ((List<GroupParticipantDTO>) group.Participants).FirstOrDefault(
+                        p => p.GroupRoleId == _groupRoleLeaderId);
                 var props = new EventProperties
-                    {
-                        {"GroupLeaderName", leader?.DisplayName },
-                        {"GroupName", group.GroupName},
-                        {"GroupCity", group?.Address?.City},
-                        {"GroupState", group?.Address?.State},
-                        {"GroupZip", group?.Address?.PostalCode}
-                    };
+                {
+                    {"GroupLeaderName", leader?.DisplayName},
+                    {"GroupName", group.GroupName},
+                    {"GroupCity", group?.Address?.City},
+                    {"GroupState", group?.Address?.State},
+                    {"GroupZip", group?.Address?.PostalCode}
+                };
                 var eventName = approve ? "AcceptedIntoGroup" : "DeniedIntoGroup";
                 _analyticsService.Track(inquiry.ContactId.ToString(), eventName, props);
             }
-            catch (GroupParticipantRemovalException e)
+            catch (GroupParticipantRemovalException)
             {
-                // ReSharper disable once PossibleIntendedRethrow
-                throw e;
+                throw;
+            }
+            catch (DuplicateGroupParticipantException)
+            {
+                throw;
             }
             catch (Exception e)
             {

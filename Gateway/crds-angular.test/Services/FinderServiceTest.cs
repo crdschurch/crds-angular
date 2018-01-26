@@ -1586,7 +1586,7 @@ namespace crds_angular.test.Services
         }
 
         [Test]
-        [ExpectedException(typeof(Exception), ExpectedMessage = "User is already a group member")]
+        [ExpectedException(typeof(DuplicateGroupParticipantException), ExpectedMessage = "User is already a group member")]
         public void TryAGroupAcceptDenyShouldThrowWhenUserInGroup()
         {
             const string token = "token";

@@ -23,6 +23,7 @@ namespace crds_angular.Exceptions
         public GroupNotFoundForParticipantException(string message) : base(message) { StatusCode = HttpStatusCode.NotFound; }
     }
 
+
     public class NotGroupLeaderException : GroupParticipantRemovalException
     {
         public NotGroupLeaderException(string message) : base(message) { StatusCode = HttpStatusCode.Forbidden; }

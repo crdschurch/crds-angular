@@ -82,7 +82,6 @@ namespace crds_angular.test.Services
             _addressMatrixService = new Mock<IAddressProximityService>(MockBehavior.Strict);
             _emailCommunicationService = new Mock<IEmailCommunication>(MockBehavior.Strict);
             _attributeService = new Mock<IAttributeService>(MockBehavior.Strict);
-            _addressService = new Mock<IAddressService>(MockBehavior.Strict);
             _finderRepository = new Mock<MPServices.IFinderRepository>();
             _mockAnalyticService = new Mock<IAnalyticsService>();
 
@@ -122,7 +121,6 @@ namespace crds_angular.test.Services
                                             _addressMatrixService.Object,
                                             _emailCommunicationService.Object,
                                             _attributeService.Object,
-                                            _addressService.Object,
                                             _mockAnalyticService.Object,
                                             _finderRepository.Object);
         }

@@ -43,7 +43,6 @@ namespace crds_angular.Services
         private readonly int _defaultAuthorUserId;
         private readonly int _defaultGroupRoleId;
         private readonly int _groupRoleLeaderId;
-        private readonly int _groupsTryAGroupAcceptedNotificationTemplateId;
         private readonly int _connectCommunicationTypeEmailSmallGroupLeader; 
         private readonly int _connectCommunicationStatusNA; 
         private readonly int _domainId;
@@ -59,6 +58,8 @@ namespace crds_angular.Services
         private readonly int _onsiteGroupTypeId;
         private readonly int _anywhereGroupType;
         private readonly int _emailAuthorId;
+        private readonly int _genericGroupForCMSMergeEmailTemplateId;
+
 
         private const string GroupToolRemoveParticipantEmailTemplateTextTitle = "groupToolRemoveParticipantEmailTemplateText";
         private const string GroupToolRemoveParticipantSubjectTemplateText = "groupToolRemoveParticipantSubjectTemplateText";
@@ -80,7 +81,6 @@ namespace crds_angular.Services
             IAddressProximityService addressMatrixService,
             IEmailCommunication emailCommunicationService,
             IAttributeService attributeService,
-            IAddressService addressService,
             IAnalyticsService analyticsService,
             IFinderRepository finderRepository
             )
@@ -109,7 +109,7 @@ namespace crds_angular.Services
             _gatheringRequestPendingReminderEmailTemplateId = configurationWrapper.GetConfigIntValue("GatheringRequestPendingReminderEmailTemplateId");
             _attributeTypeGroupCategory = configurationWrapper.GetConfigIntValue("GroupCategoryAttributeTypeId");
 
-            _groupsTryAGroupAcceptedNotificationTemplateId = configurationWrapper.GetConfigIntValue("GroupsTryAGroupParticipantAcceptedNotificationTemplateId");
+            _genericGroupForCMSMergeEmailTemplateId = configurationWrapper.GetConfigIntValue("GenericGroupForCMSMergeEmailTemplateId");
 
             _connectCommunicationTypeEmailSmallGroupLeader = configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeEmailSmallGroupLeader");
             _connectCommunicationStatusNA = configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusNA");
@@ -207,7 +207,7 @@ namespace crds_angular.Services
                 {
                     SendGroupParticipantEmail(groupId,
                                               myGroup.Group,
-                                              _groupsTryAGroupAcceptedNotificationTemplateId,
+                                              _genericGroupForCMSMergeEmailTemplateId,
                                               toParticipant, 
                                               GroupToolRemoveParticipantSubjectTemplateText,
                                               GroupToolRemoveParticipantEmailTemplateTextTitle,
