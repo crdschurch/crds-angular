@@ -8,7 +8,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
     {
         List<MpInvitation> GetInvitations(int sourceId, int invitationTypeId);
         List<MpInquiry> GetInquiries(int? groupId = null);
-        List<MpGroupSearchResultDto> SearchGroups(int[] groupTypeIds, string[] keywords = null, int? groupId = null);
         void ArchivePendingGroupInquiriesOlderThan90Days();
         string GetCurrentJourney();
     }

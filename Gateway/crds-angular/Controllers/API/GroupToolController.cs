@@ -240,44 +240,6 @@ namespace crds_angular.Controllers.API
         }
 
         /// <summary>
-        /// Search for a group matching the requested type and search terms.
-        /// </summary>
-        /// <param name="groupTypeId">An integer identifying the type of group to search for</param>
-        /// <param name="keywords">The optional keywords to search for</param>
-        /// <param name="location">The optional location/address to search for - if specified, the search results will include approximate distances from this address</param>
-        /// <returns>A list of groups matching the terms</returns>
-        [VersionedRoute(template: "groupTool/group/search", minimumVersion: "1.0.0")]
-        [Route("grouptool/group/search/")]
-        [ResponseType(typeof(List<GroupDTO>))]
-        [HttpGet]
-        public IHttpActionResult SearchGroups([FromUri] int[] groupTypeIds,
-                                              [FromUri(Name = "s")] string keywords = null,
-                                              [FromUri(Name = "loc")] string location = null,
-                                              [FromUri(Name = "id")] int? groupId = null)
-        {
-            try
-            {
-                var result = _groupToolService.SearchGroups(groupTypeIds, keywords, location, groupId);
-                if (result == null || !result.Any())
-                {
-                    return RestHttpActionResult<List<GroupDTO>>.WithStatus(HttpStatusCode.NotFound, new List<GroupDTO>());
-                }
-                // Analytics call
-                var props = new EventProperties();
-                props.Add("Keywords", keywords);
-                props.Add("Location", location);
-                _analyticsService.Track("Anonymous", "SearchedForGroup", props);
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                var apiError = new ApiErrorDto("Error searching for group", ex);
-                throw new HttpResponseException(apiError.HttpResponseMessage);
-            }
-        }
-
-        /// <summary>
         /// Allows an invitee to accept or deny a group invitation.
         /// DEPRICATED -- Use the function in the finder controller.
         /// </summary>

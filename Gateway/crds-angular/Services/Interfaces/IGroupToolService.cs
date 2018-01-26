@@ -27,8 +27,6 @@ namespace crds_angular.Services.Interfaces
         MyGroup VerifyCurrentUserIsGroupLeader(string token, int groupId);
 	    void SendAllGroupParticipantsEmail(string token, int groupId, int groupTypeId, string subject, string message);
         void SendAllGroupLeadersEmail(string token, int groupId, GroupMessageDTO message);
-        List<GroupDTO> SearchGroups(int[] groupTypeIds, string keywords = null, 
-                                    string location = null, int? groupId = null, GeoCoordinate originCoords = null);
         void SubmitInquiry(string token, int groupId, bool sendEmail);
         void EndGroup(int groupId, int reasonEndedId);
         int SendSingleGroupParticipantEmail(GroupParticipantDTO participant, int templateId, Dictionary<string, object> mergeData);
