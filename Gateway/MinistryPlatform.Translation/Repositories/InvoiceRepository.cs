@@ -61,17 +61,11 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpInvoiceDetail GetInvoiceDetailForInvoice(int invoiceId)
         {
-            var apiToken = _apiUserRepository.GetToken();
-            return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpInvoiceDetail>($"Invoice_ID_Table.[Invoice_ID]={invoiceId},", 
-                                                                                                    $"Invoice_ID_Table.[Invoice_ID], " +
-                                                                                                    $"Recipient_Contact_ID_Table.[Contact_ID], " +
-                                                                                                    $"Event_Participant_ID_Table_Event_ID_Table.[Event_ID], " +
-                                                                                                    $"Invoice_Detail.[Item_Quantity], " +
-                                                                                                    $"Invoice_Detail.[Line_Total], " +
-                                                                                                    $"Product_ID_Table.[Product_ID], " +
-                                                                                                    $"Product_Option_Price_ID_Table.[Product_Option_Price_ID], " +
-                                                                                                    $"Invoice_Detail.[Item_Note], " +
-                                                                                                    $"Recipient_Contact_ID_Table.[Nickname] + ' ' + Recipient_Contact_ID_Table.[Last_Name] AS [Recipient_Name]").FirstOrDefault();
+            var apiToken = _apiUserRepository.GetToken();            
+            return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpInvoiceDetail>($"Invoice_ID_Table.[Invoice_ID]={invoiceId}", "Invoice_ID_Table.[Invoice_ID],Recipient_Contact_ID_Table.[Contact_ID], " +
+                                                                                                    "Event_Participant_ID_Table_Event_ID_Table.[Event_ID],Invoice_Detail.[Item_Quantity], Product_ID_Table.[Product_ID], " +
+                                                                                                    "Invoice_Detail.[Line_Total], Product_Option_Price_ID_Table.[Product_Option_Price_ID], Invoice_Detail.[Item_Note]," +
+                                                                                                    "Recipient_Contact_ID_Table.[Nickname] + ' ' + Recipient_Contact_ID_Table.[Last_Name] AS [Recipient_Name]").FirstOrDefault();
         }
 
         public bool CreateInvoiceAndDetail(int productId, int? productOptionPriceId, int purchaserContactId, int recipientContactId, int eventParticipantId)
