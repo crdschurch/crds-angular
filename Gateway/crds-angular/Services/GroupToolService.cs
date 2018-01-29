@@ -13,6 +13,7 @@ using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using System.Text.RegularExpressions;
 using crds_angular.Services.Analytics;
+using Crossroads.ApiVersioning;
 using Crossroads.Utilities.Extensions;
 using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models.Finder;
@@ -34,7 +35,6 @@ namespace crds_angular.Services
         private readonly IAddressProximityService _addressMatrixService;
         private readonly IEmailCommunication _emailCommunicationService;
         private readonly IAttributeService _attributeService;
-        private readonly IAddressService _addressService;
         private readonly IFinderRepository _finderRepository;
         private readonly IAnalyticsService _analyticsService;
 
@@ -43,10 +43,6 @@ namespace crds_angular.Services
         private readonly int _defaultAuthorUserId;
         private readonly int _defaultGroupRoleId;
         private readonly int _groupRoleLeaderId;
-        private readonly int _groupRoleTrialMemberId;
-        private readonly int _genericGroupForCMSMergeEmailTemplateId;
-        private readonly int _gatheringHostAcceptTemplate;
-        private readonly int _gatheringHostDenyTemplate;
         private readonly int _connectCommunicationTypeEmailSmallGroupLeader; 
         private readonly int _connectCommunicationStatusNA; 
         private readonly int _domainId;
@@ -61,18 +57,12 @@ namespace crds_angular.Services
         private readonly int _smallGroupTypeId;
         private readonly int _onsiteGroupTypeId;
         private readonly int _anywhereGroupType;
-        private readonly int _connectGatheringStatusAccept;
-        private readonly int _connectGatheringStatusDeny;
-        private readonly int _connectGatheringRequestToJoin;
-        private readonly int _connectCommunicationTypeRequestToJoinSmallGroup;
         private readonly int _emailAuthorId;
+        private readonly int _genericGroupForCMSMergeEmailTemplateId;
+
 
         private const string GroupToolRemoveParticipantEmailTemplateTextTitle = "groupToolRemoveParticipantEmailTemplateText";
         private const string GroupToolRemoveParticipantSubjectTemplateText = "groupToolRemoveParticipantSubjectTemplateText";
-        private const string GroupToolApproveInquiryEmailTemplateText = "groupToolApproveInquiryEmailTemplateText";
-        private const string GroupToolApproveInquirySubjectTemplateText = "groupToolApproveInquirySubjectTemplateText";
-        private const string GroupToolDenyInquiryEmailTemplateText = "groupToolDenyInquiryEmailTemplateText";
-        private const string GroupToolDenyInquirySubjectTemplateText = "groupToolDenyInquirySubjectTemplateText";
 
         private readonly ILog _logger = LogManager.GetLogger(typeof(GroupToolService));
 
@@ -91,7 +81,6 @@ namespace crds_angular.Services
             IAddressProximityService addressMatrixService,
             IEmailCommunication emailCommunicationService,
             IAttributeService attributeService,
-            IAddressService addressService,
             IAnalyticsService analyticsService,
             IFinderRepository finderRepository
             )
@@ -109,7 +98,6 @@ namespace crds_angular.Services
             _addressMatrixService = addressMatrixService;
             _emailCommunicationService = emailCommunicationService;
             _attributeService = attributeService;
-            _addressService = addressService;
             _analyticsService = analyticsService;
             _finderRepository = finderRepository;
 
@@ -127,8 +115,6 @@ namespace crds_angular.Services
             _connectCommunicationStatusNA = configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusNA");
             _domainId = configurationWrapper.GetConfigIntValue("DomainId");
             _groupEndedParticipantEmailTemplate = configurationWrapper.GetConfigIntValue("GroupEndedParticipantEmailTemplate");
-            _gatheringHostAcceptTemplate = configurationWrapper.GetConfigIntValue("GatheringHostAcceptTemplate");
-            _gatheringHostDenyTemplate = configurationWrapper.GetConfigIntValue("GatheringHostDenyTemplate");
             _groupRequestToJoinEmailTemplate = configurationWrapper.GetConfigIntValue("GroupRequestToJoinEmailTemplate");
             _anywhereGroupRequestToJoinEmailTemplate = configurationWrapper.GetConfigIntValue("AnywhereGroupRequestToJoinEmailTemplate");
             _baseUrl = configurationWrapper.GetConfigValue("BaseURL");
@@ -137,12 +123,7 @@ namespace crds_angular.Services
             _smallGroupTypeId = configurationWrapper.GetConfigIntValue("SmallGroupTypeId");
             _onsiteGroupTypeId = configurationWrapper.GetConfigIntValue("OnsiteGroupTypeId");
             _anywhereGroupType = configurationWrapper.GetConfigIntValue("AnywhereGroupTypeId");
-            _connectGatheringStatusAccept = configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusAccepted");
-            _connectGatheringStatusDeny = configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusDeclined");
-            _connectGatheringRequestToJoin = configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeRequestToJoinGathering");
-            _connectCommunicationTypeRequestToJoinSmallGroup = configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeRequestToJoinSmallGroup");
             _emailAuthorId = configurationWrapper.GetConfigIntValue("EmailAuthorId");
-            _groupRoleTrialMemberId = configurationWrapper.GetConfigIntValue("GroupsTrialMemberRoleId");
         }
 
         public List<Invitation> GetInvitations(int sourceId, int invitationTypeId, string token)
@@ -380,44 +361,6 @@ namespace crds_angular.Services
             };
         }
 
-        public void ApproveDenyInquiryFromMyGroup(string token, int groupId, bool approve, Inquiry inquiry, string message, int roleId)
-        {
-            try
-            {
-                var group = _groupService.GetGroupDetails(groupId);
-                var participant = _participantRepository.GetParticipantRecord(token);
-                var sendEmail = (roleId != _groupRoleTrialMemberId);
-                if (approve)
-                {
-                    ApproveInquiry(groupId, group, inquiry, participant, message, roleId, sendEmail);
-                    var leader = ((List<GroupParticipantDTO>)group.Participants).FirstOrDefault(p => p.GroupRoleId == _groupRoleLeaderId);
-
-
-                    var props = new EventProperties
-                    {
-                        {"GroupLeaderName", leader?.DisplayName },
-                        {"GroupName", group.GroupName},
-                        {"GroupCity", group?.Address?.City},
-                        {"GroupState", group?.Address?.State},
-                        {"GroupZip", group?.Address?.PostalCode}
-                    };
-                    _analyticsService.Track(inquiry.ContactId.ToString(), "AcceptedIntoGroup", props);
-                }
-                else
-                {
-                    DenyInquiry(groupId, group, inquiry, participant, message, sendEmail);
-                }
-            }
-            catch (GroupParticipantRemovalException e)
-            {
-                // ReSharper disable once PossibleIntendedRethrow
-                throw e;
-            }
-            catch (Exception e)
-            {
-                throw new GroupParticipantRemovalException($"Could not add Inquirer {inquiry.InquiryId} from group {groupId}", e);
-            }
-        }
 
         private void RecordConnectInteraction(int groupId, int fromContactId, int toContactId, int connectionType, int connectionStatus)
         {
@@ -439,84 +382,6 @@ namespace crds_angular.Services
             _finderRepository.RecordConnection(connection);
         }
 
-        private void ApproveInquiry(int groupId, GroupDTO group, Inquiry inquiry, MpParticipant me, string message, int roleId, bool doSendEmail)
-        {
-            _groupService.addContactToGroup(groupId, inquiry.ContactId, roleId);
-            _groupRepository.UpdateGroupInquiry(groupId, inquiry.InquiryId, true);
-
-            var commType = group.GroupTypeId == _smallGroupTypeId ? _connectCommunicationTypeRequestToJoinSmallGroup : _connectGatheringRequestToJoin;
-            RecordConnectInteraction(groupId, me.ContactId, inquiry.ContactId, commType, _connectGatheringStatusAccept);
-
-            var emailTemplateId = (group.GroupTypeId == _anywhereGroupType) 
-                ? _gatheringHostAcceptTemplate 
-                : _genericGroupForCMSMergeEmailTemplateId;
-                                                                                                    
-            // assumes small group - group tool, if not anywhere
-            var subject = (group.GroupTypeId != _anywhereGroupType)
-                ? GroupToolApproveInquirySubjectTemplateText
-                : null;
-
-            var participant = _participantRepository.GetParticipant(inquiry.ContactId);
-
-            try
-            {
-                if (doSendEmail)
-                {
-                    SendGroupParticipantEmail(groupId,
-                                              group,
-                                              emailTemplateId,
-                                              participant,
-                                              subject,
-                                              GroupToolApproveInquiryEmailTemplateText,
-                                              message,
-                                              me);
-                }
-
-            }
-            catch (Exception e)
-            {
-                _logger.Error($"Could not send email to Inquirer {inquiry.InquiryId} notifying of being approved to group {groupId}", e);
-                throw;
-            }
-        }
-
-        private void DenyInquiry(int groupId, GroupDTO group, Inquiry inquiry, MpParticipant me, string message, bool doSendEmail)
-        {
-            _groupRepository.UpdateGroupInquiry(groupId, inquiry.InquiryId, false);
-
-            var commType = group.GroupTypeId == _smallGroupTypeId ? _connectCommunicationTypeRequestToJoinSmallGroup : _connectGatheringRequestToJoin;
-            RecordConnectInteraction(groupId, me.ContactId, inquiry.ContactId, commType, _connectGatheringStatusDeny);
-
-            var emailTemplateId = (group.GroupTypeId == _anywhereGroupType)
-                                                      ? _gatheringHostDenyTemplate
-                                                      : _genericGroupForCMSMergeEmailTemplateId;
-
-            // assumes small group - group tool, if not anywhere
-            var subject = (group.GroupTypeId != _anywhereGroupType)
-                ? GroupToolDenyInquirySubjectTemplateText
-                : null;
-
-            var participant = _participantRepository.GetParticipant(inquiry.ContactId);
-
-            try
-            {
-                if (doSendEmail)
-                {
-                    SendGroupParticipantEmail(groupId,
-                                              group,
-                                              emailTemplateId,
-                                              participant,
-                                              subject,
-                                              GroupToolDenyInquiryEmailTemplateText,
-                                              message,
-                                              me);
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Error($"Could not send email to Inquirer {inquiry.InquiryId} notifying of being approved to group {groupId}", e);
-            }
-        }
 
         public void AcceptDenyGroupInvitation(string token, int groupId, string invitationGuid, bool accept)
         {
@@ -753,71 +618,6 @@ namespace crds_angular.Services
             };
             // ReSharper disable once RedundantArgumentDefaultValue
             return _communicationRepository.SendMessage(message, false);
-        }
-
-
-        public List<GroupDTO> SearchGroups(int[] groupTypeIds, 
-                                           string keywords = null, 
-                                           string location = null, 
-                                           int? groupId = null,
-                                           GeoCoordinate originCoords = null)
-        {
-            // Split single search term into multiple words, broken on whitespace
-            // TODO Should remove stopwords from search - possibly use a configurable list of words (http://www.link-assistant.com/seo-stop-words.html)
-            var search = string.IsNullOrWhiteSpace(keywords)
-                ? null
-                : keywords
-                    .Replace("'", "''") // Replace single quote with two, since the MP Rest API doesn't do it
-                    .Replace("&", "%26") // Replace & with the hex representation, to avoid looking like a stored proc parameter
-                    .Split((char[]) null, StringSplitOptions.RemoveEmptyEntries);
-
-            var results = _groupToolRepository.SearchGroups(groupTypeIds, search, groupId);
-
-            if (results == null || !results.Any())
-            {
-                return null;
-            }
-
-            var groups = results.Select(Mapper.Map<GroupDTO>).ToList();
-
-            if (string.IsNullOrWhiteSpace(location))
-            {
-                return groups;
-            }
-
-            try
-            {
-                // first call is for all results
-                var proximities = _addressProximityService.GetProximity(location, groups.Select(g => g.Address).ToList(), originCoords);
-                for (var i = 0; i < groups.Count; i++)
-                {
-                    groups[i].Proximity = proximities[i];
-                }
-
-                // order by closest n raw results, then get driving directions
-                groups = groups.OrderBy(r => r.Proximity ?? decimal.MaxValue).ToList();
-
-                var closestGroups = groups.Take(_addressMatrixSearchDepth).ToList();
-                var drivingProximities = _addressMatrixService.GetProximity(location, closestGroups.Select(g => g.Address).ToList());
-
-                for (var i = 0; i < closestGroups.Count; i++)
-                {
-                    groups[i].Proximity = drivingProximities[i];
-                }
-
-                // order again in case proximties changed because of driving directions
-                groups = groups.OrderBy(r => r.Proximity ?? decimal.MaxValue).ToList();
-            }
-            catch (InvalidAddressException e)
-            {
-                _logger.Info($"Can't validate origin address {location}", e);
-            }
-            catch (Exception e)
-            {
-                _logger.Error($"Can't search by proximity for address {location}", e);
-            }
-
-            return groups;
         }
 
         public List<GroupDTO> GetGroupToolGroups(string token)
