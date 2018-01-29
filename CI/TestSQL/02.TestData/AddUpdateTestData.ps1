@@ -4,9 +4,11 @@ param (
 	[string]$addChildGroupDataCSV = "AddChildGroup.csv",
 	[string]$updateGroupAddressDataCSV = "UpdateGroupAddressFromHost.csv",
 	[string]$updateOpportunityDataCSV = "UpdateOpportunities.csv",
+	[string]$createProgramDataCSV = "CreateProgram.csv",
+	[string]$createEventDataCSV = "CreateEvent.csv",
     [string]$DBServer = "mp-demo-db.centralus.cloudapp.azure.com",
-    [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
-    [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
+    [string]$DBUser = 'MigrateUser', #$(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
+    [string]$DBPassword = 'Aw@!ted2014' #$(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
  
  #Helpers to reformat/convert from csv input 
@@ -65,13 +67,12 @@ function ExecuteCommand($command){
 	$adapter.SelectCommand = $command
 	
 	$dataset = new-object System.Data.Dataset
-	try { $adapter.Fill($dataset) }
+	try { return $adapter.Fill($dataset) }
 	catch {
 		#Catches issues when running query
 		write-host "Error: " $Error
 		return 1
 	}
-	return 0
 }
 
 
@@ -283,13 +284,111 @@ function UpdateOpportunities($DBConnection){
 	return $errorCount
 }
 
+#Creates programs in list
+function CreatePrograms($DBConnection){
+	$dataList = import-csv $createProgramDataCSV
+	$errorCount = 0
+
+	foreach($row in $dataList)
+	{
+		if(![string]::IsNullOrEmpty($row.Program_Name))
+		{
+			#Create command to be executed
+			$command = CreateCommand($DBConnection)
+			$command.CommandText = "cr_QA_Create_Program" #Set name of stored procedure
+			
+			#Get data in correct format
+			$name = $row.Program_Name
+			$congregation_id = StringToInt($row.Congregation_ID)
+			$ministry_id = StringToInt($row.Ministry_ID)
+			$start_date = StringToDate($row.Start_Date)
+			$end_date = StringToDate($row.End_Date)
+			$program_type_id = StringToInt($row.Program_Type_ID)
+			$contact_email = CatchNullString($row.Contact_Email)
+			$available_online = StringToBit($row.Available_Online)
+			$communication_id = StringToInt($row.Communication_ID)
+			$allow_recurring_giving = StringToBit($row.Allow_Recurring_Giving)
+						
+			#Add parameters to command - parameter names must match stored proc parameter names
+			$command.Parameters.AddWithValue("@program_name", $name) | Out-Null
+			$command.Parameters.AddWithValue("@contact_email", $contact_email) | Out-Null
+			$command.Parameters.AddWithValue("@start_date", $start_date) | Out-Null
+			$command.Parameters.AddWithValue("@end_date", $end_date) | Out-Null
+			$command.Parameters.AddWithValue("@congregation_id", $congregation_id) | Out-Null
+			$command.Parameters.AddWithValue("@ministry_id", $ministry_id) | Out-Null
+			$command.Parameters.AddWithValue("@program_type_id", $program_type_id) | Out-Null
+			$command.Parameters.AddWithValue("@available_online", $available_online) | Out-Null
+			$command.Parameters.AddWithValue("@communication_id", $communication_id) | Out-Null
+			$command.Parameters.AddWithValue("@allow_recurring_giving", $allow_recurring_giving) | Out-Null
+			
+			#Execute query
+			$result = ExecuteCommand($command)
+			if($result -ne 0){
+				write-host "There was an error creating program "$name
+				$error_count += 1
+			}			
+		}
+	}
+	return $errorCount
+}
+
+#Creates events in list
+#Run this after Groups and Programs are created since Events can be dependent on this data
+function CreateEvents($DBConnection){
+	$dataList = import-csv $createEventDataCSV
+	$errorCount = 0
+
+	foreach($row in $dataList)
+	{
+		if(![string]::IsNullOrEmpty($row.Event_Name))
+		{
+			#Create command to be executed
+			$command = CreateCommand($DBConnection)
+			$command.CommandText = "cr_QA_Create_Event" #Set name of stored procedure
+			
+			#Get data in correct format
+			$name = $row.Event_Name
+			$event_type = CatchNullString($row.Event_Type)
+			$program_name = CatchNullString($row.Program_Name)
+			$contact_email = CatchNullString($row.Contact_Email)
+			$start_date = StringToDate($row.Start_Date)
+			$end_date = StringToDate($row.End_Date)			
+			$congregation_id = StringToInt($row.Congregation_ID)
+			$location_id = StringToInt($row.Location_ID)			
+			$group_name = CatchNullString($row.Group_Name)
+			
+			Write-host "$name $event_type $program_name $contact_email $start_date $end_date $congregation_id $location_id $group_name"
+			
+			#Add parameters to command - parameter names must match stored proc parameter names
+			$command.Parameters.AddWithValue("@event_name", $name) | Out-Null
+			$command.Parameters.AddWithValue("@event_type", $event_type) | Out-Null
+			$command.Parameters.AddWithValue("@program_name", $program_name) | Out-Null
+			$command.Parameters.AddWithValue("@contact_email", $contact_email) | Out-Null
+			$command.Parameters.AddWithValue("@start_date", $start_date) | Out-Null
+			$command.Parameters.AddWithValue("@end_date", $end_date) | Out-Null
+			$command.Parameters.AddWithValue("@congregation_id", $congregation_id) | Out-Null
+			$command.Parameters.AddWithValue("@location_id", $location_id) | Out-Null
+			$command.Parameters.AddWithValue("@group_name", $group_name) | Out-Null
+			
+			#Execute query
+			$result = ExecuteCommand($command)
+			if($result -ne 0){
+				write-host "There was an error creating event "$name
+				$error_count += 1
+			}			
+		}
+	}
+	return $errorCount
+}
 
 #Execute all the update functions
 $DBConnection = OpenConnection
 $errorCount = 0
-$error_count += CreateGroup($DBConnection)
-$error_count += UpdateGroup($DBConnection)
-$error_count += AddChildGroup($DBConnection)
-$error_count += UpdateGroupFromHost($DBConnection)
-$error_count += UpdateOpportunities($DBConnection)
+#$error_count += CreateGroup($DBConnection)
+#$error_count += UpdateGroup($DBConnection)
+#$error_count += AddChildGroup($DBConnection)
+#$error_count += UpdateGroupFromHost($DBConnection)
+#$error_count += UpdateOpportunities($DBConnection)
+#$error_count += CreatePrograms($DBConnection)
+$error_count += CreateEvents($DBConnection)
 exit $errorCount

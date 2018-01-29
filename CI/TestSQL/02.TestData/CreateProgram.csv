@@ -1,0 +1,7 @@
+﻿Program_Name,Congregation_ID,Ministry_ID,Start_Date,End_Date,Program_Type_ID,Contact_Email,Communication_ID,Available_Online,Allow_Recurring_Giving,,,
+(t) Test Pledge Program1,5,8,1/1/2018,12/31/2018,1,lakshmi.nair@ingagepartners.com,11402,1,,,,
+(t) Test Pledge Program2,5,8,1/1/2018,12/31/2018,1,lakshmi.nair@ingagepartners.com,11402,1,1,,,Creates a Program with Program_Name
+(t) Test Pledge Program+Auto1,5,8,1/1/2018,12/31/2018,1,lakshmi.nair@ingagepartners.com,11402,1,1,,,All fields excecpt Available_Online and Allow_Recurring_Giving are required
+(t) Test Pledge Program+Auto2,5,8,1/1/2018,12/31/2018,1,lakshmi.nair@ingagepartners.com,11402,1,1,,,
+(t) GO Midgar 2018,5,20,1/1/2018,12/31/2018,3,jkerstanoff@callibrity.com,121611,,,,,"If cell is left blank, Null will be inserted into MP"
+(t+auto) GO Bedrock 2018,5,20,1/1/2018,12/31/2018,3,jkerstanoff@callibrity.com,121611,,,,,
