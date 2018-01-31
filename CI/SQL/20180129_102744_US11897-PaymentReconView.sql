@@ -26,6 +26,6 @@ BEGIN
           ,Payment_ID_Table_Payment_Type_ID_Table.[Payment_Type]
           ,Payment_Detail.[Payment_Amount] 
           ,Payment_ID_Table_Payment_Status_ID_Table.[Donation_Status] AS [Payment Status]'
-          ,'Payment_ID_Table_Payment_Type_ID_Table.[Payment_Type] IS NOT NULL')
+          ,'Payment_ID_Table_Payment_Status_ID_Table.[Donation_Status] IS NOT NULL')
 	SET IDENTITY_INSERT dp_Page_Views OFF
 END
