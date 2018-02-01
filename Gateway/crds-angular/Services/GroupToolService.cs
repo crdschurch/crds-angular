@@ -779,7 +779,7 @@ namespace crds_angular.Services
                 var email = new EmailCommunicationDTO
                 {
                     groupId = group.GroupId,
-                    TemplateId = group.GroupType == _anywhereGroupType ? _gatheringRequestPendingReminderEmailTemplateId : 2037,
+                    TemplateId = group.GroupType == _anywhereGroupType ? _gatheringRequestPendingReminderEmailTemplateId : _groupRequestPendingReminderEmailTemplateId,
                     ToContactId = leader.ContactId,
                     MergeData = mergeData
                 };
