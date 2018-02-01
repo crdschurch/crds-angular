@@ -173,6 +173,28 @@ namespace crds_angular.Controllers.API
         }
 
         /// <summary>
+        /// Returns the name of the a current journey or null if there isn't a journey going on.
+        /// Note: Will only return one journey name.
+        /// </summary>
+        /// <returns>journey name (string)</returns>
+        [VersionedRoute(template: "grouptool/joetest", minimumVersion: "1.0.0")]
+        [Route("grouptool/joetest")]
+        [HttpGet]
+        public IHttpActionResult JoeTest()
+        {
+            try
+            {
+                _groupToolService.SendSmallGroupPendingInquiryReminderEmails();
+                return Ok(new { journeyName = _groupToolService.GetCurrentJourney() });
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Could not get current journey: " + e.Message);
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
         /// Remove a participant from my group.
         /// </summary>
         /// <param name="groupTypeId">An integer identifying the type of group.</param>
