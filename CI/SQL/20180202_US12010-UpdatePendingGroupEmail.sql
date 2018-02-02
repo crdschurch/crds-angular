@@ -2,7 +2,6 @@ USE [MinistryPlatform]
 GO
 
 DECLARE @pendingGroupRequestTemplateId int = 2004;
-DECLARE @tryAGroupTemplate int = 2026;
 
 UPDATE [dbo].dp_Communications SET
 Subject='Action Required - Pending request(s) to try your group: [Group_Name]',
@@ -11,6 +10,8 @@ From_Contact=7675411,
 Reply_to_Contact=7675411
 WHERE Communication_Id = @pendingGroupRequestTemplateId;
 GO
+
+DECLARE @tryAGroupTemplate int = 2026;
 
 UPDATE [dbo].dp_Communications SET
 From_Contact=7675411,
