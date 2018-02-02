@@ -2,7 +2,6 @@
 <section class="row" ng-show='invoice.viewReady'>
   <div class="col-sm-10 col-sm-offset-1" >
     <h1 id="InvoiceHeader" class="page-header">{{invoice.invoicesService.invoiceDetails.product.productName}} Invoice Payment</h1>
-    <h3 id="InvoiceRecipientName" class="font-size-smaller">For {{invoice.invoicesService.invoiceDetails.recipientName}}</h3>
     <div class="push-top row">
       <div ng-if="invoice.alreadyPaid">
         <div dynamic-content="$root.MESSAGES.invoiceAlreadyPaid.content | html"></div>
