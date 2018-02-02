@@ -713,7 +713,9 @@ namespace crds_angular.Services
             try
             {
                 var mpRequests = _groupToolRepository.GetInquiries();
-                var groupsWithPendingRequests = mpRequests.Select(r => r.GroupId).Distinct().ToList();
+                var groupsWithPendingRequests = mpRequests
+                    .Where(request => request.RequestDate < DateTime.Now.AddDays(-7))
+                    .Select(r => r.GroupId).Distinct().ToList();
 
                 foreach (var groupId in groupsWithPendingRequests)
                 {
@@ -751,8 +753,14 @@ namespace crds_angular.Services
         {
             var leaders = ((List<MpGroupParticipant>) group.Participants).FindAll(p => p.GroupRoleId == _groupRoleLeaderId).ToList();
             var allLeaders = string.Join(", ", leaders.Select(leader => $"{leader.NickName} {leader.LastName} ({leader.Email})").ToArray());
-            var pendingRequests = string.Join("<br>", inquiries.Select(inquiry => $"{inquiry.FirstName} {inquiry.LastName} ({inquiry.EmailAddress})").ToArray());
-
+            var pendingRequests = "<table><tr><th>First Name</th><th>Last Name</th><th>Email Address</th><th>Request Date</th>"
+                                  +
+                                  string.Join("",
+                                      inquiries.Select(
+                                              inquiry =>
+                                                  $"<tr><td>{inquiry.FirstName}</td><td>{inquiry.LastName}</td><td>{inquiry.EmailAddress}</td><td>{inquiry.RequestDate.ToShortDateString()}</td></tr>")
+                                          .ToArray())
+                                  + "</table>";
             // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (var leader in leaders)
             {

@@ -1476,22 +1476,32 @@ namespace crds_angular.test.Services
                     GroupId = 123,
                     FirstName = "first #1 123",
                     LastName = "last #1 123",
-                    EmailAddress = "email #1 123"
+                    EmailAddress = "email #1 123",
+                    RequestDate = DateTime.Now.AddDays(-9)
                 },
                 new MpInquiry
                 {
                     GroupId = 456,
                     FirstName = "first #1 456",
                     LastName = "last #1 456",
-                    EmailAddress = "email #1 456"
-                },
+                    EmailAddress = "email #1 456",
+                    RequestDate = DateTime.Now.AddDays(-9)
+        },
                 new MpInquiry
                 {
                     GroupId = 123,
                     FirstName = "first #2 123",
                     LastName = "last #2 123",
-                    EmailAddress = "email #2 123"
-                },
+                    EmailAddress = "email #2 123",
+                    RequestDate = DateTime.Now.AddDays(-9)
+        }, new MpInquiry
+                {
+                    GroupId =  999,
+                    FirstName = "First 999",
+                    LastName = "last 999",
+                    EmailAddress = "Email999",
+                    RequestDate = DateTime.Now
+                }
             };
             _groupToolRepository.Setup(mocked => mocked.GetInquiries(null)).Returns(inquiries);
 
