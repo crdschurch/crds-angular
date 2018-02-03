@@ -1103,8 +1103,8 @@ namespace crds_angular.Services
 
             var mergeData = new Dictionary<string, object>
             {
-                {"YesURL", $"{baseUrl}{groupToolPath}/small-group/{group.GroupId}/true/{participant.ParticipantId}" },
-                {"NoURL" , $"{baseUrl}{groupToolPath}/small-group/{group.GroupId}/false/{participant.ParticipantId}" },
+                {"YesURL", $"https://{baseUrl}{groupToolPath}/small-group/{group.GroupId}/true/{participant.ParticipantId}" },
+                {"NoURL" , $"https://{baseUrl}{groupToolPath}/small-group/{group.GroupId}/false/{participant.ParticipantId}" },
                 {"StartURL",   $"{baseUrl}{groupToolPath}/create-group" },
                 {"SearchURL",   $"{baseUrl}{groupToolPath}" },
                 {"Participant_Name",  newMember.Nickname},
