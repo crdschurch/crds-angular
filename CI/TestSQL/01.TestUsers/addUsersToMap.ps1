@@ -1,6 +1,6 @@
 param (
 	[parameter(Mandatory=$true)] [string]$userCredentialsCSV,
-	[parameter(Mandatory=$true)] [string]$mapUserListCSV,
+	[parameter(Mandatory=$true)] [string]$userListCSV,
 	[string]$loginEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Login',
 	[string]$participantEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Participant',
 	[string]$profileEndpoint = 'https://gatewayint.crossroads.net/gateway/api/Profile',
@@ -11,7 +11,7 @@ param (
 
 function addUsersToMap
 {
-	$mapUserList = import-csv $mapUserListCSV
+	$mapUserList = import-csv $userListCSV
 	$logFile = "log_creating_map_data.txt"
 	
 	foreach($mapUser in $mapUserList)

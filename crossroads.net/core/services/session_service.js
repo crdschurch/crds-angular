@@ -316,7 +316,7 @@
       if (event) {
         event.preventDefault();
       }
-      $state.go('login');
+      $state.go('login', {}, { location: 'replace' });
     };
 
     vm.resetCredentials = () => {

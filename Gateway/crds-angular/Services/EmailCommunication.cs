@@ -104,8 +104,9 @@ namespace crds_angular.Services
                 FromContact = from,
                 StartDate = email.StartDate ?? DateTime.Now,
                 MergeData = email.MergeData,
-                ToContacts = new List<MpContact>()
+                ToContacts = new List<MpContact>(),             
             };
+
             communication.ToContacts.Add(to);
 
             if (!communication.MergeData.ContainsKey("BaseUrl"))
