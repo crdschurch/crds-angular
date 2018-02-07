@@ -9,7 +9,8 @@ GO
 -- Author:		Henney, Sarah
 -- Create date: 02/02/2018
 -- Description:	Creates a new Invoice (and Invoice_Details) with given details
--- Output:      @invoice_id contains the invoice id, @error_message contains basic error message
+-- Output:      @invoice_id contains the invoice id, @invoice_detail_id contains the invoice detail id,
+--              @error_message contains basic error message
 -- =============================================
 
 
@@ -23,16 +24,18 @@ IF NOT EXISTS ( SELECT  *
 	@invoice_total money,
 	@invoice_date datetime,
 	@product_name nvarchar(50),
-	@error_message nvarchar(50) OUTPUT,
-	@invoice_id int OUTPUT AS SET NOCOUNT ON;')
+	@error_message nvarchar(500) OUTPUT,
+	@invoice_id int OUTPUT,
+	@invoice_detail_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_New_Invoice]
 	@purchaser_email nvarchar(254),
 	@invoice_total money,
 	@invoice_date datetime,
 	@product_name nvarchar(50),
-	@error_message nvarchar(50) OUTPUT,
-	@invoice_id int OUTPUT
+	@error_message nvarchar(500) OUTPUT,
+	@invoice_id int OUTPUT,
+	@invoice_detail_id int OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -40,7 +43,7 @@ BEGIN
 	--Enforce required parameters
 	IF @purchaser_email is null OR @product_name is null
 	BEGIN
-		SET @error_message = 'Purchaser email and product name cannot be null'
+		SET @error_message = 'Purchaser email and product name cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
@@ -56,14 +59,14 @@ BEGIN
 	SET @product_id = (SELECT TOP 1 Product_ID FROM [dbo].Products WHERE Product_Name = @product_name ORDER BY Product_ID ASC);
 	IF @product_id is null
 	BEGIN
-		SET @error_message = 'Could not find product with name '+@product_name;
+		SET @error_message = 'Could not find product with name '+@product_name+CHAR(13);
 		RETURN;
 	END;
 
 	DECLARE @purchaser_contact_id INT = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @purchaser_email);
 	IF @purchaser_contact_id is null
 	BEGIN
-		SET @error_message = 'Could not find contact with email '+@purchaser_email;
+		SET @error_message = 'Could not find contact with email '+@purchaser_email+CHAR(13);
 		RETURN;
 	END;
 
@@ -83,20 +86,16 @@ BEGIN
 
 	IF @invoice_id is null
 	BEGIN
-		SET @error_message = 'Could not create invoice for some reason'
+		SET @error_message = 'Could not create invoice for some reason'+CHAR(13);
 		RETURN;
 	END;
 
 	
 	--Create Invoice Details
-	DECLARE @invoice_detail_id INT;
 	INSERT INTO [dbo].Invoice_Detail
 	(Invoice_ID ,Recipient_Contact_ID ,Item_Quantity ,Line_Total    ,Product_ID ,Domain_ID) VALUES
 	(@invoice_id,@purchaser_contact_id,@item_quantity,@invoice_total,@product_id,1        );
 
 	SET @invoice_detail_id = SCOPE_IDENTITY();
-
-	IF @invoice_detail_id is null
-		SET @error_message = 'Could not create invoice detail for invoice '+@invoice_id+' for some reason';
 END
 GO

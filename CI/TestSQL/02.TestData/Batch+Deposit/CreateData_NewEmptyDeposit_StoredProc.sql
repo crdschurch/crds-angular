@@ -22,14 +22,14 @@ IF NOT EXISTS ( SELECT  *
 	@deposit_name nvarchar(75),
 	@deposit_date datetime,
 	@account_number nvarchar(15),
-	@error_message nvarchar(50) OUTPUT,
+	@error_message nvarchar(500) OUTPUT,
 	@deposit_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_New_Empty_Deposit]
 	@deposit_name nvarchar(75),
 	@deposit_date datetime,
 	@account_number nvarchar(15),
-	@error_message nvarchar(50) OUTPUT,
+	@error_message nvarchar(500) OUTPUT,
 	@deposit_id int OUTPUT
 AS
 BEGIN
@@ -38,7 +38,7 @@ BEGIN
 	--Enforce required parameters
 	IF @deposit_name is null
 	BEGIN
-		SET @error_message = 'deposit name cannot be null';
+		SET @error_message = 'Deposit name cannot be null'+CHAR(13);
 		RETURN;
 	END;
 

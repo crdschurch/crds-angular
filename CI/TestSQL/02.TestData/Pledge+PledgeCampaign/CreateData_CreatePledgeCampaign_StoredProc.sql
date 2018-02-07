@@ -34,7 +34,7 @@ IF NOT EXISTS ( SELECT  *
 	@youngest_age int,
 	@program_name nvarchar(130),
 	@event_name nvarchar(75),
-	@error_message nvarchar(50) OUTPUT,
+	@error_message nvarchar(500) OUTPUT,
 	@campaign_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Create_Pledge_Campaign] 
@@ -53,7 +53,7 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Pledge_Campaign]
 	@youngest_age int,
 	@program_name nvarchar(130),
 	@event_name nvarchar(75),
-	@error_message nvarchar(50) OUTPUT,
+	@error_message nvarchar(500) OUTPUT,
 	@campaign_id int OUTPUT
 AS
 BEGIN
@@ -62,7 +62,7 @@ BEGIN
 	--Enforce required parameters
 	IF @campaign_name is null
 	BEGIN
-		SET @error_message = 'Pledge Campaign name cannot be null'
+		SET @error_message = 'Pledge Campaign name cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
@@ -148,7 +148,7 @@ BEGIN
 	END
 	ELSE
 	BEGIN
-		SET @error_message = @error_message+'Could not create Pledge Campaign '+@campaign_name+' for some reason.';
+		SET @error_message = @error_message+'Could not create Pledge Campaign '+@campaign_name+' for some reason'+CHAR(13);
 		RETURN;
 	END
 

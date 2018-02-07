@@ -9,7 +9,8 @@ GO
 -- Author:		Henney, Sarah
 -- Create date: 01/29/2018
 -- Description:	Creates a new Payment (and Payment_Details) with given details
--- Output:      @payment_id contains the payment id, @error_message contains basic error message
+-- Output:      @payment_id contains the payment id, @payment_detail_id contains the payment detail id,
+--              @error_message contains basic error message
 -- =============================================
 
 
@@ -27,8 +28,9 @@ IF NOT EXISTS ( SELECT  *
 	@invoice_id int,
 	@payment_type_id int,
 	@transaction_code nvarchar(50),
-	@error_message nvarchar(50) OUTPUT,
-	@payment_id int OUTPUT AS SET NOCOUNT ON;')
+	@error_message nvarchar(500) OUTPUT,
+	@payment_id int OUTPUT,
+	@payment_detail_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_New_Payment]
 	@user_email nvarchar(254),
@@ -39,8 +41,9 @@ ALTER PROCEDURE [dbo].[cr_QA_New_Payment]
 	@invoice_id int,
 	@payment_type_id int,
 	@transaction_code nvarchar(50),
-	@error_message nvarchar(50) OUTPUT,
-	@payment_id int OUTPUT
+	@error_message nvarchar(500) OUTPUT,
+	@payment_id int OUTPUT,
+	@payment_detail_id int OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -48,7 +51,7 @@ BEGIN
 	--Enforce required parameters
 	IF @user_email is null OR @invoice_id is null
 	BEGIN
-		SET @error_message = 'User email and invoice id cannot be null'
+		SET @error_message = 'User email and invoice id cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
@@ -63,7 +66,7 @@ BEGIN
 	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @user_email);
 	IF @contact_id is null
 	BEGIN
-		SET @error_message = 'Could not find contact with email '+ @user_email;
+		SET @error_message = 'Could not find contact with email '+ @user_email+CHAR(13);;
 		RETURN;
 	END;
 
@@ -71,7 +74,7 @@ BEGIN
 	SET @invoice_detail_id = (SELECT TOP 1 Invoice_Detail_ID FROM [dbo].Invoice_Detail where Invoice_ID = @invoice_id ORDER BY Invoice_Detail_ID ASC);
 	IF @invoice_detail_id is null
 	BEGIN
-		SET @error_message = 'Could not find invoice detail on invoice'
+		SET @error_message = 'Could not find invoice detail on invoice'+CHAR(13);
 		RETURN;
 	END;
 
@@ -111,7 +114,7 @@ BEGIN
 
 	IF @payment_id is null
 	BEGIN
-		SET @error_message = @error_message+'Could not create payment for some reason';
+		SET @error_message = @error_message+'Could not create payment for some reason'+CHAR(13);;
 		RETURN;
 	END;
 
@@ -121,9 +124,6 @@ BEGIN
 	(Payment_ID ,Payment_Amount,Invoice_Detail_ID ,Domain_ID,Congregation_ID ) VALUES
 	(@payment_id,@payment_total,@invoice_detail_id,1        ,@congregation_id);
 
-	DECLARE @payment_detail_id int = SCOPE_IDENTITY();
-
-	IF @payment_detail_id is null
-		SET @error_message = @error_message+'Could not create payment detail'
+	SET @payment_detail_id = SCOPE_IDENTITY();
 END
 GO

@@ -26,7 +26,7 @@ IF NOT EXISTS ( SELECT  *
 	@congregation_id int,
 	@deposit_id int,
 	@default_program_id_list nvarchar(32),
-	@error_message nvarchar(50) OUTPUT,
+	@error_message nvarchar(500) OUTPUT,
 	@batch_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_New_Empty_Batch]
@@ -37,7 +37,7 @@ ALTER PROCEDURE [dbo].[cr_QA_New_Empty_Batch]
 	@congregation_id int,
 	@deposit_id int,
 	@default_program_id_list nvarchar(32),
-	@error_message nvarchar(50) OUTPUT,
+	@error_message nvarchar(500) OUTPUT,
 	@batch_id int OUTPUT
 AS
 BEGIN
@@ -46,7 +46,7 @@ BEGIN
 	--Enforce required parameters
 	IF @batch_name is null
 	BEGIN
-		SET @error_message = 'batch name cannot be null';
+		SET @error_message = 'Batch name cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
@@ -68,7 +68,7 @@ BEGIN
 	BEGIN
 		SET @operator_user_id = (SELECT User_ID FROM [dbo].dp_Users WHERE User_Name = @user_email);
 		IF @operator_user_id is null
-			SET @error_message = 'Could not find contact with email '+@user_email+' so will operator user will not be added to batch';
+			SET @error_message = 'Could not find contact with email '+@user_email+', so operator user will not be added to batch'+CHAR(13);
 	END
 
 	
