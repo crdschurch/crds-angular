@@ -5,8 +5,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+picard@gmail.com' and Last_Name = 'Picard');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+picard@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -37,41 +37,53 @@ VALUES
  
  SET IDENTITY_INSERT [dbo].[Addresses] OFF;
  
- UPDATE  [dbo].Households
+ UPDATE [dbo].Households
  SET Address_ID = @addressID
  WHERE Household_ID = @houseHoldID
 
- -- Create Group
+ -- Create Group (if does not already exist)
 -- For new group, Change Group_name
 -- Group_type_ID 1 = small group
 -- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
+DECLARE @groupIdSG   AS INT;
+SET @groupIdSG = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = '(t+auto) The Next Generation' ORDER BY Group_ID asc);
 
-DECLARE @groupIdSG   AS INT
-SET IDENTITY_INSERT [dbo].[Groups] ON;
-SET @groupIdSG = (SELECT IDENT_CURRENT('Groups')) + 1 ;
+IF @groupIdSG is null
+BEGIN
+	SET IDENTITY_INSERT [dbo].[Groups] ON;
+	SET @groupIdSG = (SELECT IDENT_CURRENT('Groups')) + 1 ;
 
--- Set up Jean-Luc as leader of the group
--- change group name
-INSERT INTO Groups
-( Group_ID  , Group_Name                       , Group_Type_ID, Ministry_ID, Congregation_ID, Primary_Contact, Description                   , Start_Date      , Offsite_Meeting_Address, Group_Is_Full, Available_Online, Meeting_Time, Meeting_Day_ID, Domain_ID, Deadline_Passed_Message_ID , Send_Attendance_Notification , Send_Service_Notification , Child_Care_Available) 
-VALUES
-( @groupIdSG, '(t+auto) The Next Generation'   , 1            , 8          ,  1             ,  @contactID    , 'Finder group for automation' , {d '2015-11-01'},  @addressID            ,0             , 1               , '17:00:00'  , 1             , 1        , 58                         ,  0                           , 0                         , 0                   ) ;
-SET IDENTITY_INSERT [dbo].[Groups] OFF;
+	-- Set up Jean-Luc as leader of the group
+	-- change group name
+	INSERT INTO Groups
+	( Group_ID  , Group_Name                       , Group_Type_ID, Ministry_ID, Congregation_ID, Primary_Contact, Description                   , Start_Date      , Offsite_Meeting_Address, Group_Is_Full, Available_Online, Meeting_Time, Meeting_Day_ID, Domain_ID, Deadline_Passed_Message_ID , Send_Attendance_Notification , Send_Service_Notification , Child_Care_Available) 
+	VALUES
+	( @groupIdSG, '(t+auto) The Next Generation'   , 1            , 8          ,  1             ,  @contactID    , 'Finder group for automation' , {d '2015-11-01'},  @addressID            ,0             , 1               , '17:00:00'  , 1             , 1        , 58                         ,  0                           , 0                         , 0                   ) ;
+	SET IDENTITY_INSERT [dbo].[Groups] OFF;
+END
 
 -- Add Interest to group
-DECLARE @AttributeID   AS INT
-SET IDENTITY_INSERT [dbo].Attributes ON;
-SET @AttributeID = (SELECT IDENT_CURRENT('Attributes')) + 1 ;
-INSERT INTO Attributes
-(  [Attribute_ID], [Attribute_Name]     , [Attribute_Type_ID], [Attribute_Category_ID], [Domain_ID], [Sort_Order] )
-VALUES
-(  @AttributeID  , 'Automation testing' , 90                 , 20                     , 1          , 0            )
+--Create attribute if it doesn't exist
+DECLARE @AttributeID   AS INT;
+SET @AttributeID = (SELECT Attribute_ID FROM Attributes WHERE Attribute_Name = 'Automation testing');
+
+IF @AttributeID is null
+BEGIN	
+	SET IDENTITY_INSERT [dbo].Attributes ON;
+	SET @AttributeID = (SELECT IDENT_CURRENT('Attributes')) + 1 ;
+	INSERT INTO Attributes
+	(  [Attribute_ID], [Attribute_Name]     , [Attribute_Type_ID], [Attribute_Category_ID], [Domain_ID], [Sort_Order] )
+	VALUES
+	(  @AttributeID  , 'Automation testing' , 90                 , 20                     , 1          , 0            )
+	SET IDENTITY_INSERT [dbo].Attributes OFF;
+END
+
 
 -- Add existing attributes to group
 INSERT INTO [dbo].[Group_Attributes]
-(  [Attribute_ID]                                                                  , [Group_ID] , [Domain_ID], [Start_Date] )
+(  [Attribute_ID] , [Group_ID] , [Domain_ID], [Start_Date] )
 VALUES
-(  (SELECT attribute_id FROM Attributes WHERE Attribute_Name='Automation testing') , @groupIdSG , 1          , {d '2015-11-01'} )
+(  @AttributeID   , @groupIdSG , 1          , {d '2015-11-01'} )
 
 
 INSERT INTO [dbo].[Group_Attributes]
@@ -101,8 +113,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+data@gmail.com' and Last_Name = 'Data');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+data@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -143,9 +155,10 @@ WHERE Household_ID = @houseHoldID
 -- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
-SET @groupID =        (SELECT Group_ID 
+SET @groupID =        (SELECT TOP 1 Group_ID 
 				       FROM   Groups 
-				       WHERE  Group_Name = '(t+auto) The Next Generation');--Change to group you want the person inserted into
+				       WHERE  Group_Name = '(t+auto) The Next Generation'
+					   ORDER BY Group_ID asc);--Change to group you want the person inserted into
 
 INSERT INTO dbo.Group_Participants
 ( Group_ID, Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
@@ -158,8 +171,8 @@ USE [MinistryPlatform]
 GO
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+worf@gmail.com' and Last_Name = 'Worf');
+				       FROM dp_Users 
+				       WHERE User_Email = 'mpcrds+worf@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -189,8 +202,8 @@ VALUES
 (@addressID, '5121 Rybolt'  , 'Cincinnati'  ,'OH'          ,'45248'    ,'United States','USA'       ,1        ,'39.184353','-84.666394');
  
  SET IDENTITY_INSERT [dbo].[Addresses] OFF;
- 
- UPDATE  [dbo].Households
+
+ UPDATE [dbo].Households
  SET Address_ID = @addressID 
  WHERE Household_ID = @houseHoldID
 
@@ -200,9 +213,10 @@ VALUES
 -- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
-SET @groupID =        (SELECT Group_ID 
+SET @groupID =        (SELECT TOP 1 Group_ID 
 				       FROM   Groups 
-				       WHERE  Group_Name = '(t+auto) The Next Generation');--Change to group you want the person inserted into
+				       WHERE  Group_Name = '(t+auto) The Next Generation'
+					   ORDER BY Group_ID asc);--Change to group you want the person inserted into
 
 INSERT INTO dbo.Group_Participants
 ( Group_ID, Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
@@ -215,8 +229,8 @@ USE [MinistryPlatform]
 GO
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+riker@gmail.com' and Last_Name = 'Riker');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+riker@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -257,9 +271,10 @@ VALUES
 -- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
-SET @groupID =        (SELECT Group_ID 
+SET @groupID =        (SELECT TOP 1 Group_ID 
 				       FROM   Groups 
-				       WHERE  Group_Name = '(t+auto) The Next Generation');--Change to group you want the person inserted into
+				       WHERE  Group_Name = '(t+auto) The Next Generation'
+					   ORDER BY Group_ID asc);--Change to group you want the person inserted into
 
 INSERT INTO dbo.Group_Participants
 ( Group_ID, Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
@@ -274,8 +289,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+troi@gmail.com' and Last_Name = 'Troi');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+troi@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -316,9 +331,10 @@ VALUES
 -- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
-SET @groupID =        (SELECT Group_ID 
+SET @groupID =        (SELECT TOP 1 Group_ID 
 				       FROM   Groups 
-				       WHERE  Group_Name = '(t+auto) The Next Generation');--Change to group you want the person inserted into
+				       WHERE  Group_Name = '(t+auto) The Next Generation'
+					   ORDER BY Group_ID asc);--Change to group you want the person inserted into
 
 INSERT INTO dbo.Group_Participants
 ( Group_ID, Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
@@ -334,8 +350,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+laforge@gmail.com' and Last_Name = 'La Forge');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+laforge@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -376,9 +392,10 @@ VALUES
 -- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
-SET @groupID =        (SELECT Group_ID 
+SET @groupID =        (SELECT TOP 1 Group_ID 
 				       FROM   Groups 
-				       WHERE  Group_Name = '(t+auto) The Next Generation');--Change to group you want the person inserted into
+				       WHERE  Group_Name = '(t+auto) The Next Generation'
+					   ORDER BY Group_ID asc);--Change to group you want the person inserted into
 
 INSERT INTO dbo.Group_Participants
 ( Group_ID, Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
@@ -393,8 +410,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+guinan@gmail.com' and Last_Name = 'Guinan');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+guinan@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -435,9 +452,10 @@ VALUES
 -- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
-SET @groupID =        (SELECT Group_ID 
+SET @groupID =        (SELECT TOP 1 Group_ID 
 				       FROM   Groups 
-				       WHERE  Group_Name = '(t+auto) The Next Generation');--Change to group you want the person inserted into
+				       WHERE  Group_Name = '(t+auto) The Next Generation'
+					   ORDER BY Group_ID asc);--Change to group you want the person inserted into
 
 INSERT INTO dbo.Group_Participants
 ( Group_ID, Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
@@ -492,9 +510,10 @@ VALUES
 -- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
-SET @groupID =        (SELECT Group_ID 
+SET @groupID =        (SELECT TOP 1 Group_ID 
 				       FROM   Groups 
-				       WHERE  Group_Name = '(t+auto) The Next Generation');--Change to group you want the person inserted into
+				       WHERE  Group_Name = '(t+auto) The Next Generation'
+					   ORDER BY Group_ID asc);--Change to group you want the person inserted into
 
 INSERT INTO dbo.Group_Participants
 ( Group_ID, Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
@@ -508,8 +527,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+crusher@gmail.com' and Last_Name = 'Crusher');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+crusher@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -551,9 +570,10 @@ VALUES
 -- Ministry_ID 8 = spiritual growth. Run this query for all minitstries: SELECT * FROM dbo.Ministries
 
 DECLARE @groupID       AS INT 
-SET @groupID =        (SELECT Group_ID 
+SET @groupID =        (SELECT TOP 1 Group_ID 
 				       FROM   Groups 
-				       WHERE  Group_Name = '(t+auto) The Next Generation');--Change to group you want the person inserted into
+				       WHERE  Group_Name = '(t+auto) The Next Generation'
+					   ORDER BY Group_ID asc);--Change to group you want the person inserted into
 
 INSERT INTO dbo.Group_Participants
 ( Group_ID, Participant_ID, Group_Role_ID, Domain_ID, Start_Date      , Employee_Role, Auto_Promote ) 
@@ -568,8 +588,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+ae@gmail.com' and Last_Name = 'Einstein');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+ae@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 
@@ -636,8 +656,8 @@ GO
 
 DECLARE @contactID     AS INT
 SET @contactID =      (SELECT Contact_ID 
-				       FROM Contacts 
-				       WHERE Email_Address = 'mpcrds+sh@gmail.com' and Last_Name = 'Hawking');
+				       FROM dp_Users 
+				       WHERE User_Name = 'mpcrds+sh@gmail.com');
 
 DECLARE @houseHoldID   AS INT
 SET @houseHoldID =    (SELECT Household_ID 

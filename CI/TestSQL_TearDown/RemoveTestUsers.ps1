@@ -1,30 +1,46 @@
 param (
-    [string]$userListCSV = "..\TestSQL\01.TestUsers\userList.csv",
+    [string]$userListCSV = "CreateUserList.csv",
     [string]$DBServer = "mp-int-db.cloudapp.net",
-    [string]$SQLcmd = "C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\sqlcmd.exe",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
- 
- $userList = import-csv $userListCSV
- $exitCode = 0
- $SQLCommonParams = @("-U", $DBUser, "-P", $DBPassword, "-S", $DBServer, "-b")
- 
 
+#Create connection
+$DBConnection = new-object System.Data.SqlClient.SqlConnection 
+$DBConnection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;User Id=$DBUser;Password=$DBPassword"
  
- foreach($user in $userList)
+$userList = import-csv $userListCSV
+$exitCode = 0
+ 
+foreach($user in $userList)
 {
 	if(![string]::IsNullOrEmpty($user.email))
 	{
         $email = $user.email
-		write-host "Removing User" $user.first $user.last "with email" $user.email;
-		$output = & $SQLcmd @SQLCommonParams -Q """EXEC [MinistryPlatform].[dbo].[cr_QADeleteData] '$email'"""
 		
-		if($LASTEXITCODE -ne 0){
-				write-host "User: "$user.email
-				write-host "Error: "$output
-				$exitCode = $LASTEXITCODE
-			}
+		#Create command
+		$command = New-Object System.Data.SqlClient.SqlCommand
+		$command.CommandType = [System.Data.CommandType]'StoredProcedure'
+		$command.Connection = $DBConnection
+		$command.CommandTimeout = 300 #Set command timeout to 5 minutes
+		$command.CommandText = "cr_QADeleteData" #Set name of stored procedure
+		
+		#Add variables for stored proc
+		$command.Parameters.AddWithValue("@Email_Address", $email) | Out-Null
+		
+		write-host "Removing User" $user.first $user.last "with email" $email;
+		
+		#Execute command
+		$adapter = new-object System.Data.SqlClient.SqlDataAdapter
+		$adapter.SelectCommand = $command		
+		$dataset = new-object System.Data.Dataset
+		try { $adapter.Fill($dataset) }
+		catch {
+			#Catches issues when running query
+			write-host "There was an error deleting data related to user "$email
+			write-host "Error: " $Error
+			$exitCode = 1
+		}
 	}
 }
 exit $exitCode

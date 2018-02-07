@@ -1,4 +1,4 @@
---Registered Account / Guest Give Account - This is an account that started as a guest giving account and then registered as a new user.
+--Guest Giver Account - This is creates a contact-only guest giver account for a registered user
 USE [MinistryPlatform]
 GO
 
@@ -25,27 +25,4 @@ INSERT INTO [dbo].Donors
 
 --Update Contact Record
 UPDATE [dbo].Contacts set Donor_Record = (select donor_id from donors where contact_id = @contactID) where contact_id = @contactID;
-GO
-
---Registered Account - Mpcrds+20@gmail.com contact record
-DECLARE @processorID as varchar(255);
-
-IF (SELECT URL from DP_Bookmarks where name like '%demo%') is not null
- SET @processorID = 'cus_6Woe7iX2PlkGeb';
-ELSE
- SET @processorID = 'cus_8Lf397wd4AxozZ';
-
-
-DECLARE @contactID as int
-set @contactID = (select contact_id from contacts where Email_Address = 'mpcrds+20@gmail.com' and Last_Name = 'Kendricks');
-
-INSERT INTO [dbo].Donors 
-(Contact_ID,Statement_Frequency_ID,Statement_Type_ID,Statement_Method_ID,Setup_Date                ,Envelope_No,Cancel_Envelopes,Notes,First_Contact_Made,Domain_ID,__ExternalPersonID,_First_Donation_Date,_Last_Donation_Date,Processor_ID) VALUES
-(@contactID,1                     ,1                ,2                  ,{ts '2015-07-01 09:13:17'},null       ,0               ,null ,null              ,1        ,null              ,null                ,null               ,@processorID);
-
-DECLARE @donor_id as int
-set @donor_id = (Select donor_ID from donors where contact_id = @contactID);
-
---Update Contact Record
-update [dbo].Contacts set Donor_Record = @donor_id where contact_id = @contactID;
 GO
