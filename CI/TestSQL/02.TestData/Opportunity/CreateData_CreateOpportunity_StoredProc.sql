@@ -58,9 +58,9 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @opportunity_name is null OR @contact_email is null
+	IF @opportunity_name is null OR @contact_email is null OR @program_name is null
 	BEGIN
-		SET @error_message = 'Opportunity name and contact email cannot be null'+CHAR(13);
+		SET @error_message = 'Opportunity name, program name and contact email cannot be null'+CHAR(13);
 		RETURN;
 	END;
 

@@ -78,9 +78,9 @@ BEGIN
 	END;
 	
 	DECLARE @distribution_error nvarchar(500);
-	DECLARE @soft_credit_donor_id int = null;
-	DECLARE @distribution_notes nvarchar(1000) = null;
-	EXECUTE [dbo].[cr_QA_New_Donation_Distribution] @donation_id, @donation_amount, @program_name, @pledge_user_email, @congregation_id, @soft_credit_donor_id, @distribution_notes, 
+	DECLARE @soft_credit_donor_id int = null; --No test data uses this yet, so pass in null
+	DECLARE @distribution_notes nvarchar(1000) = null; --No test data uses this yet, so pass in null
+	EXEC [dbo].[cr_QA_New_Donation_Distribution] @donation_id, @donation_amount, @program_name, @pledge_user_email, @congregation_id, @soft_credit_donor_id, @distribution_notes, 
 	@error_message = @distribution_error OUTPUT, @distribution_id = @distribution_id OUTPUT;
 
 	--Concatenate error message

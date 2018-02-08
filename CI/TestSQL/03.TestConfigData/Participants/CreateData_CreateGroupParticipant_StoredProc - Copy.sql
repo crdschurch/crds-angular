@@ -19,16 +19,16 @@ IF NOT EXISTS ( SELECT  *
 	WHERE   object_id = OBJECT_ID(N'cr_QA_Create_Group_Participant')
 			AND type IN ( N'P', N'PC' ) )
 	EXEC('CREATE PROCEDURE dbo.cr_QA_Create_Group_Participant
-	@group_name nvarchar(75),
 	@participant_email nvarchar(254),
+	@group_name nvarchar(75),
 	@group_role_id int,
 	@start_date datetime,
 	@error_message nvarchar(500) OUTPUT,
 	@group_participant_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Create_Group_Participant]
-	@group_name nvarchar(75),
 	@participant_email nvarchar(254),
+	@group_name nvarchar(75),
 	@group_role_id int,
 	@start_date datetime,
 	@error_message nvarchar(500) OUTPUT,

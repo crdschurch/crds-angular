@@ -20,7 +20,7 @@ IF NOT EXISTS ( SELECT  *
 	WHERE   object_id = OBJECT_ID(N'cr_QA_New_Payment')
 			AND type IN ( N'P', N'PC' ) )
 	EXEC('CREATE PROCEDURE dbo.cr_QA_New_Payment
-	@user_email nvarchar(254),
+	@contact_email nvarchar(254),
 	@payment_total money,
 	@payment_date datetime,
 	@congregation_id int,
@@ -33,7 +33,7 @@ IF NOT EXISTS ( SELECT  *
 	@payment_detail_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_New_Payment]
-	@user_email nvarchar(254),
+	@contact_email nvarchar(254),
 	@payment_total money,
 	@payment_date datetime,
 	@congregation_id int,
@@ -49,7 +49,7 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @user_email is null OR @invoice_id is null
+	IF @contact_email is null OR @invoice_id is null
 	BEGIN
 		SET @error_message = 'User email and invoice id cannot be null'+CHAR(13);
 		RETURN;
@@ -63,10 +63,10 @@ BEGIN
 
 	DECLARE @payment_status_id int = 1; --Pending
 
-	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @user_email);
+	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @contact_email);
 	IF @contact_id is null
 	BEGIN
-		SET @error_message = 'Could not find contact with email '+ @user_email+CHAR(13);;
+		SET @error_message = 'Could not find contact with email '+ @contact_email+CHAR(13);;
 		RETURN;
 	END;
 

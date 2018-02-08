@@ -88,21 +88,18 @@ BEGIN
 	--Optional fields
 	SET @description = ISNULL(@description, @campaign_name);
 
-	DECLARE @event_id int = null;
-	DECLARE @program_id int = null;
-	DECLARE @external_trip_id int = 40;
-	DECLARE @external_fund_id int = 99;
+	DECLARE @external_trip_id int = 40; --No idea. 
+	DECLARE @external_fund_id int = 99; --No idea.
 		
-	
-	--Retrieve Event if it exists
+	DECLARE @event_id int = null;
 	IF @event_name is not null
 	BEGIN
 		SET @event_id = (SELECT TOP 1 Event_ID FROM [dbo].Events WHERE Event_Title = @event_name ORDER BY Event_ID ASC);
 		IF @event_id is null
 			SET @error_message = 'Could not find event with name '+@event_name+'. Event not included in pledge campaign '+@campaign_name+CHAR(13);
 	END
-
-	--Retrieve Program if it exists
+	
+	DECLARE @program_id int = null;
 	IF @program_name is not null
 	BEGIN
 		SET @program_id = (SELECT TOP 1 Program_ID FROM [dbo].Programs WHERE Program_Name = @program_name ORDER BY Program_ID ASC);

@@ -6,8 +6,8 @@ GO
 -- =============================================
 -- Author:		Henney, Sarah
 -- Create date: 02/02/2018
--- Description:	Creates donation distribution with given information
--- Output:      @distribution_id contains the donation distribution id OR @error_message contains basic error message
+-- Description:	Creates new donation distribution with given information
+-- Output:      @distribution_id contains the donation distribution id, @error_message contains basic error message
 -- =============================================
 
 
@@ -70,7 +70,7 @@ BEGIN
 	BEGIN
 		DECLARE @pledge_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @pledge_user_email);
 		IF @pledge_contact_id is not null
-		BEGIN
+		BEGIN --Get donor's pledge towards campaign attached to program
 			DECLARE @pledge_donor_id int = (SELECT Donor_Record FROM [dbo].Contacts WHERE Contact_ID = @pledge_contact_id);		
 			DECLARE @pledge_campaign_id int = (SELECT Pledge_Campaign_ID FROM [dbo].Programs WHERE Program_ID = @program_id);
 
@@ -86,8 +86,8 @@ BEGIN
 
 	--Create distribution
 	INSERT INTO [dbo].Donation_Distributions
-	(Donation_ID ,Amount              ,Program_id ,Pledge_ID ,Soft_Credit_Donor    ,Notes ,Domain_ID,Congregation_ID ) VALUES
-	(@donation_id,@distribution_amount,@program_id,@pledge_id,@soft_credit_donor_id,@notes,1        ,@congregation_id);
+	(Donation_ID ,Amount              ,Program_id ,Pledge_ID ,Soft_Credit_Donor    ,Notes ,Congregation_ID ,Domain_ID) VALUES
+	(@donation_id,@distribution_amount,@program_id,@pledge_id,@soft_credit_donor_id,@notes,@congregation_id,1        );
 
 	SET @distribution_id = SCOPE_IDENTITY();
 END

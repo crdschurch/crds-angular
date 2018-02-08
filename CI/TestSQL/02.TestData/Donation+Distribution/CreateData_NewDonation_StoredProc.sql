@@ -82,15 +82,15 @@ BEGIN
 	DECLARE @donor_id int = (SELECT Donor_Record FROM [dbo].Contacts WHERE Contact_ID = @contact_id);
 	IF @donor_id is null
 	BEGIN
-		DECLARE @statement_frequency int = 1; --Quarterly
-		DECLARE @statement_method int = 1; --Postal
-		DECLARE @statement_type int = 1; --Individual
+		--Use defaults
+		EXEC [dbo].[cr_QA_Create_Donor] @contact_id, null, null, null, null, null, 
+		@error_message = @error_message OUTPUT, @donor_id = @donor_id OUTPUT;
 
-		INSERT INTO [dbo].Donors
-		(Contact_ID ,Setup_Date,Statement_Frequency_ID,Statement_Method_ID,Statement_Type_ID,Domain_ID) VALUES
-		(@contact_id,GETDATE() ,@statement_frequency  ,@statement_method  ,@statement_type  ,1        );
-
-		SET @donor_id = SCOPE_IDENTITY();
+		IF @donor_id is null
+		BEGIN
+			SET @error_message = @error_message+'Could not create donor for contact with email '+@donor_email+CHAR(13);
+			RETURN;
+		END;
 	END;
 
 	

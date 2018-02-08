@@ -35,6 +35,8 @@ IF NOT EXISTS ( SELECT  *
 	@is_web_enabled nvarchar(1),
 	@deadline_passed_message_id int,
 	@meeting_time time(7),
+	@meeting_day nvarchar(10),
+	@available_online bit,
 	@error_message nvarchar(500) OUTPUT,
 	@group_id int OUTPUT AS SET NOCOUNT ON;')
 GO
@@ -55,6 +57,8 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Group]
 	@is_web_enabled nvarchar(1),
 	@deadline_passed_message_id int,
 	@meeting_time time(7),
+	@meeting_day nvarchar(10),
+	@available_online bit,
 	@error_message nvarchar(500) OUTPUT,
 	@group_id int OUTPUT
 AS
@@ -89,18 +93,29 @@ BEGIN
 	END;
 
 
-	--Optional fields	
+	--Optional fields
+	SET @available_online = ISNULL(@available_online, 0);
+
 	DECLARE @offsite_meeting_address int;
 	IF ISNULL(@primary_contact_is_host, 0) = 1
 	BEGIN
-		--Get household 
-		DECLARE @household_id int;
-		SET @household_id = (SELECT Household_ID FROM [dbo].Contacts WHERE Contact_ID = @primary_contact_id);
-	
-		--If contact has no household, can't add address to group
+		DECLARE @household_id int = (SELECT Household_ID FROM [dbo].Contacts WHERE Contact_ID = @primary_contact_id);	
 		IF @household_id is not null
 			SET @offsite_meeting_address = (SELECT Address_ID FROM [dbo].Households WHERE Household_ID = @household_id);
+		ELSE
+			SET @error_message = 'Contact '+@primary_contact_email+' does not have an address. Cannot set group meeting location to host address.'+CHAR(13);
 	END;
+
+	DECLARE @meeting_day_id int = null;
+	IF @meeting_day is not null
+	BEGIN
+		SET @meeting_day_id = (SELECT Meeting_Day_ID FROM [dbo].Meeting_Days WHERE Meeting_Day = @meeting_day);
+		IF @meeting_day_id is null
+		BEGIN
+			SET @error_message = @error_message + 'Meeting day called '+@meeting_day+' could not be found. Using default day instead.';
+			SET @meeting_day_id = 2; --Monday
+		END;
+	END
 
 	
 	--Create/Update group
@@ -132,6 +147,8 @@ BEGIN
 		__ISWebEnabled = @is_web_enabled,
 		Deadline_Passed_Message_ID = @deadline_passed_message_id,
 		Meeting_Time = @meeting_time,
+		Meeting_Day_ID = @meeting_day_id,
+		Available_Online = @available_online,
 		Offsite_Meeting_Address = @offsite_meeting_address,
 		Description = @description,
 		Target_Size = @target_size
