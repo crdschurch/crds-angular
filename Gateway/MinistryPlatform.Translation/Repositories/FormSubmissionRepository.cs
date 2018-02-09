@@ -4,14 +4,14 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using log4net;
+using Newtonsoft.Json;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -24,15 +24,17 @@ namespace MinistryPlatform.Translation.Repositories
 
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
-        private readonly IDbConnection _dbConnection;
+        private readonly IDbConnection _dbConnection;       
         private readonly IConfigurationWrapper _configurationWrapper;
+        private readonly ILog _logger;
 
         public FormSubmissionRepository(IMinistryPlatformService ministryPlatformService, IDbConnection dbConnection, IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper, IMinistryPlatformRestRepository ministryPlatformRest)
             : base(authenticationService,configurationWrapper)
         {
             _ministryPlatformService = ministryPlatformService;
-            _ministryPlatformRestRepository = ministryPlatformRest;
             _dbConnection = dbConnection;
+            _ministryPlatformRestRepository = ministryPlatformRest;            
+     
             _configurationWrapper = configurationWrapper;
 
             _formResponsePageId = configurationWrapper.GetConfigIntValue("FormResponsePageId");
@@ -160,15 +162,29 @@ namespace MinistryPlatform.Translation.Repositories
 
         public int SubmitFormResponse(MpFormResponse form)
         {
-            var token = ApiLogin();
-            var responseId = CreateOrUpdateFormResponse(form, token);
-            foreach (var answer in form.FormAnswers)
+            try
             {
-                if (answer.Response == null) continue;
-                answer.FormResponseId = responseId;
-                CreateOrUpdateFormAnswer(answer, token);
+                var token = ApiLogin();
+                var responseId = CreateOrUpdateFormResponse(form, token);
+                foreach (var answer in form.FormAnswers)
+                {
+                    if (answer.Response == null) continue;
+                    answer.FormResponseId = responseId;
+                    CreateOrUpdateFormAnswer(answer, token);
+                }
+                return responseId;
             }
-            return responseId;
+            catch
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    Error = (serializer, err) => err.ErrorContext.Handled = true
+                };
+                string json = JsonConvert.SerializeObject(form, settings);            
+                _logger.Error($"Failure in SubmitFormResponse: {json}");
+                throw new Exception();
+            }
+           
         }
 
         public string GetFormResponseAnswer(int formId, int contactId, int formFieldId, int? eventId = null)
@@ -223,7 +239,7 @@ namespace MinistryPlatform.Translation.Repositories
             };
 
             var formResponseId = _configurationWrapper.GetConfigIntValue("FormResponsePageId");
-
+           
             // This code is shared by Trips, Camps, and Volunteer Application.  
             //
             // For trips:
