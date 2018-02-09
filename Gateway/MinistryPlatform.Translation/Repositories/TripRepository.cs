@@ -45,10 +45,10 @@ namespace MinistryPlatform.Translation.Repositories
                 _logger.Warn($"Adding a trip participant returned no results. The trip is already full.");
                 return new Result<MpPledge>(false, "Trip is already full");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 _logger.Error($"Failed to call stored procedure #{storedProc} for contactId {ContactId} pledge campaign Id {PledgeCampaignID}");
-                _logger.Error(e.Message);               
+                _logger.Error(ex, ex.Message);               
                 throw;
             }            
         }

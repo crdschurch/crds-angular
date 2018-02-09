@@ -182,7 +182,7 @@ namespace MinistryPlatform.Translation.Repositories
                 };
                 string json = JsonConvert.SerializeObject(form, settings);            
                 _logger.Error($"Failure in SubmitFormResponse: {json}");
-                throw new Exception();
+                throw ;
             }
            
         }

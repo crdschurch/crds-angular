@@ -522,13 +522,14 @@ namespace crds_angular.Services
                     PledgeCampaignId = dto.PledgeCampaignId,
                     FormAnswers = new List<MpFormAnswer>(FormatFormAnswers(dto))
                 };
+
                 JsonSerializerSettings settings = new JsonSerializerSettings
                 {
                     Error = (serializer, err) => err.ErrorContext.Handled = true
                 };
-                string json = JsonConvert.SerializeObject(dto, settings);
-                _logger.Error($"Failure in SubmitFormResponse: {json}");
+                string json = JsonConvert.SerializeObject(dto, settings);                
                 _logger.Warn($"Logging form data for contact {dto.ContactId}, PledgeCampaignId = {dto.PledgeCampaignId}: {json}");
+
                 var formResponseId = _formSubmissionService.SubmitFormResponse(formResponse);
              
                 if (dto.InviteGUID != null)
