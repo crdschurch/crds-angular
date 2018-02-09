@@ -122,7 +122,7 @@ namespace crds_angular.Services
                 InvoiceId = invoiceDetails.Status ? invoiceDetails.Value.InvoiceId : 0,
                 ProductId = eventProduct.ProductId,
                 ProductName = eventProduct.ProductName,
-                BasePrice = eventProduct.BasePrice,
+                BasePrice = (paymentDetail != null && paymentDetail.InvoiceTotal > 0) ? paymentDetail.InvoiceTotal: eventProduct.BasePrice,
                 DepositPrice = eventProduct.DepositPrice.Value,
                 Options = ConvertProductOptionPricetoDto(eventProductOptionPrices,eventProduct.BasePrice,campEvent.EventStartDate),
                 BasePriceEndDate = campEvent.EventStartDate,

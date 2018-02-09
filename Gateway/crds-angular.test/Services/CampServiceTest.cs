@@ -1139,9 +1139,71 @@ namespace crds_angular.test.Services
             Assert.IsTrue(result.Options.Count == 2);
             Assert.IsTrue(result.ProductId == 111);
             Assert.IsTrue(result.PaymentDetail.TotalToPay == 1000);
-        }      
+        }
 
-      [Test]
+        [Test]
+        public void ShouldGetProductInfoAndUseInvoiceTotal()
+        {
+            const int eventId = 1234;
+            const string token = "1aaaa";
+            var product = new MpProduct
+            {
+                ProductId = 111,
+                BasePrice = 2000,
+                DepositPrice = 200,
+                ProductName = "Hipster Beard Wax"
+            };
+
+            var mpevent = new MpEvent
+            {
+                EventId = 999,
+                EventTitle = "Hipster Beard Training",
+                EventType = "event-type-100",
+                EventStartDate = new DateTime(2017, 3, 28, 8, 30, 0),
+                EventEndDate = new DateTime(2017, 4, 28, 8, 30, 0),
+                PrimaryContact = new MpContact { ContactId = 12345, EmailAddress = "thedude@beautifulbeards.com" },
+                ParentEventId = 6543219,
+                CongregationId = 2,
+                ReminderDaysPriorId = 2,
+                RegistrationStartDate = new DateTime(2017, 1, 1, 8, 30, 0),
+                RegistrationEndDate = new DateTime(2017, 3, 15, 8, 30, 0),
+                Cancelled = false
+            };
+
+            var mpprodoption1 = new MpProductOptionPrice
+            {
+                ProductOptionPriceId = 1,
+                OptionTitle = "Option 1",
+                OptionPrice = 20,
+                DaysOutToHide = 90
+            };           
+
+            var paymentDetail = new PaymentDetailDTO
+            {
+                InvoiceTotal = 1000,
+                RecipientEmail = "x@x.com",
+                TotalToPay = 1000
+            };
+
+            var mpInvoiceResult = new Result<MpInvoiceDetail>(true, new MpInvoiceDetail() { InvoiceId = 1234 });
+            var mpoptionlist = new List<MpProductOptionPrice>() { mpprodoption1 };
+            const int contactid = 12345;
+
+            _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpevent);
+            _productRepository.Setup(m => m.GetProductForEvent(eventId)).Returns(product);
+            _productRepository.Setup(m => m.GetProductOptionPricesForProduct(product.ProductId)).Returns(mpoptionlist);
+            _formSubmissionRepository.Setup(m => m.GetFormResponseAnswer(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns("true");
+            _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(product.ProductId, contactid, eventId))
+                .Returns(mpInvoiceResult);
+            _paymentService.Setup(m => m.GetPaymentDetails(0, mpInvoiceResult.Value.InvoiceId, token, false)).Returns(paymentDetail);
+
+            var result = _fixture.GetCampProductDetails(eventId, contactid, token);
+            Assert.IsTrue(result.Options.Count == 1);
+            Assert.IsTrue(result.ProductId == 111);
+            Assert.IsTrue(result.BasePrice == paymentDetail.InvoiceTotal);
+        }
+
+        [Test]
       public void ShouldGetProductInfoWhenThereIsNoInvoiceYet()
       {
       const int eventId = 1234;
@@ -1185,8 +1247,6 @@ namespace crds_angular.test.Services
           OptionPrice = 20,
           DaysOutToHide = 90
         };
-
-        
 
         var mpInvoiceResult = new Result<MpInvoiceDetail>(false, "No invoice");
         var mpoptionlist = new List<MpProductOptionPrice>() { mpprodoption1, mpprodoption2 };
