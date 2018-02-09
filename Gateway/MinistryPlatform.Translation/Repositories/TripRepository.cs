@@ -47,8 +47,7 @@ namespace MinistryPlatform.Translation.Repositories
             }
             catch (Exception ex)
             {
-                _logger.Error($"Failed to call stored procedure #{storedProc} for contactId {ContactId} pledge campaign Id {PledgeCampaignID}");
-                _logger.Error(ex, ex.Message);               
+                _logger.Error($"Failed to call stored procedure #{storedProc} for contactId {ContactId} pledge campaign Id {PledgeCampaignID}", ex);                          
                 throw;
             }            
         }
