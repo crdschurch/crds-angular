@@ -390,13 +390,12 @@ namespace crds_angular.Services
 
         public TripParticipantPledgeDto CreateTripParticipant(int contactId, int pledgeCampaignId)
         {
-
             var token = _apiUserRepository.GetToken();
             var result = _tripRepository.AddAsTripParticipant(contactId, pledgeCampaignId, token);
             if (!result.Status)
             {
-                // trip is full
-                throw new TripFullException();
+                _logger.Error($"The trip was full when trying to create trip participant for contact {contactId}");
+                throw new TripFullException();                
             }
             var tripParticipantPledgeInfo = new TripParticipantPledgeDto
             {
@@ -408,12 +407,11 @@ namespace crds_angular.Services
 
         public TripParticipantPledgeDto GetCampaignPledgeInfo(int contactId, int pledgeCampaignId)
         {
-            var tripParticipantPledgeInfo = new TripParticipantPledgeDto();
-
-            var tripRecord = _campaignService.GetGoTripDetailsByCampaign(pledgeCampaignId).FirstOrDefault();
-            var tripDonor = _mpDonorService.GetContactDonor(contactId);
+            var tripParticipantPledgeInfo = new TripParticipantPledgeDto();      
+            var tripRecord = _campaignService.GetGoTripDetailsByCampaign(pledgeCampaignId).FirstOrDefault();          
+            var tripDonor = _mpDonorService.GetContactDonor(contactId);          
             var campaign = _campaignService.GetPledgeCampaign(pledgeCampaignId);
-
+      
             if (campaign == null)
                 throw new ApplicationException($"Pledge campaign Id {pledgeCampaignId} not found or expired");
 
@@ -516,7 +514,7 @@ namespace crds_angular.Services
         {
             try
             {
-                UpdateChildSponsorship(dto);
+                UpdateChildSponsorship(dto);               
                 var formResponse = new MpFormResponse
                 {
                     ContactId = dto.ContactId, //contact id of the person the application is for
@@ -524,9 +522,16 @@ namespace crds_angular.Services
                     PledgeCampaignId = dto.PledgeCampaignId,
                     FormAnswers = new List<MpFormAnswer>(FormatFormAnswers(dto))
                 };
-                
-                var formResponseId = _formSubmissionService.SubmitFormResponse(formResponse);
 
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    Error = (serializer, err) => err.ErrorContext.Handled = true
+                };
+                string json = JsonConvert.SerializeObject(dto, settings);                
+                _logger.Warn($"Logging form data for contact {dto.ContactId}, PledgeCampaignId = {dto.PledgeCampaignId}: {json}");
+
+                var formResponseId = _formSubmissionService.SubmitFormResponse(formResponse);
+             
                 if (dto.InviteGUID != null)
                 {
                     _privateInviteService.MarkAsUsed(dto.PledgeCampaignId, dto.InviteGUID);
@@ -549,7 +554,7 @@ namespace crds_angular.Services
             {
                 // add exception to error log
                 _logger.Error($"SaveApplication exception: ContactId = {dto.ContactId}, PledgeCampaignId = {dto.PledgeCampaignId}", ex);
-
+               
                 // include form data in error log (serialized json); ignore exceptions during serialization
                 JsonSerializerSettings settings = new JsonSerializerSettings();
                 settings.Error = (serializer, err) => err.ErrorContext.Handled = true;
