@@ -12,13 +12,12 @@ using crds_angular.Models.Crossroads.Trip;
 using crds_angular.Models.Json;
 using crds_angular.Security;
 using crds_angular.Services.Interfaces;
-using Crossroads.Utilities.Interfaces;
 using Crossroads.Utilities.Messaging.Interfaces;
-using Newtonsoft.Json;
 using Crossroads.ApiVersioning;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
+using Newtonsoft.Json;
+using log4net;
 
 namespace crds_angular.Controllers.API
 {
@@ -27,6 +26,7 @@ namespace crds_angular.Controllers.API
         private readonly ITripService _tripService;
         private readonly IMessageFactory _messageFactory;
         private readonly MessageQueue _eventQueue;
+        private readonly ILog _logger;
 
         public TripApplicationController(ITripService tripService, IConfigurationWrapper configuration, IMessageFactory messageFactory, IMessageQueueFactory messageQueueFactory, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
         {
@@ -65,7 +65,7 @@ namespace crds_angular.Controllers.API
         public IHttpActionResult Save([FromBody] TripApplicationDto dto)
         {
             if (!ModelState.IsValid)
-            {
+            {              
                 var errors = ModelState.Values.SelectMany(val => val.Errors).Aggregate("", (current, err) => current + err.Exception.Message);
                 var dataError = new ApiErrorDto("Save Trip Application Data Invalid", new InvalidOperationException("Invalid Save Data" + errors));
                 throw new HttpResponseException(dataError.HttpResponseMessage);
@@ -73,7 +73,7 @@ namespace crds_angular.Controllers.API
 
             TripApplicationResponseDto response;
             try
-            {
+            {               
                 var participantPledgeInfo = _tripService.CreateTripParticipant(dto.ContactId, dto.PledgeCampaignId);
                 var message = _messageFactory.CreateMessage(dto);
                 _eventQueue.Send(message, MessageQueueTransactionType.None);
@@ -106,7 +106,7 @@ namespace crds_angular.Controllers.API
                 };
                 return (RestHttpActionResult<TripApplicationResponseDto>.ServerError(responseDto));
             }
-            return ((IHttpActionResult) RestHttpActionResult<TripApplicationResponseDto>.Ok(response));
+            return RestHttpActionResult<TripApplicationResponseDto>.Ok(response);
         }
 
     }
