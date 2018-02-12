@@ -21,12 +21,16 @@ IF NOT EXISTS ( SELECT  *
 	EXEC('CREATE PROCEDURE dbo.cr_QA_Add_Child_Group
 	@parent_group_name nvarchar(75),
 	@child_group_name nvarchar(75),
-	@error_message nvarchar(500) OUTPUT AS SET NOCOUNT ON;')
+	@error_message nvarchar(500) OUTPUT,
+	@parent_group_id int OUTPUT,
+	@child_group_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Add_Child_Group] 
 	@parent_group_name nvarchar(75),
 	@child_group_name nvarchar(75),
-	@error_message nvarchar(500) OUTPUT
+	@error_message nvarchar(500) OUTPUT,
+	@parent_group_id int OUTPUT,
+	@child_group_id int OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -37,7 +41,6 @@ BEGIN
 
 
 	--Required fields
-	DECLARE @parent_group_id int;
 	SET @parent_group_id = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @parent_group_name ORDER BY Group_ID ASC);
 	IF @parent_group_id is null
 	BEGIN
@@ -45,7 +48,6 @@ BEGIN
 		RETURN;
 	END;
 
-	DECLARE @child_group_id int;
 	SET @child_group_id = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @child_group_name ORDER BY Group_ID ASC);
 	IF @child_group_id is null
 	BEGIN

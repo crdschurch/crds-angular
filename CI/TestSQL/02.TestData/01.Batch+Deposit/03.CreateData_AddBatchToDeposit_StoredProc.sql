@@ -21,12 +21,16 @@ IF NOT EXISTS ( SELECT  *
 	EXEC('CREATE PROCEDURE dbo.cr_QA_Add_Batch_To_Deposit 
 	@deposit_name nvarchar(75),
 	@batch_name nvarchar(75),
-	@error_message nvarchar(500) OUTPUT AS SET NOCOUNT ON;')
+	@error_message nvarchar(500) OUTPUT,
+	@deposit_id int OUTPUT,
+	@batch_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Add_Batch_To_Deposit]
 	@deposit_name nvarchar(75),
 	@batch_name nvarchar(75),
-	@error_message nvarchar(500) OUTPUT
+	@error_message nvarchar(500) OUTPUT,
+	@deposit_id int OUTPUT,
+	@batch_id int OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -40,7 +44,6 @@ BEGIN
 
 
 	--Retrieve deposit
-	DECLARE @deposit_id int;
 	SET @deposit_id = (SELECT TOP 1 Deposit_ID FROM [dbo].Deposits WHERE Deposit_Name = @deposit_name ORDER BY Deposit_ID ASC);
 	IF @deposit_id is null
 	BEGIN
@@ -49,7 +52,6 @@ BEGIN
 	END;
 
 	--Retrieve batch
-	DECLARE @batch_id int;
 	SET @batch_id = (SELECT TOP 1 Batch_ID FROM [dbo].Batches WHERE Batch_Name = @batch_name ORDER BY Batch_ID ASC);
 	IF @batch_id is null
 	BEGIN
