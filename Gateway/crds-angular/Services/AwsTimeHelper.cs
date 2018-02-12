@@ -81,7 +81,11 @@ namespace crds_angular.Services
         public string GetPmTimeHours(string time)
         {
             string hourStringBeforeConversion = time.Substring(0, 2);
-            string hourStringInMilitaryTime = (Int32.Parse(hourStringBeforeConversion) + 12).ToString();
+            string hourStringInMilitaryTime = hourStringBeforeConversion;
+            if (hourStringBeforeConversion != "12")
+            {
+                hourStringInMilitaryTime = (Int32.Parse(hourStringBeforeConversion) + 12).ToString();
+            }
             return hourStringInMilitaryTime;
         }
 
