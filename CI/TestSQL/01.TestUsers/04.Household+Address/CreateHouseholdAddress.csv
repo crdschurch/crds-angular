@@ -1,4 +1,4 @@
-R_User_Email,R_Address_Line_1,Address_Line_2,City,State,Zip_Code,Country,Country_Code,County,Latitude,Longitude
+R_Household_Member_Email,R_Address_Line_1,Address_Line_2,City,State,Zip_Code,Country,Country_Code,County,Latitude,Longitude
 kcradduck+testing@crossroads.net,1234 Kathyrn Testing Lane,,CITY,OH,45209,United States,USA,County!,,
 mpcrds+auto+husband@gmail.com,1234 Tatooine Lane,,CITY,OH,45209,United States,USA,County!,,
 mpcrds+auto+georgesmith@gmail.com,12 Ridge Ave.,,Oakley,OH,45067,United States,USA,,,

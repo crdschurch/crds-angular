@@ -1,4 +1,4 @@
-R_User_Email,R_Setup_Date,Statement_Type_ID,R_Statement_Frequency_ID,R_Statement_Method_ID,INT_Stripe_Processor_ID,DEMO_Stripe_Processor_ID
+R_Donor_Email,R_Setup_Date,R_Statement_Type_ID,R_Statement_Frequency_ID,R_Statement_Method_ID,INT_Stripe_Processor_ID,DEMO_Stripe_Processor_ID
 kcradduck+testing@crossroads.net,8/5/2015,1,1,2,cus_7I3CcWLFnecIAV,cus_7I3CcWLFnecIAV
 kcradduck+husband@crossroads.net,8/5/2015,1,1,2,,
 mpcrds+auto+1@gmail.com,1/3/2017,1,1,2,cus_9rioLxKczE0gLb,cus_9sx2eijgfgS97o

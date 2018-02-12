@@ -9,6 +9,7 @@ GO
 -- Author:		Henney, Sarah
 -- Create date: 01/25/2018
 -- Description:	Create (if nonexistent) or Update Participant record
+-- Output:      @participant_id contains the participant id, @error_message contains basic error message
 -- =============================================
 
 

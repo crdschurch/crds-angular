@@ -1,4 +1,4 @@
-﻿R_User_Email,Middle_Name,Date_of_Birth,Gender_ID,Marital_Status_ID,Household_Position_ID,Mobile_Phone,Company_Phone,Prefix_ID,Tester notes
+﻿R_Contact_Email,Middle_Name,Date_of_Birth,Gender_ID,Marital_Status_ID,Household_Position_ID,Mobile_Phone,Company_Phone,Prefix_ID,Tester notes
 kcradduck+testing@crossroads.net,Ann,1/1/1983,2,2,1,513-654-8745,555-365-4125,1,
 kcradduck+husband@crossroads.net,A,1/1/1975,1,2,1,321-654-8184,,2,
 kcradduck+kid14@crossroads.net,,1/1/2001,1,1,2,321-548-6154,,,

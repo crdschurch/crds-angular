@@ -9,6 +9,7 @@ GO
 -- Author:		Henney, Sarah
 -- Create date: 01/15/2018
 -- Description:	Create (if nonexistent) or Update Donor record
+-- Output:      @donor_id contains the donor id, @error_message contains basic error message
 -- =============================================
 
 
@@ -18,7 +19,7 @@ IF NOT EXISTS ( SELECT  *
 	WHERE   object_id = OBJECT_ID(N'cr_QA_Create_Donor')
 			AND type IN ( N'P', N'PC' ) )
 	EXEC('CREATE PROCEDURE dbo.cr_QA_Create_Donor
-	@contact_email varchar(254),
+	@donor_email varchar(254),
 	@setup_date datetime,
 	@statement_type_id int,
 	@statement_frequency_id int,
@@ -28,7 +29,7 @@ IF NOT EXISTS ( SELECT  *
 	@donor_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Create_Donor] 
-	@contact_email varchar(254),
+	@donor_email varchar(254),
 	@setup_date datetime,
 	@statement_type_id int,
 	@statement_frequency_id int,
@@ -41,7 +42,7 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @contact_email is null
+	IF @donor_email is null
 	BEGIN
 		SET @error_message = 'Contact email cannot be null'+CHAR(13);
 		RETURN;
@@ -56,10 +57,10 @@ BEGIN
 
 	DECLARE @cancel_envelopes bit = 0;
 
-	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @contact_email);
+	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @donor_email);
 	IF @contact_id is null
 	BEGIN
-		SET @error_message = 'Could not find contact with email '+@contact_email+CHAR(13);
+		SET @error_message = 'Could not find contact with email '+@donor_email+CHAR(13);
 		RETURN;
 	END;
 

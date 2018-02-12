@@ -28,6 +28,8 @@ IF NOT EXISTS ( SELECT  *
 	@country nvarchar(50),
 	@country_code nvarchar(25),
 	@county nvarchar(50),
+	@latitude nvarchar(15),
+	@longitude nvarchar(15),
 	@error_message nvarchar(500) OUTPUT,
 	@address_id int OUTPUT AS SET NOCOUNT ON;')
 GO
@@ -41,6 +43,8 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Household_Address]
 	@country nvarchar(50),
 	@country_code nvarchar(25),
 	@county nvarchar(50),
+	@latitude nvarchar(15),
+	@longitude nvarchar(15),
 	@error_message nvarchar(500) OUTPUT,
 	@address_id int OUTPUT
 AS
@@ -100,7 +104,9 @@ BEGIN
 		Postal_Code = @zip,
 		Foreign_Country = @country,
 		Country_Code = @country_code,
-		County = @county
+		County = @county,
+		Latitude = @latitude,
+		Longitude = @longitude
 		WHERE Address_ID = @address_id;
 	END;	
 END
