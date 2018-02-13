@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/26/2018
--- Description:	Creates (if nonexistent) or Updates pledge campaign with given information
+-- Description: Creates (if nonexistent) or Updates pledge campaign with given information
 -- Output:      @campaign_id contains the pledge campaign id, @error_message contains basic error message
 -- =============================================
 

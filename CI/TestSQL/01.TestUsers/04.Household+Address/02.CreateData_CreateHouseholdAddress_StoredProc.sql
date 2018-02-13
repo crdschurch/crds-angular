@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/15/2018
--- Description:	Create (if nonexistent) or Update Address record on a contact's household
+-- Description: Create (if nonexistent) or Update Address record on a contact's household
 -- Output:      @address_id contains the address id, @error_message contains basic error message
 -- =============================================
 

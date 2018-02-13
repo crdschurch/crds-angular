@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 02/05/2018
--- Description:	Creates (if nonexistent) or Updates event type
+-- Description: Creates (if nonexistent) or Updates event type
 -- Output:      @event_type_id contains the event type id, @error_message contains basic error message
 -- =============================================
 

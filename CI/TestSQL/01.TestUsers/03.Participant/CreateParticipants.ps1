@@ -1,5 +1,5 @@
 param (
-    [string]$particpantDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateParticipant.csv"),
+    [string]$particpantDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateParticipants.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -15,7 +15,7 @@ function OpenConnection{
 }
 
 #Create all participants in list
-function CreateParticipant($DBConnection){
+function CreateParticipants($DBConnection){
 	$participantDataList = import-csv $particpantDataCSV
 	
 	foreach($userRow in $participantDataList)
@@ -49,7 +49,7 @@ function CreateParticipant($DBConnection){
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateParticipant $DBConnection
+	CreateParticipants $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1

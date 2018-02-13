@@ -1,6 +1,6 @@
 param (
-    [string]$donationDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDonation.csv"),
-	[string]$donationToPledgeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDonationToPledge.csv"),
+    [string]$donationDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDonations.csv"),
+	[string]$donationToPledgeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDonationToPledges.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -16,7 +16,7 @@ function OpenConnection{
 }
 
 #Create all donations in list
-function CreateDonation($DBConnection){
+function CreateDonations($DBConnection){
 	$donationDataList = import-csv $donationDataCSV
 	
 	foreach($donationRow in $donationDataList)
@@ -63,7 +63,7 @@ function CreateDonation($DBConnection){
 }
 
 #Create all donations towards pledges in list
-function CreateDonationToPledge($DBConnection){
+function CreateDonationToPledges($DBConnection){
 	$donationToPledgeDataList = import-csv $donationToPledgeDataCSV
 	
 	foreach($donationRow in $donationToPledgeDataList)
@@ -112,8 +112,8 @@ function CreateDonationToPledge($DBConnection){
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateDonation $DBConnection
-	CreateDonationToPledge $DBConnection
+	CreateDonations $DBConnection
+	CreateDonationToPledges $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1

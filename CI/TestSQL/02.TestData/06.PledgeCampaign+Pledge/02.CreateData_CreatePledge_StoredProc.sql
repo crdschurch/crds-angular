@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/29/2018
--- Description:	Creates (if nonexistent) or Updates pledge information
+-- Description: Creates (if nonexistent) or Updates pledge information
 -- Output:      @pledge_id contains the pledge id, @error_message contains basic error message
 -- =============================================
 

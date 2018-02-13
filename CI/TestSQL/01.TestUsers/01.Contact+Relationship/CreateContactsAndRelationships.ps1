@@ -1,6 +1,6 @@
 param (
-    [string]$contactDataCSV =((Split-Path $MyInvocation.MyCommand.Definition)+"\UpdateContact.csv"),
-    [string]$contactRelationshipsDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateContactRelationship.csv"),
+    [string]$contactDataCSV =((Split-Path $MyInvocation.MyCommand.Definition)+"\UpdateContacts.csv"),
+    [string]$contactRelationshipsDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateContactRelationships.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -17,7 +17,7 @@ function OpenConnection{
 
 
 #Update all contacts in list
-function UpdateContact($DBConnection){
+function UpdateContacts($DBConnection){
 	$contactDataList = import-csv $contactDataCSV
 	
 	foreach($userRow in $contactDataList)
@@ -86,7 +86,7 @@ function CreateContactRelationships($DBConnection){
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	UpdateContact $DBConnection
+	UpdateContacts $DBConnection
 	CreateContactRelationships $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_

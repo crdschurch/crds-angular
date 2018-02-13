@@ -1,6 +1,6 @@
 param (
-    [string]$eventParticipantDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateEventParticipant.csv"),
-	[string]$groupParticipantDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroupParticipant.csv"),
+    [string]$eventParticipantDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateEventParticipants.csv"),
+	[string]$groupParticipantDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroupParticipants.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -15,7 +15,7 @@ function OpenConnection{
 	return $DBConnection
 }
 
-#Create all group participants in list
+#Create all event participants in list
 function CreateEventParticipants($DBConnection){
 	$eventParticipantDataList = import-csv $eventParticipantDataCSV
 	

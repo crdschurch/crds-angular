@@ -1,8 +1,8 @@
 param (
-    [string]$groupDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroup.csv"),
+    [string]$groupDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroups.csv"),
     [string]$addChildGroupDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\AddChildGroup.csv"),
-	[string]$attributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateAttribute.csv"),
-    [string]$groupAttributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroupAttribute.csv"),
+	[string]$attributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateAttributes.csv"),
+    [string]$groupAttributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroupAttributes.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -18,7 +18,7 @@ function OpenConnection{
 }
 
 #Create all groups in list
-function CreateGroup($DBConnection){
+function CreateGroups($DBConnection){
 	$groupDataList = import-csv $groupDataCSV
 
 	foreach($groupRow in $groupDataList)
@@ -44,7 +44,7 @@ function CreateGroup($DBConnection){
 			AddStringParameter $command "@is_blog_enabled" $groupRow.IsBlogEnabled
 			AddStringParameter $command "@is_web_enabled" $groupRow.IsWebEnabled
 			AddIntParameter $command "@deadline_passed_message_id" $groupRow.Deadline_Passed_Message_ID
-			AddDateParameter $command "@meeting_time" $userRow.Meeting_Time #TODO does this work? or do we need a Timeconvert?
+			AddDateParameter $command "@meeting_time" $userRow.Meeting_Time
 			AddStringParameter $command "@meeting_day" $groupRow.Meeting_Day
 			AddBitParameter $command "@available_online" $groupRow.Available_Online
 			AddOutputParameter $command "@error_message" "String"
@@ -94,7 +94,7 @@ function AddChildGroup($DBConnection){
 }
 
 #Creates all attributes in list
-function CreateAttribute($DBConnection){
+function CreateAttributes($DBConnection){
 	$attributeDataList = import-csv $attributeDataCSV
 
 	foreach($attributeRow in $attributeDataList)
@@ -124,7 +124,7 @@ function CreateAttribute($DBConnection){
 }
 
 #Creates group attributes
-function CreateGroupAttribute($DBConnection){
+function CreateGroupAttributes($DBConnection){
 	$groupAttributeDataList = import-csv $groupAttributeDataCSV
 
 	foreach($attributeRow in $groupAttributeDataList)
@@ -156,10 +156,10 @@ function CreateGroupAttribute($DBConnection){
 #Execute all the Create functions
 try{
 	$DBConnection = OpenConnection
-	CreateGroup $DBConnection
+	CreateGroups $DBConnection
 	AddChildGroup $DBConnection
-	CreateAttribute $DBConnection
-	CreateGroupAttribute $DBConnection
+	CreateAttributes $DBConnection
+	CreateGroupAttributes $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1

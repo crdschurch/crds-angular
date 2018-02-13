@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/15/2018
--- Description:	Creates (if nonexistent) or Updates an opportunity
+-- Description: Creates (if nonexistent) or Updates an opportunity
 -- Output:      @opportunity_id contains the opportunity id, @error_message contains basic error message
 -- =============================================
 

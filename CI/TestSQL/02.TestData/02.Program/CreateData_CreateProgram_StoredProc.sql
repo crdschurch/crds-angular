@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/22/2018
--- Description:	Creates (if nonexistent) or Updates program information
+-- Description: Creates (if nonexistent) or Updates program information
 -- Output:      @program_id contains the program id, @error_message contains basic error message
 -- =============================================
 

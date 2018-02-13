@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 02/02/2018
--- Description:	Creates a new Invoice and makes one Payment towards it
+-- Description: Creates a new Invoice and makes one Payment towards it
 -- Output:      @invoice_id contains the invoice id, @invoice_detail_id contains the invoice detail id,
 --              @payment_id contains the payment id, @payment_detail_id contains the payment detail id,
 --              @error_message contains basic error message

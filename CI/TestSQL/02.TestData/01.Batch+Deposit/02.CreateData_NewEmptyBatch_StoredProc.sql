@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/29/2018
--- Description:	Creates an empty batch with given information
+-- Description: Creates an empty batch with given information
 -- Output:      @batch_id contains the batch id, @error_message contains basic error message
 -- =============================================
 

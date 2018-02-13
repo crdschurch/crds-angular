@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/15/2018
--- Description:	Updates data on existing contact
+-- Description: Updates data on existing contact
 -- Output:      @contact_id contains the contact id, @error_message contains basic error message
 -- =============================================
 

@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/29/2018
--- Description:	Creates a new Payment (and Payment_Details) with given details
+-- Description: Creates a new Payment (and Payment_Details) with given details
 -- Output:      @payment_id contains the payment id, @payment_detail_id contains the payment detail id,
 --              @error_message contains basic error message
 -- =============================================

@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 02/01/2018
--- Description:	Creates an empty deposit with the given information
+-- Description: Creates an empty deposit with the given information
 -- Output:      @deposit_id contains the created deposit id, @error_message contains basic error message
 -- =============================================
 

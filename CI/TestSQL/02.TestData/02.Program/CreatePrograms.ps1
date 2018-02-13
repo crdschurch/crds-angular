@@ -1,5 +1,5 @@
 param (
-    [string]$programDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateProgram.csv"),
+    [string]$programDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreatePrograms.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -15,7 +15,7 @@ function OpenConnection{
 }
 
 #Create all programs in list
-function CreateProgram($DBConnection){
+function CreatePrograms($DBConnection){
 	$programDataList = import-csv $programDataCSV
 	
 	foreach($programRow in $programDataList)
@@ -55,7 +55,7 @@ function CreateProgram($DBConnection){
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateProgram $DBConnection
+	CreatePrograms $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1

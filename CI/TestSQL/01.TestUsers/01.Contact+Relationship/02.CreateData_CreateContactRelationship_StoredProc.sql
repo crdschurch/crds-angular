@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/16/2018
--- Description:	Creates (if non-existant) or Updates contact relationship between contacts
+-- Description: Creates (if non-existant) or Updates contact relationship between contacts
 -- Output:      @contact_relationship_id contains the contact relationship id, @error_message contains basic error message
 -- =============================================
 

@@ -1,5 +1,5 @@
 param (
-    [string]$invoiceAndPaymentDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateInvoiceAndPayment.csv"),
+    [string]$invoiceAndPaymentDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateInvoicesAndPayments.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -15,7 +15,7 @@ function OpenConnection{
 }
 
 #Create all invoices in list
-function CreateInvoiceWithPayment($DBConnection){
+function CreateInvoicesWithPayment($DBConnection){
 	$invoiceAndPaymentDataList = import-csv $invoiceAndPaymentDataCSV
 	
 	foreach($invoiceRow in $invoiceAndPaymentDataList)
@@ -60,7 +60,7 @@ function CreateInvoiceWithPayment($DBConnection){
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateInvoiceWithPayment $DBConnection
+	CreateInvoicesWithPayment $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1

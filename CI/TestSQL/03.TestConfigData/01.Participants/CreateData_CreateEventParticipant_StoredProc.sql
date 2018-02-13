@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 02/05/2018
--- Description:	Creates (if nonexistent) or Updates event participant. Event will be matched by name and given start
+-- Description: Creates (if nonexistent) or Updates event participant. Event will be matched by name and given start
 --              date, since event names are not all unique.
 -- Output:      @event_participant_id contains the event participant id, @error_message contains basic error message
 -- =============================================

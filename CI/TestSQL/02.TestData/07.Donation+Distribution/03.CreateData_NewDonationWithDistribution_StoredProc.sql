@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 02/01/2018
--- Description:	Creates donation and distribution with given information
+-- Description: Creates donation and distribution with given information
 -- Output:      @donation_id contains the donation id, @error_message contains basic error message
 -- =============================================
 

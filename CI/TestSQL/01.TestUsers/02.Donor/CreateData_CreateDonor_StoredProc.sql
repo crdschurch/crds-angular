@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/15/2018
--- Description:	Create (if nonexistent) or Update Donor record
+-- Description: Create (if nonexistent) or Update Donor record
 -- Output:      @donor_id contains the donor id, @error_message contains basic error message
 -- =============================================
 

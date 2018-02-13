@@ -6,10 +6,10 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 02/01/2018
--- Description:	Adds batch to deposit. Both must exist.
--- Output:      @error_message contains basic error message
+-- Description: Adds batch to deposit. Both must exist.
+-- Output:      @deposit_id contains the created deposit id, @batch_id contains the batch id, @error_message contains basic error message
 -- =============================================
 
 

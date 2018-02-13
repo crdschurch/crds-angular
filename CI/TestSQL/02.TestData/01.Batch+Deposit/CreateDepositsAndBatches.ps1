@@ -1,6 +1,6 @@
 param (
-    [string]$depositDataCSV =((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDeposit.csv"),
-    [string]$batchDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateBatch.csv"),
+    [string]$depositDataCSV =((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDeposits.csv"),
+    [string]$batchDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateBatches.csv"),
 	[string]$depositBatchLinkDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\AddBatchToDeposit.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
@@ -17,7 +17,7 @@ function OpenConnection{
 }
 
 #Create empty deposit
-function CreateDeposit($DBConnection){
+function CreateDeposits($DBConnection){
 	$depositDataList = import-csv $depositDataCSV
 
 	foreach($depositRow in $depositDataList)
@@ -47,7 +47,7 @@ function CreateDeposit($DBConnection){
 }
 
 #Create empty batch
-function CreateBatch($DBConnection){
+function CreateBatches($DBConnection){
 	$batchDataList = import-csv $batchDataCSV
 
 	foreach($batchRow in $batchDataList)
@@ -114,8 +114,8 @@ function AddBatchToDeposit($DBConnection){
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateDeposit $DBConnection
-	CreateBatch $DBConnection
+	CreateDeposits $DBConnection
+	CreateBatches $DBConnection
 	AddBatchToDeposit $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_

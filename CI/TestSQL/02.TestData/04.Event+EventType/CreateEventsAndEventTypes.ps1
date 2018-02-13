@@ -1,6 +1,6 @@
 param (
-	[string]$eventTypeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateEventType.csv"),
-    [string]$eventDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateEvent.csv"),
+	[string]$eventTypeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateEventTypes.csv"),
+    [string]$eventDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateEvents.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -16,7 +16,7 @@ function OpenConnection{
 }
 
 #Create all event types in list
-function CreateEventType($DBConnection){
+function CreateEventTypes($DBConnection){
 	$eventTypeDataList = import-csv $eventTypeDataCSV
 	
 	foreach($eventTypeRow in $eventTypeDataList)
@@ -45,7 +45,7 @@ function CreateEventType($DBConnection){
 }
 
 #Create all event types in list
-function CreateEvent($DBConnection){
+function CreateEvents($DBConnection){
 	$eventDataList = import-csv $eventDataCSV
 	
 	foreach($eventRow in $eventDataList)
@@ -86,8 +86,8 @@ function CreateEvent($DBConnection){
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateEventType $DBConnection
-	CreateEvent $DBConnection
+	CreateEventTypes $DBConnection
+	CreateEvents $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1

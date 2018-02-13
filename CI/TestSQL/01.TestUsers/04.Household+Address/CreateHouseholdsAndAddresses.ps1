@@ -1,6 +1,6 @@
 param (
-    [string]$householdDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateHousehold.csv"),
-    [string]$householdAddressDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateHouseholdAddress.csv"),
+    [string]$householdDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateHouseholds.csv"),
+    [string]$householdAddressDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateHouseholdAddresses.csv"),
     [string]$contactsInHouseholdDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\AddHouseholdMember.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
@@ -17,7 +17,7 @@ function OpenConnection{
 }
 
 #Create all households in list
-function CreateHousehold($DBConnection){
+function CreateHouseholds($DBConnection){
 	$householdDataList = import-csv $householdDataCSV
 
 	foreach($userRow in $householdDataList)
@@ -47,7 +47,7 @@ function CreateHousehold($DBConnection){
 }
 
 #Create all household addresses in list
-function CreateHouseholdAddress($DBConnection){
+function CreateHouseholdAddresses($DBConnection){
 	$addressDataList = import-csv $householdAddressDataCSV
 
 	foreach($userRow in $addressDataList)
@@ -116,8 +116,8 @@ function AddHouseholdMember($DBConnection){
 #Execute all the Create functions
 try{
 	$DBConnection = OpenConnection
-	CreateHousehold $DBConnection
-	CreateHouseholdAddress $DBConnection
+	CreateHouseholds $DBConnection
+	CreateHouseholdAddresses $DBConnection
 	AddHouseholdMember $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_

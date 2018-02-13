@@ -1,5 +1,5 @@
 param (
-    [string]$donorDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDonor.csv"),
+    [string]$donorDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDonors.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -15,7 +15,7 @@ function OpenConnection{
 }
 
 #Create all donors in list
-function CreateDonor($DBConnection){
+function CreateDonors($DBConnection){
 	$donorDataList = import-csv $donorDataCSV
 	
 	foreach($userRow in $donorDataList)
@@ -56,7 +56,7 @@ function CreateDonor($DBConnection){
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateDonor $DBConnection
+	CreateDonors $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1

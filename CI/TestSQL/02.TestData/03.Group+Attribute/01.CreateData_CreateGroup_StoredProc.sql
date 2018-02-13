@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 02/05/2018
--- Description:	Creates (if nonexistent) or Updates group information
+-- Description: Creates (if nonexistent) or Updates group information
 -- Output:      @group_id contains the group id, @error_message contains basic error message
 -- =============================================
 

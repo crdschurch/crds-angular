@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 02/07/2018
--- Description:	Creates (if nonexistent) an event group
+-- Description: Creates (if nonexistent) an event group
 -- Output:      @event_group_id contains the event group id, @error_message contains basic error message
 -- =============================================
 

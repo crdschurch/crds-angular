@@ -1,6 +1,6 @@
 param (
-    [string]$opportunityDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateOpportunity.csv"),
-	[string]$responseDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateResponse.csv"),
+    [string]$opportunityDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateOpportunities.csv"),
+	[string]$responseDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateResponses.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -16,7 +16,7 @@ function OpenConnection{
 }
 
 #Create all opportunities in list
-function CreateOpportunity($DBConnection){
+function CreateOpportunities($DBConnection){
 	$opportunityDataList = import-csv $opportunityDataCSV
 	
 	foreach($opportunityRow in $opportunityDataList)
@@ -57,7 +57,7 @@ function CreateOpportunity($DBConnection){
 }
 
 #Create all responses in list
-function CreateResponse($DBConnection){
+function CreateResponses($DBConnection){
 	$responseDataList = import-csv $responseDataCSV
 	
 	foreach($responseRow in $responseDataList)
@@ -90,8 +90,8 @@ function CreateResponse($DBConnection){
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateOpportunity $DBConnection
-	CreateResponse $DBConnection
+	CreateOpportunities $DBConnection
+	CreateResponses $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1

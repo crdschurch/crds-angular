@@ -6,9 +6,10 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/16/2018
--- Description:	Add contact to household of another contact
+-- Description: Add contact to household of another contact
+-- Output:      @household_id contains the household id new contact was added to, @error_message contains basic error message
 -- =============================================
 
 

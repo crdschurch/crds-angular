@@ -1,6 +1,6 @@
 param (
-    [string]$pledgeCampaignDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreatePledgeCampaign.csv"),
-	[string]$pledgeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreatePledge.csv"),
+    [string]$pledgeCampaignDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreatePledgeCampaigns.csv"),
+	[string]$pledgeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreatePledges.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -16,7 +16,7 @@ function OpenConnection{
 }
 
 #Create all pledge campaigns in list
-function CreatePledgeCampaign($DBConnection){
+function CreatePledgeCampaigns($DBConnection){
 	$pledgeCampaignDataList = import-csv $pledgeCampaignDataCSV
 	
 	foreach($pledgeCampaignRow in $pledgeCampaignDataList)
@@ -58,7 +58,7 @@ function CreatePledgeCampaign($DBConnection){
 }
 
 #Create all pledges in list
-function CreatePledge($DBConnection){
+function CreatePledges($DBConnection){
 	$pledgeDataList = import-csv $pledgeDataCSV
 	
 	foreach($pledgeRow in $pledgeDataList)
@@ -92,8 +92,8 @@ function CreatePledge($DBConnection){
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreatePledgeCampaign $DBConnection
-	CreatePledge $DBConnection
+	CreatePledgeCampaigns $DBConnection
+	CreatePledges $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1

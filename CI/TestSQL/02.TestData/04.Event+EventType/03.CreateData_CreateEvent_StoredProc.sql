@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/22/2018
--- Description:	Creates (if nonexistent) or Updates event. Adds event to group if group given.
+-- Description: Creates (if nonexistent) or Updates event. Adds event to group if group given.
 -- Output:      @event_id contains the event id, @event_group_id contains the event group id,
 --              @error_message contains basic error message
 -- =============================================

@@ -6,10 +6,10 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/24/2018
--- Description:	Add child group to parent group
--- Output:      @error_message contains basic error message
+-- Description: Add child group to parent group
+-- Output:      @parent_group_id contains the parent group id, @child_group_id contains the child group id, @error_message contains basic error message
 -- =============================================
 
 

@@ -6,9 +6,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/16/2018
--- Description:	Creates (if non-existent) or Updates response
+-- Description: Creates (if non-existent) or Updates response
 -- Output:      @response_id contains the response id, @error_message contains basic error message
 -- =============================================
 

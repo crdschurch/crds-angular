@@ -6,7 +6,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- =============================================
--- Author:		Henney, Sarah
+-- Author:      Henney, Sarah
 -- Create date: 01/15/2018
 -- Description:	Creates (if nonexistent) or Updates household
 -- Output:      @household_id contains the household id, @error_message contains basic error message
