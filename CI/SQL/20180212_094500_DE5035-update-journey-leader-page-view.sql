@@ -1,5 +1,5 @@
 USE MinistryPlatform;
-GO;
+GO
 
 DECLARE @PAGEVIEWID INTEGER = 93316;
 DECLARE @TITLE VARCHAR(100) = 'Current Journey Leaders';
