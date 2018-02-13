@@ -1289,7 +1289,7 @@ namespace crds_angular.test.Services
                     m.DaysOutToHide = 101;
                 })
             };
-            var invoiceDetails = new Result<MpInvoiceDetail>(false, "no nvoice found");
+            var invoiceDetails = new Result<MpInvoiceDetail>(false, "no invoice found");
 
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(myFamily);
