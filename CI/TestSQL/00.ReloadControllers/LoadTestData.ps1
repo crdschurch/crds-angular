@@ -1,7 +1,7 @@
 param (
-    [string]$DBServer = "mp-demo-db.centralus.cloudapp.azure.com",
-    [string]$DBUser = 'MigrateUser', #$(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
-    [string]$DBPassword = 'Aw@!ted2014' #$(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
+    [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
+    [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
+    [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
 )
 
 #Call scripts in subfolders relative to current script
