@@ -1,6 +1,6 @@
 param (
     [string]$pledgeCampaignDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreatePledgeCampaigns.csv"),
-	[string]$pledgeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreatePledges.csv"),
+    [string]$pledgeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreatePledges.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable

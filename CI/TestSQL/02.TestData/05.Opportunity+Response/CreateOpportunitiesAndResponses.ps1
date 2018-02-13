@@ -1,6 +1,6 @@
 param (
     [string]$opportunityDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateOpportunities.csv"),
-	[string]$responseDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateResponses.csv"),
+    [string]$responseDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateResponses.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable

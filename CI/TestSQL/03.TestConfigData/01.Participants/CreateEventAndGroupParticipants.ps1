@@ -1,6 +1,6 @@
 param (
     [string]$eventParticipantDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateEventParticipants.csv"),
-	[string]$groupParticipantDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroupParticipants.csv"),
+    [string]$groupParticipantDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroupParticipants.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable

@@ -1,7 +1,7 @@
 param (
     [string]$groupDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroups.csv"),
     [string]$addChildGroupDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\AddChildGroup.csv"),
-	[string]$attributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateAttributes.csv"),
+    [string]$attributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateAttributes.csv"),
     [string]$groupAttributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroupAttributes.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
