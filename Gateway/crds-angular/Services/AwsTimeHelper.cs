@@ -24,7 +24,7 @@ namespace crds_angular.Services
 
             bool isAmTime = isAM(time);
 
-            hourString = isAmTime ? time.Substring(0, 2) : GetPmTimeHours(time);
+            hourString = isAmTime ? getAmTimeHours(time) : GetPmTimeHours(time);
             hourString = Convert24To00(hourString); 
             minuteString = time.Substring(3, 2);
 
@@ -83,6 +83,18 @@ namespace crds_angular.Services
             string hourStringBeforeConversion = time.Substring(0, 2);
             string hourStringInMilitaryTime = hourStringBeforeConversion;
             if (hourStringBeforeConversion != "12")
+            {
+                hourStringInMilitaryTime = (Int32.Parse(hourStringBeforeConversion) + 12).ToString();
+            }
+            return hourStringInMilitaryTime;
+        }
+
+        // add 12 hours to 12AM to get 00:00 hours
+        public string getAmTimeHours(string time)
+        {
+            string hourStringBeforeConversion = time.Substring(0, 2);
+            string hourStringInMilitaryTime = hourStringBeforeConversion;
+            if (hourStringBeforeConversion == "12")
             {
                 hourStringInMilitaryTime = (Int32.Parse(hourStringBeforeConversion) + 12).ToString();
             }
