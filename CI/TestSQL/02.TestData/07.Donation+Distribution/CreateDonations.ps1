@@ -24,7 +24,7 @@ function CreateDonation($DBConnection){
 		if(![string]::IsNullOrEmpty($donationRow.R_Donor_Email))
 		{
 			#Create command to be executed
-			$command = CreateStoredProcCommand $DBConnection "cr_QA_New_Donation"
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_New_DonationWithDistribution"
 			
 			#Add parameters to command - parameter names must match stored proc parameter names
 			AddStringParameter $command "@donor_email" $donationRow.R_Donor_Email
@@ -38,7 +38,7 @@ function CreateDonation($DBConnection){
 			AddStringParameter $command "@status_notes" $donationRow.Status_Notes
 			AddBitParameter $command "@processed" $donationRow.Processed
 			AddStringParameter $command "@batch_name" $donationRow.Batch_Name
-			AddStringParameter $command "@congregation_id" $donationRow.Congregation_ID
+			AddIntParameter $command "@congregation_id" $donationRow.Congregation_ID
 			AddStringParameter $command "@item_number" $donationRow.Item_Number
 			AddStringParameter $command "@donation_notes" $donationRow.Donation_Notes
 			AddStringParameter $command "@processor_id" $donationRow.Processor_ID
@@ -71,7 +71,7 @@ function CreateDonationToPledge($DBConnection){
 		if(![string]::IsNullOrEmpty($donationRow.R_Donor_Email))
 		{
 			#Create command to be executed
-			$command = CreateStoredProcCommand $DBConnection "cr_QA_New_Donation"
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_New_DonationWithDistribution"
 			
 			#Add parameters to command - parameter names must match stored proc parameter names
 			AddStringParameter $command "@donor_email" $donationRow.R_Donor_Email
@@ -80,16 +80,16 @@ function CreateDonationToPledge($DBConnection){
 			AddIntParameter $command "@payment_type_id" $donationRow.R_Payment_Type_ID
 			AddIntParameter $command "@donation_status" $donationRow.R_Donation_Status_ID
 			AddBitParameter $command "@receipted" $donationRow.R_Receipted
-			AddBitParameter $command "@anonymous" $donationRow.Anonymous			
+			AddBitParameter $command "@anonymous" $donationRow.Anonymous
 			AddDateParameter $command "@status_date" ""
 			AddStringParameter $command "@status_notes" ""
 			AddBitParameter $command "@processed" ""
 			AddStringParameter $command "@batch_name" ""
-			AddStringParameter $command "@congregation_id" ""
+			AddIntParameter $command "@congregation_id" $donationRow.Congregation_ID
 			AddStringParameter $command "@item_number" ""
 			AddStringParameter $command "@donation_notes" ""
 			AddStringParameter $command "@processor_id" ""
-			AddStringParameter $command "@transaction_code" ""			
+			AddStringParameter $command "@transaction_code" ""
 			AddStringParameter $command "@program_name" $donationRow.R_Program_Name
 			AddStringParameter $command "@pledge_user_email" $donationRow.R_Pledge_Owner_Email
 			AddOutputParameter $command "@error_message" "String"

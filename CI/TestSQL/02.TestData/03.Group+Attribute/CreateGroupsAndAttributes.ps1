@@ -132,7 +132,7 @@ function CreateGroupAttribute($DBConnection){
 		if(![string]::IsNullOrEmpty($attributeRow.R_Attribute_Name))
 		{
 		#Create command to be executed
-			$command = CreateStoredProcCommand $DBConnection "cr_QA_Create_Attribute"
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_Create_Group_Attribute"
 						
 			#Add parameters to command - parameter names must match stored proc parameter names
 			AddStringParameter $command "@attribute_name" $attributeRow.R_Attribute_Name

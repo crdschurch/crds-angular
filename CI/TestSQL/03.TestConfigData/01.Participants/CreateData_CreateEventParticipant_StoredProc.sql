@@ -60,7 +60,7 @@ BEGIN
 	SET @event_id = (SELECT TOP 1 Event_ID FROM [dbo].Events WHERE Event_Title = @event_name AND Event_Start_Date = @event_start_date ORDER BY Event_ID ASC);
 	IF @event_id is null
 	BEGIN
-		SET @error_message = 'Event with name '+@event_name+' and start date '+@event_start_date+' could not be found'+CHAR(13);
+		SET @error_message = 'Event with name '+@event_name+' and start date '+convert(nvarchar, @event_start_date)+' could not be found'+CHAR(13);
 		RETURN;
 	END;
 

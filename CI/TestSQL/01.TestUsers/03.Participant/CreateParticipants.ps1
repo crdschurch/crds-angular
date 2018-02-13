@@ -48,7 +48,6 @@ function CreateParticipant($DBConnection){
 
 #Execute all the update functions
 try{
-	write-host "i'm in CreateParticipants.ps1"
 	$DBConnection = OpenConnection
 	CreateParticipant $DBConnection
 } catch {

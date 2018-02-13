@@ -20,7 +20,7 @@ function CreateInvoiceWithPayment($DBConnection){
 	
 	foreach($invoiceRow in $invoiceAndPaymentDataList)
 	{
-		if(![string]::IsNullOrEmpty($invoiceRow.R_Program_Name))
+		if(![string]::IsNullOrEmpty($invoiceRow.R_Purchaser_Email))
 		{
 			#Create command to be executed
 			$command = CreateStoredProcCommand $DBConnection "cr_QA_New_Invoice_With_Payment"
@@ -46,7 +46,7 @@ function CreateInvoiceWithPayment($DBConnection){
 			$result = $command.ExecuteNonQuery()
 			$error_found = LogResult $command "@error_message" "ERROR"
 			$invoice_created = LogResult $command "@invoice_id" "Invoice created"
-			$invoice_detail_created = LogResult $command "@invoice_detail_id" "	       with Invoice Detail"
+			$invoice_detail_created = LogResult $command "@invoice_detail_id" "        with Invoice Detail"
 			$payment_created = LogResult $command "@payment_id" "Payment created"
 			$payment_detail_created = LogResult $command "@payment_detail_id" "        with Payment Detail"
 			

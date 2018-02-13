@@ -73,7 +73,7 @@ function CreateEvent($DBConnection){
 			$result = $command.ExecuteNonQuery()
 			$error_found = LogResult $command "@error_message" "ERROR"
 			$event_created = LogResult $command "@event_id" "Event created"
-			$event_group_created = LogResult $command "@event_group_id" "		and added to Event Group"
+			$event_group_created = LogResult $command "@event_group_id" "        and added to Event Group"
 			
 			#Event group is not required, so don't error out if not created
 			if(!$event_created){

@@ -39,7 +39,8 @@ function CreatePledgeCampaign($DBConnection){
 			AddIntParameter $command "@registration_form_id" $pledgeCampaignRow.Registration_Form_ID
 			AddStringParameter $command "@fundraising_goal" $pledgeCampaignRow.Fundraising_Goal
 			AddIntParameter $command "@destination_id" $pledgeCampaignRow.Destination_ID
-			AddIntParameter $command "@youngest_age" $pledgeCampaignRow.Youngest_Age_Allowed			AddStringParameter $command "@program_name" $pledgeCampaignRow.Program_Name
+			AddIntParameter $command "@youngest_age" $pledgeCampaignRow.Youngest_Age_Allowed
+			AddStringParameter $command "@program_name" $pledgeCampaignRow.Program_Name
 			AddStringParameter $command "@event_name" $pledgeCampaignRow.Event_Name
 			AddOutputParameter $command "@error_message" "String"
 			AddOutputParameter $command "@campaign_id" "Int32"

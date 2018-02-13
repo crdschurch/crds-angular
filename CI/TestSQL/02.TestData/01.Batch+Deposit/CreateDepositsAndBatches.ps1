@@ -102,7 +102,7 @@ function AddBatchToDeposit($DBConnection){
 			$result = $command.ExecuteNonQuery()
 			$error_found = LogResult $command "@error_message" "ERROR"
 			$batch_found = LogResult $command "@batch_id" "Batch"
-			$deposit_found = LogResult $command "@deposit_id" "		added to Deposit"
+			$deposit_found = LogResult $command "@deposit_id" "        added to Deposit"
 			
 			if(!$batch_found -or !$deposit_found){
 				throw
