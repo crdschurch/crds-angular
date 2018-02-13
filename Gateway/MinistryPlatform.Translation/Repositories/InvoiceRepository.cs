@@ -100,7 +100,7 @@ namespace MinistryPlatform.Translation.Repositories
 
     public void UpdateInvoiceAndDetail(int invoiceId, MpProduct product, int? productOptionPriceId, int contactId, int recipientContactId, int eventParticipantId)
     {
-      var productOptionPrice = _productRepository.GetProductOptionPrice((int)productOptionPriceId).OptionPrice;
+      var productOptionPrice = productOptionPriceId != null ? _productRepository.GetProductOptionPrice((int)productOptionPriceId).OptionPrice : 0;
       var invoice = GetInvoice(invoiceId);
       var invoiceDetail = GetInvoiceDetailForInvoice(invoiceId);
 
