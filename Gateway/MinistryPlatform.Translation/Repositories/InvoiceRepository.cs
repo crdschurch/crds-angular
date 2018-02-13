@@ -5,6 +5,7 @@ using Crossroads.Utilities.FunctionalHelpers;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models.Payments;
+using MinistryPlatform.Translation.Models.Product;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace MinistryPlatform.Translation.Repositories
@@ -95,6 +96,35 @@ namespace MinistryPlatform.Translation.Repositories
       };
       var apiToken = _apiUserRepository.GetToken();
       return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Post(new List<MpNestedInvoiceDetail>(new List<MpNestedInvoiceDetail> { invoice })) == 200;
+    }
+
+    public void UpdateInvoiceAndDetail(int invoiceId, MpProduct product, int? productOptionPriceId, int contactId, int recipientContactId, int eventParticipantId)
+    {
+      var productOptionPrice = _productRepository.GetProductOptionPrice((int)productOptionPriceId).OptionPrice;
+      var invoice = GetInvoice(invoiceId);
+      var invoiceDetail = GetInvoiceDetailForInvoice(invoiceId);
+
+      var updatedInvoice = new MpNestedInvoiceDetail
+      {
+        Invoice = new MpInvoice()
+        {
+          InvoiceDate = invoice.InvoiceDate,
+          InvoiceId = invoiceId,
+          InvoiceTotal = product.BasePrice + productOptionPrice,
+          PurchaserContactId = contactId,
+          InvoiceStatusId = 1
+        },
+        InvoiceDetailId = invoiceDetail.InvoiceDetailId,
+        ProductId = product.ProductId,
+        Quantity = 1,
+        ProductOptionPriceId = productOptionPriceId,
+        LineTotal = product.BasePrice + productOptionPrice,
+        RecipientContactId = recipientContactId,
+        EventParticipantId = eventParticipantId
+      };
+      
+      var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+      _ministryPlatformRest.UsingAuthenticationToken(apiToken).Put(new List<MpNestedInvoiceDetail> { updatedInvoice });
     }
 
     public Result<MpInvoiceDetail> GetInvoiceDetailsForProductAndCamper(int productId, int camperId, int eventId)

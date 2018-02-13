@@ -1139,71 +1139,9 @@ namespace crds_angular.test.Services
             Assert.IsTrue(result.Options.Count == 2);
             Assert.IsTrue(result.ProductId == 111);
             Assert.IsTrue(result.PaymentDetail.TotalToPay == 1000);
-        }
+        }      
 
-        [Test]
-        public void ShouldGetProductInfoAndUseInvoiceTotal()
-        {
-            const int eventId = 1234;
-            const string token = "1aaaa";
-            var product = new MpProduct
-            {
-                ProductId = 111,
-                BasePrice = 2000,
-                DepositPrice = 200,
-                ProductName = "Hipster Beard Wax"
-            };
-
-            var mpevent = new MpEvent
-            {
-                EventId = 999,
-                EventTitle = "Hipster Beard Training",
-                EventType = "event-type-100",
-                EventStartDate = new DateTime(2017, 3, 28, 8, 30, 0),
-                EventEndDate = new DateTime(2017, 4, 28, 8, 30, 0),
-                PrimaryContact = new MpContact { ContactId = 12345, EmailAddress = "thedude@beautifulbeards.com" },
-                ParentEventId = 6543219,
-                CongregationId = 2,
-                ReminderDaysPriorId = 2,
-                RegistrationStartDate = new DateTime(2017, 1, 1, 8, 30, 0),
-                RegistrationEndDate = new DateTime(2017, 3, 15, 8, 30, 0),
-                Cancelled = false
-            };
-
-            var mpprodoption1 = new MpProductOptionPrice
-            {
-                ProductOptionPriceId = 1,
-                OptionTitle = "Option 1",
-                OptionPrice = 20,
-                DaysOutToHide = 90
-            };           
-
-            var paymentDetail = new PaymentDetailDTO
-            {
-                InvoiceTotal = 1000,
-                RecipientEmail = "x@x.com",
-                TotalToPay = 1000
-            };
-
-            var mpInvoiceResult = new Result<MpInvoiceDetail>(true, new MpInvoiceDetail() { InvoiceId = 1234 });
-            var mpoptionlist = new List<MpProductOptionPrice>() { mpprodoption1 };
-            const int contactid = 12345;
-
-            _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpevent);
-            _productRepository.Setup(m => m.GetProductForEvent(eventId)).Returns(product);
-            _productRepository.Setup(m => m.GetProductOptionPricesForProduct(product.ProductId)).Returns(mpoptionlist);
-            _formSubmissionRepository.Setup(m => m.GetFormResponseAnswer(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns("true");
-            _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(product.ProductId, contactid, eventId))
-                .Returns(mpInvoiceResult);
-            _paymentService.Setup(m => m.GetPaymentDetails(0, mpInvoiceResult.Value.InvoiceId, token, false)).Returns(paymentDetail);
-
-            var result = _fixture.GetCampProductDetails(eventId, contactid, token);
-            Assert.IsTrue(result.Options.Count == 1);
-            Assert.IsTrue(result.ProductId == 111);
-            Assert.IsTrue(result.BasePrice == paymentDetail.InvoiceTotal);
-        }
-
-        [Test]
+      [Test]
       public void ShouldGetProductInfoWhenThereIsNoInvoiceYet()
       {
       const int eventId = 1234;
@@ -1351,7 +1289,7 @@ namespace crds_angular.test.Services
                     m.DaysOutToHide = 101;
                 })
             };
-
+            var invoiceDetails = new Result<MpInvoiceDetail>(false, "no invoice found");
 
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(myFamily);
@@ -1364,7 +1302,7 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(m => m.GetConfigIntValue("SummerCampFormID")).Returns(summerCampFormId);
 
             _formSubmissionRepository.Setup(m => m.SubmitFormResponse(It.IsAny<MpFormResponse>()));
-            _invoiceRepository.Setup(m => m.InvoiceExistsForEventParticipant(eventParticipantId)).Returns(false);
+            _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(productId, campDto.ContactId, campDto.EventId)).Returns(invoiceDetails); 
 
             _eventRepository.Setup(m => m.GetEvent(campDto.EventId)).Returns(mpEvent);
             _productRepository.Setup(m => m.GetProductForEvent(campDto.EventId)).Returns(mpProduct);
@@ -1429,7 +1367,7 @@ namespace crds_angular.test.Services
                     m.DaysOutToHide = 101;
                 })
             };
-
+            var invoiceDetails = new Result<MpInvoiceDetail>(false, "no invoice found");
 
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(myFamily);
@@ -1442,7 +1380,7 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(m => m.GetConfigIntValue("SummerCampFormID")).Returns(summerCampFormId);
 
             _formSubmissionRepository.Setup(m => m.SubmitFormResponse(It.IsAny<MpFormResponse>()));
-            _invoiceRepository.Setup(m => m.InvoiceExistsForEventParticipant(eventParticipantId)).Returns(false);
+            _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(productId, campDto.ContactId, campDto.EventId)).Returns(invoiceDetails);
 
             _eventRepository.Setup(m => m.GetEvent(campDto.EventId)).Returns(mpEvent);
             _productRepository.Setup(m => m.GetProductForEvent(campDto.EventId)).Returns(mpProduct);
@@ -1463,13 +1401,18 @@ namespace crds_angular.test.Services
 
 
         [Test]
-        public void ShouldNotCreateAnInvoiceIfOneExistsAlready()
+        public void ShouldUpdateAnInvoiceIfOneExistsAlready()
         {
             const int loggedInContactId = 456;
             const string token = "whyNoTestBefore?";
             const int eventParticipantId = 7878;
             const int summerCampFinancialAssistanceField = 99;
             const int summerCampFormId = 9;
+            const int productId = 123;
+            const int invoiceId = 8765;
+            const decimal productBasePrice = 450M;
+            var eventStartDate = DateTime.Now.AddDays(190);
+            var eventEndDate = DateTime.Now.AddDays(191);
 
             var myContact = getFakeContact(loggedInContactId);
             var myFamily = getFakeHouseholdMembers(myContact);
@@ -1479,6 +1422,32 @@ namespace crds_angular.test.Services
                 m.ContactId = campDto.ContactId;
                 m.Age = myFamily.First().Age;
             });
+            var mpEvent = FactoryGirl.NET.FactoryGirl.Build<MpEvent>(m =>
+            {
+              m.EventId = campDto.EventId;
+              m.EventStartDate = eventStartDate;
+              m.EventEndDate = eventEndDate;
+            });
+            var mpProduct = FactoryGirl.NET.FactoryGirl.Build<MpProduct>(m => { m.ProductId = productId; m.BasePrice = productBasePrice; });
+            var mpProductOptions = new List<MpProductOptionPrice>
+            {
+              FactoryGirl.NET.FactoryGirl.Build<MpProductOptionPrice>(m =>
+              {
+                m.ProductOptionPriceId = 67;
+                m.OptionPrice = -65;
+                m.OptionTitle = "Extra Early";
+                m.DaysOutToHide = 190;
+              }),
+              FactoryGirl.NET.FactoryGirl.Build<MpProductOptionPrice>(m =>
+              {
+                m.ProductOptionPriceId = 69;
+                m.OptionPrice = -25;
+                m.OptionTitle = "Early";
+                m.DaysOutToHide = 101;
+              })
+            };
+         
+            var invoiceDetails = new Result<MpInvoiceDetail>(true, new MpInvoiceDetail() { InvoiceId = invoiceId });
 
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(myFamily);
@@ -1491,7 +1460,11 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(m => m.GetConfigIntValue("SummerCampFormID")).Returns(summerCampFormId);
 
             _formSubmissionRepository.Setup(m => m.SubmitFormResponse(It.IsAny<MpFormResponse>()));
-            _invoiceRepository.Setup(m => m.InvoiceExistsForEventParticipant(eventParticipantId)).Returns(true);
+            _eventRepository.Setup(m => m.GetEvent(campDto.EventId)).Returns(mpEvent);
+            _productRepository.Setup(m => m.GetProductForEvent(campDto.EventId)).Returns(mpProduct);
+            _productRepository.Setup(m => m.GetProductOptionPricesForProduct(productId)).Returns(mpProductOptions);
+            _invoiceRepository.Setup(m => m.GetInvoiceDetailsForProductAndCamper(productId, campDto.ContactId, campDto.EventId)).Returns(invoiceDetails);
+            _invoiceRepository.Setup(m => m.UpdateInvoiceAndDetail(invoiceDetails.Value.InvoiceId, mpProduct, 69, loggedInContactId, campDto.ContactId, eventParticipantId));
 
             _fixture.SaveInvoice(campDto, token);
 
