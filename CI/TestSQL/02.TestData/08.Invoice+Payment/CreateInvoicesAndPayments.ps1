@@ -36,7 +36,7 @@ function CreateInvoicesWithPayment($DBConnection){
 			AddIntParameter $command "@payment_type_id" $invoiceRow.Payment_Type_ID
 			AddStringParameter $command "@payment_transaction_code" $invoiceRow.Transaction_Code
 			AddIntParameter $command "@congregation_id" $invoiceRow.R_Congregation_ID
-			AddOutputParameter $command "@error_message" "String"
+			AddOutputParameter $command "@error_message" "String" 1000
 			AddOutputParameter $command "@invoice_id" "Int32"
 			AddOutputParameter $command "@invoice_detail_id" "Int32"
 			AddOutputParameter $command "@payment_id" "Int32"

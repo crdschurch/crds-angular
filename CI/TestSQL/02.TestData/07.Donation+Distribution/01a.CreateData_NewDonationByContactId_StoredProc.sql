@@ -8,17 +8,17 @@ GO
 -- =============================================
 -- Author:      Henney, Sarah
 -- Create date: 02/01/2018
--- Description: Creates donation and distribution with given information
+-- Description: Creates new Donation given contact id
 -- Output:      @donation_id contains the donation id, @error_message contains basic error message
 -- =============================================
 
--- Defines cr_QA_New_Donation
+-- Defines cr_QA_New_Donation_By_Contact_Id
 IF NOT EXISTS ( SELECT  *
 	FROM    sys.objects
-	WHERE   object_id = OBJECT_ID(N'cr_QA_New_Donation')
+	WHERE   object_id = OBJECT_ID(N'cr_QA_New_Donation_By_Contact_Id')
 			AND type IN ( N'P', N'PC' ) )
-	EXEC('CREATE PROCEDURE dbo.cr_QA_New_Donation
-	@donor_email nvarchar(254),
+	EXEC('CREATE PROCEDURE dbo.cr_QA_New_Donation_By_Contact_Id
+	@contact_id int,
 	@donation_amount money,
 	@donation_date datetime,
 	@payment_type_id int,
@@ -36,8 +36,8 @@ IF NOT EXISTS ( SELECT  *
 	@error_message nvarchar(500) OUTPUT,
 	@donation_id int OUTPUT AS SET NOCOUNT ON;')
 GO
-ALTER PROCEDURE [dbo].[cr_QA_New_Donation]
-	@donor_email nvarchar(254),
+ALTER PROCEDURE [dbo].[cr_QA_New_Donation_By_Contact_Id]
+	@contact_id int,
 	@donation_amount money,
 	@donation_date datetime,
 	@payment_type_id int,
@@ -59,9 +59,9 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @donor_email is null OR @donation_amount is null
+	IF @contact_id is null OR @donation_amount is null
 	BEGIN
-		SET @error_message = 'User email and amount cannot be null'+CHAR(13);
+		SET @error_message = 'Contact id and amount cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
@@ -72,23 +72,24 @@ BEGIN
 	SET @payment_type_id = ISNULL(@payment_type_id, 5); --Bank
 	SET @receipted = ISNULL(@receipted, 0);
 
-	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @donor_email);
-	IF @contact_id is null
+	DECLARE @contact_count int = (SELECT count(Contact_ID) FROM [dbo].Contacts WHERE Contact_ID = @contact_id);
+	IF @contact_count = 0
 	BEGIN
-		SET @error_message = 'Could not find contact with email '+@donor_email+CHAR(13);
+		SET @error_message = 'Could not find contact with id '+@contact_id+CHAR(13);
 		RETURN;
 	END;
 
+	--Create donor record if does not exist
 	DECLARE @donor_id int = (SELECT Donor_Record FROM [dbo].Contacts WHERE Contact_ID = @contact_id);
 	IF @donor_id is null
 	BEGIN
 		--Use defaults
-		EXEC [dbo].[cr_QA_Create_Donor] @contact_id, null, null, null, null, null, 
+		EXEC [dbo].[cr_QA_Create_Donor_By_Contact_Id] @contact_id, null, null, null, null, null, 
 		@error_message = @error_message OUTPUT, @donor_id = @donor_id OUTPUT;
 
 		IF @donor_id is null
 		BEGIN
-			SET @error_message = @error_message+'Could not create donor for contact with email '+@donor_email+CHAR(13);
+			SET @error_message = @error_message+'Could not create donor for contact with id '+@contact_id+CHAR(13);
 			RETURN;
 		END;
 	END;

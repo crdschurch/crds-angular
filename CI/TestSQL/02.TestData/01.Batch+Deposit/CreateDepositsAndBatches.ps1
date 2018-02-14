@@ -94,7 +94,7 @@ function AddBatchToDeposit($DBConnection){
 			#Add parameters to command - parameter names must match stored proc parameter names
 			AddStringParameter $command "@deposit_name" $depositRow.R_Deposit_Name
 			AddStringParameter $command "@batch_name" $depositRow.R_Batch_Name
-			AddOutputParameter $command "@error_message" "String"
+			AddOutputParameter $command "@error_message" "String" 1000
 			AddOutputParameter $command "@deposit_id" "Int32"
 			AddOutputParameter $command "@batch_id" "Int32"
 			

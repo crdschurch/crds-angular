@@ -64,7 +64,7 @@ BEGIN
 	IF @donor_id is null
 	BEGIN
 		--Use defaults
-		EXEC [dbo].[cr_QA_Create_Donor] @contact_id, null, null, null, null, null, 
+		EXEC [dbo].[cr_QA_Create_Donor_By_Contact_Id] @contact_id, null, null, null, null, null, 
 		@error_message = @error_message OUTPUT, @donor_id = @donor_id OUTPUT;
 
 		IF @donor_id is null
