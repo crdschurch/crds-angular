@@ -253,7 +253,15 @@ namespace MinistryPlatform.Translation.Repositories
 
             if (records.Count > 1)
             {
-                throw new Exception("User email did not return exactly one user record");
+                _logger.Error($"There are multiple contacts for email: <{email}>, trying to find a unique contact by user record");
+                var userRecord =
+                    _ministryPlatformRest.UsingAuthenticationToken(token)
+                        .Search<MpUser, MpContact>($"User_Name = '{email}'", "Contact_Id");
+                if (userRecord.Count < 1)
+                {
+                    throw new Exception("User email did not return exactly one contact record and no user record found");
+                }
+                return userRecord[0].ContactId;
             }
             if (records.Count < 1)
             {
