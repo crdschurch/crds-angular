@@ -19,7 +19,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRestRepository;
         private Mock<IAuthenticationRepository> _authenticationRepository;
         private Mock<IDbConnection> _dpConnection;
-        private Mock<IConfigurationWrapper> _configurationWrapper;
+        private Mock<IConfigurationWrapper> _configurationWrapper;   
 
         private IFormSubmissionRepository _fixture;
 
@@ -36,9 +36,9 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository = new Mock<IMinistryPlatformRestRepository>();
             _dpConnection = new Mock<IDbConnection>();
             _authenticationRepository = new Mock<IAuthenticationRepository>();
-            _configurationWrapper = new Mock<IConfigurationWrapper>();
+            _configurationWrapper = new Mock<IConfigurationWrapper>();         
 
-            _fixture = new FormSubmissionRepository(_ministryPlatformService.Object, _dpConnection.Object, _authenticationRepository.Object, _configurationWrapper.Object, _ministryPlatformRestRepository.Object );
+            _fixture = new FormSubmissionRepository(_ministryPlatformService.Object, _dpConnection.Object, _authenticationRepository.Object, _configurationWrapper.Object, _ministryPlatformRestRepository.Object);
 
             _configurationWrapper.Setup(m => m.GetConfigIntValue("FormResponsePageId")).Returns(formResponsePageId);
             _configurationWrapper.Setup(m => m.GetConfigIntValue("FormAnswerPageId")).Returns(formAnswerPageId);

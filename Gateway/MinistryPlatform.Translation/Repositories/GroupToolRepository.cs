@@ -20,8 +20,8 @@ namespace MinistryPlatform.Translation.Repositories
     {
         public const string SearchGroupsProcName = "api_crds_SearchGroups";
         private readonly int _invitationPageId;
-        private readonly int _groupInquiresSubPageId;
-        private readonly int _groupInquiriesNotPlacedPageViewId;
+        private readonly int _smallGroupTypeId;
+        private readonly int _gatheringTypeId;
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IMinistryPlatformRestRepository _mpRestRepository;
@@ -37,8 +37,8 @@ namespace MinistryPlatform.Translation.Repositories
         {
             _ministryPlatformService = ministryPlatformService;
             _invitationPageId = _configurationWrapper.GetConfigIntValue("InvitationPageID");
-            _groupInquiresSubPageId = _configurationWrapper.GetConfigIntValue("GroupInquiresSubPage");
-            _groupInquiriesNotPlacedPageViewId = _configurationWrapper.GetConfigIntValue("GroupInquiriesNotPlacedPageView");
+            _smallGroupTypeId = _configurationWrapper.GetConfigIntValue("SmallGroupTypeId");
+            _gatheringTypeId = _configurationWrapper.GetConfigIntValue("AnywhereGroupTypeId");
             _mpRestRepository = mpRestRepository;
             _apiUserRepository = apiUserRepository;
         }
@@ -89,28 +89,6 @@ namespace MinistryPlatform.Translation.Repositories
             return mpInvitations;
         }
 
-        public List<MpGroupSearchResultDto> SearchGroups(int[] groupTypeIds, string[] keywords = null, int? groupId = null)
-        {
-            var token = _apiUserRepository.GetToken();
-
-            var parms = new Dictionary<string, object>
-            {
-                {"@GroupTypeId", String.Join(",", groupTypeIds)}
-            };
-            if (keywords != null && keywords.Any())
-            {
-                parms.Add("@SearchString", string.Join(",", keywords));
-            }
-
-            if(groupId != null)
-            {
-                parms.Add("@GroupId", groupId);
-            }
-
-            var results = _mpRestRepository.UsingAuthenticationToken(token).GetFromStoredProc<MpGroupSearchResultDto>(SearchGroupsProcName, parms);
-            return results?.FirstOrDefault();
-        }
-
         public void ArchivePendingGroupInquiriesOlderThan90Days()
         {
             try
@@ -130,30 +108,18 @@ namespace MinistryPlatform.Translation.Repositories
             var mpInquiries = new List<MpInquiry>();
             try
             {
-                var inquiries = groupId.HasValue
-                    ? _ministryPlatformService.GetSubPageRecords(_groupInquiresSubPageId, groupId.Value, _apiUserRepository.GetToken())
-                    : _ministryPlatformService.GetPageViewRecords(_groupInquiriesNotPlacedPageViewId, _apiUserRepository.GetToken());
+                var token = _apiUserRepository.GetDefaultApiUserToken();
+                var filter = $"Group_ID_Table.Group_Type_ID in ({_smallGroupTypeId}, {_gatheringTypeId}) AND Placed is null";
 
-                // Translate object format from MP to an MpInquiry object
-                if (inquiries != null && inquiries.Count > 0)
+                if (groupId.HasValue)
                 {
-                    mpInquiries.AddRange(
-                        inquiries.Select(
-                            p =>
-                                new MpInquiry
-                                {
-                                    InquiryId = p.ToInt("dp_RecordID"),
-                                    GroupId = groupId ?? p.ToInt("Group_ID"),
-                                    EmailAddress = p.ToString("Email"),
-                                    PhoneNumber = p.ToString("Phone"),
-                                    FirstName = p.ToString("First_Name"),
-                                    LastName = p.ToString("Last_Name"),
-                                    RequestDate = p.ToDate("Inquiry_Date"),
-                                    Placed = p.ToNullableBool("Placed"),
-                                    ContactId = p.ToInt("Contact_ID")
-                                }));
+                    filter += $" AND Group_Inquiries.Group_ID = {groupId.Value}";
                 }
-                else
+
+               mpInquiries = _mpRestRepository.UsingAuthenticationToken(token)
+                    .Search<MpInquiry>(filter, "Group_Inquiries.*").ToList();
+
+                if (mpInquiries.Count < 1)
                 {
                     _logger.Info("No pending inquires found" + (groupId == null ? string.Empty : $" for GroupId = {groupId}"));
                 }

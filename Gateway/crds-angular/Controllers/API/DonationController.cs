@@ -271,6 +271,7 @@ namespace crds_angular.Controllers.API
                     {
                         pledgeId = pledge.PledgeId;
                     }
+                    _logger.Warn($"Processing donation for pledge {dto.PledgeCampaignId}, donor {dto.PledgeDonorId}, trip deposit {dto.TripDeposit}");
                 }
 
                 if (!isPayment)

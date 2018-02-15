@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -22,7 +19,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
         private Mock<IDbConnection> _dbConnection;
-        private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;
+        private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;        
         private MpFormResponse _mockForm;
         private MpFormAnswer _mockAnswer1, _mockAnswer2, _mockAnswer3;
         private const int formResponsePageId = 424;
@@ -36,7 +33,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
             _dbConnection = new Mock<IDbConnection>();
-            _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
+            _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();           
 
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");

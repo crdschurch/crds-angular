@@ -173,6 +173,28 @@ namespace crds_angular.Controllers.API
         }
 
         /// <summary>
+        /// Returns the name of the a current journey or null if there isn't a journey going on.
+        /// Note: Will only return one journey name.
+        /// </summary>
+        /// <returns>journey name (string)</returns>
+        [VersionedRoute(template: "grouptool/joetest", minimumVersion: "1.0.0")]
+        [Route("grouptool/joetest")]
+        [HttpGet]
+        public IHttpActionResult JoeTest()
+        {
+            try
+            {
+                _groupToolService.SendSmallGroupPendingInquiryReminderEmails();
+                return Ok(new { journeyName = _groupToolService.GetCurrentJourney() });
+            }
+            catch (Exception e)
+            {
+                _logger.Error("Could not get current journey: " + e.Message);
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
         /// Remove a participant from my group.
         /// </summary>
         /// <param name="groupTypeId">An integer identifying the type of group.</param>
@@ -234,77 +256,6 @@ namespace crds_angular.Controllers.API
                 catch (Exception ex)
                 {
                     var apiError = new ApiErrorDto(string.Format("Error removing group participant {0} from group {1}", groupInformation.GroupParticipantId, groupInformation.GroupId), ex);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-            });
-        }
-
-        /// <summary>
-        /// Search for a group matching the requested type and search terms.
-        /// </summary>
-        /// <param name="groupTypeId">An integer identifying the type of group to search for</param>
-        /// <param name="keywords">The optional keywords to search for</param>
-        /// <param name="location">The optional location/address to search for - if specified, the search results will include approximate distances from this address</param>
-        /// <returns>A list of groups matching the terms</returns>
-        [VersionedRoute(template: "groupTool/group/search", minimumVersion: "1.0.0")]
-        [Route("grouptool/group/search/")]
-        [ResponseType(typeof(List<GroupDTO>))]
-        [HttpGet]
-        public IHttpActionResult SearchGroups([FromUri] int[] groupTypeIds,
-                                              [FromUri(Name = "s")] string keywords = null,
-                                              [FromUri(Name = "loc")] string location = null,
-                                              [FromUri(Name = "id")] int? groupId = null)
-        {
-            try
-            {
-                var result = _groupToolService.SearchGroups(groupTypeIds, keywords, location, groupId);
-                if (result == null || !result.Any())
-                {
-                    return RestHttpActionResult<List<GroupDTO>>.WithStatus(HttpStatusCode.NotFound, new List<GroupDTO>());
-                }
-                // Analytics call
-                var props = new EventProperties();
-                props.Add("Keywords", keywords);
-                props.Add("Location", location);
-                _analyticsService.Track("Anonymous", "SearchedForGroup", props);
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                var apiError = new ApiErrorDto("Error searching for group", ex);
-                throw new HttpResponseException(apiError.HttpResponseMessage);
-            }
-        }
-
-        /// <summary>
-        /// Allows a group leader to accept or deny a group inquirier.
-        /// </summary>
-        /// <param name="groupTypeId">An integer identifying the type of group.</param>
-        /// <param name="groupId">An integer identifying the group that the inquiry is associated to.</param>
-        /// <param name="approve">A boolean showing if the inquiry is being approved or denied. It defaults to approved</param>
-        /// <param name="inquiry">An Inquiry JSON Object.</param>
-        [RequiresAuthorization]
-        [VersionedRoute(template: "group-tool/group-type/{groupTypeId}/group/{groupId}/inquiry/approve/{approve}", minimumVersion: "1.0.0")]
-        [Route("grouptool/grouptype/{groupTypeId:int}/group/{groupId:int}/inquiry/approve/{approve:bool}")]
-        [HttpPost]
-        public IHttpActionResult ApproveDenyInquiryFromMyGroup([FromUri] int groupTypeId, [FromUri] int groupId, [FromUri] bool approve, [FromBody] Inquiry inquiry)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    _groupToolService.ApproveDenyInquiryFromMyGroup(token, groupId, approve, inquiry, inquiry.Message, _defaultRoleId);
-                    return Ok();
-                }
-                catch (GroupParticipantRemovalException e)
-                {
-                    var apiError = new ApiErrorDto(e.Message, null, e.StatusCode);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-                catch (Exception ex)
-                {
-                    var apiError = new ApiErrorDto(string.Format("Error {0} group inquiry {1} from group {2}", approve, inquiry.InquiryId, groupId), ex);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
             });
