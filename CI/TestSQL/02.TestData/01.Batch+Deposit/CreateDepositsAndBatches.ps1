@@ -37,7 +37,7 @@ function CreateDeposits($DBConnection){
 			#Execute and report results
 			$result = $command.ExecuteNonQuery()
 			$error_found = LogResult $command "@error_message" "ERROR"
-			$deposit_created = LogResult $command "@deposit_id" "Empty Deposit"
+			$deposit_created = LogResult $command "@deposit_id" "Empty Deposit created"
 			
 			if(!$deposit_created){
 				throw
@@ -71,7 +71,7 @@ function CreateBatches($DBConnection){
 			#Execute and report results
 			$result = $command.ExecuteNonQuery()
 			$error_found = LogResult $command "@error_message" "ERROR"
-			$batch_created = LogResult $command "@batch_id" "Empty Batch"
+			$batch_created = LogResult $command "@batch_id" "Empty Batch created"
 			
 			if(!$batch_created){
 				throw
