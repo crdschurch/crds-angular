@@ -1,7 +1,7 @@
 param (
     [string]$donationDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDonations_DonorsHaveUserAccounts.csv"),
-	[string]$donationNoUserDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDonations_NoUserAccounts.csv"),
-	[string]$donationTwoDistributionsDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDonations_TwoDistributions.csv"),
+    [string]$donationNoUserDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDonations_NoUserAccounts.csv"),
+    [string]$donationTwoDistributionsDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDonations_TwoDistributions.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable

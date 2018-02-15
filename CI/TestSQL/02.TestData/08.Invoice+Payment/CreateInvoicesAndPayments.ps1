@@ -47,26 +47,26 @@ function CreateInvoicesWithPayment($DBConnection){
 			$invoice_id = $i_command.Parameters["@invoice_id"].Value
 		
 			#Create command to create payment
-			$command = CreateStoredProcCommand $DBConnection "cr_QA_New_Payment"
+			$p_command = CreateStoredProcCommand $DBConnection "cr_QA_New_Payment"
 			
 			#Add parameters to command - parameter names must match stored proc parameter names
-			AddStringParameter $command "@contact_email" $invoiceRow.R_Purchaser_Email
-			AddMoneyParameter $command "@payment_total" $invoiceRow.R_Payment_Total
-			AddDateParameter $command "@payment_date" $invoiceRow.R_Payment_Date
-			AddIntParameter $command "@congregation_id" $invoiceRow.R_Congregation_Id
-			AddStringParameter $command "@batch_name" $invoiceRow.Batch_Name
-			AddIntParameter $command "@invoice_id" $invoice_id
-			AddIntParameter $command "@payment_type_id" $invoiceRow.Payment_Type_Id
-			AddStringParameter $command "transaction_code" $invoiceRow.Transaction_Code
-			AddOutputParameter $command "@error_message" "String"
-			AddOutputParameter $command "@payment_id" "Int32"
-			AddOutputParameter $command "@payment_detail_id" "Int32"
+			AddStringParameter $p_command "@contact_email" $invoiceRow.R_Purchaser_Email
+			AddMoneyParameter $p_command "@payment_total" $invoiceRow.R_Payment_Total
+			AddDateParameter $p_command "@payment_date" $invoiceRow.R_Payment_Date
+			AddIntParameter $p_command "@congregation_id" $invoiceRow.R_Congregation_Id
+			AddStringParameter $p_command "@batch_name" $invoiceRow.Batch_Name
+			AddIntParameter $p_command "@invoice_id" $invoice_id
+			AddIntParameter $p_command "@payment_type_id" $invoiceRow.Payment_Type_Id
+			AddStringParameter $p_command "transaction_code" $invoiceRow.Transaction_Code
+			AddOutputParameter $p_command "@error_message" "String"
+			AddOutputParameter $p_command "@payment_id" "Int32"
+			AddOutputParameter $p_command "@payment_detail_id" "Int32"
 				
 			#Execute and report results
-			$result = $command.ExecuteNonQuery()
-			$error_found = LogResult $command "@error_message" "ERROR"
-			$payment_created = LogResult $command "@payment_id" "Payment created"
-			$payment_detail_created = LogResult $command "@payment_detail_id" "        with Payment Detail"
+			$result = $p_command.ExecuteNonQuery()
+			$error_found = LogResult $p_command "@error_message" "ERROR"
+			$payment_created = LogResult $p_command "@payment_id" "Payment created"
+			$payment_detail_created = LogResult $p_command "@payment_detail_id" "        with Payment Detail"
 			
 			if(!$payment_created){
 				throw
