@@ -22,35 +22,53 @@ function CreateInvoicesWithPayment($DBConnection){
 	{
 		if(![string]::IsNullOrEmpty($invoiceRow.R_Purchaser_Email))
 		{
-			#Create command to be executed
-			$command = CreateStoredProcCommand $DBConnection "cr_QA_New_Invoice_With_Payment"
+			#Create command to create invoice
+			$i_command = CreateStoredProcCommand $DBConnection "cr_QA_New_Invoice"
 			
 			#Add parameters to command - parameter names must match stored proc parameter names
-			AddStringParameter $command "@user_email" $invoiceRow.R_Purchaser_Email			
-			AddStringParameter $command "@invoice_total" $invoiceRow.R_Invoice_Total
-			AddDateParameter $command "@invoice_date" $invoiceRow.R_Invoice_Date
-			AddStringParameter $command "@product_name" $invoiceRow.R_Product_Name
-			AddStringParameter $command "@batch_name" $invoiceRow.Batch_Name
-			AddStringParameter $command "@payment_total" $invoiceRow.R_Payment_Total
+			AddStringParameter $i_command "@purchaser_email" $invoiceRow.R_Purchaser_Email
+			AddMoneyParameter $i_command "@invoice_total" $invoiceRow.R_Invoice_Total
+			AddDateParameter $i_command "@invoice_date" $invoiceRow.R_Invoice_Date
+			AddStringParameter $i_command "@product_name" $invoiceRow.R_Product_Name
+			AddOutputParameter $i_command "@error_message" "String"
+			AddOutputParameter $i_command "@invoice_id" "Int32"
+			AddOutputParameter $i_command "@invoice_detail_id" "Int32"
+			
+			#Execute and report invoice creation results
+			$result = $i_command.ExecuteNonQuery()
+			$error_found = LogResult $i_command "@error_message" "ERROR"
+			$invoice_created = LogResult $i_command "@invoice_id" "Invoice created"
+			$invoice_detail_created = LogResult $i_command "@invoice_detail_id" "        with Invoice Detail"
+			
+			if(!$invoice_created){
+				throw
+			}
+			
+			$invoice_id = $i_command.Parameters["@invoice_id"].Value
+		
+			#Create command to create payment
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_New_Payment"
+			
+			#Add parameters to command - parameter names must match stored proc parameter names
+			AddStringParameter $command "@contact_email" $invoiceRow.R_Purchaser_Email
+			AddMoneyParameter $command "@payment_total" $invoiceRow.R_Payment_Total
 			AddDateParameter $command "@payment_date" $invoiceRow.R_Payment_Date
-			AddIntParameter $command "@payment_type_id" $invoiceRow.Payment_Type_ID
-			AddStringParameter $command "@payment_transaction_code" $invoiceRow.Transaction_Code
-			AddIntParameter $command "@congregation_id" $invoiceRow.R_Congregation_ID
-			AddOutputParameter $command "@error_message" "String" 1000
-			AddOutputParameter $command "@invoice_id" "Int32"
-			AddOutputParameter $command "@invoice_detail_id" "Int32"
+			AddIntParameter $command "@congregation_id" $invoiceRow.R_Congregation_Id
+			AddStringParameter $command "@batch_name" $invoiceRow.Batch_Name
+			AddIntParameter $command "@invoice_id" $invoice_id
+			AddIntParameter $command "@payment_type_id" $invoiceRow.Payment_Type_Id
+			AddStringParameter $command "transaction_code" $invoiceRow.Transaction_Code
+			AddOutputParameter $command "@error_message" "String"
 			AddOutputParameter $command "@payment_id" "Int32"
 			AddOutputParameter $command "@payment_detail_id" "Int32"
 				
 			#Execute and report results
 			$result = $command.ExecuteNonQuery()
 			$error_found = LogResult $command "@error_message" "ERROR"
-			$invoice_created = LogResult $command "@invoice_id" "Invoice created"
-			$invoice_detail_created = LogResult $command "@invoice_detail_id" "        with Invoice Detail"
 			$payment_created = LogResult $command "@payment_id" "Payment created"
 			$payment_detail_created = LogResult $command "@payment_detail_id" "        with Payment Detail"
 			
-			if(!$invoice_created -or !$payment_created){
+			if(!$payment_created){
 				throw
 			}
 		}

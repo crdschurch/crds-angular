@@ -29,15 +29,15 @@ function CreatePledgeCampaigns($DBConnection){
 			#Add parameters to command - parameter names must match stored proc parameter names
 			AddStringParameter $command "@campaign_name" $pledgeCampaignRow.R_Campaign_Name
 			AddIntParameter $command "@campaign_type_id" $pledgeCampaignRow.R_Pledge_Campaign_Type			
-			AddStringParameter $command "@goal" $pledgeCampaignRow.R_Campaign_Goal #TODO will string work for money
+			AddMoneyParameter $command "@goal" $pledgeCampaignRow.R_Campaign_Goal
 			AddDateParameter $command "@start_date" $pledgeCampaignRow.R_Start_Date
 			AddDateParameter $command "@end_date" $pledgeCampaignRow.End_Date			
 			AddStringParameter $command "@description" $pledgeCampaignRow.Description			
 			AddDateParameter $command "@registration_start" $pledgeCampaignRow.Registration_Start_Date
 			AddDateParameter $command "@registration_end" $pledgeCampaignRow.Registration_End_Date
-			AddStringParameter $command "@registration_deposit" $pledgeCampaignRow.Registration_Deposit
+			AddMoneyParameter $command "@registration_deposit" $pledgeCampaignRow.Registration_Deposit
 			AddIntParameter $command "@registration_form_id" $pledgeCampaignRow.Registration_Form_ID
-			AddStringParameter $command "@fundraising_goal" $pledgeCampaignRow.Fundraising_Goal
+			AddMoneyParameter $command "@fundraising_goal" $pledgeCampaignRow.Fundraising_Goal
 			AddIntParameter $command "@destination_id" $pledgeCampaignRow.Destination_ID
 			AddIntParameter $command "@youngest_age" $pledgeCampaignRow.Youngest_Age_Allowed
 			AddStringParameter $command "@program_name" $pledgeCampaignRow.Program_Name
@@ -71,7 +71,7 @@ function CreatePledges($DBConnection){
 			#Add parameters to command - parameter names must match stored proc parameter names
 			AddStringParameter $command "@donor_email" $pledgeRow.R_Donor_Email
 			AddStringParameter $command "@campaign_name" $pledgeRow.R_Pledge_Campaign
-			AddStringParameter $command "@amount_pledged" $pledgeRow.R_Total_Pledge
+			AddMoneyParameter $command "@amount_pledged" $pledgeRow.R_Total_Pledge
 			AddDateParameter $command "@first_installment_date" $pledgeRow.R_First_Installment_Date
 			AddIntParameter $command "@installments_planned" $pledgeRow.R_Installments_Planned
 			AddOutputParameter $command "@error_message" "String"
