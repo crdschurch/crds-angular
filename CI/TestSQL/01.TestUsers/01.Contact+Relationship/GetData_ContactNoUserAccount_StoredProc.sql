@@ -39,12 +39,9 @@ BEGIN
 		RETURN;
 	END;
 
-	--Find by both criteria
-	IF @contact_email is not null
+	IF @contact_email is not null --Find by both criteria
 		SET @contact_id = (SELECT TOP 1 Contact_ID FROM [dbo].Contacts WHERE Display_Name = @display_name AND Email_Address = @contact_email AND User_Account is null ORDER BY Contact_ID ASC);
-	
-	--Find by display name only
-	IF @contact_id is null
+	ELSE --Find by display name only
 		SET @contact_id = (SELECT TOP 1 Contact_ID FROM [dbo].Contacts WHERE Display_Name = @display_name AND User_Account is null ORDER BY Contact_ID ASC);
 	
 	IF @contact_id is null

@@ -33,6 +33,7 @@ IF NOT EXISTS ( SELECT  *
 	@donation_notes nvarchar(500),
 	@processor_id nvarchar(50),
 	@transaction_code nvarchar(50),
+	@non_cash_asset_type_id int,
 	@error_message nvarchar(500) OUTPUT,
 	@donation_id int OUTPUT AS SET NOCOUNT ON;')
 GO
@@ -52,6 +53,7 @@ ALTER PROCEDURE [dbo].[cr_QA_New_Donation]
 	@donation_notes nvarchar(500),
 	@processor_id nvarchar(50),
 	@transaction_code nvarchar(50),
+	@non_cash_asset_type_id int,
 	@error_message nvarchar(500) OUTPUT,
 	@donation_id int OUTPUT
 AS
@@ -74,7 +76,7 @@ BEGIN
 	
 	--Create donation
 	EXEC [dbo].[cr_QA_New_Donation_By_Contact_Id] @contact_id, @donation_amount, @donation_date, @payment_type_id, @donation_status, @receipted, @anonymous, @status_date, @status_notes,
-	@processed, @batch_name, @item_number, @donation_notes, @processor_id, @transaction_code,
+	@processed, @batch_name, @item_number, @donation_notes, @processor_id, @transaction_code, @non_cash_asset_type_id,
 	@error_message = @error_message OUTPUT, @donation_id = @donation_id OUTPUT;
 END
 GO

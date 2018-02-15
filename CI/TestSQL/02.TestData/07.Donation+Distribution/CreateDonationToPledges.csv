@@ -1,7 +1,0 @@
-R_Donor_Email,R_Donation_Amount,R_Donation_Date,R_Payment_Type_ID,R_Donation_Status_ID,R_Receipted,Anonymous,R_Program_Name,R_Pledge_Owner_Email,Congregation_ID,Tester notes
-mpcrds+cloudstrife@gmail.com,100,1/1/2018,2,4,1,0,(t) GO Midgar 2018,mpcrds+cloudstrife@gmail.com,5,Donation towards donor's own pledge
-mpcrds+auto+fredflintstone@gmail.com,100,1/1/2018,2,4,1,0,(t+auto) GO Bedrock 2018,mpcrds+auto+fredflintstone@gmail.com,5,Donation towards donor's own pledge
-mpcrds+tifalockhart@gmail.com,150,1/1/2018,2,2,1,0,(t) GO Midgar 2018,mpcrds+cloudstrife@gmail.com,5,Anonymous donation towards Cloud's trip by Tifa
-mpcrds+tifalockhart@gmail.com,100,1/2/2018,2,2,1,1,(t) GO Midgar 2018,mpcrds+cloudstrife@gmail.com,5,Non-anonymous donation towards Cloud's trip by Tifa
-mpcrds+auto+wilmaflintstone@gmail.com,150,1/1/2018,2,2,1,0,(t+auto) GO Bedrock 2018,mpcrds+auto+fredflintstone@gmail.com,5,Donation to Fred's trip pledge by Wilma - not anonymous.
-mpcrds+auto+wilmaflintstone@gmail.com,150,1/2/2018,2,2,1,1,(t+auto) GO Bedrock 2018,mpcrds+auto+fredflintstone@gmail.com,5,Donation to Fred's trip pledge by Wilma - anonymous.

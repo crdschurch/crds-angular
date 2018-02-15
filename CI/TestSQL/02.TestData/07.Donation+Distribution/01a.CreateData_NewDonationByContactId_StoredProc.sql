@@ -33,6 +33,7 @@ IF NOT EXISTS ( SELECT  *
 	@donation_notes nvarchar(500),
 	@processor_id nvarchar(50),
 	@transaction_code nvarchar(50),
+	@non_cash_asset_type_id int,
 	@error_message nvarchar(500) OUTPUT,
 	@donation_id int OUTPUT AS SET NOCOUNT ON;')
 GO
@@ -52,6 +53,7 @@ ALTER PROCEDURE [dbo].[cr_QA_New_Donation_By_Contact_Id]
 	@donation_notes nvarchar(500),
 	@processor_id nvarchar(50),
 	@transaction_code nvarchar(50),
+	@non_cash_asset_type_id int,
 	@error_message nvarchar(500) OUTPUT,
 	@donation_id int OUTPUT
 AS
@@ -104,7 +106,6 @@ BEGIN
 	DECLARE @invoice_number nvarchar(25) = null;
 	DECLARE @is_recurring_gift bit = null;
 	DECLARE @recurring_gift_id int = null;
-	DECLARE @non_cash_asset_id int = null;
 
 	DECLARE @processor_fee_amount money = 0;
 	IF @payment_type_id = 5 --Bank
@@ -130,8 +131,8 @@ BEGIN
 
 	--Create Donation
 	INSERT INTO [dbo].Donations
-	(Donor_ID ,Donation_Amount ,Donation_Date ,Payment_Type_ID ,Notes          ,Batch_ID  ,Donation_Status_ID,Donation_Status_Date,Domain_ID,Currency ,Processed ,Receipted ,Position       ,Anonymous ,Donation_Status_Notes,Invoice_Number ,Is_Recurring_Gift ,Item_Number ,Non_Cash_Asset_Type_ID,Processor_Fee_Amount ,Processor_ID ,Recurring_Gift_ID ,Registered_Donor    ,Transaction_Code ) VALUES
-	(@donor_id,@donation_amount,@donation_date,@payment_type_id,@donation_notes,@batch_id ,@donation_status  ,@status_date        ,1        ,@currency,@processed,@receipted,@batch_position,@anonymous,@status_notes        ,@invoice_number,@is_recurring_gift,@item_number,@non_cash_asset_id    ,@processor_fee_amount,@processor_id,@recurring_gift_id,@is_registered_donor,@transaction_code);
+	(Donor_ID ,Donation_Amount ,Donation_Date ,Payment_Type_ID ,Notes          ,Batch_ID  ,Donation_Status_ID,Donation_Status_Date,Domain_ID,Currency ,Processed ,Receipted ,Position       ,Anonymous ,Donation_Status_Notes,Invoice_Number ,Is_Recurring_Gift ,Item_Number ,Non_Cash_Asset_Type_ID ,Processor_Fee_Amount ,Processor_ID ,Recurring_Gift_ID ,Registered_Donor    ,Transaction_Code ) VALUES
+	(@donor_id,@donation_amount,@donation_date,@payment_type_id,@donation_notes,@batch_id ,@donation_status  ,@status_date        ,1        ,@currency,@processed,@receipted,@batch_position,@anonymous,@status_notes        ,@invoice_number,@is_recurring_gift,@item_number,@non_cash_asset_type_id,@processor_fee_amount,@processor_id,@recurring_gift_id,@is_registered_donor,@transaction_code);
 
 	SET @donation_id = SCOPE_IDENTITY();
 END
