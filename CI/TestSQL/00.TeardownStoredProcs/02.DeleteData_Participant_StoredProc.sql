@@ -11,7 +11,6 @@ GO
 -- Description:	Stored procedure declarations for deleting participant data
 -- =============================================
 
-
 -- Defines cr_QA_Delete_Event_Participant
 IF NOT EXISTS ( SELECT  *
 	FROM    sys.objects

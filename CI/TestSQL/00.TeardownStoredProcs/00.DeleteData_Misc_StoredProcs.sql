@@ -11,7 +11,6 @@ GO
 -- Description:	Miscellaneous, independent stored procedures used by multiple other stored procs in the cr_QA_Delete suite
 -- =============================================
 
-
 -- Defines cr_QA_Delete_Childcare_Request
 IF NOT EXISTS ( SELECT  *
 	FROM    sys.objects
@@ -124,5 +123,44 @@ BEGIN
 	UPDATE [dbo].cr_Submissions SET Form_Response_ID = null WHERE Form_Response_ID = @form_response_id;
 	
 	DELETE [dbo].Form_Responses WHERE Form_Response_ID = @form_response_id;
+END
+GO
+
+
+-- Defines cr_QA_Delete_Attribute
+IF NOT EXISTS ( SELECT  *
+	FROM    sys.objects
+	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Attribute')
+			AND type IN ( N'P', N'PC' ) )
+	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Attribute
+	@attribute_id int,
+	@attribute_name nvarchar(100) AS SET NOCOUNT ON;')
+GO
+ALTER PROCEDURE [dbo].[cr_QA_Delete_Attribute] 
+	@attribute_id int,
+	@attribute_name nvarchar(100)
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	IF @attribute_id is null AND @attribute_name is not null
+		SET @attribute_id = (SELECT TOP 1 Attribute_ID FROM [dbo].Attributes WHERE Attribute_Name = @attribute_name ORDER BY Attribute_ID ASC);
+
+	IF @attribute_id is null
+		RETURN;
+	
+	--Delete foreign key entries that can't be nullified
+	DELETE [dbo].Contact_Attributes WHERE Attribute_ID = @attribute_id;
+	DELETE [dbo].cr_Go_Volunteer_Skills WHERE Attribute_ID = @attribute_id;
+	DELETE [dbo].cr_Registration_Children_Attributes WHERE Attribute_ID = @attribute_id;
+	DELETE [dbo].cr_Registration_Equipment_Attributes WHERE Attribute_ID = @attribute_id;
+	DELETE [dbo].cr_Registration_PrepWork_Attributes WHERE Attribute_ID = @attribute_id;
+	DELETE [dbo].Group_Attributes WHERE Attribute_ID = @attribute_id;
+	DELETE [dbo].Group_Participant_Attributes WHERE Attribute_ID = @attribute_id;
+	DELETE [dbo].Group_Role_Attributes WHERE Attribute_ID = @attribute_id OR Group_Role_Attribute_ID = @attribute_id;
+	DELETE [dbo].Opportunity_Attributes WHERE Attribute_ID = @attribute_id;
+	DELETE [dbo].Response_Attributes WHERE Attribute_ID = @attribute_id;
+
+	DELETE [dbo].Attributes WHERE Attribute_ID = @attribute_id;
 END
 GO

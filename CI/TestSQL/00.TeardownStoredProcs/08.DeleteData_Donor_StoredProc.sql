@@ -11,32 +11,6 @@ GO
 -- Description:	Stored procedure declarations for deleting donor data.
 -- =============================================
 
--- Defines cr_QA_Delete_Pledge
-IF NOT EXISTS ( SELECT  *
-	FROM    sys.objects
-	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Pledge')
-			AND type IN ( N'P', N'PC' ) )
-	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Pledge @pledge_id int AS SET NOCOUNT ON;')
-GO
-ALTER PROCEDURE [dbo].[cr_QA_Delete_Pledge] 
-	@pledge_id int
-AS
-BEGIN
-	SET NOCOUNT ON;
-
-	IF @pledge_id is null
-		RETURN;
-
-	--Nullify foreign keys
-	UPDATE [dbo].Donation_Distributions SET Pledge_ID = null WHERE Pledge_ID = @pledge_id;
-	UPDATE [dbo].Form_Response_Answers SET Pledge_ID = null WHERE Pledge_ID = @pledge_id;
-	UPDATE [dbo].Scheduled_Donations SET Pledge_ID = null WHERE Pledge_ID = @pledge_id;
-
-	DELETE [dbo].Pledges WHERE Pledge_ID = @pledge_id;
-END
-GO
-
-
 -- Defines cr_QA_Delete_Donation
 IF NOT EXISTS ( SELECT  *
 	FROM    sys.objects

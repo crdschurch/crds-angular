@@ -11,7 +11,6 @@ GO
 -- Description:	Stored procedure declarations for deleting user data
 -- =============================================
 
-
 -- Defines cr_QA_Delete_Notification
 IF NOT EXISTS ( SELECT  *
 	FROM    sys.objects

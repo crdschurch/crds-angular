@@ -8,7 +8,7 @@ GO
 -- =============================================
 -- Author:		Henney, Sarah
 -- Create date: 01/08/2018
--- Description:	Stored procedure declarations for deleting event data
+-- Description:	Stored procedure declarations for deleting event and event type data
 -- =============================================
 
 -- Defines cr_QA_Delete_Event_Room
@@ -158,5 +158,61 @@ BEGIN
 	UPDATE [dbo].Scheduled_Donations SET Target_Event = null WHERE Target_Event = @event_id;
 
 	DELETE [dbo].Events WHERE Event_ID = @event_id;
+END
+GO
+
+
+-- Defines cr_QA_Delete_Event_Type
+IF NOT EXISTS ( SELECT  *
+	FROM    sys.objects
+	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Event_Type')
+			AND type IN ( N'P', N'PC' ) )
+	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Event_Type
+	@event_type_id int,
+	@event_type_name nvarchar(50) AS SET NOCOUNT ON;')
+GO
+ALTER PROCEDURE [dbo].[cr_QA_Delete_Event_Type] 
+	@event_type_id int,
+	@event_type_name nvarchar(50)
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	IF @event_type_id is null AND @event_type_name is not null
+		SET @event_type_id = (SELECT TOP 1 Event_Type_ID FROM [dbo].Event_Types WHERE Event_Type = @event_type_name ORDER BY Event_Type_ID ASC);
+
+	IF @event_type_id is null
+		RETURN;
+
+	--Delete foreign key entries that can't be nullified using another stored proc
+	--Delete Events
+	DECLARE @events_to_delete TABLE
+	(
+		event_id int
+	)
+	INSERT INTO @events_to_delete (event_id) SELECT Event_ID 
+		FROM [dbo].Events WHERE Event_Type_ID = @event_type_id;
+
+	DECLARE @cur_entry_id int = 0;
+
+	WHILE @cur_entry_id is not null
+	BEGIN
+		--Get top item in list
+		SET @cur_entry_id = (SELECT TOP 1 event_id 
+			FROM @events_to_delete
+			WHERE event_id > @cur_entry_id
+			ORDER BY event_id ASC);
+
+		--Delete using the stored proc
+		IF @cur_entry_id is not null
+		BEGIN
+			EXEC [dbo].[cr_QA_Delete_Event] @cur_entry_id, null, null;
+		END
+	END
+
+	--Nullify foreign keys
+	UPDATE [dbo].Opportunities SET Event_Type_ID = null WHERE Event_Type_ID = @event_type_id;
+	
+	DELETE [dbo].Event_Types WHERE Event_Type_ID = @event_type_id;
 END
 GO

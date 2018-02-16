@@ -463,7 +463,7 @@ BEGIN
 	IF @household_id is not null
 	BEGIN
 		--Get # members in household
-		SET @num_household_members = (SELECT COUNT(Contact_ID)
+		DECLARE @num_household_members int = (SELECT COUNT(Contact_ID)
 			FROM [dbo].Contacts
 			WHERE Household_ID = @household_id);
 

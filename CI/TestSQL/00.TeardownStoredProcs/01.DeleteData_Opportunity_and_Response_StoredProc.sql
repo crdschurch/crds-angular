@@ -11,7 +11,6 @@ GO
 -- Description:	Stored procedure declarations for deleting opportunity and response data
 -- =============================================
 
-
 -- Defines cr_QA_Delete_Response
 IF NOT EXISTS ( SELECT  *
 	FROM    sys.objects
