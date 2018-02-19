@@ -227,7 +227,7 @@ namespace MinistryPlatform.Translation.Repositories
         {
             var apiToken = ApiLogin();
             const string tableName = "Event_Participants";
-            var searchString = $"Event_ID = {eventId} AND Participant_ID_Table_Contact_ID_Table_Gender_ID_Table.Gender_ID = {genderId}";
+            var searchString = $"Event_ID = {eventId} AND Participant_ID_Table_Contact_ID_Table_Gender_ID_Table.Gender_ID = {genderId} AND (End_Date IS NULL OR End_Date >= GETDATE())";
             const string columnName = "Count(*)";
 
             return _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Search<int>(tableName, searchString, columnName, null, false);
