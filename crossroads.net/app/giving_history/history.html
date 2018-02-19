@@ -54,7 +54,8 @@
             <a href="" class="btn btn-primary col-sm-6 col-md-5 col-xs-12 mobile-push-bottom disable" onClick="window.print();">Print Statement</a>
           </div>
           <div class="col-sm-6" ng-if="giving_history_controller.donations_all"></div> <!-- what is this div? it's doing nothing' -->
-          <div class="col-sm-6 pull-right" giving-years
+          <!-- DE5056: z-index hack fixes non-clickable <select> on mobile -->
+          <div class="col-sm-6 pull-right" style="z-index: 1" giving-years
                 selected-year="giving_history_controller.selected_giving_year"
                 all-years="giving_history_controller.donation_years"
                 on-change="(giving_history_controller.server_error = false) || giving_history_controller.getDonations() || giving_history_controller.getSoftCreditDonations()"></div>
