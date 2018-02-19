@@ -23,7 +23,7 @@ function DeleteContacts($DBConnection){
 		if(![string]::IsNullOrEmpty($user.email))
 		{
 			#Create command
-			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Contact_Related_Data"
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Accounts_With_Email"
 			
 			#Add variables for stored proc
 			AddStringParameter $command "@contact_email" $user.email
