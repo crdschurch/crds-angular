@@ -1,5 +1,5 @@
 param (
-    [string]$userListCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateUserList.csv"),
+    [string]$userDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateUserList.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -16,12 +16,12 @@ function OpenConnection{
 
 #Deletes all contacts and their user account in the list
 function DeleteContacts($DBConnection){
-	$userList = import-csv $userListCSV
+	$userList = import-csv $userDataCSV
 	
 	foreach($user in $userList)
 	{
 		if(![string]::IsNullOrEmpty($user.email))
-		{s
+		{
 			#Create command
 			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Contact_Related_Data"
 			
