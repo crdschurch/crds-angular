@@ -46,6 +46,15 @@ function AddDateParameter{
 	$command.Parameters.AddWithValue($parameter, $db_value) | Out-Null	
 }
 
+function AddMoneyParameter{
+	param([System.Data.SqlClient.SqlCommand]$command,
+		[String]$parameter,
+		[String]$value)
+	
+	$db_value = CatchNullString($value)
+	$command.Parameters.AddWithValue($parameter, $db_value) | Out-Null	
+}
+
 function AddOutputParameter{
 	param([System.Data.SqlClient.SqlCommand]$command,
 		[String]$parameter,

@@ -20,10 +20,10 @@ IF NOT EXISTS ( SELECT  *
 	@donation_id int,
 	@distribution_amount money,
 	@program_name nvarchar(130),
-	@pledge_user_email nvarchar(254),
+	@pledge_donor_email nvarchar(254),
+	@soft_credit_donor_email nvarchar(254),
 	@congregation_id int,
-	@soft_credit_donor_id int,
-	@notes nvarchar(500),
+	@notes nvarchar(1000),
 	@error_message nvarchar(500) OUTPUT,
 	@distribution_id int OUTPUT AS SET NOCOUNT ON;')
 GO
@@ -31,9 +31,9 @@ ALTER PROCEDURE [dbo].[cr_QA_New_Donation_Distribution]
 	@donation_id int,
 	@distribution_amount money,
 	@program_name nvarchar(130),
-	@pledge_user_email nvarchar(254),
+	@pledge_donor_email nvarchar(254),
+	@soft_credit_donor_email nvarchar(254),
 	@congregation_id int,
-	@soft_credit_donor_id int,
 	@notes nvarchar(1000),
 	@error_message nvarchar(500) OUTPUT,
 	@distribution_id int OUTPUT
@@ -66,9 +66,9 @@ BEGIN
 	SET @congregation_id = ISNULL(@congregation_id, 5); --Not site specific
 
 	DECLARE @pledge_id int;
-	IF @pledge_user_email is not null
+	IF @pledge_donor_email is not null
 	BEGIN
-		DECLARE @pledge_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @pledge_user_email);
+		DECLARE @pledge_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @pledge_donor_email);
 		IF @pledge_contact_id is not null
 		BEGIN --Get donor's pledge towards campaign attached to program
 			DECLARE @pledge_donor_id int = (SELECT Donor_Record FROM [dbo].Contacts WHERE Contact_ID = @pledge_contact_id);		
@@ -77,10 +77,31 @@ BEGIN
 			IF @pledge_donor_id is not null AND @pledge_campaign_id is not null
 				SET @pledge_id = (SELECT Pledge_ID FROM [dbo].Pledges WHERE Donor_ID = @pledge_donor_id AND Pledge_Campaign_ID = @pledge_campaign_id);
 			ELSE
-				SET @error_message = @error_message+'Could not find pledge for donor '+@pledge_user_email+' towards pledge campaign for program '+@program_name+CHAR(13);
+				SET @error_message = @error_message+'Could not find pledge for donor '+@pledge_donor_email+' towards pledge campaign for program '+@program_name+CHAR(13);
 		END
 		ELSE
-			SET @error_message = @error_message+'Could not find pledge contact with email '+@pledge_user_email+CHAR(13);
+			SET @error_message = @error_message+'Could not find pledge contact with email '+@pledge_donor_email+CHAR(13);
+	END;
+
+	DECLARE @soft_credit_donor_id int;
+	IF @soft_credit_donor_email is not null
+	BEGIN
+		DECLARE @sc_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @soft_credit_donor_email);
+		IF @sc_contact_id is not null
+		BEGIN 
+			SET @soft_credit_donor_id = (SELECT Donor_Record FROM [dbo].Contacts WHERE Contact_ID = @sc_contact_id);
+			IF @soft_credit_donor_id is null
+			BEGIN
+				--Use defaults
+				EXEC [dbo].[cr_QA_Create_Donor_By_Contact_Id] @sc_contact_id, null, null, null, null, null, 
+				@error_message = @error_message OUTPUT, @donor_id = @soft_credit_donor_id OUTPUT;
+
+				IF @soft_credit_donor_id is null
+					SET @error_message = @error_message+'Could not create donor record for contact with email '+@soft_credit_donor_email+'. Donation distribution will not be soft credited to them.'+CHAR(13);
+			END;
+		END
+		ELSE
+			SET @error_message = @error_message+'Could not find soft credit donor with email '+@soft_credit_donor_email+'. Donation distribution will not be soft credited to them.'+CHAR(13);
 	END;
 	
 
