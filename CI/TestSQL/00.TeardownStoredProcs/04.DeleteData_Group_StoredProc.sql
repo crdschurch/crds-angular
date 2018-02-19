@@ -17,19 +17,14 @@ IF NOT EXISTS ( SELECT  *
 	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Group')
 			AND type IN ( N'P', N'PC' ) )
 	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Group
-	@group_id int,
-	@group_name nvarchar(75) AS SET NOCOUNT ON;')
+	@group_id int AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Delete_Group]
-	@group_id int,
-	@group_name nvarchar(75)
+	@group_id int
 AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF @group_id is null AND @group_name is not null
-		SET @group_id = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @group_name ORDER BY Group_ID ASC);
-	
 	IF @group_id is null
 		RETURN;
 
@@ -98,6 +93,9 @@ BEGIN
 	UPDATE [dbo].Event_Participants SET Group_ID = null WHERE Group_ID = @group_id;
 	UPDATE [dbo].Feedback_Entries SET Group_ID = null WHERE Group_ID = @group_id;
 	UPDATE [dbo].File_Library SET Group_ID = null WHERE Group_ID = @group_id;
+	UPDATE [dbo].Groups SET Parent_Group = null WHERE Parent_Group = @group_id;
+	UPDATE [dbo].Groups SET Descended_From = null WHERE Descended_From = @group_id;
+	UPDATE [dbo].Groups SET Promote_to_Group = null WHERE Promote_to_Group = @group_id;
 	UPDATE [dbo].Journeys SET Leadership_Team = null WHERE Leadership_Team = @group_id;
 	UPDATE [dbo].Ministries SET Leadership_Team = null WHERE Leadership_Team = @group_id;
 	UPDATE [dbo].Opportunities SET Add_to_Group = null WHERE Add_to_Group = @group_id;
@@ -105,7 +103,51 @@ BEGIN
 	UPDATE [dbo].Product_Option_Prices SET Add_to_Group = null WHERE Add_to_Group = @group_id;
 	UPDATE [dbo].Programs SET Leadership_Team = null WHERE Leadership_Team = @group_id;
 	UPDATE [dbo].Servicing SET Team_Group_ID = null WHERE Team_Group_ID = @group_id;
-
+	
 	DELETE [dbo].Groups WHERE Group_ID = @group_id;
+END
+GO
+
+
+-- Defines cr_QA_Delete_Group_By_Name
+IF NOT EXISTS ( SELECT  *
+	FROM    sys.objects
+	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Group_By_Name')
+			AND type IN ( N'P', N'PC' ) )
+	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Group_By_Name
+	@group_name nvarchar(75) AS SET NOCOUNT ON;')
+GO
+ALTER PROCEDURE [dbo].[cr_QA_Delete_Group_By_Name]
+	@group_name nvarchar(75)
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	IF @group_name is null
+		RETURN;
+
+	--Delete Groups by name
+	DECLARE @groups_to_delete TABLE
+	(
+		group_id int
+	)
+	INSERT INTO @groups_to_delete (group_id) SELECT Group_ID FROM [dbo].Groups WHERE Group_Name = @group_name;
+
+	DECLARE @cur_entry_id int = 0;
+
+	WHILE @cur_entry_id is not null
+	BEGIN
+		--Get top item in list
+		Set @cur_entry_id = (SELECT TOP 1 group_id 
+			FROM @groups_to_delete
+			WHERE group_id > @cur_entry_id
+			ORDER BY group_id ASC);
+
+		--Delete using the stored proc
+		IF @cur_entry_id is not null
+		BEGIN
+			EXEC [dbo].[cr_QA_Delete_Group] @cur_entry_id;
+		END
+	END
 END
 GO

@@ -95,7 +95,8 @@ IF NOT EXISTS ( SELECT  *
 	FROM    sys.objects
 	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_User')
 			AND type IN ( N'P', N'PC' ) )
-	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_User @user_id int AS SET NOCOUNT ON;')
+	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_User 
+	@user_id int AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Delete_User]
 	@user_id int

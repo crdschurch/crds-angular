@@ -133,7 +133,7 @@ BEGIN
 		--Delete using the stored proc
 		IF @cur_entry_id is not null
 		BEGIN
-			EXEC [dbo].[cr_QA_Delete_Event] @cur_entry_id, null, null;
+			EXEC [dbo].[cr_QA_Delete_Event] @cur_entry_id;
 		END
 	END
 
@@ -158,7 +158,7 @@ BEGIN
 		--Delete using the stored proc
 		IF @cur_entry_id is not null
 		BEGIN
-			EXEC [dbo].[cr_QA_Delete_Group] @cur_entry_id, null;
+			EXEC [dbo].[cr_QA_Delete_Group] @cur_entry_id;
 		END
 	END
 
@@ -183,7 +183,7 @@ BEGIN
 		--Delete using the stored proc
 		IF @cur_entry_id is not null
 		BEGIN
-			EXEC [dbo].[cr_QA_Delete_Program] @cur_entry_id, null;
+			EXEC [dbo].[cr_QA_Delete_Program] @cur_entry_id;
 		END
 	END
 	

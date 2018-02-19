@@ -1,6 +1,6 @@
 param (
-    [string]$batchListCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateBatches.csv"),
-	[string]$depositListCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDeposits.csv"),
+    [string]$eventTypeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateEventTypes.csv"),
+    [string]$eventDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateEvents.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -15,58 +15,59 @@ function OpenConnection{
 	return $DBConnection
 }
 
-#Deletes all batches in the list
-function DeleteBatches($DBConnection){
-	$batchList = import-csv $batchListCSV
+#Deletes all event types in the list
+function DeleteEventTypes($DBConnection){
+	$eventTypeDataList = import-csv $eventTypeDataCSV
 	
-	foreach($batch in $batchList)
+	foreach($eventtype in $eventTypeDataList)
 	{
-		if(![string]::IsNullOrEmpty($batch.R_Batch_Name))
+		if(![string]::IsNullOrEmpty($eventtype.R_Event_Type))
 		{
 			#Create command
-			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Batch_By_Name"
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Event_Type_By_Name"
 			
 			#Add variables for stored proc
-			AddStringParameter $command "@batch_name" $batch.R_Batch_Name
+			AddStringParameter $command "@event_type_name" $eventtype.R_Event_Type
 			
 			#Execute command
 			$adapter = new-object System.Data.SqlClient.SqlDataAdapter
 			$adapter.SelectCommand = $command		
 			$dataset = new-object System.Data.Dataset
 			try { 
-				write-host "Removing Batch" $batch.R_Batch_Name
+				write-host "Removing Event Type" $eventtype.R_Event_Type
 				$results = $adapter.Fill($dataset) 
 			} catch {
-				write-host "There was an error deleting data related to batch "$batch.R_Batch_Name
+				write-host "There was an error deleting data related to event type "$eventtype.R_Event_Type
 				write-host "Error: " $Error
 			}
 		}
 	}
 }
 
-#Deletes all deposits in the list
-function DeleteDeposites($DBConnection){
-	$depositList = import-csv $depositListCSV
+#Deletes all events in the list
+function DeleteEvents($DBConnection){
+	$eventDataList = import-csv $eventDataCSV
 	
-	foreach($deposit in $depositList)
+	foreach($event in $eventDataList)
 	{
-		if(![string]::IsNullOrEmpty($deposit.R_Deposit_Name))
+		if(![string]::IsNullOrEmpty($event.R_Event_Name))
 		{
 			#Create command
-			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Deposit_By_Name"
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Event_By_Name_And_Date"
 			
 			#Add variables for stored proc
-			AddStringParameter $command "@deposit_name" $deposit.R_Deposit_Name
+			AddStringParameter $command "@event_name" $event.R_Event_Name
+			AddDateParameter $command "@start_date" $event.R_Start_Date
 			
 			#Execute command
 			$adapter = new-object System.Data.SqlClient.SqlDataAdapter
 			$adapter.SelectCommand = $command		
 			$dataset = new-object System.Data.Dataset
 			try { 
-				write-host "Removing Deposit" $deposit.R_Deposit_Name
+				write-host "Removing Event" $event.R_Event_Name
 				$results = $adapter.Fill($dataset) 
 			} catch {
-				write-host "There was an error deleting data related to deposit "$deposit.R_Deposit_Name
+				write-host "There was an error deleting data related to event "$event.R_Event_Name
 				write-host "Error: " $Error
 			}
 		}
@@ -76,8 +77,8 @@ function DeleteDeposites($DBConnection){
 #Execute
 try{
 	$DBConnection = OpenConnection
-	DeleteBatches $DBConnection
-	DeleteDeposites $DBConnection
+	DeleteEventTypes $DBConnection
+	DeleteEvents $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1

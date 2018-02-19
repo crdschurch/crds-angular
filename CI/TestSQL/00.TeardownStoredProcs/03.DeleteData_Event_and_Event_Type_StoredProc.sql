@@ -46,21 +46,14 @@ IF NOT EXISTS ( SELECT  *
 	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Event')
 			AND type IN ( N'P', N'PC' ) )
 	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Event
-	@event_id int,
-	@event_name nvarchar(75),
-	@start_date datetime AS SET NOCOUNT ON;')
+	@event_id int AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Delete_Event]
-	@event_id int,
-	@event_name nvarchar(75),
-	@start_date datetime
+	@event_id int
 AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF @event_id is null AND @event_name is not null AND @start_date is not null
-		SET @event_id = (SELECT TOP 1 Event_ID FROM [dbo].Events WHERE Event_Title = @event_name AND Event_Start_Date = @start_date ORDER BY Event_ID ASC);
-	
 	IF @event_id is null
 		RETURN;
 
@@ -162,24 +155,66 @@ END
 GO
 
 
+-- Defines cr_QA_Delete_Event_By_Name_And_Date
+IF NOT EXISTS ( SELECT  *
+	FROM    sys.objects
+	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Event_By_Name_And_Date')
+			AND type IN ( N'P', N'PC' ) )
+	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Event_By_Name_And_Date
+	@event_name nvarchar(75),
+	@start_date datetime AS SET NOCOUNT ON;')
+GO
+ALTER PROCEDURE [dbo].[cr_QA_Delete_Event_By_Name_And_Date]
+	@event_name nvarchar(75),
+	@start_date datetime
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	IF @event_name is null OR @start_date is null
+		RETURN;
+
+	--Delete all matching events
+	DECLARE @events_to_delete TABLE
+	(
+		event_id int
+	)
+	INSERT INTO @events_to_delete (event_id) SELECT Event_ID 
+		FROM [dbo].Events WHERE Event_Title = @event_name AND Event_Start_Date = @start_date;
+
+	DECLARE @cur_entry_id int = 0;
+
+	WHILE @cur_entry_id is not null
+	BEGIN
+		--Get top item in list
+		Set @cur_entry_id = (SELECT TOP 1 event_id 
+			FROM @events_to_delete
+			WHERE event_id > @cur_entry_id
+			ORDER BY event_id ASC);
+
+		--Delete using the stored proc
+		IF @cur_entry_id is not null
+		BEGIN
+			EXEC [dbo].[cr_QA_Delete_Event] @cur_entry_id;
+		END
+	END
+END
+GO
+
+
 -- Defines cr_QA_Delete_Event_Type
 IF NOT EXISTS ( SELECT  *
 	FROM    sys.objects
 	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Event_Type')
 			AND type IN ( N'P', N'PC' ) )
 	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Event_Type
-	@event_type_id int,
-	@event_type_name nvarchar(50) AS SET NOCOUNT ON;')
+	@event_type_id int AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Delete_Event_Type] 
-	@event_type_id int,
-	@event_type_name nvarchar(50)
+	@event_type_id int
 AS
 BEGIN
 	SET NOCOUNT ON;
-
-	IF @event_type_id is null AND @event_type_name is not null
-		SET @event_type_id = (SELECT TOP 1 Event_Type_ID FROM [dbo].Event_Types WHERE Event_Type = @event_type_name ORDER BY Event_Type_ID ASC);
 
 	IF @event_type_id is null
 		RETURN;
@@ -206,7 +241,7 @@ BEGIN
 		--Delete using the stored proc
 		IF @cur_entry_id is not null
 		BEGIN
-			EXEC [dbo].[cr_QA_Delete_Event] @cur_entry_id, null, null;
+			EXEC [dbo].[cr_QA_Delete_Event] @cur_entry_id;
 		END
 	END
 
@@ -214,5 +249,50 @@ BEGIN
 	UPDATE [dbo].Opportunities SET Event_Type_ID = null WHERE Event_Type_ID = @event_type_id;
 	
 	DELETE [dbo].Event_Types WHERE Event_Type_ID = @event_type_id;
+END
+GO
+
+
+-- Defines cr_QA_Delete_Event_Type_By_Name
+IF NOT EXISTS ( SELECT  *
+	FROM    sys.objects
+	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Event_Type_By_Name')
+			AND type IN ( N'P', N'PC' ) )
+	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Event_Type_By_Name
+	@event_type_name nvarchar(50) AS SET NOCOUNT ON;')
+GO
+ALTER PROCEDURE [dbo].[cr_QA_Delete_Event_Type_By_Name] 
+	@event_type_name nvarchar(50)
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	IF @event_type_name is null
+		RETURN;
+
+	--Delete Event Types with name
+	DECLARE @event_types_to_delete TABLE
+	(
+		event_type_id int
+	)
+	INSERT INTO @event_types_to_delete (event_type_id) SELECT Event_Type_ID FROM [dbo].Event_Types 
+	WHERE Event_Type = @event_type_name;
+
+	DECLARE @cur_entry_id int = 0;
+
+	WHILE @cur_entry_id is not null
+	BEGIN
+		--Get top item in list
+		SET @cur_entry_id = (SELECT TOP 1 event_type_id 
+			FROM @event_types_to_delete
+			WHERE event_type_id > @cur_entry_id
+			ORDER BY event_type_id ASC);
+
+		--Delete using the stored proc
+		IF @cur_entry_id is not null
+		BEGIN
+			EXEC [dbo].[cr_QA_Delete_Event_Type] @cur_entry_id;
+		END
+	END
 END
 GO

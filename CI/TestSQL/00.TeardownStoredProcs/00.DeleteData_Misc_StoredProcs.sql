@@ -133,18 +133,13 @@ IF NOT EXISTS ( SELECT  *
 	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Attribute')
 			AND type IN ( N'P', N'PC' ) )
 	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Attribute
-	@attribute_id int,
-	@attribute_name nvarchar(100) AS SET NOCOUNT ON;')
+	@attribute_id int AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Delete_Attribute] 
-	@attribute_id int,
-	@attribute_name nvarchar(100)
+	@attribute_id int
 AS
 BEGIN
 	SET NOCOUNT ON;
-
-	IF @attribute_id is null AND @attribute_name is not null
-		SET @attribute_id = (SELECT TOP 1 Attribute_ID FROM [dbo].Attributes WHERE Attribute_Name = @attribute_name ORDER BY Attribute_ID ASC);
 
 	IF @attribute_id is null
 		RETURN;
@@ -162,5 +157,48 @@ BEGIN
 	DELETE [dbo].Response_Attributes WHERE Attribute_ID = @attribute_id;
 
 	DELETE [dbo].Attributes WHERE Attribute_ID = @attribute_id;
+END
+GO
+
+
+-- Defines cr_QA_Delete_Attribute_By_Name
+IF NOT EXISTS ( SELECT  *
+	FROM    sys.objects
+	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Attribute_By_Name')
+			AND type IN ( N'P', N'PC' ) )
+	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Attribute_By_Name
+	@attribute_name nvarchar(100) AS SET NOCOUNT ON;')
+GO
+ALTER PROCEDURE [dbo].[cr_QA_Delete_Attribute_By_Name] 
+	@attribute_name nvarchar(100)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	IF @attribute_name is null
+		RETURN;
+
+	DECLARE @attributes_to_delete TABLE
+	(
+		attribute_id int
+	);
+	INSERT INTO @attributes_to_delete (attribute_id) SELECT Attribute_ID FROM [dbo].Attributes WHERE Attribute_Name = @attribute_name;
+	
+	DECLARE @cur_entry_id int = 0;
+
+	WHILE @cur_entry_id is not null
+	BEGIN
+		--Get top item in list
+		SET @cur_entry_id = (SELECT TOP 1 attribute_id 
+			FROM @attributes_to_delete
+			WHERE attribute_id > @cur_entry_id
+			ORDER BY attribute_id ASC);
+
+		--Delete using the stored proc
+		IF @cur_entry_id is not null
+		BEGIN
+			EXEC [dbo].[cr_QA_Delete_Attribute] @cur_entry_id;
+		END
+	END		
 END
 GO

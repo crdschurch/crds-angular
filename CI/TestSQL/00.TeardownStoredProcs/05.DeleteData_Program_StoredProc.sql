@@ -17,19 +17,14 @@ IF NOT EXISTS ( SELECT  *
 	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Program')
 			AND type IN ( N'P', N'PC' ) )
 	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Program
-	@program_id int,
-	@program_name nvarchar(130) AS SET NOCOUNT ON;')
+	@program_id int AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Delete_Program]
-	@program_id int,
-	@program_name nvarchar(130)
+	@program_id int
 AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	IF @program_id is null and @program_name is not null
-		SET @program_id = (SELECT TOP 1 Program_ID FROM [dbo].Programs WHERE Program_Name = @program_name ORDER BY Program_ID ASC);
-
 	IF @program_id is null
 		RETURN;
 
@@ -63,7 +58,7 @@ BEGIN
 		--Delete using the stored proc
 		IF @cur_entry_id is not null
 		BEGIN
-			EXEC [dbo].[cr_QA_Delete_Event] @cur_entry_id, null, null;
+			EXEC [dbo].[cr_QA_Delete_Event] @cur_entry_id;
 		END
 	END
 
@@ -88,7 +83,7 @@ BEGIN
 		--Delete using the stored proc
 		IF @cur_entry_id is not null
 		BEGIN
-			EXEC [dbo].[cr_QA_Delete_Opportunity] @cur_entry_id, null;
+			EXEC [dbo].[cr_QA_Delete_Opportunity] @cur_entry_id;
 		END
 	END
 
@@ -124,5 +119,48 @@ BEGIN
 	UPDATE [dbo].Products SET Program_ID = null WHERE Program_ID = @program_id;
 
 	DELETE [dbo].Programs WHERE Program_ID = @program_id;
+END
+GO
+
+-- Defines cr_QA_Delete_Program_By_Name
+IF NOT EXISTS ( SELECT  *
+	FROM    sys.objects
+	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Program_By_Name')
+			AND type IN ( N'P', N'PC' ) )
+	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Program_By_Name
+	@program_name nvarchar(130) AS SET NOCOUNT ON;')
+GO
+ALTER PROCEDURE [dbo].[cr_QA_Delete_Program_By_Name]
+	@program_name nvarchar(130)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	
+	IF @program_name is null
+		RETURN;
+
+	--Delete Programs by name
+	DECLARE @programs_to_delete TABLE
+	(
+		program_id int
+	)
+	INSERT INTO @programs_to_delete (program_id) SELECT Program_ID FROM [dbo].Programs WHERE Program_Name = @program_name;
+
+	DECLARE @cur_entry_id int = 0;
+
+	WHILE @cur_entry_id is not null
+	BEGIN
+		--Get top item in list
+		SET @cur_entry_id = (SELECT TOP 1 program_id 
+			FROM @programs_to_delete
+			WHERE program_id > @cur_entry_id
+			ORDER BY program_id ASC);
+
+		--Delete using the stored proc
+		IF @cur_entry_id is not null
+		BEGIN
+			EXEC [dbo].[cr_QA_Delete_Program] @cur_entry_id;
+		END
+	END
 END
 GO

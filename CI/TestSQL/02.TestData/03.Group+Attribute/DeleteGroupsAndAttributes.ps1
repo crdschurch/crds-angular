@@ -1,6 +1,6 @@
 param (
-    [string]$batchListCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateBatches.csv"),
-	[string]$depositListCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateDeposits.csv"),
+    [string]$groupListCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroups.csv"),
+    [string]$attributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateAttributes.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -15,58 +15,58 @@ function OpenConnection{
 	return $DBConnection
 }
 
-#Deletes all batches in the list
-function DeleteBatches($DBConnection){
-	$batchList = import-csv $batchListCSV
+#Deletes all groups in the list
+function DeleteGroups($DBConnection){
+	$groupList = import-csv $groupListCSV
 	
-	foreach($batch in $batchList)
+	foreach($group in $groupList)
 	{
-		if(![string]::IsNullOrEmpty($batch.R_Batch_Name))
+		if(![string]::IsNullOrEmpty($group.R_Group_Name))
 		{
 			#Create command
-			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Batch_By_Name"
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Group_By_Name"
 			
 			#Add variables for stored proc
-			AddStringParameter $command "@batch_name" $batch.R_Batch_Name
+			AddStringParameter $command "@group_name" $group.R_Group_Name
 			
 			#Execute command
 			$adapter = new-object System.Data.SqlClient.SqlDataAdapter
 			$adapter.SelectCommand = $command		
 			$dataset = new-object System.Data.Dataset
 			try { 
-				write-host "Removing Batch" $batch.R_Batch_Name
+				write-host "Removing Group" $group.R_Group_Name
 				$results = $adapter.Fill($dataset) 
 			} catch {
-				write-host "There was an error deleting data related to batch "$batch.R_Batch_Name
+				write-host "There was an error deleting data related to group "$group.R_Group_Name
 				write-host "Error: " $Error
 			}
 		}
 	}
 }
 
-#Deletes all deposits in the list
-function DeleteDeposites($DBConnection){
-	$depositList = import-csv $depositListCSV
+#Deletes all attributes in the list
+function DeleteAttributes($DBConnection){
+	$attributeList = import-csv $attributeDataCSV
 	
-	foreach($deposit in $depositList)
+	foreach($attribute in $attributeList)
 	{
-		if(![string]::IsNullOrEmpty($deposit.R_Deposit_Name))
+		if(![string]::IsNullOrEmpty($attribute.R_Attribute_Name))
 		{
 			#Create command
-			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Deposit_By_Name"
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Attribute_By_Name"
 			
 			#Add variables for stored proc
-			AddStringParameter $command "@deposit_name" $deposit.R_Deposit_Name
+			AddStringParameter $command "@attribute_name" $attribute.R_Attribute_Name
 			
 			#Execute command
 			$adapter = new-object System.Data.SqlClient.SqlDataAdapter
 			$adapter.SelectCommand = $command		
 			$dataset = new-object System.Data.Dataset
 			try { 
-				write-host "Removing Deposit" $deposit.R_Deposit_Name
+				write-host "Removing Attribute" $attribute.R_Attribute_Name
 				$results = $adapter.Fill($dataset) 
 			} catch {
-				write-host "There was an error deleting data related to deposit "$deposit.R_Deposit_Name
+				write-host "There was an error deleting data related to attribute "$attribute.R_Attribute_Name
 				write-host "Error: " $Error
 			}
 		}
@@ -76,8 +76,8 @@ function DeleteDeposites($DBConnection){
 #Execute
 try{
 	$DBConnection = OpenConnection
-	DeleteBatches $DBConnection
-	DeleteDeposites $DBConnection
+	DeleteGroups $DBConnection
+	DeleteAttributes $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
