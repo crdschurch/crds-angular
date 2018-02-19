@@ -1,9 +1,0 @@
-﻿User_Email,Address_Line_1,Address_Line_2,City,State,Zip_Code,Country,Country_Code,County,,
-kcradduck+testing@crossroads.net,1234 Kathyrn Testing Lane,,CITY,OH,45209,United States,USA,County!,,
-mpcrds+auto+husband@gmail.com,1234 Tatooine Lane,,CITY,OH,45209,United States,USA,County!,,Will update the Address on the Household of the user with with User_Email
-mpcrds+auto+georgesmith@gmail.com,12 Ridge Ave.,,Oakley,OH,45067,United States,USA,,,"Required: User_Email, Address_Line_1"
-mpcrds+tremplay.richard@gmail.com,123 Towne Commons Way,,Oakley,OH,45067,United States,USA,,,
-rtheil+Testing@crossroads.net,1234 Rich Testing Lane,,CITY,OH,45209,United States,USA,County!,,"If cell is empty, Null will be entered in the DB"
-kidsclubdad@gmail.com,1234 Testing Lane,,CITY,OH,45067,United States,USA,,,
-mpcrds+cloudstrife@gmail.com,123 Midgar Section 6,,CITY,OH,45209,United States,USA,,,
-mpcrds+auto+fredflintstone@gmail.com,301 Cobblestone Way,,CITY,OH,45209,United States,USA,,,

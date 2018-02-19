@@ -68,5 +68,22 @@ namespace crds_angular.test.Services
             Assert.AreEqual(expectedHours1, actualHours1);
             Assert.AreEqual(expectedHours2, actualHours2);
         }
+
+        [Test]
+        public void ShouldNotAdd12to12pm()
+        {
+            string testHours1 = "12:15:00.0000000";
+            string testHours2 = "12:30 PM";
+            string testHours3 = "12:45 AM";
+
+            string actualHours1 = fixture.ConvertTimeToUtcString(testHours1);
+            string actualHours2 = fixture.ConvertTimeToUtcString(testHours2);
+            string actualHours3 = fixture.ConvertTimeToUtcString(testHours3);
+
+            Assert.AreEqual("0001-01-01T12:15:00.000Z", actualHours1);
+            Assert.AreEqual("0001-01-01T12:30:00.000Z", actualHours2);
+            Assert.AreEqual("0001-01-01T00:45:00.000Z", actualHours3);
+        }
+        
     }
 }
