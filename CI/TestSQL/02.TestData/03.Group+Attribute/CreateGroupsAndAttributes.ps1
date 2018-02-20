@@ -3,9 +3,9 @@ param (
     [string]$addChildGroupDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\AddChildGroup.csv"),
     [string]$attributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateAttributes.csv"),
     [string]$groupAttributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroupAttributes.csv"),
-    [string]$DBServer = "mp-demo-db.centralus.cloudapp.azure.com",
-    [string]$DBUser = 'MigrateUser', #$(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
-    [string]$DBPassword = 'Aw@!ted2014' #$(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
+    [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
+    [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
+    [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
 . ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.ReloadControllers\DBCommand.ps1") #should avoid dot-source errors
