@@ -1,0 +1,12 @@
+R_Event_Name,R_Participant_Email,R_Event_Start_Date,R_Participation_Status_ID,Time_In,Time_Confirmed,Setup_Date
+(t) GO Midgar 2018,mpcrds+cloudstrife@gmail.com,12/25/2018,2,1/1/2018,1/1/2018,9/9/2017
+(t+auto) GO Bedrock 2018,mpcrds+auto+fredflintstone@gmail.com,1/1/2018,2,1/1/2018,1/1/2018,9/9/2017
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,NOTE! Event names are not guaranteed to be unique. This will add the user to the first event that begins on the given event start date.,,,,,
