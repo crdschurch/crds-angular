@@ -59,6 +59,7 @@ namespace crds_angular.test.Services
         private int _gatheringHostAcceptTemplateId = 7;
         private int _gatheringHostDenyTemplateId = 8;
         private int _anywhereGroupTypeId = 30;
+        private string _smallGroupIconUrl = "www.cooliconurl.com";
 
         [SetUp]
         public void SetUp()
@@ -105,6 +106,8 @@ namespace crds_angular.test.Services
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("GatheringHostDenyTemplate"))
                 .Returns(_gatheringHostDenyTemplateId);
             _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigIntValue("GroupsTrialMemberRoleId")).Returns(_trialMemberRoldId);
+            _mpConfigurationWrapper.Setup(mocked => mocked.GetConfigValue("ConnectSmallGroupPinUrl"))
+                .Returns(_smallGroupIconUrl);
 
             _fixture = new FinderService(_addressGeocodingService.Object,
                                          _mpFinderRepository.Object,
@@ -844,13 +847,10 @@ namespace crds_angular.test.Services
             var pinlist = new List<PinDto> {pin};
             var coords = new GeoCoordinate(36,-84);
 
-            //_addressService.SetGroupPinGeoCoordinates(pin); _addressService.SetGroupPinGeoCoordinates(pin);
-            _addressService.Setup(mocked => mocked.SetGroupPinGeoCoordinates(It.IsAny<PinDto>())).Callback<PinDto>(AddCoords);
 
             var result = _fixture.AddPinMetaData(pinlist, coords, 0);
 
-            Assert.IsTrue(result[0].Address.Latitude != 0);
-            Assert.IsTrue(result[0].Address.Longitude != 0);
+            Assert.AreEqual(result[0].IconUrl, _smallGroupIconUrl);
         }
 
         private static void AddCoords(PinDto pin)
