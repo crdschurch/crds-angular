@@ -1,6 +1,8 @@
-#Updated
+# Given a directory, parses files and removes meta data from the cr_Build_Scripts	
+# table.  So that test SQL can be rerun on a database. 
+
 param (
-    [string]$path = $(throw "-path is required."), #Comma separated paths
+    [string]$path = $(throw "-path is required."), #Comma separated paths, no spaces
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
