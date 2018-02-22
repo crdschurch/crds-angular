@@ -16,7 +16,6 @@ $DBConnection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;Use
 $DBConnection.Open();
 
 try {
-	write-host $sqlfiles
 	$command = New-Object System.Data.SQLClient.SQLCommand
 	$command.Connection = $DBConnection
 	$command.CommandText = "DELETE FROM [MinistryPlatform].[dbo].[cr_Scripts] WHERE Name in ($sqlfiles)";
