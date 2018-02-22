@@ -21,6 +21,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IMinistryPlatformService> _ministryPlatformService;
         private Mock<IApiUserRepository> _apiUserService;
         private Mock<IConfigurationWrapper> _configuration;
+        private Mock<IMinistryPlatformRestRepository> _ministryPlatformRepo;
         private AddressRepository _fixture;
         private readonly int _addressPageId = 271;
         private readonly int _addressApiPageViewId = 271;
@@ -33,9 +34,10 @@ namespace MinistryPlatform.Translation.Test.Services
             _apiUserService = new Mock<IApiUserRepository>();
             _apiUserService.Setup(m => m.GetToken()).Returns("useme");
             _configuration = new Mock<IConfigurationWrapper>();
+            _ministryPlatformRepo = new Mock<IMinistryPlatformRestRepository>();
             _configuration.Setup(mocked => mocked.GetConfigIntValue("Addresses")).Returns(_addressPageId);
             _configuration.Setup(mocked => mocked.GetConfigIntValue("AddressesApiPageView")).Returns(_addressApiPageViewId);
-            _fixture = new AddressRepository(_configuration.Object,_ministryPlatformService.Object, _apiUserService.Object);
+            _fixture = new AddressRepository(_configuration.Object,_ministryPlatformService.Object, _apiUserService.Object, _ministryPlatformRepo.Object);
         }
 
         [Test]
@@ -100,25 +102,12 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             _ministryPlatformService.Setup(m => m.UpdateRecord(271, It.IsAny<Dictionary<string, object>>(), apiToken));
+            _ministryPlatformRepo.Setup(m => m.UsingAuthenticationToken(apiToken))
+                .Returns(_ministryPlatformRepo.Object);
+            _ministryPlatformRepo.Setup(m => m.Update(addr, (string) null)).Returns(addr);
 
             var addrId = _fixture.Update(addr);
-            _ministryPlatformService.Verify(
-                mocked =>
-                    mocked.UpdateRecord(_addressPageId,
-                                        It.Is<Dictionary<string, object>>(
-                                            d =>
-                                                d["Address_ID"].Equals(addr.Address_ID) &&
-                                                d["Address_Line_1"].Equals(addr.Address_Line_1) &&
-                                                d["Address_Line_2"].Equals(addr.Address_Line_2) &&
-                                                d["City"].Equals(addr.City) &&
-                                                d["State/Region"].Equals(addr.State) &&
-                                                d["Postal_Code"].Equals(addr.Postal_Code) &&
-                                                d["Foreign_Country"].Equals(addr.Foreign_Country) &&
-                                                d["County"].Equals(addr.County) &&
-                                                d["Longitude"].Equals(addr.Longitude) &&
-                                                d["Latitude"].Equals(addr.Latitude)
-                                            ),
-                                        "useme"));
+            _ministryPlatformRepo.VerifyAll();
 
             Assert.IsNotNull(addrId);
             Assert.AreEqual(addressId, addrId);

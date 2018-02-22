@@ -83,7 +83,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _ministryPlatformRestRepository.Setup(
                 mocked =>
-                    mocked.Search<MpAddress>(
+                    mocked.Search<MpContact, MpAddress>(
                         It.Is<string>(
                             m =>
                                 m.Equals(

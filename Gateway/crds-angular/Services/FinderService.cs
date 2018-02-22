@@ -1270,12 +1270,6 @@ namespace crds_angular.Services
                 pin.Title = GetPinTitle(pin, contactId);
                 pin.IconUrl = GetPinUrl(pin.PinType);
 
-                if ((pin.PinType == PinType.GATHERING || pin.PinType == PinType.SMALL_GROUP) && pin.Address.PostalCode != null && pin.Address.Longitude == 0)
-                {
-                    // Everything will go to a state level with bad address - because state is required select control
-                    _addressService.SetGroupPinGeoCoordinates(pin);
-                }
-
                 //calculate proximity for all pins to origin
                 if (pin.Address.Latitude == null) continue;
                 if (pin.Address.Longitude != null && originCoords != null)
