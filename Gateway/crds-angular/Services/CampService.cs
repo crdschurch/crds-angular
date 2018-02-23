@@ -112,7 +112,7 @@ namespace crds_angular.Services
             var formFieldId = _configurationWrapper.GetConfigIntValue("SummerCampForm.FinancialAssistance");
             var campEvent = _eventRepository.GetEvent(eventId);
             var eventProduct = _productRepository.GetProductForEvent(eventId);
-            var invoiceDetails = _invoiceRepository.GetInvoiceDetailsForProductAndCamper(eventProduct.ProductId, camperContactId, eventId);            
+            var invoiceDetails = _invoiceRepository.GetInvoiceDetailsForProductAndCamper(eventProduct.ProductId, camperContactId, eventId);
             var eventProductOptionPrices = _productRepository.GetProductOptionPricesForProduct(eventProduct.ProductId).OrderByDescending(m => m.DaysOutToHide).ToList();
             var answer = _formSubmissionRepository.GetFormResponseAnswer(formId, camperContactId, formFieldId, eventId);
             var financialAssistance = (!string.IsNullOrEmpty(answer) && Convert.ToBoolean(answer));
@@ -122,7 +122,7 @@ namespace crds_angular.Services
                 InvoiceId = invoiceDetails.Status ? invoiceDetails.Value.InvoiceId : 0,
                 ProductId = eventProduct.ProductId,
                 ProductName = eventProduct.ProductName,
-                BasePrice = (paymentDetail != null && paymentDetail.InvoiceTotal > 0) ? paymentDetail.InvoiceTotal: eventProduct.BasePrice,
+                BasePrice = eventProduct.BasePrice,
                 DepositPrice = eventProduct.DepositPrice.Value,
                 Options = ConvertProductOptionPricetoDto(eventProductOptionPrices,eventProduct.BasePrice,campEvent.EventStartDate),
                 BasePriceEndDate = campEvent.EventStartDate,
@@ -541,12 +541,6 @@ namespace crds_angular.Services
             };
 
             _formSubmissionRepository.SubmitFormResponse(formResponse);
-
-            // if an invoice exists for this eventparticipant then don't create a new one
-            if (_invoiceRepository.InvoiceExistsForEventParticipant(eventParticipantId)) return;
-
-            // create the invoice with product from event and best pricing for the current date
-            //get the product id for this event
             var campEvent = _eventRepository.GetEvent(campProductDto.EventId);
             var product = _productRepository.GetProductForEvent(campProductDto.EventId);
             var optionPrices = _productRepository.GetProductOptionPricesForProduct(product.ProductId);
@@ -556,8 +550,16 @@ namespace crds_angular.Services
                     .OrderBy(i => i.EndDate).FirstOrDefault()?
                     .ProductOptionPriceId 
                 : (int?)null;
-
-            _invoiceRepository.CreateInvoiceAndDetail(product.ProductId, productOptionPriceId, loggedInContact.Contact_ID, campProductDto.ContactId, eventParticipantId);
+            var invoiceDetail = _invoiceRepository.GetInvoiceDetailsForProductAndCamper(product.ProductId,campProductDto.ContactId, campProductDto.EventId);
+            if (invoiceDetail.Status)
+            {
+              _invoiceRepository.UpdateInvoiceAndDetail(invoiceDetail.Value.InvoiceId, product, productOptionPriceId, loggedInContact.Contact_ID, campProductDto.ContactId, eventParticipantId); 
+            }
+            else
+            {
+              _invoiceRepository.CreateInvoiceAndDetail(product.ProductId, productOptionPriceId, loggedInContact.Contact_ID, campProductDto.ContactId, eventParticipantId);
+            }
+            
         }
 
         public bool SendCampConfirmationEmail(int eventId, int invoiceId, int paymentId, string token)
