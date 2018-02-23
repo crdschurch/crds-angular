@@ -4,8 +4,7 @@ class TripDeposit {
     this.giveTransferService = GiveTransferService;
     this.giveFlow = GiveFlow;
     this.session = Session;
-    this.state = $state;
-    this.applicationSaved = false;
+    this.state = $state;   
   }
 
   initDefaultState(program, campaign, amount) {
