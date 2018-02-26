@@ -149,35 +149,29 @@ class TripDepositController {
 
     this.dto.processing = true;
     this.signupService.paymentMethod = this.getPaymentType();
-    if (this.tripDeposit.applicationSaved) {
+   
+    this.signupService.saveApplication((data) => {     
+      this.dto.campaign.pledgeDonorId = data.donorId;
       this.saveDeposit(shouldSubmitBank);
-    } else {
-      this.signupService.saveApplication((data) => {
-        this.tripDeposit.applicationSaved = true;
-        this.dto.campaign.pledgeDonorId = data.donorId;
-        this.saveDeposit(shouldSubmitBank);
-      }, (err) => {
-        this.dto.processing = false;
-        if (err.status === 409) {
-          this.rootScope.$emit('notify', this.rootScope.MESSAGES.tripIsFull);
-        } else {
-          this.rootScope.$emit('notify', this.rootScope.MESSAGES.generalError);
-        }
-      });
-    }
+    }, (err) => {
+      this.dto.processing = false;
+      if (err.status === 409) {
+        this.rootScope.$emit('notify', this.rootScope.MESSAGES.tripIsFull);
+      } else {
+        this.rootScope.$emit('notify', this.rootScope.MESSAGES.generalError);
+      }
+    });   
   }
 
   saveDeposit(shouldSubmitBank) {
-    /*jshint unused:false */
+    /*jshint unused:false */   
     if (shouldSubmitBank === 'submit')
     {
       this.donationService.submitBankInfo(this.tripForm);
     } else if (shouldSubmitBank === 'changed') {
       this.donationService.submitChangedBankInfo(this.tripForm);
     } else {
-      this.donationService.confirmDonation(null, (confirmation) => {
-        this.tripDeposit.applicationSaved = false;
-      });
+      this.donationService.confirmDonation();    
     }
   }
 
