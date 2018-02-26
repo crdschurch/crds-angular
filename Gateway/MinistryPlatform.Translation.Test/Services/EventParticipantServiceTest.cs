@@ -251,7 +251,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const string token = "ABC";
             const int eventId = 9876;
             const int genderId = 3;
-            var searchString = $"Event_ID = {eventId} AND Participant_ID_Table_Contact_ID_Table_Gender_ID_Table.Gender_ID = {genderId}";
+            var searchString = $"Event_ID = {eventId} AND Participant_ID_Table_Contact_ID_Table_Gender_ID_Table.Gender_ID = {genderId} AND (End_Date IS NULL OR End_Date >= GETDATE())";
             const string column = "Count(*)";
 
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRest.Object);
