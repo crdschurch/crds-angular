@@ -156,9 +156,7 @@ BEGIN
 	BEGIN
 		DECLARE @event_group_error nvarchar(500);
 		EXEC [dbo].[cr_QA_Create_Event_Group] @group_name, @event_id, 
-		@error_message = @event_group_error OUTPUT, @event_group_id = @event_group_id OUTPUT;
-
-		SET @error_message = @error_message+@event_group_error;
+		@error_message = @error_message OUTPUT, @event_group_id = @event_group_id OUTPUT;
 	END;		
 END
 GO

@@ -43,7 +43,7 @@ function UpdateContacts($DBConnection){
 			#Execute and report results
 			$result = $command.ExecuteNonQuery()
 			$error_found = LogResult $command "@error_message" "ERROR"
-			$contact_created = LogResult $command "@contact_id" "Contact created"
+			$contact_created = LogResult $command "@contact_id" "Contact updated"
 			
 			if(!$contact_created){
 				throw

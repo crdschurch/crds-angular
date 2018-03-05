@@ -79,7 +79,7 @@ namespace MinistryPlatform.Translation.Repositories
         {
             string filter = $"Participant_Record = {participantId}";
             const string addressSearch = "Household_ID_Table_Address_ID_Table.*";
-            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserRepository.GetDefaultApiUserToken()).Search<MpAddress>(filter, addressSearch)?.First();
+            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserRepository.GetDefaultApiUserToken()).Search<MpContact, MpAddress>(filter, addressSearch)?.First();
         }
         
         public void EnablePin(int participantId)

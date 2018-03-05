@@ -7,6 +7,7 @@ function CreateStoredProcCommand{
 	$command.CommandType = [System.Data.CommandType]'StoredProcedure'
 	$command.CommandText = $proc_name
 	$command.Connection = $DBConnection
+	$command.CommandTimeout = 300 #Set command timeout to 5 minutes. Teardown takes a while.
 	return $command
 }
 
@@ -43,6 +44,15 @@ function AddDateParameter{
 		[String]$value)
 	
 	$db_value = StringToDate($value)
+	$command.Parameters.AddWithValue($parameter, $db_value) | Out-Null	
+}
+
+function AddMoneyParameter{
+	param([System.Data.SqlClient.SqlCommand]$command,
+		[String]$parameter,
+		[String]$value)
+	
+	$db_value = CatchNullString($value)
 	$command.Parameters.AddWithValue($parameter, $db_value) | Out-Null	
 }
 
