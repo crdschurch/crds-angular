@@ -24,7 +24,4 @@ $root_path = (Split-Path (Split-Path ($MyInvocation.MyCommand.Definition)))
 . "$($root_path)\02.TestData\06.PledgeCampaign+Pledge\CreatePledgeCampaignsAndPledges.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 . "$($root_path)\02.TestData\07.Donation+Distribution\CreateDonations.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 . "$($root_path)\02.TestData\08.Invoice+Payment\CreateInvoicesAndPayments.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
-
-
-#Load TestConfigData
-. "$($root_path)\03.TestConfigData\01.Participants\CreateEventAndGroupParticipants.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
+. "$($root_path)\02.TestData\09.EventParticipants+GroupParticipants\CreateEventAndGroupParticipants.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
