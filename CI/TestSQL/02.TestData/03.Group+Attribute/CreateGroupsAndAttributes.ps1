@@ -34,17 +34,17 @@ function CreateGroups($DBConnection){
 			AddIntParameter $command "@group_type_id" $groupRow.R_Group_Type_ID
 			AddIntParameter $command "@ministry_id" $groupRow.R_Ministry_ID
 			AddIntParameter $command "@congregation_id" $groupRow.R_Congregation_ID
-			AddDateParameter $command "@start_date" $userRow.R_Start_Date
-			AddBitParameter $command "@child_care_available" $userRow.R_Child_Care_Available
-			AddBitParameter $command "@primary_contact_is_host" $userRow.Is_Primary_Contact_Host
-			AddBitParameter $command "@enable_waiting_list" $userRow.Enable_Waiting_List
+			AddDateParameter $command "@start_date" $groupRow.R_Start_Date
+			AddBitParameter $command "@child_care_available" $groupRow.R_Child_Care_Available
+			AddBitParameter $command "@primary_contact_is_host" $groupRow.Is_Primary_Contact_Host
+			AddBitParameter $command "@enable_waiting_list" $groupRow.Enable_Waiting_List
 			AddIntParameter $command "@target_size" $groupRow.Target_Size
 			AddStringParameter $command "@description" $groupRow.Description
 			AddStringParameter $command "@is_public" $groupRow.IsPublic
 			AddStringParameter $command "@is_blog_enabled" $groupRow.IsBlogEnabled
 			AddStringParameter $command "@is_web_enabled" $groupRow.IsWebEnabled
 			AddIntParameter $command "@deadline_passed_message_id" $groupRow.Deadline_Passed_Message_ID
-			AddDateParameter $command "@meeting_time" $userRow.Meeting_Time
+			AddDateParameter $command "@meeting_time" $groupRow.Meeting_Time
 			AddStringParameter $command "@meeting_day" $groupRow.Meeting_Day
 			AddBitParameter $command "@available_online" $groupRow.Available_Online
 			AddOutputParameter $command "@error_message" "String"
