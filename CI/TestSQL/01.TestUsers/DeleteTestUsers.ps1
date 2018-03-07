@@ -17,7 +17,7 @@ function OpenConnection{
 #Deletes all contacts and their user account in the list
 function DeleteContacts($DBConnection){
 	$userList = import-csv $userDataCSV
-	
+	$error_count = 0
 	foreach($user in $userList)
 	{
 		if(![string]::IsNullOrEmpty($user.email))
@@ -38,18 +38,24 @@ function DeleteContacts($DBConnection){
 			} catch {
 				write-host "There was an error deleting data related to user "$user.email
 				write-host "Error: " $Error
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute
 try{
 	$DBConnection = OpenConnection
-	DeleteContacts $DBConnection
+	$errors = 0
+	$errors += DeleteContacts $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }
