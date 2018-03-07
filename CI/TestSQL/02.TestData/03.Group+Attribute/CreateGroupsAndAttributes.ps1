@@ -3,9 +3,9 @@ param (
     [string]$addChildGroupDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\AddChildGroup.csv"),
     [string]$attributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateAttributes.csv"),
     [string]$groupAttributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroupAttributes.csv"),
-    [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
-    [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
-    [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
+    [string]$DBServer = "mp-demo-db.centralus.cloudapp.azure.com",
+    [string]$DBUser = 'MigrateUser', #$(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
+    [string]$DBPassword = 'Aw@!ted2014' #$(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
 . ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
@@ -148,12 +148,13 @@ function CreateGroupAttributes($DBConnection){
 			$result = $command.ExecuteNonQuery()
 			$error_found = LogResult $command "@error_message" "ERROR"
 			$attribute_created = LogResult $command "@group_attribute_id" "Group Attribute created"
-			
+			write-host "attribute created = $attribute_created"
 			if(!$attribute_created){
 				$error_count += 1
 			}
 		}
 	}
+	write-host $error_count
 	return $error_count
 }
 
@@ -161,10 +162,11 @@ function CreateGroupAttributes($DBConnection){
 try{
 	$DBConnection = OpenConnection
 	$errors = 0
-	$errors += CreateGroups $DBConnection
-	$errors += AddChildGroup $DBConnection
-	$errors += CreateAttributes $DBConnection
+	#$errors += CreateGroups $DBConnection
+	#$errors += AddChildGroup $DBConnection
+	#$errors += CreateAttributes $DBConnection
 	$errors += CreateGroupAttributes $DBConnection
+	write-host $errors
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
