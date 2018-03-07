@@ -15,16 +15,18 @@ namespace MinistryPlatform.Translation.Repositories
     public class AddressRepository : IAddressRepository
     {
         private readonly IMinistryPlatformService _ministryPlatformService;
+        private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
         private readonly IApiUserRepository _apiUserService;
         private readonly int _addressPageId;
         private readonly int _addressApiPageViewId;
 
-        public AddressRepository(IConfigurationWrapper configurationWrapper, IMinistryPlatformService ministryPlatformService, IApiUserRepository apiUserService)
+        public AddressRepository(IConfigurationWrapper configurationWrapper, IMinistryPlatformService ministryPlatformService, IApiUserRepository apiUserService, IMinistryPlatformRestRepository mpRestRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _apiUserService = apiUserService;
             _addressPageId = configurationWrapper.GetConfigIntValue("Addresses");
             _addressApiPageViewId = configurationWrapper.GetConfigIntValue("AddressesApiPageView");
+            _ministryPlatformRestRepository = mpRestRepository;
         }
 
         public int Create(MpAddress address)
@@ -42,12 +44,9 @@ namespace MinistryPlatform.Translation.Repositories
         {
             var apiToken = _apiUserService.GetToken();
 
-            var values = MapAddressDictionary(address);
-            values.Add("Address_ID", address.Address_ID.Value);
+            var updatedAddress = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Update(address);    
 
-            _ministryPlatformService.UpdateRecord(_addressPageId, values, apiToken);
-
-            return address.Address_ID.Value;
+            return updatedAddress.Address_ID.Value;
         }
 
         private static Dictionary<string, object> MapAddressDictionary(MpAddress address)

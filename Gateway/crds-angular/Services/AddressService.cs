@@ -106,11 +106,11 @@ namespace crds_angular.Services
             }
             catch (InvalidAddressException e)
             {
-                _logger.Info($"Can't get GeoCoordinates for address '{address}', address is invalid", e);
+                _logger.Info($"Can't get GeoCoordinates for address({address.AddressID}) '{address}', address is invalid", e);
             }
             catch (Exception e)
             {
-                _logger.Error($"Error getting GeoCoordinates for address '{address}'", e);
+                _logger.Error($"Error getting GeoCoordinates for address({address.AddressID}) '{address}'", e);
             }
         }
 
@@ -127,11 +127,11 @@ namespace crds_angular.Services
             }
             catch (InvalidAddressException e)
             {
-                _logger.Info($"Can't get GeoCoordinates for address '{pin.Gathering.Address}', address is invalid", e);
+                _logger.Info($"Can't get GeoCoordinates for address({pin.Gathering.Address.AddressID}) '{pin.Gathering.Address}', address is invalid", e);
             }
             catch (Exception e)
             {
-                _logger.Error($"Error getting GeoCoordinates for address '{pin.Gathering.Address}'", e);
+                _logger.Error($"Error getting GeoCoordinates for address({pin.Gathering.Address.AddressID}) '{pin.Gathering.Address}'", e);
             }
         }
 

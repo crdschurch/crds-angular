@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace MinistryPlatform.Translation.Models
 {
-    [MpRestApiTable(Name = "Contacts")]
+    [MpRestApiTable(Name = "Addresses")]
     public class MpAddress
     {
         public int? Address_ID { get; set; }

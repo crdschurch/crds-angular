@@ -1,21 +1,34 @@
-# Requires Powershell version 4, if this doesn't work you are likely running version 3
-# https://www.microsoft.com/en-us/download/confirmation.aspx?id=40855
-# Given a directory, parses files and removes meta data from the cr_Build_Scripts
+# Given a directory, parses files and removes meta data from the cr_Build_Scripts	
 # table.  So that test SQL can be rerun on a database. 
 
 param (
-    [string]$DBServer = "mp-int-db.cloudapp.net",
-    [string]$SQLcmd = "C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\110\Tools\Binn\sqlcmd.exe",
+    [string]$path = $(throw "-path is required."), #Comma separated paths, no spaces
+    [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
-$exitCode = 0
-$SQLCommonParams = @("-U", $DBUser, "-P", $DBPassword, "-S", $DBServer, "-b")
+#get sql files and format for query
+$path -split ',' | foreach { $sqlfiles += (Get-ChildItem -path ($_) -recurse -filter *.sql)}
+$sqlfiles = "'"+([string]$sqlfiles).replace(" ", "', '")+"'"
 
-#Hardcoded values for the TestSQL directories. 
-$fileNames = (Get-ChildItem ..\TestSQL\01.TestUsers\, ..\TestSQL\02.TestData\, ..\TestSQL\03.TestConfigData\, .\ -filter *.sql -recurse) -join "','"
+#open connection
+$DBConnection = new-object System.Data.SqlClient.SqlConnection 
+$DBConnection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;User Id=$DBUser;Password=$DBPassword"
+$DBConnection.Open();
 
-$output = & $SQLcmd @SQLCommonParams -Q "Delete from [MinistryPlatform].[dbo].[cr_Scripts] where name in ('$fileNames')"
+try {
+	$command = New-Object System.Data.SQLClient.SQLCommand
+	$command.Connection = $DBConnection
+	$command.CommandText = "DELETE FROM [MinistryPlatform].[dbo].[cr_Scripts] WHERE Name in ($sqlfiles)";
 
-write-host $output;
+	$command.ExecuteNonQuery() | Out-Null
+}
+catch {         
+	Write-Output "File: $_"
+	Write-Output "Error: $_.Exception.Message"
+	$exitCode = 8
+}
+finally {
+	$DBConnection.close()
+}

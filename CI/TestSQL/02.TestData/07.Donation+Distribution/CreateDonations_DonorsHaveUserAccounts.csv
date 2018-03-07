@@ -1,0 +1,37 @@
+R_Donor_Email,R_Donation_Amount,R_Donation_Date,R_Payment_Type_Id,R_Donation_Status_Id,R_Receipted,R_Program_Name,Congregation_Id,Required if this is a soft credit donation →,Soft_Credit_Donor_Email,Required if this is a donation to a pledge→,Pledge_Owner_Email,Optional→,Non-Cash_Asset_Type_Id,Anonymous,Processed,Processor_Id,Status_Date,Status_Notes,Donation_Notes,Transaction_Code,Batch_Name,Item_Number,Tester notes
+mpcrds+auto+wilmaflintstone@gmail.com,250,9/3/2017,2,2,1,General Giving,5,,,,,,,0,1,,9/3/2017,,,,,,Donation made last year
+mpcrds+auto+2@gmail.com,50,8/30/2017,4,2,0,General Giving,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+12@gmail.com,50,8/30/2017,4,2,0,General Giving,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+tremplay.richard@gmail.com,50,8/30/2017,4,2,0,General Giving,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+auto+2@gmail.com,50,8/30/2017,4,2,0,General Giving,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+12@gmail.com,50,8/30/2017,4,2,0,General Giving,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+tremplay.richard@gmail.com,50,8/30/2017,4,2,0,General Giving,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+auto+wilmaflintstone@gmail.com,150,1/3/2018,4,2,1,General Giving,5,,,,,,,0,1,,1/3/2018,,,ch_16odS5Eldv5NE53si5NDZzoN,,,Credit Card donation
+mpcrds+auto+wilmaflintstone@gmail.com,200,1/3/2018,5,2,1,Beans and Rice Week,5,,,,,,,0,1,,1/9/2018,,,,,,ACH donation with bank data but no Stripe transaciton id. This mirrors migrated bank transactions.
+mpcrds+auto+wilmaflintstone@gmail.com,555,1/4/2018,4,2,1,General Giving,5,,,,,,,0,1,,1/4/2018,,,ch_16ngVCEldv5NE53s9ZK1bq1Z,,,Credit Card donation we'll do a partial refund on
+mpcrds+auto+wilmaflintstone@gmail.com,-55,1/5/2018,4,2,1,General Giving,5,,,,,,,0,1,,1/5/2018,,Refund on last donation,re_16ngWoEldv5NE53sFQdhoGr8,,,Credit Card donation refund
+mpcrds+auto+wilmaflintstone@gmail.com,300,1/5/2018,5,3,0,General Giving,5,,,,,,,,,,1/5/2018,insufficient_funds: Your account has insufficient funds to cover the payment.,,py_16obd5Eldv5NE53s36krdjBt,,,ACH Declined donation
+mpcrds+auto+wilmaflintstone@gmail.com,180,1/5/2018,5,1,0,General Giving,5,,,,,,,,,,1/5/2018,,,py_16obd5Eldv5NE53s36krdjBt,,,Pending ACH bank donation
+mpcrds+auto+wilmaflintstone@gmail.com,42,1/7/2018,1,2,0,General Giving,5,,,,,,,,,cus_85UsQReBytr2dn,1/6/2018,,,py_17q50XEldv5NE53sDWzSG9s6,,1234,Check donation with a check number and Stripe transaction id
+mpcrds+auto+wilmaflintstone@gmail.com,43,1/7/2018,1,2,0,General Giving,5,,,,,,,,,,1/6/2018,,,,,1337,Check donation with a check number but no Stripe transaction id. This mirrors migrated check data.
+mpcrds+auto+wilmaflintstone@gmail.com,44,1/7/2018,1,2,0,General Giving,5,,,,,,,,,cus_85UsQReBytr2dn,1/6/2018,,,py_17q5pZEldv5NE53s2tTutxOz,,,Check donation with no check number but with Stripe data. Should NOT happen in the wild.
+mpcrds+auto+wilmaflintstone@gmail.com,45,1/7/2018,1,2,0,General Giving,5,,,,,,,,,,1/6/2018,,,,,,Check donation with no check number and no stripe data. (DBT check case)
+mpcrds+auto+wilmaflintstone@gmail.com,72,1/29/2018,4,4,0,General Giving,5,,,,,,,,,,1/29/2018,,,,,,"Credit card donation that has donation_status of successful, but is not in a deposit"
+mpcrds+tifalockhart@gmail.com,250,9/3/2017,2,2,1,General Giving,5,,,,,,,0,1,,9/3/2017,,,,,,Add a donation from last year for Tifa
+mpcrds+tifalockhart@gmail.com,150,1/3/2018,4,2,1,General Giving,5,,,,,,,0,1,,1/3/2018,,,ch_16odS5Eldv5NE53si5NDZzoN,,,CC donations
+mpcrds+tifalockhart@gmail.com,200,1/3/2018,5,2,1,General Giving,5,,,,,,,0,1,,1/3/2018,,,,,,ACH donation with bank ACH but no stripe information. This mirrors bank transactions migrated from legacy.
+mpcrds+tifalockhart@gmail.com,555,1/4/2018,4,2,1,General Giving,5,,,,,,,0,1,,1/4/2018,,,ch_16ngVCEldv5NE53s9ZK1bq1Z,,,Donation with credit card that we will do a partial refund on
+mpcrds+tifalockhart@gmail.com,-55,1/4/2018,4,2,1,General Giving,5,,,,,,,0,1,,1/4/2018,,Refund on last donation,re_16ngWoEldv5NE53sFQdhoGr8,,,Donation refund by Tifa with credit card
+mpcrds+tifalockhart@gmail.com,300,1/5/2018,5,3,0,General Giving,5,,,,,,,,,,1/5/2018,insufficient_funds: Your account has insufficient funds to cover the payment.,,p,,,ACH declined donation for Tifa Lockhart
+mpcrds+tifalockhart@gmail.com,180,1/5/2018,5,1,0,General Giving,5,,,,,,,,,,1/5/2018,,,py_16obd5Eldv5NE53s36krdjBt,,,Pending ACH bank donation
+mpcrds+tifalockhart@gmail.com,42,1/7/2018,1,2,0,General Giving,5,,,,,,,,,,1/7/2018,,,py_17q50XEldv5NE53sDWzSG9s6,,1234,Check Donation that has a check number and a stripe transaction ID
+mpcrds+tifalockhart@gmail.com,43,1/7/2018,1,2,0,General Giving,5,,,,,,,,,,1/7/2018,,,,,1337,Check Donation that has a check number but no stripe transaction ID. This mirrors migrated check data.
+mpcrds+tifalockhart@gmail.com,44,1/7/2018,1,2,0,General Giving,5,,,,,,,,,,1/7/2018,,,py_17q5pZEldv5NE53s2tTutxOz,,,Check Donation has stripe data but no check number for some reason.
+mpcrds+tifalockhart@gmail.com,45,1/7/2018,1,2,0,General Giving,5,,,,,,,,,,1/7/2018,,,,,,Check with no check number or stripe data (DBT check case)
+mpcrds+tifalockhart@gmail.com,72,1/29/2018,4,4,0,General Giving,5,,,,,,,,,,1/29/2018,,,,,,Add a Credit card donation on todays date that has a donation_status  of SUCCESSFUL but is not in a deposit. 
+mpcrds+cloudstrife@gmail.com,100,1/1/2018,2,4,1,(t) GO Midgar 2018,5,,,,mpcrds+cloudstrife@gmail.com,,,0,,,,,,,,,Donation towards donor's own pledge
+mpcrds+auto+fredflintstone@gmail.com,100,1/1/2018,2,4,1,(t+auto) GO Bedrock 2018,5,,,,mpcrds+auto+fredflintstone@gmail.com,,,0,,,,,,,,,Donation towards donor's own pledge
+mpcrds+tifalockhart@gmail.com,150,1/1/2018,2,2,1,(t) GO Midgar 2018,5,,,,mpcrds+cloudstrife@gmail.com,,,0,,,,,,,,,Anonymous donation towards Cloud's trip by Tifa
+mpcrds+tifalockhart@gmail.com,100,1/2/2018,2,2,1,(t) GO Midgar 2018,5,,,,mpcrds+cloudstrife@gmail.com,,,1,,,,,,,,,Non-anonymous donation towards Cloud's trip by Tifa
+mpcrds+auto+wilmaflintstone@gmail.com,150,1/1/2018,2,2,1,(t+auto) GO Bedrock 2018,5,,,,mpcrds+auto+fredflintstone@gmail.com,,,0,,,,,,,,,Donation to Fred's trip pledge by Wilma - not anonymous.
+mpcrds+auto+wilmaflintstone@gmail.com,150,1/2/2018,2,2,1,(t+auto) GO Bedrock 2018,5,,,,mpcrds+auto+fredflintstone@gmail.com,,,1,,,,,,,,,Donation to Fred's trip pledge by Wilma - anonymous.

@@ -1,4 +1,4 @@
-﻿first,last,email,description
+first,last,email,description
 Anderson,Cooper,mpcrds+12@gmail.com,Registered Account - Existing ACH donor US1390
 Lisa,Strauss,mpcrds+15@gmail.com,Registered Account - Existing ACH donor for manual testing
 Phillip,Fry,mpcrds+32@gmail.com,Registered Account - This is a user that has ACH saved as payment data in stripe and should not change to credit card. 
@@ -72,3 +72,4 @@ Test,Subject,mpcrds+chell@aperture.com,default contact when creating test data
 Mike,Tester1,miketester1@yahoo.se,Map user
 Mike,Tester2,miketester2@yahoo.se,Map user
 Mike,Tester3,miketester3@yahoo.se,Map user
+Alicia,Keys,mpcrds+aliciakeys@gmail.com,MP Tools user
