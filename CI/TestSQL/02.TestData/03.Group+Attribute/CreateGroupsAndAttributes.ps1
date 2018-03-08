@@ -46,6 +46,7 @@ function CreateGroups($DBConnection){
 			AddIntParameter $command "@deadline_passed_message_id" $groupRow.Deadline_Passed_Message_ID
 			AddDateParameter $command "@meeting_time" $groupRow.Meeting_Time
 			AddStringParameter $command "@meeting_day" $groupRow.Meeting_Day
+			AddIntParameter $command "@meeting_frequency_id" $groupRow.Meeting_Frequency_ID
 			AddBitParameter $command "@available_online" $groupRow.Available_Online
 			AddOutputParameter $command "@error_message" "String"
 			AddOutputParameter $command "@group_id" "Int32"
