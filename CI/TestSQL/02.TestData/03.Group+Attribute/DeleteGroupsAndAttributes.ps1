@@ -18,7 +18,7 @@ function OpenConnection{
 #Deletes all groups in the list
 function DeleteGroups($DBConnection){
 	$groupList = import-csv $groupListCSV
-	
+	$error_count = 0
 	foreach($group in $groupList)
 	{
 		if(![string]::IsNullOrEmpty($group.R_Group_Name))
@@ -39,15 +39,17 @@ function DeleteGroups($DBConnection){
 			} catch {
 				write-host "There was an error deleting data related to group "$group.R_Group_Name
 				write-host "Error: " $Error
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Deletes all attributes in the list
 function DeleteAttributes($DBConnection){
 	$attributeList = import-csv $attributeDataCSV
-	
+	$error_count = 0
 	foreach($attribute in $attributeList)
 	{
 		if(![string]::IsNullOrEmpty($attribute.R_Attribute_Name))
@@ -68,19 +70,25 @@ function DeleteAttributes($DBConnection){
 			} catch {
 				write-host "There was an error deleting data related to attribute "$attribute.R_Attribute_Name
 				write-host "Error: " $Error
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute
 try{
 	$DBConnection = OpenConnection
-	DeleteGroups $DBConnection
-	DeleteAttributes $DBConnection
+	$errors = 0
+	$errors += DeleteGroups $DBConnection
+	$errors += DeleteAttributes $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

@@ -20,7 +20,7 @@ function OpenConnection{
 #Create all groups in list
 function CreateGroups($DBConnection){
 	$groupDataList = import-csv $groupDataCSV
-
+	$error_count = 0
 	foreach($groupRow in $groupDataList)
 	{
 		if(![string]::IsNullOrEmpty($groupRow.R_Group_Name))
@@ -56,16 +56,17 @@ function CreateGroups($DBConnection){
 			$group_created = LogResult $command "@group_id" "Group created"
 			
 			if(!$group_created){
-				throw
+				$error_count += 1
 			}	
 		}
 	}
+	return $error_count
 }
 
 #Add child group to parent group
 function AddChildGroup($DBConnection){
 	$addChildGroupDataList = import-csv $addChildGroupDataCSV
-
+	$error_count = 0
 	foreach($groupRow in $addChildGroupDataList)
 	{
 		if(![string]::IsNullOrEmpty($groupRow.R_Parent_Group_Name))
@@ -87,16 +88,17 @@ function AddChildGroup($DBConnection){
 			$parent_found = LogResult $command "@parent_group_id" "        to parent Group"
 			
 			if(!$child_found -or !$parent_found){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Creates all attributes in list
 function CreateAttributes($DBConnection){
 	$attributeDataList = import-csv $attributeDataCSV
-
+	$error_count = 0
 	foreach($attributeRow in $attributeDataList)
 	{
 		if(![string]::IsNullOrEmpty($attributeRow.R_Attribute_Name))
@@ -117,16 +119,17 @@ function CreateAttributes($DBConnection){
 			$attribute_created = LogResult $command "@attribute_id" "Attribute created"
 			
 			if(!$attribute_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Creates group attributes
 function CreateGroupAttributes($DBConnection){
 	$groupAttributeDataList = import-csv $groupAttributeDataCSV
-
+	$error_count = 0
 	foreach($attributeRow in $groupAttributeDataList)
 	{
 		if(![string]::IsNullOrEmpty($attributeRow.R_Attribute_Name))
@@ -147,22 +150,28 @@ function CreateGroupAttributes($DBConnection){
 			$attribute_created = LogResult $command "@group_attribute_id" "Group Attribute created"
 			
 			if(!$attribute_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute all the Create functions
 try{
 	$DBConnection = OpenConnection
-	CreateGroups $DBConnection
-	AddChildGroup $DBConnection
-	CreateAttributes $DBConnection
-	CreateGroupAttributes $DBConnection
+	$errors = 0
+	$errors += CreateGroups $DBConnection
+	$errors += AddChildGroup $DBConnection
+	$errors += CreateAttributes $DBConnection
+	$errors += CreateGroupAttributes $DBConnection
+	
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }
