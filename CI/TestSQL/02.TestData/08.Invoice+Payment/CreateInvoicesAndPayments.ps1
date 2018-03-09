@@ -17,7 +17,7 @@ function OpenConnection{
 #Create all invoices in list
 function CreateInvoicesWithPayment($DBConnection){
 	$invoiceAndPaymentDataList = import-csv $invoiceAndPaymentDataCSV
-	
+	$error_count = 0
 	foreach($invoiceRow in $invoiceAndPaymentDataList)
 	{
 		if(![string]::IsNullOrEmpty($invoiceRow.R_Purchaser_Email))
@@ -41,7 +41,8 @@ function CreateInvoicesWithPayment($DBConnection){
 			$invoice_detail_created = LogResult $i_command "@invoice_detail_id" "        with Invoice Detail"
 			
 			if(!$invoice_created){
-				throw
+				$error_count += 1
+				continue
 			}
 			
 			$invoice_id = $i_command.Parameters["@invoice_id"].Value
@@ -69,19 +70,24 @@ function CreateInvoicesWithPayment($DBConnection){
 			$payment_detail_created = LogResult $p_command "@payment_detail_id" "        with Payment Detail"
 			
 			if(!$payment_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateInvoicesWithPayment $DBConnection
+	$errors = 0
+	$errors += CreateInvoicesWithPayment $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

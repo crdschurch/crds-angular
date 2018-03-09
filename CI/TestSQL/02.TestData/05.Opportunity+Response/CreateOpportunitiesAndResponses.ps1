@@ -18,7 +18,7 @@ function OpenConnection{
 #Create all opportunities in list
 function CreateOpportunities($DBConnection){
 	$opportunityDataList = import-csv $opportunityDataCSV
-	
+	$error_count = 0
 	foreach($opportunityRow in $opportunityDataList)
 	{
 		if(![string]::IsNullOrEmpty($opportunityRow.R_Opportunity_Title))
@@ -50,16 +50,17 @@ function CreateOpportunities($DBConnection){
 			$opportunity_created = LogResult $command "@opportunity_id" "Opportunity created"
 			
 			if(!$opportunity_created){
-				throw
+				$error_count += 1
 			}			
 		}
 	}
+	return $error_count
 }
 
 #Create all responses in list
 function CreateResponses($DBConnection){
 	$responseDataList = import-csv $responseDataCSV
-	
+	$error_count = 0
 	foreach($responseRow in $responseDataList)
 	{
 		if(![string]::IsNullOrEmpty($responseRow.R_User_Email))
@@ -81,20 +82,25 @@ function CreateResponses($DBConnection){
 			$response_created = LogResult $command "@response_id" "Response created"
 			
 			if(!$response_created){
-				throw
+				$error_count += 1
 			}			
 		}
 	}
+	return $error_count
 }
 
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateOpportunities $DBConnection
-	CreateResponses $DBConnection
+	$errors = 0
+	$errors += CreateOpportunities $DBConnection
+	$errors += CreateResponses $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

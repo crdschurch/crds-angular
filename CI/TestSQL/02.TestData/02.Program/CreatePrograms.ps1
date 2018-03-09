@@ -17,7 +17,7 @@ function OpenConnection{
 #Create all programs in list
 function CreatePrograms($DBConnection){
 	$programDataList = import-csv $programDataCSV
-	
+	$error_count = 0
 	foreach($programRow in $programDataList)
 	{
 		if(![string]::IsNullOrEmpty($programRow.R_Program_Name))
@@ -46,19 +46,24 @@ function CreatePrograms($DBConnection){
 			$program_created = LogResult $command "@program_id" "Program created"
 			
 			if(!$program_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreatePrograms $DBConnection
+	$errors = 0
+	$errors += CreatePrograms $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

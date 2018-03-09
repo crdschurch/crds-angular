@@ -18,7 +18,7 @@ function OpenConnection{
 #Deletes all pledge campaigns in the list
 function DeletePledgeCampaigns($DBConnection){
 	$pledgeCampaignList = import-csv $pledgeCampaignDataCSV
-	
+	$error_count = 0
 	foreach($pledgeCampaign in $pledgeCampaignList)
 	{
 		if(![string]::IsNullOrEmpty($pledgeCampaign.R_Campaign_Name))
@@ -39,18 +39,24 @@ function DeletePledgeCampaigns($DBConnection){
 			} catch {
 				write-host "There was an error deleting data related to Pledge Campaign "$pledgeCampaign.R_Campaign_Name
 				write-host "Error: " $Error
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute
 try{
 	$DBConnection = OpenConnection
-	DeletePledgeCampaigns $DBConnection
+	$errors = 0
+	$errors += DeletePledgeCampaigns $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

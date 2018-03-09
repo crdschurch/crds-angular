@@ -18,7 +18,7 @@ function OpenConnection{
 #Deletes all batches in the list
 function DeleteBatches($DBConnection){
 	$batchList = import-csv $batchListCSV
-	
+	$error_count = 0
 	foreach($batch in $batchList)
 	{
 		if(![string]::IsNullOrEmpty($batch.R_Batch_Name))
@@ -39,15 +39,17 @@ function DeleteBatches($DBConnection){
 			} catch {
 				write-host "There was an error deleting data related to batch "$batch.R_Batch_Name
 				write-host "Error: " $Error
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Deletes all deposits in the list
 function DeleteDeposites($DBConnection){
 	$depositList = import-csv $depositListCSV
-	
+	$error_count = 0
 	foreach($deposit in $depositList)
 	{
 		if(![string]::IsNullOrEmpty($deposit.R_Deposit_Name))
@@ -68,19 +70,25 @@ function DeleteDeposites($DBConnection){
 			} catch {
 				write-host "There was an error deleting data related to deposit "$deposit.R_Deposit_Name
 				write-host "Error: " $Error
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute
 try{
 	$DBConnection = OpenConnection
-	DeleteBatches $DBConnection
-	DeleteDeposites $DBConnection
+	$errors = 0
+	$errors += DeleteBatches $DBConnection
+	$errors += DeleteDeposites $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

@@ -18,7 +18,7 @@ function OpenConnection{
 #Create all pledge campaigns in list
 function CreatePledgeCampaigns($DBConnection){
 	$pledgeCampaignDataList = import-csv $pledgeCampaignDataCSV
-	
+	$error_count = 0
 	foreach($pledgeCampaignRow in $pledgeCampaignDataList)
 	{
 		if(![string]::IsNullOrEmpty($pledgeCampaignRow.R_Campaign_Name))
@@ -51,16 +51,17 @@ function CreatePledgeCampaigns($DBConnection){
 			$pledge_campaign_created = LogResult $command "@campaign_id" "Pledge Campaign created"
 			
 			if(!$pledge_campaign_created){
-				throw
+				$error_count += 1
 			}			
 		}
 	}
+	return $error_count
 }
 
 #Create all pledges in list
 function CreatePledges($DBConnection){
 	$pledgeDataList = import-csv $pledgeDataCSV
-	
+	$error_count = 0
 	foreach($pledgeRow in $pledgeDataList)
 	{
 		if(![string]::IsNullOrEmpty($pledgeRow.R_Donor_Email))
@@ -83,20 +84,25 @@ function CreatePledges($DBConnection){
 			$pledge_created = LogResult $command "@pledge_id" "Pledge created"
 			
 			if(!$pledge_created){
-				throw
+				$error_count += 1
 			}			
 		}
 	}
+	return $error_count
 }
 
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreatePledgeCampaigns $DBConnection
-	CreatePledges $DBConnection
+	$errors = 0
+	$errors += CreatePledgeCampaigns $DBConnection
+	$errors += CreatePledges $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }
