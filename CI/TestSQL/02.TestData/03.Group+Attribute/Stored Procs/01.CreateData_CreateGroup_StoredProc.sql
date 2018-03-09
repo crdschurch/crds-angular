@@ -36,6 +36,7 @@ IF NOT EXISTS ( SELECT  *
 	@deadline_passed_message_id int,
 	@meeting_time time(7),
 	@meeting_day nvarchar(10),
+	@meeting_frequency_id int,
 	@available_online bit,
 	@error_message nvarchar(500) OUTPUT,
 	@group_id int OUTPUT AS SET NOCOUNT ON;')
@@ -58,6 +59,7 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Group]
 	@deadline_passed_message_id int,
 	@meeting_time time(7),
 	@meeting_day nvarchar(10),
+	@meeting_frequency_id int,
 	@available_online bit,
 	@error_message nvarchar(500) OUTPUT,
 	@group_id int OUTPUT
@@ -95,7 +97,7 @@ BEGIN
 
 	--Optional fields
 	SET @available_online = ISNULL(@available_online, 0);
-
+	
 	DECLARE @offsite_meeting_address int;
 	IF ISNULL(@primary_contact_is_host, 0) = 1
 	BEGIN
@@ -116,6 +118,7 @@ BEGIN
 			SET @meeting_day_id = 2; --Monday
 		END;
 	END
+
 
 	
 	--Create/Update group
@@ -148,6 +151,7 @@ BEGIN
 		Deadline_Passed_Message_ID = @deadline_passed_message_id,
 		Meeting_Time = @meeting_time,
 		Meeting_Day_ID = @meeting_day_id,
+		Meeting_Frequency_ID = @meeting_frequency_id,
 		Available_Online = @available_online,
 		Offsite_Meeting_Address = @offsite_meeting_address,
 		Description = @description,

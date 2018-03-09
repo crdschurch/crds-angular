@@ -10,7 +10,7 @@ $root_path = (Split-Path (Split-Path ($MyInvocation.MyCommand.Definition)))
 $errors = 0
 #Load UserData folder
 . "$($root_path)\01.TestUsers\01.Contact+Relationship\CreateContactsAndRelationships.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
-$errors += $$LASTEXITCODE
+$errors += $LASTEXITCODE
 . "$($root_path)\01.TestUsers\02.Donor\CreateDonors.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 $errors += $LASTEXITCODE
 . "$($root_path)\01.TestUsers\03.Participant\CreateParticipants.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
