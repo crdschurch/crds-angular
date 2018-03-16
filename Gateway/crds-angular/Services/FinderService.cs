@@ -1383,11 +1383,9 @@ namespace crds_angular.Services
 
         private void ApproveOrDenyGroupInquiry(Inquiry inquiry, GroupDTO group, MpParticipant participant, bool approve)
         {
-            // Add member to group if it is approved
-            var roleId = group.GroupTypeId == _smallGroupType ? _trialMemberRoleId : _memberRoleId;
             if (approve)
             {
-                _groupService.addContactToGroup(group.GroupId, inquiry.ContactId, roleId);
+                _groupService.addContactToGroup(group.GroupId, inquiry.ContactId, _memberRoleId);
             }
             // Update the inquiry
             _groupRepository.UpdateGroupInquiry(group.GroupId, inquiry.InquiryId, approve);
