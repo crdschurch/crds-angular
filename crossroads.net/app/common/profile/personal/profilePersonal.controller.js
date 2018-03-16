@@ -88,6 +88,7 @@
     vm.verifyPasswordAttempt = '';
     vm.viewReady = false;
     vm.zipFormat = /^(\d{5}([\-]\d{4})?)$/;
+    vm.scrollToAnchor= scrollToAnchor;
 
     // TODO: Remove this hack and move the promises below into resolves on the directive.
     // Hack to overcome issue where Bootstrap UI Datepicker picks up the date value as string and can't parse it correctly, so it raises validation error.
@@ -165,6 +166,14 @@
     function setAttendanceStartDateToJSDate() {
       if (originalAttendanceStartDate) {
         vm.profileData.person.attendanceStartDate = new Date(originalAttendanceStartDate);
+      }
+    }
+
+    function scrollToAnchor(anchor) {
+      if (anchor != null && vm.modalInstance == null) {
+        $anchorScroll(anchor.$name);
+        // need to scroll up by toast message height
+        window.scrollBy(0, -100);
       }
     }
 
@@ -271,15 +280,14 @@
       $timeout(function() {
         vm.submitted = true;
 
-        if (vm.householdForm.$invalid) {
-          $rootScope.$emit('notify', $rootScope.MESSAGES.generalError);
-          vm.isHouseholdCollapsed = false;
-          vm.submitted = false;
-          return;
-        }
-
         if (vm.pform.$invalid) {
           $rootScope.$emit('notify', $rootScope.MESSAGES.generalError);
+          vm.isHouseholdCollapsed = false;
+          if (vm.pform.$error.required[0].$name === 'household.householdForm') {
+            vm.scrollToAnchor(vm.householdForm.$error.required[0]);
+          } else {
+            vm.scrollToAnchor(vm.pform.$error.required[0]);
+          }
           vm.submitted = false;
           return;
         }
