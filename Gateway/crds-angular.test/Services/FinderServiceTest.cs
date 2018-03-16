@@ -1460,7 +1460,7 @@ namespace crds_angular.test.Services
             _communicationRepository.Setup(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
             _analyticsService.Setup(
                 x => x.Track(inquiry.ContactId.ToString(), "AcceptedIntoGroup", It.IsAny<EventProperties>()));
-            _groupService.Setup(x => x.addContactToGroup(group.GroupId, inquiry.ContactId, _trialMemberRoldId));
+            _groupService.Setup(x => x.addContactToGroup(group.GroupId, inquiry.ContactId, _memberRoleId));
             _fixture.TryAGroupAcceptDeny(token, groupId, participantId, true);
             
             _mpContactRepository.VerifyAll();
