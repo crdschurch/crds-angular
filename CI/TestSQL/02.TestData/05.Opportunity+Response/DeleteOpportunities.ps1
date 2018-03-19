@@ -5,7 +5,7 @@ param (
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
-. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.ReloadControllers\DBCommand.ps1") #should avoid dot-source errors
+. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
 	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
@@ -18,7 +18,7 @@ function OpenConnection{
 #Deletes all opportunities in the list
 function DeleteOpportunities($DBConnection){
 	$opportunityList = import-csv $opportunityDataCSV
-	
+	$error_count = 0
 	foreach($opportunity in $opportunityList)
 	{
 		if(![string]::IsNullOrEmpty($opportunity.R_Opportunity_Title))
@@ -39,18 +39,24 @@ function DeleteOpportunities($DBConnection){
 			} catch {
 				write-host "There was an error deleting data related to opportunity "$opportunity.R_Opportunity_Title
 				write-host "Error: " $Error
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute
 try{
 	$DBConnection = OpenConnection
-	DeleteOpportunities $DBConnection
+	$errors = 0
+	$errors += DeleteOpportunities $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

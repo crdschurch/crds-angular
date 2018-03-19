@@ -104,7 +104,10 @@ BEGIN
 			EXEC [dbo].[cr_QA_Delete_Invoice_Detail] @cur_entry_id;
 		END
 	END
-		
+	
+	--Nullify foreign keys
+	UPDATE [dbo].Form_Responses SET Invoice_ID = null WHERE Invoice_ID = @invoice_id;
+
 	DELETE [dbo].Invoices WHERE Invoice_ID = @invoice_id;
 END
 GO

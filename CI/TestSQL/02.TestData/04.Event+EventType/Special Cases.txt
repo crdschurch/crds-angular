@@ -1,0 +1,1 @@
+-When creating an event in CreateEvents.csv, please omit the "*" prefix from any Event Type unless the Event Type is also scripted test data. Int and Demo have some naming differences, and ommitting the * prefix (or other prefix that's in one environment but not the other) will allow test data to be created accurately in both environments.

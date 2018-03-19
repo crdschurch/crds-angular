@@ -142,6 +142,7 @@ BEGIN
 	--Nullify foreign keys
 	UPDATE [dbo].Batches SET Source_Event = null WHERE Source_Event = @event_id;
 	UPDATE [dbo].Donation_Distributions SET Target_Event = null WHERE Target_Event = @event_id;
+	UPDATE [dbo].Events SET Parent_Event_ID = null WHERE Event_ID = @event_id;
 	UPDATE [dbo].Form_Responses SET Event_ID = null WHERE Event_ID = @event_id;
 	UPDATE [dbo].Opportunities SET Add_to_Event = null WHERE Add_to_Event = @event_id;
 	UPDATE [dbo].Participant_Milestones SET Event_ID = null WHERE Event_ID = @event_id;

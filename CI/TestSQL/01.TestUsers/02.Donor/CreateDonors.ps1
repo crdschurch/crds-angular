@@ -6,7 +6,7 @@ param (
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
-. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.ReloadControllers\DBCommand.ps1") #should avoid dot-source errors
+. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
 	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
@@ -18,7 +18,7 @@ function OpenConnection{
 #Create all donors in list
 function CreateDonors($DBConnection){
 	$donorDataList = import-csv $donorDataCSV
-	
+	$error_count = 0
 	foreach($userRow in $donorDataList)
 	{
 		if(![string]::IsNullOrEmpty($userRow.R_Donor_Email))
@@ -48,16 +48,17 @@ function CreateDonors($DBConnection){
 			$donor_created = LogResult $command "@donor_id" "Donor created"
 			
 			if(!$donor_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Create all guest givers in list
 function CreateGuestGivers($DBConnection){
 	$guestGiverDataList = import-csv $guestGiverDataCSV
-	
+	$error_count = 0
 	foreach($userRow in $guestGiverDataList)
 	{
 		if(![string]::IsNullOrEmpty($userRow.R_Donor_Email))
@@ -84,20 +85,25 @@ function CreateGuestGivers($DBConnection){
 			$donor_created = LogResult $command "@donor_id" "Guest Giver created"
 			
 			if(!$donor_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateDonors $DBConnection
-	CreateGuestGivers $DBConnection
+	$errors = 0
+	$errors += CreateDonors $DBConnection
+	$errors += CreateGuestGivers $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

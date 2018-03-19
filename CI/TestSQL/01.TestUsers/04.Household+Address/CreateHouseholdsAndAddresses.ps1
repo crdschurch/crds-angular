@@ -7,7 +7,7 @@ param (
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
-. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.ReloadControllers\DBCommand.ps1") #should avoid dot-source errors
+. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
 	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
@@ -19,7 +19,7 @@ function OpenConnection{
 #Create all households in list
 function CreateHouseholds($DBConnection){
 	$householdDataList = import-csv $householdDataCSV
-
+	$error_count = 0
 	foreach($userRow in $householdDataList)
 	{
 		if(![string]::IsNullOrEmpty($userRow.R_Household_Member_Email))
@@ -40,16 +40,17 @@ function CreateHouseholds($DBConnection){
 			$household_created = LogResult $command "@household_id" "Household created"
 			
 			if(!$household_created){
-				throw
+				$error_count += 1
 			}	
 		}
 	}
+	return $error_count
 }
 
 #Create all household addresses in list
 function CreateHouseholdAddresses($DBConnection){
 	$addressDataList = import-csv $householdAddressDataCSV
-
+	$error_count = 0
 	foreach($userRow in $addressDataList)
 	{
 		if(![string]::IsNullOrEmpty($userRow.R_Household_Member_Email))
@@ -78,16 +79,17 @@ function CreateHouseholdAddresses($DBConnection){
 			$address_created = LogResult $command "@address_id" "Address created"
 			
 			if(!$address_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Add contacts to households
 function AddHouseholdMember($DBConnection){
 	$contactHouseholdsDataList = import-csv $contactsInHouseholdDataCSV
-
+	$error_count = 0
 	foreach($userRow in $contactHouseholdsDataList)
 	{
 		if(![string]::IsNullOrEmpty($userRow.R_Household_Member_Email))
@@ -107,21 +109,26 @@ function AddHouseholdMember($DBConnection){
 			$household_created = LogResult $command "@household_id" "$($userRow.R_New_Member_Email) added to household"
 			
 			if(!$household_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute all the Create functions
 try{
 	$DBConnection = OpenConnection
-	CreateHouseholds $DBConnection
-	CreateHouseholdAddresses $DBConnection
-	AddHouseholdMember $DBConnection
+	$errors = 0
+	$errors += CreateHouseholds $DBConnection
+	$errors += CreateHouseholdAddresses $DBConnection
+	$errors += AddHouseholdMember $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

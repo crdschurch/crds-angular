@@ -5,7 +5,7 @@ param (
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
-. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.ReloadControllers\DBCommand.ps1") #should avoid dot-source errors
+. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
 	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
@@ -17,7 +17,7 @@ function OpenConnection{
 #Deletes all programs in the list
 function DeletePrograms($DBConnection){
 	$programList = import-csv $programListCSV
-	
+	$error_count = 0
 	foreach($program in $programList)
 	{
 		if(![string]::IsNullOrEmpty($program.R_Program_Name))
@@ -38,18 +38,24 @@ function DeletePrograms($DBConnection){
 			} catch {
 				write-host "There was an error deleting data related to program "$program.R_Program_Name
 				write-host "Error: " $Error
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute
 try{
 	$DBConnection = OpenConnection
-	DeletePrograms $DBConnection
+	$errors = 0
+	$errors += DeletePrograms $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

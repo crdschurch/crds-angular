@@ -6,7 +6,7 @@ param (
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
-. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.ReloadControllers\DBCommand.ps1") #should avoid dot-source errors
+. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
 	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
@@ -18,7 +18,7 @@ function OpenConnection{
 #Deletes all event types in the list
 function DeleteEventTypes($DBConnection){
 	$eventTypeDataList = import-csv $eventTypeDataCSV
-	
+	$error_count = 0
 	foreach($eventtype in $eventTypeDataList)
 	{
 		if(![string]::IsNullOrEmpty($eventtype.R_Event_Type))
@@ -39,15 +39,17 @@ function DeleteEventTypes($DBConnection){
 			} catch {
 				write-host "There was an error deleting data related to event type "$eventtype.R_Event_Type
 				write-host "Error: " $Error
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Deletes all events in the list
 function DeleteEvents($DBConnection){
 	$eventDataList = import-csv $eventDataCSV
-	
+	$error_count = 0
 	foreach($event in $eventDataList)
 	{
 		if(![string]::IsNullOrEmpty($event.R_Event_Name))
@@ -69,19 +71,25 @@ function DeleteEvents($DBConnection){
 			} catch {
 				write-host "There was an error deleting data related to event "$event.R_Event_Name
 				write-host "Error: " $Error
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute
 try{
 	$DBConnection = OpenConnection
-	DeleteEventTypes $DBConnection
-	DeleteEvents $DBConnection
+	$errors = 0
+	$errors += DeleteEventTypes $DBConnection
+	$errors += DeleteEvents $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

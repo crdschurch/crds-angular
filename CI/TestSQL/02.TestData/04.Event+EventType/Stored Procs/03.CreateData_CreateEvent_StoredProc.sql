@@ -77,6 +77,11 @@ BEGIN
 
 	DECLARE @event_type_id int;
 	SET @event_type_id = (SELECT TOP 1 Event_Type_ID FROM [dbo].Event_Types WHERE Event_Type = @event_type_name ORDER BY Event_Type_ID ASC);
+	--Some event types in int are prefixed with *. Loosen the search up to make more compatible.
+	IF @event_type_id is null
+	BEGIN
+		SET @event_type_id = (SELECT TOP 1 Event_Type_ID FROM [dbo].Event_Types WHERE Event_Type LIKE '%'+@event_type_name ORDER BY Event_Type_ID ASC);
+	END;
 	IF @event_type_id is null
 	BEGIN
 		SET @error_message = 'Could not find event type with name '+@event_type_name+CHAR(13);
