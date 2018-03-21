@@ -8,7 +8,7 @@ param (
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
-. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.ReloadControllers\DBCommand.ps1") #should avoid dot-source errors
+. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
 	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
@@ -20,7 +20,7 @@ function OpenConnection{
 #Create all groups in list
 function CreateGroups($DBConnection){
 	$groupDataList = import-csv $groupDataCSV
-
+	$error_count = 0
 	foreach($groupRow in $groupDataList)
 	{
 		if(![string]::IsNullOrEmpty($groupRow.R_Group_Name))
@@ -34,18 +34,19 @@ function CreateGroups($DBConnection){
 			AddIntParameter $command "@group_type_id" $groupRow.R_Group_Type_ID
 			AddIntParameter $command "@ministry_id" $groupRow.R_Ministry_ID
 			AddIntParameter $command "@congregation_id" $groupRow.R_Congregation_ID
-			AddDateParameter $command "@start_date" $userRow.R_Start_Date
-			AddBitParameter $command "@child_care_available" $userRow.R_Child_Care_Available
-			AddBitParameter $command "@primary_contact_is_host" $userRow.Is_Primary_Contact_Host
-			AddBitParameter $command "@enable_waiting_list" $userRow.Enable_Waiting_List
+			AddDateParameter $command "@start_date" $groupRow.R_Start_Date
+			AddBitParameter $command "@child_care_available" $groupRow.R_Child_Care_Available
+			AddBitParameter $command "@primary_contact_is_host" $groupRow.Is_Primary_Contact_Host
+			AddBitParameter $command "@enable_waiting_list" $groupRow.Enable_Waiting_List
 			AddIntParameter $command "@target_size" $groupRow.Target_Size
 			AddStringParameter $command "@description" $groupRow.Description
 			AddStringParameter $command "@is_public" $groupRow.IsPublic
 			AddStringParameter $command "@is_blog_enabled" $groupRow.IsBlogEnabled
 			AddStringParameter $command "@is_web_enabled" $groupRow.IsWebEnabled
 			AddIntParameter $command "@deadline_passed_message_id" $groupRow.Deadline_Passed_Message_ID
-			AddDateParameter $command "@meeting_time" $userRow.Meeting_Time
+			AddDateParameter $command "@meeting_time" $groupRow.Meeting_Time
 			AddStringParameter $command "@meeting_day" $groupRow.Meeting_Day
+			AddIntParameter $command "@meeting_frequency_id" $groupRow.Meeting_Frequency_ID
 			AddBitParameter $command "@available_online" $groupRow.Available_Online
 			AddOutputParameter $command "@error_message" "String"
 			AddOutputParameter $command "@group_id" "Int32"
@@ -56,16 +57,17 @@ function CreateGroups($DBConnection){
 			$group_created = LogResult $command "@group_id" "Group created"
 			
 			if(!$group_created){
-				throw
+				$error_count += 1
 			}	
 		}
 	}
+	return $error_count
 }
 
 #Add child group to parent group
 function AddChildGroup($DBConnection){
 	$addChildGroupDataList = import-csv $addChildGroupDataCSV
-
+	$error_count = 0
 	foreach($groupRow in $addChildGroupDataList)
 	{
 		if(![string]::IsNullOrEmpty($groupRow.R_Parent_Group_Name))
@@ -87,16 +89,17 @@ function AddChildGroup($DBConnection){
 			$parent_found = LogResult $command "@parent_group_id" "        to parent Group"
 			
 			if(!$child_found -or !$parent_found){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Creates all attributes in list
 function CreateAttributes($DBConnection){
 	$attributeDataList = import-csv $attributeDataCSV
-
+	$error_count = 0
 	foreach($attributeRow in $attributeDataList)
 	{
 		if(![string]::IsNullOrEmpty($attributeRow.R_Attribute_Name))
@@ -117,16 +120,17 @@ function CreateAttributes($DBConnection){
 			$attribute_created = LogResult $command "@attribute_id" "Attribute created"
 			
 			if(!$attribute_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Creates group attributes
 function CreateGroupAttributes($DBConnection){
 	$groupAttributeDataList = import-csv $groupAttributeDataCSV
-
+	$error_count = 0
 	foreach($attributeRow in $groupAttributeDataList)
 	{
 		if(![string]::IsNullOrEmpty($attributeRow.R_Attribute_Name))
@@ -147,22 +151,28 @@ function CreateGroupAttributes($DBConnection){
 			$attribute_created = LogResult $command "@group_attribute_id" "Group Attribute created"
 			
 			if(!$attribute_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute all the Create functions
 try{
 	$DBConnection = OpenConnection
-	CreateGroups $DBConnection
-	AddChildGroup $DBConnection
-	CreateAttributes $DBConnection
-	CreateGroupAttributes $DBConnection
+	$errors = 0
+	$errors += CreateGroups $DBConnection
+	$errors += AddChildGroup $DBConnection
+	$errors += CreateAttributes $DBConnection
+	$errors += CreateGroupAttributes $DBConnection
+	
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

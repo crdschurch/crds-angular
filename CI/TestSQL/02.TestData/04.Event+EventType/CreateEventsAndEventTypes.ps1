@@ -6,7 +6,7 @@ param (
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
-. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.ReloadControllers\DBCommand.ps1") #should avoid dot-source errors
+. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
 	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
@@ -18,7 +18,7 @@ function OpenConnection{
 #Create all event types in list
 function CreateEventTypes($DBConnection){
 	$eventTypeDataList = import-csv $eventTypeDataCSV
-	
+	$error_count = 0
 	foreach($eventTypeRow in $eventTypeDataList)
 	{
 		if(![string]::IsNullOrEmpty($eventTypeRow.R_Event_Type))
@@ -38,16 +38,17 @@ function CreateEventTypes($DBConnection){
 			$event_type_created = LogResult $command "@event_type_id" "Event Type created"
 			
 			if(!$event_type_created){
-				throw
+				$error_count += 1
 			}			
 		}
 	}
+	return $error_count
 }
 
 #Create all event types in list
 function CreateEvents($DBConnection){
 	$eventDataList = import-csv $eventDataCSV
-	
+	$error_count = 0
 	foreach($eventRow in $eventDataList)
 	{
 		if(![string]::IsNullOrEmpty($eventRow.R_Event_Name))
@@ -77,20 +78,25 @@ function CreateEvents($DBConnection){
 			
 			#Event group is not required, so don't error out if not created
 			if(!$event_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateEventTypes $DBConnection
-	CreateEvents $DBConnection
+	$errors = 0
+	$errors += CreateEventTypes $DBConnection
+	$errors += CreateEvents $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

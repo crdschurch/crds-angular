@@ -121,6 +121,7 @@ BEGIN
 
 	--Nullify foreign keys
 	UPDATE [dbo].cr_Submissions SET Form_Response_ID = null WHERE Form_Response_ID = @form_response_id;
+	UPDATE [dbo].Invoices SET Form_Response_ID = null WHERE Form_Response_ID = @form_response_id;
 	
 	DELETE [dbo].Form_Responses WHERE Form_Response_ID = @form_response_id;
 END

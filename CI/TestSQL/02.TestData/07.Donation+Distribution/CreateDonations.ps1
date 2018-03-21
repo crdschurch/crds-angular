@@ -7,7 +7,7 @@ param (
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
-. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.ReloadControllers\DBCommand.ps1") #should avoid dot-source errors
+. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
 	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
@@ -19,7 +19,7 @@ function OpenConnection{
 #Create all donations in list
 function CreateDonations($DBConnection){
 	$donationDataList = import-csv $donationDataCSV
-	
+	$error_count = 0
 	foreach($donationRow in $donationDataList)
 	{
 		if(![string]::IsNullOrEmpty($donationRow.R_Donor_Email))
@@ -53,7 +53,8 @@ function CreateDonations($DBConnection){
 			$donation_created = LogResult $d_command "@donation_id" "Donation created"
 			
 			if(!$donation_created){
-				throw
+				$error_count += 1
+				continue
 			}
 			
 			$donation_id = $d_command.Parameters["@donation_id"].Value
@@ -79,16 +80,17 @@ function CreateDonations($DBConnection){
 			$distribution_created = LogResult $dd_command "@distribution_id" "        with Donation Distribution"
 			
 			if(!$distribution_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Create all donations in the list
 function CreateDonationNoUserAccount($DBConnection){
 	$donationNoUserDataList = import-csv $donationNoUserDataCSV
-	
+	$error_count = 0
 	foreach($donationRow in $donationNoUserDataList)
 	{
 		if(![string]::IsNullOrEmpty($donationRow.R_Donor_Display_Name))
@@ -105,7 +107,8 @@ function CreateDonationNoUserAccount($DBConnection){
 			$contact_found = LogResult $c_command "@contact_id" "Contact making donation"
 			
 			if(!$contact_found){
-				throw
+				$error_count += 1
+				continue
 			}
 			
 			$contact_id = $c_command.Parameters["@contact_id"].Value
@@ -140,7 +143,8 @@ function CreateDonationNoUserAccount($DBConnection){
 			$donation_created = LogResult $d_command "@donation_id" "Donation created"
 			
 			if(!$donation_created){
-				throw
+				$error_count += 1
+				continue
 			}
 			
 			$donation_id = $d_command.Parameters["@donation_id"].Value
@@ -166,17 +170,18 @@ function CreateDonationNoUserAccount($DBConnection){
 			$distribution_created = LogResult $dd_command "@distribution_id" "        with Donation Distribution"
 			
 			if(!$distribution_created){
-				throw
+				$error_count += 1
 			}			
 		}
 	}
+	return $error_count
 }
 
 
 #Create all donations in list
 function CreateDonationsWithTwoDistributions($DBConnection){
 	$donationTwoDistributionsDataList = import-csv $donationTwoDistributionsDataCSV
-	
+	$error_count = 0
 	foreach($donationRow in $donationTwoDistributionsDataList)
 	{
 		if(![string]::IsNullOrEmpty($donationRow.R_Donor_Email))
@@ -210,7 +215,8 @@ function CreateDonationsWithTwoDistributions($DBConnection){
 			$donation_created = LogResult $d_command "@donation_id" "Donation created"
 			
 			if(!$donation_created){
-				throw
+				$error_count += 1
+				continue
 			}
 			
 			$donation_id = $d_command.Parameters["@donation_id"].Value
@@ -236,7 +242,8 @@ function CreateDonationsWithTwoDistributions($DBConnection){
 			$distribution_created = LogResult $dd1_command "@distribution_id" "        with first Distribution"
 			
 			if(!$distribution_created){
-				throw
+				$error_count += 1
+				continue
 			}
 			
 			
@@ -260,24 +267,27 @@ function CreateDonationsWithTwoDistributions($DBConnection){
 			$distribution_created = LogResult $dd2_command "@distribution_id" "        and second Distribution"
 			
 			if(!$distribution_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
-
-
 
 
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateDonations $DBConnection
-	CreateDonationNoUserAccount $DBConnection
-	CreateDonationsWithTwoDistributions $DBConnection
+	$errors = 0
+	$errors += CreateDonations $DBConnection
+	$errors += CreateDonationNoUserAccount $DBConnection
+	$errors += CreateDonationsWithTwoDistributions $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

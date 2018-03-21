@@ -5,7 +5,7 @@ param (
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
-. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.ReloadControllers\DBCommand.ps1") #should avoid dot-source errors
+. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
 	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
@@ -17,7 +17,7 @@ function OpenConnection{
 #Create all participants in list
 function CreateParticipants($DBConnection){
 	$participantDataList = import-csv $particpantDataCSV
-	
+	$error_count = 0
 	foreach($userRow in $participantDataList)
 	{
 		if(![string]::IsNullOrEmpty($userRow.R_Participant_Email))
@@ -40,19 +40,24 @@ function CreateParticipants($DBConnection){
 			$participant_created = LogResult $command "@participant_id" "Participant created"
 			
 			if(!$participant_created){
-				throw
+				$error_count += 1
 			}			
 		}
 	}
+	return $error_count
 }
 
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	CreateParticipants $DBConnection
+	$errors = 0
+	$errors += CreateParticipants $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

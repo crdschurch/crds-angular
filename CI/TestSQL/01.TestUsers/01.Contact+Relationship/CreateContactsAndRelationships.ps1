@@ -6,7 +6,7 @@ param (
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
  )
 
-. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.ReloadControllers\DBCommand.ps1") #should avoid dot-source errors
+. ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
 	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
@@ -19,7 +19,7 @@ function OpenConnection{
 #Update all contacts in list
 function UpdateContacts($DBConnection){
 	$contactDataList = import-csv $contactDataCSV
-	
+	$error_count = 0
 	foreach($userRow in $contactDataList)
 	{
 		if(![string]::IsNullOrEmpty($userRow.R_Contact_Email))
@@ -46,16 +46,17 @@ function UpdateContacts($DBConnection){
 			$contact_created = LogResult $command "@contact_id" "Contact updated"
 			
 			if(!$contact_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Create contact relationships
 function CreateContactRelationships($DBConnection){
 	$contactRelationshipsDataList = import-csv $contactRelationshipsDataCSV
-
+	$error_count = 0
 	foreach($userRow in $contactRelationshipsDataList)
 	{
 		if(![string]::IsNullOrEmpty($userRow.R_Contact_Email))
@@ -77,20 +78,25 @@ function CreateContactRelationships($DBConnection){
 			$relationship_created = LogResult $command "@contact_relationship_id" "Contact Relationship"
 			
 			if(!$relationship_created){
-				throw
+				$error_count += 1
 			}
 		}
 	}
+	return $error_count
 }
 
 #Execute all the update functions
 try{
 	$DBConnection = OpenConnection
-	UpdateContacts $DBConnection
-	CreateContactRelationships $DBConnection
+	$errors = 0
+	$errors += UpdateContacts $DBConnection
+	$errors += CreateContactRelationships $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1
 } finally {
 	$DBConnection.Close();
+	if($errors -ne 0){
+		exit 1
+	}
 }

@@ -7,7 +7,7 @@ function CreateStoredProcCommand{
 	$command.CommandType = [System.Data.CommandType]'StoredProcedure'
 	$command.CommandText = $proc_name
 	$command.Connection = $DBConnection
-	$command.CommandTimeout = 300 #Set command timeout to 5 minutes. Teardown takes a while.
+	$command.CommandTimeout = 900 #Set command timeout to 15 minutes. Teardown takes a while.
 	return $command
 }
 
