@@ -62,7 +62,7 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
 
         MpGroup GetSmallGroupDetailsById(int groupId);
 
-        void SendNewStudentMinistryGroupAlertEmail(List<MpGroupParticipant> leaders);
+        void SendNewStudentMinistryGroupAlertEmail(List<MpGroupParticipant> leaders, MpGroup group);
 
         int UpdateGroup(MpGroup mpGroup);
         int UpdateGroupParticipant(List<MpGroupParticipant> participants);
