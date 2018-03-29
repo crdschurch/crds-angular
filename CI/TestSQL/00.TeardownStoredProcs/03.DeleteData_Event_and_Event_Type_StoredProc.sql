@@ -124,6 +124,8 @@ BEGIN
 	INSERT INTO @child_events_to_delete (child_event_id) SELECT Event_ID
 		FROM [dbo].Events WHERE Parent_Event_ID = @event_id;
 
+	SET @cur_entry_id = 0;
+
 	WHILE @cur_entry_id is not null
 	BEGIN
 		--Get top item in list
