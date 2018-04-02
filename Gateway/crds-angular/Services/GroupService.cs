@@ -140,7 +140,7 @@ namespace crds_angular.Services
 
                 if (group.MinorAgeGroupsAdded)
                 {
-                    _mpGroupRepository.SendNewStudentMinistryGroupAlertEmail((List<MpGroupParticipant>) mpGroup.Participants);
+                    _mpGroupRepository.SendNewStudentMinistryGroupAlertEmail((List<MpGroupParticipant>) mpGroup.Participants, mpGroup);
                 }
 
                 _awsCloudsearchService.UploadSingleGroupToAwsFromMp(group.GroupId);
@@ -855,7 +855,7 @@ namespace crds_angular.Services
                 if (group.MinorAgeGroupsAdded)
                 {
                     var leaders =groupParticipants.Where(p => p.GroupRoleId == _groupRoleLeader).ToList();
-                    _mpGroupRepository.SendNewStudentMinistryGroupAlertEmail(leaders);
+                    _mpGroupRepository.SendNewStudentMinistryGroupAlertEmail(leaders, mpGroup);
                 }
 
                 _awsCloudsearchService.UpdateGroupInAws(group.GroupId);
@@ -875,6 +875,11 @@ namespace crds_angular.Services
             try
             {
                 var apiToken = _apiUserService.GetToken();
+                var group = new MpGroup()
+                {
+                    GroupDescription = "this is the description",
+                    Name = "This is the name of the group"
+                };
                 var mpParticipant = Mapper.Map<MpGroupParticipant>(participant);
                 List<MpGroupParticipant> part = new List<MpGroupParticipant>();
                 part.Add(mpParticipant);
@@ -883,7 +888,7 @@ namespace crds_angular.Services
                 {
                     if (_mpGroupRepository.ParticipantGroupHasStudents(apiToken, mpParticipant.ParticipantId, mpParticipant.GroupParticipantId))
                     {
-                        _mpGroupRepository.SendNewStudentMinistryGroupAlertEmail(part);
+                        _mpGroupRepository.SendNewStudentMinistryGroupAlertEmail(part, group);
                     }
                 }
             }

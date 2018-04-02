@@ -743,7 +743,7 @@ namespace MinistryPlatform.Translation.Repositories
         }
 
 
-        public void SendNewStudentMinistryGroupAlertEmail(List<MpGroupParticipant> leaders)
+        public void SendNewStudentMinistryGroupAlertEmail(List<MpGroupParticipant> leaders, MpGroup group)
         {
             var emailTemplate = _communicationService.GetTemplate(NewStudentMinistryGroupAlertEmailTemplate);
             const string toEmail = "studentministry@crossroads.net";
@@ -757,7 +757,9 @@ namespace MinistryPlatform.Translation.Repositories
 
             var mergeData = new Dictionary<string, object>
             {
-                {"Leaders", formattedData + "</ul>"}
+                {"Leaders", formattedData + "</ul>"},
+                {"GroupName", group.Name },
+                {"GroupDescription", group.GroupDescription }
             };
 
             var domainId = Convert.ToInt32(AppSettings("DomainId"));

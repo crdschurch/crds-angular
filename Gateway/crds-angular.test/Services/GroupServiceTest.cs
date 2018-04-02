@@ -1301,6 +1301,12 @@ namespace crds_angular.test.Services
                 GroupRoleTitle = "Group Leader"
             };
 
+            var group = new MpGroup()
+            {
+                Name = "group",
+                GroupDescription = "Desc"
+            };
+
             var part = new List<MpGroupParticipant>();
 
             groupRepository.Setup(x => x.ParticipantGroupHasStudents(token,
@@ -1308,7 +1314,7 @@ namespace crds_angular.test.Services
                                                                      participant.GroupParticipantId)).Returns(false);
 
             fixture.UpdateGroupParticipantRole(participant);
-            groupRepository.Verify(x => x.SendNewStudentMinistryGroupAlertEmail(part), Times.Never);
+            groupRepository.Verify(x => x.SendNewStudentMinistryGroupAlertEmail(part, group), Times.Never);
         }
 
         [Test]
