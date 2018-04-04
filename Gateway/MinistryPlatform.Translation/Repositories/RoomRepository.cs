@@ -150,8 +150,14 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<RoomLayout> GetRoomLayouts()
         {
-            var t = ApiLogin();
-            var records = _ministryPlatformService.GetPageViewRecords("RoomLayoutsById", t);
+            var filter = "Room_ID IS NULL";
+            var columns = "Room_Layout_ID,Layout_Name";
+            var orderBy = "Room_Layout_ID";
+
+            var token = ApiLogin();
+            var records = _ministryPlatformRestRepository
+                .UsingAuthenticationToken(token)
+                .SearchTable<Dictionary<string, object>>("Room_Layouts", filter, columns, orderBy);
 
             return records.Select(record => new RoomLayout
             {
