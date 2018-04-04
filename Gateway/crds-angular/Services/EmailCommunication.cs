@@ -114,14 +114,22 @@ namespace crds_angular.Services
                 communication.MergeData.Add("BaseUrl", _configurationWrapper.GetConfigValue("BaseUrl"));
             }
 
-            var communicationId = _communicationService.SendMessage(communication, true);
-            var directEmailId = new DirectEmailCommunication()
+            bool sendImmediately = communication.StartDate <= DateTime.Today;
+            if (sendImmediately)
             {
-                CommunicationId = communicationId
-            };
-            var message = _messageFactory.CreateMessage(directEmailId);
+                var communicationId = _communicationService.SendMessage(communication, true);
+                var directEmailId = new DirectEmailCommunication()
+                {
+                    CommunicationId = communicationId
+                };
+                var message = _messageFactory.CreateMessage(directEmailId);
 
-            _directEmailQueue.Send(message);
+                _directEmailQueue.Send(message);
+            }
+            else
+            {
+                _communicationService.SendMessage(communication);
+            }
         }
 
 
