@@ -114,7 +114,7 @@ namespace crds_angular.Services
                 communication.MergeData.Add("BaseUrl", _configurationWrapper.GetConfigValue("BaseUrl"));
             }
 
-            bool sendImmediately = communication.StartDate <= DateTime.Today;
+            bool sendImmediately = email.StartDate == null;
             if (sendImmediately)
             {
                 var communicationId = _communicationService.SendMessage(communication, true);
