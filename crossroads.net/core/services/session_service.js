@@ -159,7 +159,7 @@
           vm.removeRedirectRoute();
 
           // check if absolute url
-          var absoluteUrlRegex = /^https?:\/\//i;
+          const absoluteUrlRegex = /^https?:\/\//i;
           if (absoluteUrlRegex.test(url))
           {
             $window.location.href = url;
