@@ -37,6 +37,7 @@
     $http,
     $state,
     $location,
+    $window,
     $interval,
     $timeout,
     $cookies,
@@ -157,17 +158,24 @@
           const params = vm.exists('params');
           vm.removeRedirectRoute();
 
-          const foundState = $state.get().filter(state => state.name === url);
-          if (foundState.length > 0) {
-            if (params === undefined) {
-              $state.go(url);
-            } else {
-              $state.go(url, JSON.parse(params));
-            }
-          } else if (params === undefined) {
-            $location.url(url);
+          // check if absolute url
+          var absoluteUrlRegex = /^https?:\/\//i;
+          if (absoluteUrlRegex.test(url))
+          {
+            $window.location.href = url;
           } else {
-            $location.url(url).search(JSON.parse(params));
+            const foundState = $state.get().filter(state => state.name === url);
+            if (foundState.length > 0) {
+              if (params === undefined) {
+                $state.go(url);
+              } else {
+                $state.go(url, JSON.parse(params));
+              }
+            } else if (params === undefined) {
+              $location.url(url);
+            } else {
+              $location.url(url).search(JSON.parse(params));
+            }
           }
         }
       });
@@ -337,6 +345,7 @@
     '$http',
     '$state',
     '$location',
+    '$window',
     '$interval',
     '$timeout',
     '$cookies',
