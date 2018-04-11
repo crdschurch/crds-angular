@@ -17,7 +17,6 @@
       FORMLY_BUILDER: 'crossroads.formly_builder',
       GO_VOLUNTEER: 'crossroads.go_volunteer',
       MEDIA: 'crossroads.media',
-      MY_SERVE: 'crossroads.my_serve',
       LIVE_STREAM: 'crossroads.live_stream',
       GROUP_TOOL: 'crossroads.grouptool',
       MPTOOLS: 'crossroads.mptools',
