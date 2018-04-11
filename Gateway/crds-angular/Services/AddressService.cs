@@ -27,7 +27,7 @@ namespace crds_angular.Services
             var mpAddress = AutoMapper.Mapper.Map<MpAddress>(address);
             var found = FindExistingAddress(address, mpAddress);
 
-            if (updateGeoCoordinates || !address.HasGeoCoordinates())
+            if (updateGeoCoordinates)
             {
                 var newAddress = GetGeoLocationCascading(address);
                 mpAddress.Longitude = newAddress.Longitude;
