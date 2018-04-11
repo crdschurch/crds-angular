@@ -597,19 +597,19 @@ namespace crds_angular.Services
             switch (pin.PinType)
             {
                 case PinType.SITE:
-                    jsonData = $"{{ 'siteName': '{RemoveSpecialCharacters(pin.SiteName)}','isHost':  false,'isMe': false,'pinType': {(int) pin.PinType}}}";
+                    jsonData = $"{{ 'siteName': '{RemoveSpecialCharacters(pin.SiteName ?? "")}','isHost':  false,'isMe': false,'pinType': {(int) pin.PinType}}}";
                     break;
                 case PinType.GATHERING:
-                    jsonData = $"{{ 'firstName': '{RemoveSpecialCharacters(pin.FirstName)}', 'lastInitial': '{RemoveSpecialCharacters(lastname)}','isHost':  true,'isMe': false,'pinType': {(int) pin.PinType}}}";
+                    jsonData = $"{{ 'firstName': '{RemoveSpecialCharacters(pin.FirstName ?? "")}', 'lastInitial': '{RemoveSpecialCharacters(lastname ?? "")}','isHost':  true,'isMe': false,'pinType': {(int) pin.PinType}}}";
                     break;
                 case PinType.PERSON:
-                    jsonData = $"{{ 'firstName': '{RemoveSpecialCharacters(pin.FirstName)}', 'lastInitial': '{RemoveSpecialCharacters(lastname)}','isHost':  false,'isMe': {isMyPinAsString(pin, contactId)},'pinType': {(int) pin.PinType}}}";
+                    jsonData = $"{{ 'firstName': '{RemoveSpecialCharacters(pin.FirstName ?? "")}', 'lastInitial': '{RemoveSpecialCharacters(lastname ?? "")}','isHost':  false,'isMe': {isMyPinAsString(pin, contactId)},'pinType': {(int) pin.PinType}}}";
                     break;
                 case PinType.SMALL_GROUP:
-                    var groupName = RemoveSpecialCharacters(pin.Gathering.GroupName).Trim();
+                    var groupName = RemoveSpecialCharacters(pin.Gathering.GroupName ?? "").Trim();
                     if (groupName.Length > 22)
                     {
-                        groupName = RemoveSpecialCharacters(pin.Gathering.GroupName).Trim().Substring(0, 22);
+                        groupName = RemoveSpecialCharacters(pin.Gathering.GroupName ?? "").Trim().Substring(0, 22);
                     }
                     jsonData = $"{{ 'firstName': '{groupName}', 'lastInitial': '','isHost':  false,'isMe': false,'pinType': {(int)pin.PinType}}}";
                     break;
@@ -1265,19 +1265,33 @@ namespace crds_angular.Services
        
         public List<PinDto> AddPinMetaData(List<PinDto> pins, GeoCoordinate originCoords, int contactId = 0)
         {
-            foreach (var pin in pins)
+            int c = 0;
+            try
             {
-                pin.Title = GetPinTitle(pin, contactId);
-                pin.IconUrl = GetPinUrl(pin.PinType);
-
-                //calculate proximity for all pins to origin
-                if (pin.Address.Latitude == null) continue;
-                if (pin.Address.Longitude != null && originCoords != null)
+                foreach (var pin in pins)
                 {
-                    pin.Proximity = GetProximity(originCoords, new GeoCoordinate(pin.Address.Latitude.Value, pin.Address.Longitude.Value));
-                }
+                    pin.Title = GetPinTitle(pin, contactId);
+                    pin.IconUrl = GetPinUrl(pin.PinType);
 
+                    //calculate proximity for all pins to origin
+                    if (pin.Address.Latitude == null) continue;
+                    if (pin.Address.Longitude != null && originCoords != null)
+                    {
+                        pin.Proximity = GetProximity(originCoords, new GeoCoordinate(pin.Address.Latitude.Value, pin.Address.Longitude.Value));
+                    }
+
+                    if (c % 165 == 0)
+                    {
+                        System.Diagnostics.Trace.Write(pin.Title);
+                    }
+                    c++;
+                }
             }
+            catch (Exception e)
+            {
+                throw new Exception("Arg",e);
+            }
+
             return pins;
         }
 

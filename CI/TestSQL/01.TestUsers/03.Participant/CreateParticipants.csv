@@ -1,4 +1,4 @@
-﻿R_Participant_Email,R_Start_Date,R_Show_On_Map,R_Host_Status_ID,R_Group_Leader_Status_ID
+R_Participant_Email,R_Start_Date,R_Show_On_Map,R_Host_Status_ID,R_Group_Leader_Status_ID
 mpcrds+auto+franksmith@gmail.com,1/1/2015,0,0,1
 mpcrds+auto+zoesmith@gmail.com,1/1/2015,0,0,1
 mpcrds+auto+jimsmith@gmail.com,1/1/2017,0,0,1
@@ -22,3 +22,5 @@ mpcrds+sh@gmail.com,2/2/2015,1,3,4
 mpcrds+auto+matcauthon@gmail.com,2/2/2015,1,3,4
 mpcrds+auto+talmanesdelovinde@gmail.com,2/2/2015,1,3,1
 mpcrds+auto+naleseanaldiaya@gmail.com,2/2/2015,1,3,1
+mpcrds+sherlock@gmail.com,2/2/2015,1,3,4
+mpcrds+watson@gmail.com,2/2/2015,1,3,1
