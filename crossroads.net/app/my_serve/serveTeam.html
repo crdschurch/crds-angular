@@ -1,0 +1,210 @@
+<script type="text/ng-template" id="serveFrequencyPopover.html">
+  <div dynamic-content="$root.MESSAGES.serveFrequencyPopover.content | html"></div>
+</script>
+
+<div class="col-sm-12 serve-opp-listings mobile-hard-sides">
+  <div class="panel panel-default" ng-class="{'serve-opp-listing-expired': team.pastDeadline}">
+    <div class="panel-heading clearfix" ng-click="togglePanel(null)">
+      <span class="team-name" ng-class="{'text-muted': team.pastDeadline}">{{::team.name}}</span>
+      <span ng-show="team.pastDeadline" class="badge word-badge">Signup Closed</span>
+      <div class="name-btns">
+        <!-- TEAM BUTTON -->
+        <button type="button"
+                class="btn btn normal-type"
+                ng-class="{'active':isActiveTab(team.name) }"
+                ng-click="togglePanel(team)"
+                stop-event>
+          Team <span class="badge badge-success" ng-if="team.rsvpYesCount > 0">{{team.rsvpYesCount}}</span>
+        </button>
+
+        <!-- Member buttons -->
+        <button type="button"
+          ng-click="togglePanel(member)"
+          ng-repeat="member in team.members"
+          class="btn btn normal-type"
+          ng-class="{'active':isActiveTab(member.name) }"
+          stop-event>
+          {{::member.name}}
+          <span ng-if="showIcon(member)" >
+            <svg-icon icon="check-circle" ng-show="member.serveRsvp.attending"> </svg-icon>
+            <svg-icon icon="minus-circle" ng-show="!member.serveRsvp.attending"> </svg-icon>
+          </span>
+        </button>
+
+      </div><!--/pull-right-->
+    </div><!--/panel-heading-->
+
+    <!-- TODO: Pull this out into it's own directive so that each form doesn't share scope? -->
+    <form name="teamForm" >
+    <div class="panel-collapse collapse" collapse="isCollapsed">
+      <div class="panel-body soft-half-bottom">
+        <div ng-show="(!isTeamTab() && team.pastDeadline)" class="alert alert-info" role="alert" dynamic-content="passedDeadlineMsg(team.pastDeadlineMessage) | html">
+        </div>
+
+        <preloader full-screen='false' ng-show='!isTeamTab() && !capacityReady'> </preloader>
+        <div ng-if="!isTeamTab() && capacityReady">
+          <!--
+            MEMBER EMAIL AND PROFILE EDIT
+          -->
+          <div ng-if='!isTeamTab()'>
+            <p class="flush-bottom">Editing sign up for {{currentMember.name}} {{currentMember.lastName}}
+              <span ng-show="displayEmail(currentMember.emailAddress)">( <span> {{ currentMember.emailAddress}} </span> )</span>
+              <span class="text-muted"></span>
+              <a href="" ng-click="editProfile(currentMember)" ng-show="showEdit" class="edit-btn">
+                <svg viewBox="0 0 32 32" class="icon icon-pencil4">
+                  <use xlink:href="#pencil4"></use>
+                </svg>
+              </a>
+            </p>
+          </div>
+
+          <!--
+            OPPORTUNITIES
+          -->
+          <div ng-if="!isTeamTab()" class="radio" ng-class="{'text-muted': role.capacity.badgeType === 'label-default', 'has-error': formErrors.role}"  >
+            <div class="row">
+              <div class="col-sm-6 col-md-6 col-lg-4 mobile-push-bottom" ng-repeat="role in currentMember.roles">
+                <label>
+                  <input type="radio"
+                        ng-disabled="role.capacity.badgeType === 'label-default' || team.pastDeadline"
+                        ng-model="currentMember.serveRsvp.roleId"
+                        ng-value="role.roleId"
+                        ng-change="roleChanged(role)"
+                        name="radio_{{team.index}}">
+                  <div>{{::role.name}}</div>
+                  <div ng-if="role.shiftStartTime && role.shiftEndTime">{{ role.shiftStartTime }} - {{ role.shiftEndTime }} </div>
+                  <div ng-if="role.room"> {{ role.room }} </div>
+                  <span class="label {{ role.capacity.badgeType }}" ng-show="role.capacity.display">{{ role.capacity.message }}</span>
+                </label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-4">
+                <label>
+                  <input type="radio" ng-disabled="team.pastDeadline" ng-model="currentMember.serveRsvp.roleId" ng-value="0" ng-change="roleChanged(role)" name="radio_{{team.index}}">
+                  Not Available
+                </label>
+              </div>
+              <div ng-show="formErrors.role">
+                <span dynamic-content="$root.MESSAGES.oneOptionMustBeSelected.content | html"></span>
+              </div>
+            </div><!--/radio-->
+          </div>
+
+          <!--
+            FREQUENCY
+          -->
+          <div class="row" ng-show="currentMember.showFrequency">
+            <!-- HOW OFTEN -->
+            <div class="col-md-4">
+              <div class="form-group" ng-class="{'has-error': formErrors.frequency}" >
+                <label>How Often?</label>
+                  <span popover-template="'serveFrequencyPopover.html'" popover-placement="right" class="hidden-xs visible-sm-inline visible-md-inline visible-lg-inline">
+                    <svg viewBox="0 0 32 32" class="icon icon-question-circle icon-subtle pointer">
+                      <use xlink:href="#question-circle"></use>
+                    </svg>
+                  </span>
+                  <svg viewBox="0 0 32 32" class="icon icon-question-circle icon-subtle pointer visible-xs-inline" ng-click="infoCollapsed = !infoCollapsed">
+                    <use xlink:href="#question-circle"></use>
+                  </svg>
+                </h5>
+                <div collapse="!infoCollapsed">
+                  <div class="well well-sm">You can use the frequency dropdown to sign up for one opportunity or to sign up on an ongoing basis, either weekly or every other week.</div>
+                </div>
+                <select class="form-control" ng-model="currentMember.currentOpportunity.frequency" ng-change="populateDates()" ng-options="f.text for f in frequency">
+                  <option value="">Select a Frequency</option>
+                </select>
+                <div ng-show="formErrors.frequency">
+                  <span dynamic-content="$root.MESSAGES.selectFrequency.content | html"></span>
+                </div>
+              </div><!--/form-group-->
+            </div><!--/col-sm-4-->
+
+            <!-- FROM -->
+            <div class="col-md-4">
+              <div class="form-group" ng-class="{'has-error': formErrors.from || formErrors.dateRange}">
+                <label>From: </label>
+                <div class="input-group">
+                  <input type="text"
+                        class="form-control"
+                        datepicker-popup="{{::format}}"
+                        ng-model="currentMember.currentOpportunity.fromDt"
+                        is-open="datePickers.fromOpened"
+                        datepicker-options="{showWeeks:false}"
+                        ng-required="true"
+                        close-text="Close"
+                        ng-change="changeFromDate()"
+                        ng-disabled="datesDisabled" />
+                  <span class="input-group-btn">
+                      <button type="button" class="btn btn-standard" ng-click="openFromDate($event)" ng-disabled="datesDisabled"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </div><!--/input-group-->
+                <div ng-show="formErrors.from">
+                  <span dynamic-content="$root.MESSAGES.invalidData.content | html"></span>
+                </div>
+              </div><!--/form-group-->
+            </div>
+
+            <!-- TO -->
+            <div class="col-md-4">
+              <div class="form-group" ng-class="{'has-error': formErrors.to || formErrors.dateRange}" >
+                <label>To:</label>
+                <div class="input-group">
+                  <input type="text"
+                        class="form-control"
+                        datepicker-popup="{{::format}}"
+                        ng-model="currentMember.currentOpportunity.toDt"
+                        is-open="datePickers.toOpened"
+                        min-date="minDate"
+                        max-date="'2050-06-22'"
+                        datepicker-options="{showWeeks:false}"
+                        date-disabled="disabled(date, mode)"
+                        ng-required="true"
+                        close-text="Close"
+                        ng-change="changeToDate()"
+                        ng-disabled="datesDisabled" />
+                  <span class="input-group-btn">
+                      <button type="button" class="btn btn-standard" ng-click="openToDate($event)" ng-disabled="datesDisabled"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </div><!--/input-group-->
+                <div ng-show="formErrors.to">
+                  <span dynamic-content="$root.MESSAGES.invalidData.content | html"></span>
+                </div>
+                <div ng-show="formErrors.dateRange">
+                  <span dynamic-content="$root.MESSAGES.invalidDateRange.content | html"></span>
+                </div>
+              </div><!--/form-group-->
+            </div><!--/ng-show-->
+          </div><!--/row-->
+
+          <!--
+            CONTACT AND BUTTONS
+          -->
+          <div ng-if="!isTeamTab()" class="row">
+            <div class="col-sm-12 serve-save soft-half-top">
+              <a href="mailto:{{ ::team.primaryContact }}" class="pull-left" ng-if="!isTeamTab()">
+                <svg viewBox="0 0 32 32" class="icon icon-mail5 icon-xlarge icon-subtle" tooltip-placement="right" tooltip="Email Team Leader">
+                  <use xlink:href="#mail5"></use>
+                </svg>
+              </a>
+              <button class="btn btn-primary btn-block-mobile sm-pull-right mobile-push-half-bottom" ng-disabled="team.pastDeadline" ng-class="{disabled: buttonState()}" ng-click="saveRsvp()">
+                <span ng-if="processing">Saving...</span>
+                <span ng-if="!processing">Save</span>
+              </button>
+              <button class="btn btn-standard btn-block-mobile" ng-disabled="team.pastDeadline" ng-click="cancel()">Cancel</button>
+            </div><!--/col-sm-12-->
+          </div>
+        </div>
+
+        <!--
+          TEAM CONFIRMED MEMBERS
+        -->
+        <div ng-if='isTeamTab()' class="panel-body">
+          <serve-team-container team="team" opp-serve-date="oppServeDate" opp-serve-time="opportunity.time" on-cancel="cancel()"></serve-team-container>
+        </div>
+      </div><!--/panel-body-->
+
+    </div><!--/panel-collapse-->
+    </form>
+
+
+</div><!--/panel-->
+</div>

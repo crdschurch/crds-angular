@@ -1,0 +1,12 @@
+<preloader full-screen='false' ng-show='!serveTeamContainer.ready'> </preloader>
+<div ng-show='serveTeamContainer.ready' class="panel-body">
+	<div ng-if="serveTeamContainer.team.serveOpportunities.length > 0">
+		<div ng-if="serveTeamContainer.isLeader">
+			<serve-team-leader team="serveTeamContainer.team" opp-serve-date="serveTeamContainer.oppServeDate" opp-serve-time="serveTeamContainer.oppServeTime" on-cancel="serveTeamContainer.onCancel()" on-update-team="serveTeamContainer.updateTeam(person, opp)"></serve-team-leader>
+		</div>
+		<div>
+			<serve-team-members on-member-click="serveTeamContainer.memberClick($member)" on-member-remove="serveTeamContainer.memberRemove($member)"
+				opportunities="serveTeamContainer.team.serveOpportunities" is-leader="serveTeamContainer.isLeader"></serve-team-members>
+		</div>
+	</div>
+</div>
