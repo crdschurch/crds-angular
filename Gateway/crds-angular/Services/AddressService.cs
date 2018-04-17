@@ -26,20 +26,12 @@ namespace crds_angular.Services
         {
             var mpAddress = AutoMapper.Mapper.Map<MpAddress>(address);
             var found = FindExistingAddress(address, mpAddress);
-            if (found)
-            {
-                mpAddress.Address_ID = address.AddressID;
-                if (!updateGeoCoordinates || address.HasGeoCoordinates())
-                {
-                    return;
-                }
-            }
 
-            if (updateGeoCoordinates && !address.HasGeoCoordinates())
+            if (updateGeoCoordinates)
             {
-                SetGeoCoordinates(address);
-                mpAddress.Longitude = address.Longitude;
-                mpAddress.Latitude = address.Latitude;
+                var newAddress = GetGeoLocationCascading(address);
+                mpAddress.Longitude = newAddress.Longitude;
+                mpAddress.Latitude = newAddress.Latitude;
             }
 
             address.AddressID = found ? UpdateAddress(mpAddress) : CreateAddress(mpAddress);
