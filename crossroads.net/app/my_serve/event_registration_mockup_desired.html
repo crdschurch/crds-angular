@@ -1,0 +1,215 @@
+<script type="text/ng-template" id="childcareContactPopover.html">
+  <div dynamic-content="$root.MESSAGES.childcareContactPopover.content | html"></div>
+</script>
+
+<div class="serve-signup-wrapper">
+  <h1 class="page-header">FI 101 Florence</h1>
+  <h2 class="subheading">First Impressions: Because you never get a second change to...you know.</h2>
+  <div class="row">
+    <div class="col-sm-9">
+      <img class="img-responsive imgix-fluid" data-src="//crossroads-media.imgix.net/images/fi-101.jpg" />
+      <br>
+      <p>Thanks for expressing interest in attending FI 101 in Oakley. We’ll answer your questions, help you decide what team to start serving with, and set you up for your first serving time when you attend.
+         You’re in good hands with our team of volunteer leaders.</p>
+      <p>FI 101 takes place every Sunday from 10-11:15am, and the fourth Saturday of the month from 4:30-5:45pm, in the Fireplace Conference Room, right off the Atrium near the fireplace. Our upcoming
+        FI 101 dates are listed below.</p>
+      <p>RSVP for one date you will attend FI 101. We’ll be ready for you when you come!</p>
+    </div>
+  </div>
+  <hr>
+
+  <p>
+    <svg viewBox="0 0 32 32" class="icon icon-check-circle">
+      <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#check-circle">
+      </use>
+    </svg>Signed Up Yes &nbsp;&nbsp;
+    <svg viewBox="0 0 32 32" class="icon icon-minus-circle">
+      <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#minus-circle">
+      </use>
+    </svg>Signed Up No
+  </p>
+
+  <!-- UX - static HTML for Filter Opportunities -->
+  <div class="col-sm-3 col-sm-push-9 clearfix serve-filter mobile-hard-left mobile-hard-right ng-isolate-scope"> <div ng-click="toggleFilterCollapse()"> <div class="filter-clear ng-hide"> <svg viewBox="0 0 25 32" class="icon icon-plus ng-hide"> <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#plus"></use> </svg><svg viewBox="0 0 25 32" class="icon icon-minus"> <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#minus"></use> </svg> </div> <h5>Filter Opportunities<a href="" data-ng-click="clearFilters()" class="filter-reset ng-hide" stop-event=""> Clear</a> </h5> </div> <div collapse="isFilterCollapsed" class="in" aria-expanded="true" aria-hidden="false" style="height: auto;">  <div class="push-bottom filter-group soft-top"> <button type="button" class="btn btn-default btn-block push-bottom" ng-click="open()"> <span class="ng-binding">10/26/15</span><span> - </span><span class="ng-binding">11/23/15</span> </button> </div> <!-- ngIf: uniqueMembers.length > 1 --><div class="push-half-bottom filter-group ng-scope"> <!-- ngRepeat: member in uniqueMembers --><div class="checkbox ng-scope"> <label class="ng-binding"> <input type="checkbox" ng-model="member.selected" ng-change="toggleFamilyMember(member)" class="ng-pristine ng-untouched ng-valid"> Pam Parker </label> </div><!-- end ngRepeat: member in uniqueMembers --><div class="checkbox ng-scope"> <label class="ng-binding"> <input type="checkbox" ng-model="member.selected" ng-change="toggleFamilyMember(member)" class="ng-pristine ng-untouched ng-valid"> Preston Parker </label> </div><!-- end ngRepeat: member in uniqueMembers --><div class="checkbox ng-scope"> <label class="ng-binding"> <input type="checkbox" ng-model="member.selected" ng-change="toggleFamilyMember(member)" class="ng-pristine ng-untouched ng-valid"> Parley Parker </label> </div><!-- end ngRepeat: member in uniqueMembers --><div class="checkbox ng-scope"> <label class="ng-binding"> <input type="checkbox" ng-model="member.selected" ng-change="toggleFamilyMember(member)" class="ng-pristine ng-untouched ng-valid"> Paul Parker </label> </div><!-- end ngRepeat: member in uniqueMembers --><div class="checkbox ng-scope"> <label class="ng-binding"> <input type="checkbox" ng-model="member.selected" ng-change="toggleFamilyMember(member)" class="ng-pristine ng-untouched ng-valid"> Pratt Parker </label> </div><!-- end ngRepeat: member in uniqueMembers --><div class="checkbox ng-scope"> <label class="ng-binding"> <input type="checkbox" ng-model="member.selected" ng-change="toggleFamilyMember(member)" class="ng-pristine ng-untouched ng-valid"> Peter Parker </label> </div><!-- end ngRepeat: member in uniqueMembers --><div class="checkbox ng-scope"> <label class="ng-binding"> <input type="checkbox" ng-model="member.selected" ng-change="toggleFamilyMember(member)" class="ng-pristine ng-untouched ng-valid"> Peggy Parker </label> </div><!-- end ngRepeat: member in uniqueMembers --> </div><!-- end ngIf: uniqueMembers.length > 1 -->  <!-- ngIf: uniqueTeams.length > 1 --><div class="push-half-bottom filter-group ng-scope" ng-if="uniqueTeams.length > 1"> <!-- ngRepeat: team in uniqueTeams --><div class="checkbox ng-scope" data-ng-repeat="team in uniqueTeams"> <label class="ng-binding"> <input type="checkbox" ng-model="team.selected" ng-change="toggleTeam(team)" class="ng-pristine ng-untouched ng-valid"> (d) FI Florence Coffee </label> </div><!-- end ngRepeat: team in uniqueTeams --><div class="checkbox ng-scope" data-ng-repeat="team in uniqueTeams"> <label class="ng-binding"> <input type="checkbox" ng-model="team.selected" ng-change="toggleTeam(team)" class="ng-pristine ng-untouched ng-valid"> (d) FI Florence Parking </label> </div><!-- end ngRepeat: team in uniqueTeams --><div class="checkbox ng-scope" data-ng-repeat="team in uniqueTeams"> <label class="ng-binding"> <input type="checkbox" ng-model="team.selected" ng-change="toggleTeam(team)" class="ng-pristine ng-untouched ng-valid"> (d) KC Florence Nursery </label> </div><!-- end ngRepeat: team in uniqueTeams --> </div><!-- end ngIf: uniqueTeams.length > 1 -->  <div class="push-half-bottom filter-group"> <div class="checkbox"> <label> <input type="checkbox" ng-model="uniqueSignUps[0].selected" ng-change="toggleSignedUp(uniqueSignUps[0])" class="ng-pristine ng-untouched ng-valid"> <span> Confirmed </span> </label> </div> <div class="checkbox"> <label> <input type="checkbox" ng-model="uniqueSignUps[1].selected" ng-change="toggleSignedUp(uniqueSignUps[1])" class="ng-pristine ng-untouched ng-valid"> Declined </label> </div> <div class="checkbox"> <label> <input type="checkbox" ng-model="uniqueSignUps[2].selected" ng-change="toggleSignedUp(uniqueSignUps[2])" class="ng-pristine ng-untouched ng-valid"> Unconfirmed </label> </div> </div>  <!-- ngIf: uniqueTimes.length > 1 --><div class="push-half-bottom filter-group ng-scope"> <!-- ngRepeat: time in uniqueTimes --><div class="checkbox ng-scope"> <label class="ng-binding"> <input type="checkbox" ng-model="time.selected" ng-change="toggleTime(time)" class="ng-pristine ng-untouched ng-valid"> 9:30am </label> </div><!-- end ngRepeat: time in uniqueTimes --><div class="checkbox ng-scope"> <label class="ng-binding"> <input type="checkbox" ng-model="time.selected" ng-change="toggleTime(time)" class="ng-pristine ng-untouched ng-valid"> 11:30am </label> </div><!-- end ngRepeat: time in uniqueTimes --><div class="checkbox ng-scope"> <label class="ng-binding"> <input type="checkbox" ng-model="time.selected" ng-change="toggleTime(time)" class="ng-pristine ng-untouched ng-valid"> 5:30pm </label> </div><!-- end ngRepeat: time in uniqueTimes --> </div><!-- end ngIf: uniqueTimes.length > 1 -->  </div> </div>
+
+  <div class="serve-signup-cont clearfix col-sm-9 col-sm-pull-3 soft-ends">
+
+    <form name='serveForm'>
+      <div class="serve-day push-bottom">
+        <h4>Sunday, November 1, 2015</h4>
+        <div class="serve-day-time row push-top">
+          <div class="col-sm-1 serve-time ng-binding"> 10:00am </div>
+          <div class="col-sm-11 clearfix">
+            <div class="col-sm-12 serve-opp-listings mobile-hard-sides ng-isolate-scope">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                  <span class="team-name ng-binding">FI 101 Event</span>
+                  <div class="name-btns">
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope active" ng-class="{'active':isActiveTab(member.name) }">
+                      <input type="checkbox" name="attender" checked />
+                       Parley
+                    </button>
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope active" ng-class="{'active':isActiveTab(member.name) }">
+                      <input type="checkbox" name="attender" checked />
+                       Paul
+                    </button>
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope" ng-class="{'active':isActiveTab(member.name) }">
+                      <input type="checkbox" name="attender"/>
+                       Pratt
+                    </button>
+                  </div><!--/name-btns-->
+                </div><!--/team-name ng-binding-->
+                <form name="teamForm-61">
+                  <div class="panel-collapse">
+                    <div class="panel-body soft-half-bottom">
+                      <p class="flush-bottom ng-binding">
+                        <span>Editing sign up for:</span>
+                        <br>
+                        <span>Parley Parker <span>( mpcrds+parleyparker@gmail.com )</span></span>
+                        <a href="" class="edit-btn"> <svg viewBox="0 0 32 32" class="icon icon-pencil4"> <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#pencil4"></use> </svg> </a>
+                        <br>
+                        <span>Paul Parker</span>
+                      </p><!--/flush-bottom ng-binding-->
+                      <div class="row">
+                        <div class="col-sm-12 push-half-bottom">
+                          <div>
+                            <div class="radio">
+                              <label>
+                                <input type="radio" class="ng-pristine ng-untouched ng-valid" name="role" checked /> <span class="opportunity-name ng-binding">Yes, we'll be there</span><span class="label label-info">100 Spots Remaining</span>
+                              </label>
+                            </div>
+                            <div class="radio">
+                              <label>
+                                <input type="radio" class="ng-pristine ng-untouched ng-valid" name="role" /> <span class="opportunity-name ng-binding">Not Available</span>
+                              </label>
+                            </div>
+                          </div>
+                          <div class="panel panel-default">
+                            <div class="panel-body text-muted">
+                              <div class="pull-left"> <h5 class="flush-bottom"> Event Times </h5> <p>10:00am - 11:15am </p> </div>
+                              <div class="pull-left push-left"> <h5 class="flush-bottom"> Location </h5> <p> KC 101 </p> </div>
+                            </div>
+                          </div>
+                        </div><!--/col-md-5-->
+
+                        <div class="col-sm-12 serve-save event-childcare soft-half-top" style="text-align:left;">
+                          <h4>
+                            Childcare
+                            <span popover-placement="right" popover-template="'childcareContactPopover.html'">
+                              <svg viewBox="0 0 32 32" class="icon icon-question-circle icon-subtle pointer">
+                                <use xlink:href="#question-circle"></use>
+                              </svg>
+                            </span>
+                          </h4>
+                          <div>
+                            <div class="checkbox">
+                              <label>
+                                <input type="checkbox" class="ng-pristine ng-untouched ng-valid" name="role"/> <span class="opportunity-name ng-binding">Lucy Miller</span>
+                              </label>
+                            </div>
+                            <div class="checkbox disabled">
+                              <label>
+                                <input type="checkbox" class="ng-pristine ng-untouched ng-valid" name="role" disabled /> <span class="opportunity-name ng-binding">Elliot Miller</span><span class="label  label-default" ng-show="role.capacity.display">Full</span>
+                              </label>
+                            </div>
+                          </div>
+                          <div class="checkbox">
+                            <label>
+                              <input type="checkbox" class="ng-pristine ng-untouched ng-valid" name="role"/> <span class="opportunity-name ng-binding">Baby Miller</span>
+                            </label>
+                          </div>
+                        </div><!--/col-sm-12 serve-save soft-half-top-->
+
+                        <div class="col-sm-12 serve-save soft-half-top">
+                          <a href="mailto:milacron@crossroads.net" class="pull-left"> <svg viewBox="0 0 32 32" class="icon icon-mail5 icon-xlarge icon-subtle" tooltip-placement="right" tooltip="Email Team Leader"> <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#mail5"></use> </svg> </a>
+                          <button class="btn btn-standard">Cancel</button>
+                          <div class="btn-group" dropdown>
+                            <button id="split-button" type="button" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-primary" dropdown-toggle>
+                              <span class="caret"></span>
+                              <span class="sr-only">Split button!</span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
+                              <li role="menuitem"><a href="#">Save for all events</a></li>
+                            </ul>
+                          </div>
+                        </div><!--/col-sm-12 serve-save soft-half-top-->
+                      </div><!--/row-->
+                    </div><!--/panel-body soft-half-bottom-->
+                  </div><!--/panel-collapse-->
+                </form><!--/teamForm-61-->
+              </div><!--/panel panel-default-->
+            </div><!--/col-sm-12 serve-opp-listings mobile-hard-sides ng-isolate-scope-->
+          </div><!--/col-sm-11 clearfix-->
+        </div><!--/serve-day-time row push-top-->
+      </div><!--/serve-day-->
+
+      <div class="serve-day push-bottom">
+        <h4>Sunday, November 8, 2015</h4>
+        <div class="serve-day-time row push-top">
+          <div class="col-sm-1 serve-time ng-binding"> 10:00pm </div>
+          <div class="col-sm-11 clearfix">
+            <div class="col-sm-12 serve-opp-listings mobile-hard-sides ng-isolate-scope">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                  <span class="team-name ng-binding">Awaited Show</span>
+                  <div class="name-btns">
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope active" ng-class="{'active':isActiveTab(member.name) }">
+                      Parley
+                      <svg viewBox="0 0 32 32" class="icon icon-check-circle"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#check-circle"></use></svg>
+                    </button>
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope" ng-class="{'active':isActiveTab(member.name) }">
+                      Paul
+                      <svg viewBox="0 0 32 32" class="icon icon-check-circle"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#check-circle"></use></svg>
+                    </button>
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope" ng-class="{'active':isActiveTab(member.name) }"> Pratt</button>
+                  </div><!--/name-btns-->
+                </div><!--/team-name ng-binding-->
+              </div><!--/panel panel-default-->
+            </div><!--/col-sm-12 serve-opp-listings mobile-hard-sides ng-isolate-scope-->
+          </div><!--/col-sm-11 clearfix-->
+        </div><!--/serve-day-time row push-top-->
+      </div><!--/serve-day-->
+
+      <div class="serve-day push-bottom">
+        <h4>Sunday, November 15, 2015</h4>
+        <div class="serve-day-time row push-top">
+          <div class="col-sm-1 serve-time ng-binding"> 10:00pm </div>
+          <div class="col-sm-11 clearfix">
+            <div class="col-sm-12 serve-opp-listings mobile-hard-sides ng-isolate-scope">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                  <span class="team-name ng-binding">Awaited Show</span>
+                  <div class="name-btns">
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope active" ng-class="{'active':isActiveTab(member.name) }"> Parley</button>
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope" ng-class="{'active':isActiveTab(member.name) }"> Paul</button>
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope" ng-class="{'active':isActiveTab(member.name) }"> Pratt</button>
+                  </div><!--/name-btns-->
+                </div><!--/team-name ng-binding-->
+              </div><!--/panel panel-default-->
+            </div><!--/col-sm-12 serve-opp-listings mobile-hard-sides ng-isolate-scope-->
+          </div><!--/col-sm-11 clearfix-->
+        </div><!--/serve-day-time row push-top-->
+        <div class="serve-day-time row push-top">
+          <div class="col-sm-1 serve-time ng-binding"> 1:00pm </div>
+          <div class="col-sm-11 clearfix">
+            <div class="col-sm-12 serve-opp-listings mobile-hard-sides ng-isolate-scope">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                  <span class="team-name ng-binding">Awaited Show</span>
+                  <div class="name-btns">
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope active" ng-class="{'active':isActiveTab(member.name) }"> Parley</button>
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope" ng-class="{'active':isActiveTab(member.name) }"> Paul</button>
+                    <button type="button" ng-click="togglePanel(member)" class="btn btn normal-type ng-binding ng-scope" ng-class="{'active':isActiveTab(member.name) }"> Pratt</button>
+                  </div><!--/name-btns-->
+                </div><!--/team-name ng-binding-->
+              </div><!--/panel panel-default-->
+            </div><!--/col-sm-12 serve-opp-listings mobile-hard-sides ng-isolate-scope-->
+          </div><!--/col-sm-11 clearfix-->
+        </div><!--/serve-day-time row push-top-->
+      </div><!--/serve-day-->
+
+    </form><!--serveForm-->
+
+  </div>
+</div>

@@ -1,0 +1,75 @@
+<div class="col-sm-3 col-sm-push-9 clearfix serve-filter mobile-hard-left mobile-hard-right mobile-flush-top mobile-soft-half-ends soft-top">
+
+  <div ng-click="toggleFilterCollapse()">
+
+    <div class="btn-mobile-filter btn block">Filter Opportunities
+      <div class="filter-clear" ng-show='$root.mobile'>
+        <svg viewBox="0 0 25 32" class="icon icon-arrow-right9 icon-large" ng-show="isFilterCollapsed">
+          <use xlink:href="#arrow-right9"></use>
+        </svg>
+        <svg viewBox="0 0 25 32" class="icon icon-arrow-down9 icon-large" ng-show="!isFilterCollapsed">
+          <use xlink:href="#arrow-down9"></use>
+        </svg>
+      </div>
+      <a href="" data-ng-click="clearFilters()" class="filter-reset" ng-show="isFilterSet()" stop-event> Clear</a>
+    </div>
+  </div>
+
+  <div collapse="isFilterCollapsed">
+
+    <!--DATE DESIGN WITH MODAL-->
+    <div class="push-bottom filter-group soft-half-top" >
+      <button type="button" class="btn btn-default btn-block push-bottom" ng-click="open()">
+        <span>{{filterFromDate | date:'M/dd/yyyy' }}</span>
+        <span> - </span>
+        <span>{{lastDate | date:'M/dd/yyyy' }}</span>
+      </button>
+    </div>
+
+    <div class="push-half-bottom filter-group" ng-if="uniqueMembers.length > 1">
+      <div class="checkbox" data-ng-repeat="member in uniqueMembers">
+        <label>
+          <input type="checkbox" ng-model="member.selected" ng-change="toggleFamilyMember(member)"> {{member.name + " " + member.lastName}}
+        </label>
+      </div>
+    </div>
+    <!--/push-bottom-->
+
+    <div class="push-half-bottom filter-group" ng-if="uniqueTeams.length > 1">
+      <div class="checkbox" data-ng-repeat="team in uniqueTeams">
+        <label>
+          <input type="checkbox" ng-model="team.selected" ng-change="toggleTeam(team)"> {{team.name}}
+        </label>
+      </div>
+    </div>
+    <!--/push-bottom-->
+
+    <div class="push-half-bottom filter-group">
+      <div class="checkbox">
+        <label>
+          <input id="confirmedCheckbox" type="checkbox" ng-model="uniqueSignUps[0].selected" ng-change="toggleSignedUp(uniqueSignUps[0])"> Confirmed
+        </label>
+      </div>
+      <div class="checkbox">
+        <label>
+          <input id="declinedCheckbox" type="checkbox" ng-model="uniqueSignUps[1].selected" ng-change="toggleSignedUp(uniqueSignUps[1])"> Declined
+        </label>
+      </div>
+      <div class="checkbox">
+        <label>
+          <input id="unconfirmedCheckbox" type="checkbox" ng-model="uniqueSignUps[2].selected" ng-change="toggleSignedUp(uniqueSignUps[2])"> Unconfirmed
+        </label>
+      </div>
+    </div>
+    <!--/push-bottom-->
+
+    <div class="push-half-bottom filter-group" ng-if="uniqueTimes.length > 1">
+      <div class="checkbox" data-ng-repeat="time in uniqueTimes">
+        <label>
+          <input type="checkbox" ng-model="time.selected" ng-change="toggleTime(time)"> {{ time.time | time }}
+        </label>
+      </div>
+    </div>
+    <!--/push-bottom-->
+  </div>
+</div>

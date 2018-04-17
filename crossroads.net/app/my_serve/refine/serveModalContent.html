@@ -1,0 +1,80 @@
+<div class="modal-body">
+  <form name='modal.filterdates' ng-submit="modal.readyFilterByDate()" novalidate>
+    <div class="push-half-bottom filter-group">
+      <!-- From -->
+      <div class="form-group" ng-class="{'has-error': modal.isFromError()}">
+        <label>From:</label>
+        <div class="input-group">
+          <input name="fromdate"
+                 type="text"
+                 class="form-control"
+                 datepicker-popup="{{modal.format}}"
+                 ng-required="true"
+                 close-text="Close"
+                 ng-model="modal.fromDate"
+                 is-open="modal.datePickers.fromOpened"
+                 datepicker-options="modal.dateOptions" />
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-standard" ng-click="modal.openFromDate($event)">
+              <i class="glyphicon glyphicon-calendar"></i>
+            </button>
+          </span>
+        </div>
+        <!--/input-group-->
+        <span ng-messages="modal.filterdates.fromdate.$error" ng-show="modal.isFromError()">
+          <span ng-message="fromDateToLarge" >
+            <span dynamic-content="$root.MESSAGES.fromDateToLarge.content | html"></span>
+        </span>
+        <span ng-message="required">
+            <span dynamic-content="$root.MESSAGES.fieldCanNotBeBlank.content | html"></span>
+        </span>
+        <span ng-message="date">
+            <span dynamic-content="$root.MESSAGES.invalidData.content | html"></span>
+        </span>
+        </span>
+      </div>
+      <!--/form-group-->
+      <!-- /From -->
+
+      <div class="form-group" ng-class="{'has-error': modal.isToError()}">
+        <label>To:</label>
+        <div class="input-group">
+          <input name="todate"
+                 type="text"
+                 class="form-control"
+                 datepicker-popup="{{::modal.format}}"
+                 ng-required="true"
+                 close-text="Close"
+                 ng-model="modal.toDate"
+                 is-open="modal.datePickers.toOpened"
+                 datepicker-options="modal.dateOptions" />
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-standard" ng-click="modal.openToDate($event)">
+              <i class="glyphicon glyphicon-calendar"></i>
+            </button>
+          </span>
+        </div>
+        <!--/input-group-->
+        <span ng-messages="modal.filterdates.todate.$error" ng-show="modal.isToError()">
+          <span ng-message="fromDate">
+            <span dynamic-content="$root.MESSAGES.toDateToSmall.content | html"> </span>
+        </span>
+        <span ng-message="required">
+            <span dynamic-content="$root.MESSAGES.fieldCanNotBeBlank.content | html"></span>
+        </span>
+        <span ng-message="date">
+            <span dynamic-content="$root.MESSAGES.invalidData.content | html"></span>
+        </span>
+        </span>
+      </div>
+      <!--/form-group-->
+    <loading-button input-type='submit'
+                    normal-text='Apply'
+                    loading-text='Applying...'
+                    loading-class='disabled'
+                    loading='modal.saving'
+                    input-classes='btn btn-primary btn-block'/>
+    </div>
+    <!--/push-bottom-->
+  </form>
+</div><!--/modal-body-->

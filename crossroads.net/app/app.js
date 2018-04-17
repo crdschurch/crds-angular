@@ -20,6 +20,7 @@ require('./invoices/invoices.module');
     constants.MODULES.MEDIA,
     constants.MODULES.LIVE_STREAM,
     constants.MODULES.MPTOOLS,
+    constants.MODULES.MY_SERVE,
     constants.MODULES.PROFILE,
     constants.MODULES.SEARCH,
     constants.MODULES.SIGNUP,
@@ -45,6 +46,7 @@ require('./invoices/invoices.module');
   require('./styleguide');
   /// #endif
   require('./thedaily');
+  require('./my_serve');
   require('./volunteer_signup');
   require('./volunteer_application');
   require('./giving_history');
