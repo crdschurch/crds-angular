@@ -1,0 +1,23 @@
+<div>
+  <!--a ng-click="closableTag.click()>{{closableTag.name}}</a-->
+  <text ng-if="closableTag.age !== null && closableTag.age <= closableTag.maxSVAge">
+    {{closableTag.name + closableTag.svText}}
+  </text>
+
+  <text ng-if="closableTag.age == null || closableTag.age > closableTag.maxSVAge">
+  {{closableTag.name}}
+  </text>
+  <svg mwl-confirm ng-if='(closableTag.isLeader && closableTag.opportunityId > 0)'
+       viewBox="0 0 32 32"
+       class="icon icon-close pointer"
+       on-confirm="closableTag.close()"
+       on-cancel=""
+       message="{{closableTag.message}}"
+       title="<center>{{closableTag.title}}</center>"
+       confirm-button-type="primary"
+       cancel-button-type="standard"
+       confirm-text="{{closableTag.confirmText}}"
+       cancel-text="{{closableTag.cancelText}}">
+    <use xlink:href="#close"></use>
+  </svg>
+</div>

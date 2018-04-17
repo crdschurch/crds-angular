@@ -1,0 +1,120 @@
+<form name="serveTeamLeader.teamLeaderForm">
+
+	<!--TEAM MEMBER SELECTION  -->
+	<div class="push-bottom" ng-class="{'has-error': (serveTeamLeader.teamLeaderForm.$submitted && serveTeamLeader.individuals.length < 1)}">
+		<tags-input ng-model="serveTeamLeader.individuals" ng-class="{'custom-tags': (!serveTeamLeader.teamLeaderForm.$submitted && serveTeamLeader.individuals.length < 1)}" ng-required='true' display-property="displayName" key-property="email"
+			placeholder="Search for a team member" add-from-autocomplete-only="true" replace-spaces-with-dashes='false' autofocus>
+
+			<auto-complete source="serveTeamLeader.loadTeamMembersSearch($query)" display-property="displayName" key-property="email"
+				min-length="1" template='serve_team_leader/serveTeamAutocomplete.html'></auto-complete>
+		</tags-input>
+		<div ng-show="(serveTeamLeader.teamLeaderForm.$submitted && serveTeamLeader.individuals.length < 1)">
+			<span dynamic-content="$root.MESSAGES.fieldCanNotBeBlank.content | html"></span>
+		</div>
+	</div>
+
+	<!-- OPPORTUNITIES -->
+	<div class="radio" ng-class="{'text-muted': opp.capacity.badgeType === 'label-default'}">
+		<div class="row">
+			<div class="col-sm-6 col-md-6 col-lg-4 mobile-push-bottom" ng-repeat="opp in serveTeamLeader.team.serveOpportunities">
+				<label>
+                <input type="radio"
+                       ng-model="serveTeamLeader.model.selectedOpp"
+                       ng-value="opp.opportunityId"
+                       name="radio_{{team.index}}">
+                <div>{{::opp.opportunityTitle}} {{::opp.roleTitle}}</div>
+                <div ng-if="opp.shiftStartTime && opp.shiftEndTime">{{ opp.shiftStartTime | time}} - {{ opp.shiftEndTime | time}} </div>
+                <div ng-if="opp.room"> {{ opp.room }} </div>
+                <span class="label {{ opp.capacity.badgeType }}" ng-show="opp.capacity.display">{{ opp.capacity.message }}</span>
+              </label>
+			</div>
+		</div>
+	</div>
+
+	<!-- FREQUENCY  -->
+	<div class="row" ng-show="serveTeamLeader.model.selectedOpp && serveTeamLeader.model.selectedOpp !== 0">
+		<!-- HOW OFTEN -->
+		<div class="col-md-4">
+			<div class="form-group" ng-class="{'has-error': formErrors.frequency}">
+				<label>How Often?</label>
+				<span popover-template="'serveFrequencyPopover.html'" popover-placement="right" class="hidden-xs visible-sm-inline visible-md-inline visible-lg-inline">
+                  <svg viewBox="0 0 32 32" class="icon icon-question-circle icon-subtle pointer">
+                    <use xlink:href="#question-circle"></use>
+                  </svg>
+                </span>
+				<svg viewBox="0 0 32 32" class="icon icon-question-circle icon-subtle pointer visible-xs-inline" ng-click="infoCollapsed = !infoCollapsed">
+					<use xlink:href="#question-circle"></use>
+				</svg>
+				</h5>
+				<div collapse="!infoCollapsed">
+					<div class="well well-sm">You can use the frequency dropdown to sign up for one opportunity or to sign up on an ongoing basis, either weekly or
+						every other week.</div>
+				</div>
+				<select ng-disabled="true" class="form-control" ng-model="serveTeamLeader.model.selectedFrequency" ng-change="serveTeamLeader.populateDates()"
+					ng-value="f.value" ng-options="f.text for f in serveTeamLeader.frequencies">
+                <option value="">Select a Frequency</option>
+              </select>
+				<div ng-show="serveTeamLeader.formErrors.frequency">
+					<span dynamic-content="$root.MESSAGES.selectFrequency.content | html"></span>
+				</div>
+			</div>
+			<!--/form-group-->
+		</div>
+		<!--/col-sm-4-->
+
+		<!-- FROM -->
+		<div class="col-md-4">
+			<div class="form-group" ng-class="{'has-error': formErrors.from || formErrors.dateRange}">
+				<label>From: </label>
+				<div class="input-group">
+					<input type="text" class="form-control" datepicker-popup="{{::format}}" ng-model="serveTeamLeader.model.fromDt" is-open="datePickers.fromOpened"
+						datepicker-options="{showWeeks:false}" ng-required="true" close-text="Close" ng-change="changeFromDate()" ng-disabled="serveTeamLeader.datesDisabled"
+					/>
+					<span class="input-group-btn">
+                    <button type="button" class="btn btn-standard" ng-click="openFromDate($event)" ng-disabled="serveTeamLeader.datesDisabled"><i class="glyphicon glyphicon-calendar"></i></button>
+                  </span>
+				</div>
+				<!--/input-group-->
+				<div ng-show="serveTeamLeaderformErrors.from">
+					<span dynamic-content="$root.MESSAGES.invalidData.content | html"></span>
+				</div>
+			</div>
+			<!--/form-group-->
+		</div>
+
+		<!-- TO -->
+		<div class="col-md-4">
+			<div class="form-group" ng-class="{'has-error': formErrors.to || formErrors.dateRange}">
+				<label>To:</label>
+				<div class="input-group">
+					<input type="text" class="form-control" datepicker-popup="{{::format}}" ng-model="serveTeamLeader.model.toDt" is-open="datePickers.toOpened"
+						min-date="minDate" max-date="'2050-06-22'" datepicker-options="{showWeeks:false}" date-disabled="disabled(date, mode)"
+						ng-required="true" close-text="Close" ng-change="changeToDate()" ng-disabled="serveTeamLeader.datesDisabled" />
+					<span class="input-group-btn">
+                    <button type="button" class="btn btn-standard" ng-click="openToDate($event)" ng-disabled="serveTeamLeader.datesDisabled"><i class="glyphicon glyphicon-calendar"></i></button>
+                  </span>
+				</div>
+				<!--/input-group-->
+				<div ng-show="formErrors.to">
+					<span dynamic-content="$root.MESSAGES.invalidData.content | html"></span>
+				</div>
+				<div ng-show="formErrors.dateRange">
+					<span dynamic-content="$root.MESSAGES.invalidDateRange.content | html"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- BUTTONS    -->
+	<div class="row">
+		<div class="col-sm-12 serve-save soft-half-top">
+			<button class="btn btn-primary btn-block-mobile sm-pull-right mobile-push-half-bottom" ng-disabled="(serveTeamLeader.processing || !serveTeamLeader.isFormValid())" ng-class="{disabled: (serveTeamLeader.processing || !serveTeamLeader.isFormValid())}"
+				ng-click="serveTeamLeader.saveRsvp()">
+              <span ng-if="serveTeamLeader.processing">Saving...</span>
+              <span ng-if="!serveTeamLeader.processing">Save</span>
+            </button>
+			<button class="btn btn-standard btn-block-mobile" ng-click="serveTeamLeader.leaderCancel()" type="reset">Cancel</button>
+		</div>
+		<!--/col-sm-12-->
+	</div>
+</form>
