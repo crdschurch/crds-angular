@@ -2,9 +2,9 @@ MyServeRouter.$inject = ['$httpProvider', '$stateProvider'];
 
 export default function MyServeRouter($httpProvider, $stateProvider) {
   $stateProvider
-    .state('serve-signup', {
+    .state('serve-signup-legacy', {
       parent: 'noSideBar',
-      url: '/serve-signup',
+      url: '/serve-signup-legacy',
       controller: 'MyServeController as serve',
       templateUrl: 'my_serve/myserve.html',
       data: {
@@ -38,16 +38,16 @@ export default function MyServeRouter($httpProvider, $stateProvider) {
         }
       },
     })
-    .state('serve-signup.message-success', {
+    .state('serve-signup-legacy.message-success', {
       parent: 'noSideBar',
-      url: '/serve-signup/message/success',
+      url: '/serve-signup-legacy/message/success',
       onEnter: function ($state, $stateParams, $cookies) {
-        $state.go('serve-signup', { messageSent: true});
+        $state.go('serve-signup-legacy', { messageSent: true});
       },
     })
-    .state('serve-signup.message', {
+    .state('serve-signup-legacy.message', {
       parent: 'noSideBar',
-      url: '/serve-signup/message/:groupId',
+      url: '/serve-signup-legacy/message/:groupId',
       template: '<serve-team-message></serve-team-message>',
       resolve: {
         /*@ngInject*/
