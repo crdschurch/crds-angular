@@ -64,7 +64,6 @@
 }
 
 @media only screen and (min-width:420px) and (max-width:768) {
-
   .crds-styles .explore-content .vertical-centered  {
     position: absolute;
     left: 50%;
@@ -72,7 +71,6 @@
     transform: translate(-50%,1%);
     width: 100%;
   }
-
 }
 
 @media (min-width:768px) and (max-width:992) {
@@ -82,7 +80,6 @@
 }
 
 @media only screen and (max-width:991px) {
-
   .crds-styles .explore-content #religion {
     margin-top: 0px;
     height: auto;
@@ -96,5 +93,4 @@
     transform: translate(-50%,.5%);
     width: 100%;
   }
-
 }
