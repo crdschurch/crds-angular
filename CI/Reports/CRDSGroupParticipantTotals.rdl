@@ -54,7 +54,7 @@
                     </Style>
                   </TextRun>
                   <TextRun>
-                    <Value>=Format(Parameters!reportdate.Value,"dd/MM/yyyy")</Value>
+                    <Value>=Format(Parameters!reportdate.Value,"MM/dd/yyyy")</Value>
                     <Style>
                       <FontFamily>Verdana</FontFamily>
                       <FontSize>20pt</FontSize>
