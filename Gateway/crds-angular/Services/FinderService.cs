@@ -1141,7 +1141,7 @@ namespace crds_angular.Services
                 var newMemberId = _contactRepository.GetContactId(token);
                 var mergeData = GetEmailMergeData(newMemberId, group);
 
-                var emailTemplateId = _configurationWrapper.GetConfigIntValue("GroupsTryAGroupLeaderNotificationTemplateId");
+                var emailTemplateId = _configurationWrapper.GetConfigIntValue("GroupRequestPendingReminderEmailTemplateId");
 
                 var emailTemplate = _communicationRepository.GetTemplate(emailTemplateId);
                 var fromContact = new MpContact
