@@ -73,7 +73,7 @@
   }
 }
 
-@media (min-width:768px) and (max-width:992) {
+@media (min-width:768px) and (max-width:992px) {
   .crds-styles .explore-content #explore3 .copy {
     margin-top: 50px;
   }
