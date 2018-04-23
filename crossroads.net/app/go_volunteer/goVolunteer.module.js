@@ -1,5 +1,7 @@
 import constants from '../constants';
-import routes from './goVolunteer.routes';
+//Removing routes to prevent users from accessing Go Local 2016/2017
+//All of the Go Volunteer code should really be deleted as it is dead
+//import routes from './goVolunteer.routes';
 import formly from './goVolunteer.formly';
 import goVolunteerService from './goVolunteer.service';
 import goVolunteerOrganizations from './organizations.service';
@@ -8,7 +10,7 @@ import skillsService from './skills.service';
 import groupConnectors from './groupConnectors.service';
 
 export default angular.module(constants.MODULES.GO_VOLUNTEER, ['crossroads.core', 'crossroads.common', 'ngFileSaver'])
-  .config(routes)
+ // .config(routes)
   .config(formly)
   .service('GoVolunteerService', goVolunteerService)
   .service('Organizations', goVolunteerOrganizations)
