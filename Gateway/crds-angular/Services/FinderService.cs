@@ -57,6 +57,7 @@ namespace crds_angular.Services
         private readonly IAccountService _accountService;
         private readonly IAnalyticsService _analyticsService;
         private readonly ILookupService _lookupService;
+        private readonly ILocationService _locationService;
         private readonly int _approvedHost;
         private readonly int _pendingHost;
         private readonly int _anywhereGroupType;
@@ -108,7 +109,8 @@ namespace crds_angular.Services
             ICommunicationRepository communicationRepository,
             IAccountService accountService,
             ILookupService lookupService,
-            IAnalyticsService analyticsService
+            IAnalyticsService analyticsService,
+            ILocationService locationService
         )
         {
             // services
@@ -129,6 +131,7 @@ namespace crds_angular.Services
             _accountService = accountService;
             _lookupService = lookupService;
             _analyticsService = analyticsService;
+            _locationService = locationService;
             // constants
             _anywhereCongregationId = _configurationWrapper.GetConfigIntValue("AnywhereCongregationId");
             _approvedHost = configurationWrapper.GetConfigIntValue("ApprovedHostStatus");
@@ -449,6 +452,7 @@ namespace crds_angular.Services
             var pins = ConvertFromAwsSearchResponse(cloudReturn);
 
             AddPinMetaData(pins, originCoords, contactId);
+            AddAddressToSites(pins.Where(a => a.PinType == PinType.SITE).ToList());
 
             return pins;
         }
@@ -1262,10 +1266,21 @@ namespace crds_angular.Services
 
             RecordCommunication(connection);
         }
-       
+
+        public List<PinDto> AddAddressToSites(List<PinDto> pins)
+        {
+            // get locations
+            var locationList = _locationService.GetAllCrossroadsLocations();
+            foreach (var pin in pins)
+            {
+                pin.Address.AddressLine1 = locationList.Find(a => a.LocationName == pin.SiteName)?.Address.AddressLine1 ?? "" ;
+            }
+
+            return pins;
+        }
+
         public List<PinDto> AddPinMetaData(List<PinDto> pins, GeoCoordinate originCoords, int contactId = 0)
         {
-            int c = 0;
             try
             {
                 foreach (var pin in pins)
@@ -1279,17 +1294,11 @@ namespace crds_angular.Services
                     {
                         pin.Proximity = GetProximity(originCoords, new GeoCoordinate(pin.Address.Latitude.Value, pin.Address.Longitude.Value));
                     }
-
-                    if (c % 165 == 0)
-                    {
-                        System.Diagnostics.Trace.Write(pin.Title);
-                    }
-                    c++;
                 }
             }
             catch (Exception e)
             {
-                throw new Exception("Arg",e);
+                throw new Exception("Failure in AddPinMetaData",e);
             }
 
             return pins;
