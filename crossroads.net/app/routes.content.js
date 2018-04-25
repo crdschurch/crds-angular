@@ -63,14 +63,11 @@
                       redirectFlag = true;
                       PageById.get({ id: ContentPageService.page.linkTo }).$promise;
                     }
-                    $cookies.remove('redirectingToMaestro');
                     return;
                   } else if (ContentPageService.page.pageType === "AngularRedirectPage") {
                     $state.go(ContentPageService.page.angularRoute);
-                    $cookies.remove('redirectingToMaestro');
                     return;
-                  } else if (ContentPageService.page.requiresAngular === 1 && $cookies.get('redirectingToMaestro') !== 1) {
-                    $cookies.put('redirectingToMaestro', 1);
+                  } else if (ContentPageService.page.requiresAngular === 1 && __IN_MAESTRO__ === 1) {
                     const queryParams = $location.search();
                     link = removeTrailingSlashIfNecessary($stateParams.link);
                     const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
@@ -84,7 +81,6 @@
                     $rootScope.$destroy();
                     return;
                   }
-                  $cookies.remove('redirectingToMaestro');
                   return originalPromise;
                 }
 
