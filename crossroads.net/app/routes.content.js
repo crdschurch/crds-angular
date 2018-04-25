@@ -67,7 +67,7 @@
                   } else if (ContentPageService.page.pageType === 'AngularRedirectPage') {
                     $state.go(ContentPageService.page.angularRoute);
                     return;
-                  } else if (ContentPageService.page.requiresAngular === '1' && __IN_MAESTRO__ === '1') {
+                  } else if (ContentPageService.page.requiresAngular === '0' && __IN_MAESTRO__ === '1') {
                     const queryParams = $location.search();
                     link = removeTrailingSlashIfNecessary($stateParams.link);
                     const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
