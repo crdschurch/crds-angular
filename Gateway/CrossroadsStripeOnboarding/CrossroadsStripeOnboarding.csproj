@@ -65,7 +65,7 @@
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
     </Reference>
     <Reference Include="Crossroads.Web.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Crossroads.Web.Common.1.1.17\lib\net461\Crossroads.Web.Common.dll</HintPath>
+      <HintPath>..\packages\Crossroads.Web.Common.1.1.18\lib\net461\Crossroads.Web.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EfEnumToLookup">
