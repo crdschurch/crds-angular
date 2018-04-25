@@ -57,20 +57,20 @@
                   ContentPageService.page = originalPromise.pages[0];
                   // check if page is redirect
                   if (ContentPageService.page.pageType === "RedirectorPage") {
-                    $cookies.remove("redirectToMaestro");
                     if (ContentPageService.page.redirectionType === "External") {
                       $window.location.href = ContentPageService.page.externalURL;
-                      return;
                     } else {
                       redirectFlag = true;
-                      return PageById.get({ id: ContentPageService.page.linkTo }).$promise;
+                      PageById.get({ id: ContentPageService.page.linkTo }).$promise;
                     }
+                    $cookies.remove('redirectingToMaestro');
+                    return;
                   } else if (ContentPageService.page.pageType === "AngularRedirectPage") {
                     $state.go(ContentPageService.page.angularRoute);
-                    $cookies.remove("redirectToMaestro");
+                    $cookies.remove('redirectingToMaestro');
                     return;
-                  } else if (ContentPageService.page.requiresAngular === 1 && $cookies.get('redirectToMaestro') !== 1) {
-                    $cookies.put('redirectToMaestro', 1); 
+                  } else if (ContentPageService.page.requiresAngular === 1 && $cookies.get('redirectingToMaestro') !== 1) {
+                    $cookies.put('redirectingToMaestro', 1);
                     const queryParams = $location.search();
                     link = removeTrailingSlashIfNecessary($stateParams.link);
                     const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
@@ -80,11 +80,11 @@
                       pageType: 'NoHeaderOrFooter',
                       title: ''
                     };
-                    $window.location.replace(`${link}${queryParamsString}`);                    
+                    $window.location.replace(`${link}${queryParamsString}`);
                     $rootScope.$destroy();
                     return;
                   }
-                  $cookies.remove("redirectToMaestro");
+                  $cookies.remove('redirectingToMaestro');
                   return originalPromise;
                 }
 
