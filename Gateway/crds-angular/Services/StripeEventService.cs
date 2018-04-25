@@ -14,6 +14,7 @@ using MinistryPlatform.Translation.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using DonationStatus = crds_angular.Models.Crossroads.Stewardship.DonationStatus;
+using Constants = Crossroads.Utilities.Constants;
 
 namespace crds_angular.Services
 {

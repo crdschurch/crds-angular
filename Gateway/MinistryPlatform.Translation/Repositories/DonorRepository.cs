@@ -18,6 +18,7 @@ using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.PlatformService;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
+using Constants = Crossroads.Utilities.Constants;
 
 namespace MinistryPlatform.Translation.Repositories
 {
