@@ -16,7 +16,7 @@ namespace crds_angular
             var container = new UnityContainer();
             CrossroadsWebCommonConfig.Register(container);
 
-            var unitySections = new[] { "unity" };
+            var unitySections = new[] { "crossroadsClientApiKeysUnity", "unity" };
 
             foreach (var section in unitySections.Select(sectionName => (UnityConfigurationSection)ConfigurationManager.GetSection(sectionName)))
             {
