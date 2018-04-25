@@ -56,18 +56,18 @@
                 if (originalPromise.pages.length > 0) {
                   ContentPageService.page = originalPromise.pages[0];
                   // check if page is redirect
-                  if (ContentPageService.page.pageType === "RedirectorPage") {
-                    if (ContentPageService.page.redirectionType === "External") {
+                  if (ContentPageService.page.pageType === 'RedirectorPage') {
+                    if (ContentPageService.page.redirectionType === 'External') {
                       $window.location.href = ContentPageService.page.externalURL;
                     } else {
                       redirectFlag = true;
                       PageById.get({ id: ContentPageService.page.linkTo }).$promise;
                     }
                     return;
-                  } else if (ContentPageService.page.pageType === "AngularRedirectPage") {
+                  } else if (ContentPageService.page.pageType === 'AngularRedirectPage') {
                     $state.go(ContentPageService.page.angularRoute);
                     return;
-                  } else if (ContentPageService.page.requiresAngular === 1 && __IN_MAESTRO__ === 1) {
+                  } else if (ContentPageService.page.requiresAngular === '1' && __IN_MAESTRO__ === '1') {
                     const queryParams = $location.search();
                     link = removeTrailingSlashIfNecessary($stateParams.link);
                     const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
