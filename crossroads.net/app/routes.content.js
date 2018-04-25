@@ -57,6 +57,7 @@
                   ContentPageService.page = originalPromise.pages[0];
                   // check if page is redirect
                   if (ContentPageService.page.pageType === "RedirectorPage") {
+                    $cookies.remove("redirectToMaestro");
                     if (ContentPageService.page.redirectionType === "External") {
                       $window.location.href = ContentPageService.page.externalURL;
                       return;
@@ -66,8 +67,10 @@
                     }
                   } else if (ContentPageService.page.pageType === "AngularRedirectPage") {
                     $state.go(ContentPageService.page.angularRoute);
+                    $cookies.remove("redirectToMaestro");
                     return;
-                  } else if (ContentPageService.page.requiresAngular === 1) {
+                  } else if (ContentPageService.page.requiresAngular === 1 && $cookies.get('redirectToMaestro') !== 1) {
+                    $cookies.put('redirectToMaestro', 1); 
                     const queryParams = $location.search();
                     link = removeTrailingSlashIfNecessary($stateParams.link);
                     const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
@@ -81,7 +84,7 @@
                     $rootScope.$destroy();
                     return;
                   }
-
+                  $cookies.remove("redirectToMaestro");
                   return originalPromise;
                 }
 
