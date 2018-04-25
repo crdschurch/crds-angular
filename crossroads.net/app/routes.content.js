@@ -49,6 +49,20 @@
 
               link = addTrailingSlashIfNecessary(link);
 
+              function redirectToMaestro() {
+                const queryParams = $location.search();
+                link = removeTrailingSlashIfNecessary($stateParams.link);
+                const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
+                ContentPageService.page = {
+                  redirectType: 'RedirectorPage',
+                  content: '',
+                  pageType: 'NoHeaderOrFooter',
+                  title: ''
+                };
+                $window.location.replace(`${link}${queryParamsString}`);
+                $rootScope.$destroy();
+              }
+
               promise = Page.get({ url: link }).$promise;
 
               var childPromise = promise.then(function (originalPromise) {
@@ -68,21 +82,27 @@
                     $state.go(ContentPageService.page.angularRoute);
                     return;
                   } else if (ContentPageService.page.requiresAngular === '0' && __IN_MAESTRO__ === '1') {
-                    const queryParams = $location.search();
-                    link = removeTrailingSlashIfNecessary($stateParams.link);
-                    const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
-                    ContentPageService.page = {
-                      redirectType: 'RedirectorPage',
-                      content: '',
-                      pageType: 'NoHeaderOrFooter',
-                      title: ''
-                    };
-                    $window.location.replace(`${link}${queryParamsString}`);
-                    $rootScope.$destroy();
+                    redirectToMaestro();
                     return;
                   }
                   return originalPromise;
                 }
+
+                // Redirecting micro clients app back to maestro from w/in angular app
+                // Maestro adds a cookie w/ the micro client routes when passing off to angular
+                var maestroPages = $cookies.get('maestro-pages');
+                if (maestroPages !== undefined) {
+                  maestroPages = maestroPages.split(",")
+                
+                  for (var i = 0; i < maestroPages.length; i++) {
+                    var page = maestroPages[i].trim();
+                    if (link.match(new RegExp('^\/'+page+'\/'))){
+                      redirectToMaestro();
+                      return;
+                    }
+                  }
+                }
+                
 
                 var notFoundPromise = Page.get({ url: '/page-not-found/' }).$promise;
                 notFoundPromise.then(function (promise) {
