@@ -2,6 +2,7 @@
 module.exports = {
   get() {
     return {
+      __IN_MAESTRO__: JSON.stringify(process.env.IN_MAESTRO || '0'),
       __CRDS_ENV__: JSON.stringify(process.env.CRDS_ENV || ''),
       __COOKIE_DOMAIN__: JSON.stringify(process.env.CRDS_COOKIE_DOMAIN || ''),
       __CROSSROADS_API_TOKEN__: JSON.stringify(process.env.CROSSROADS_API_TOKEN || ''),

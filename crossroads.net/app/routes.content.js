@@ -49,70 +49,55 @@
 
               link = addTrailingSlashIfNecessary(link);
 
-              promise = Page.get({ url: link, requiresAngular: 1 }).$promise;
+              promise = Page.get({ url: link }).$promise;
 
               var childPromise = promise.then(function (originalPromise) {
 
                 if (originalPromise.pages.length > 0) {
                   ContentPageService.page = originalPromise.pages[0];
                   // check if page is redirect
-                  if (ContentPageService.page.pageType === "RedirectorPage") {
-                    if (ContentPageService.page.redirectionType === "External") {
+                  if (ContentPageService.page.pageType === 'RedirectorPage') {
+                    if (ContentPageService.page.redirectionType === 'External') {
                       $window.location.href = ContentPageService.page.externalURL;
-                      return;
                     } else {
                       redirectFlag = true;
-                      return PageById.get({ id: ContentPageService.page.linkTo }).$promise;
+                      PageById.get({ id: ContentPageService.page.linkTo }).$promise;
                     }
-                  } else if (ContentPageService.page.pageType === "AngularRedirectPage") {
+                    return;
+                  } else if (ContentPageService.page.pageType === 'AngularRedirectPage') {
                     $state.go(ContentPageService.page.angularRoute);
                     return;
+                  } else if (ContentPageService.page.requiresAngular === '0' && __IN_MAESTRO__ === '1') {
+                    const queryParams = $location.search();
+                    link = removeTrailingSlashIfNecessary($stateParams.link);
+                    const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
+                    ContentPageService.page = {
+                      redirectType: 'RedirectorPage',
+                      content: '',
+                      pageType: 'NoHeaderOrFooter',
+                      title: ''
+                    };
+                    $window.location.replace(`${link}${queryParamsString}`);
+                    $rootScope.$destroy();
+                    return;
                   }
-
                   return originalPromise;
                 }
 
-                const unmatchedLegacyRoute = $cookies.get('unmatchedLegacyRoute');
+                var notFoundPromise = Page.get({ url: '/page-not-found/' }).$promise;
+                notFoundPromise.then(function (promise) {
+                  if (promise.pages.length > 0) {
+                    ContentPageService.page = promise.pages[0];
+                  } else {
+                    ContentPageService.page = {
+                      content: '404 Content not found',
+                      pageType: '',
+                      title: 'Page not found'
+                    };
+                  }
+                });
+                return notFoundPromise;
 
-                if (unmatchedLegacyRoute !== undefined && unmatchedLegacyRoute === link) {
-                  var notFoundPromise = Page.get({ url: '/page-not-found/' }).$promise;
-
-                  notFoundPromise.then(function (promise) {
-                    if (promise.pages.length > 0) {
-                      ContentPageService.page = promise.pages[0];
-                    } else {
-                      ContentPageService.page = {
-                        content: '404 Content not found',
-                        pageType: '',
-                        title: 'Page not found'
-                      };
-                    }
-                  });
-
-                  return notFoundPromise;
-
-                } else {
-                  $cookies.put('unmatchedLegacyRoute', link);
-
-                  // page not found....
-                  // remove the previous link from the history?
-                  const queryParams = $location.search();
-                  link = removeTrailingSlashIfNecessary($stateParams.link);
-                  const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
-
-                  // code below prevents console errors during redirect
-                  ContentPageService.page = {
-                    redirectType: 'RedirectorPage',
-                    content: '',
-                    pageType: 'NoHeaderOrFooter',
-                    title: ''
-                  };
-
-                  $window.location.replace(`${link}${queryParamsString}`);                    
-
-                  $rootScope.$destroy();
-                  return;
-                }
               });
 
               childPromise = childPromise.then(function (result) {
