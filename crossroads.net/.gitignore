@@ -38,6 +38,7 @@ node_modules
 
 # Users Environment Variables
 .idea
+.envrc
 
 assets/
 dist/
