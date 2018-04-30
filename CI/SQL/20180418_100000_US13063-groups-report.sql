@@ -1,7 +1,7 @@
 use MinistryPlatform
 GO
 
-ALTER PROCEDURE [dbo].[report_CRDS_Group_Participants_By_Date_Congregation] 
+CREATE PROCEDURE [dbo].[report_CRDS_Group_Participants_By_Date_Congregation] 
      @reportdate DATE
 AS
 
