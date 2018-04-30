@@ -168,7 +168,9 @@
     COOKIES: {
       SESSION_ID: `${__CRDS_ENV__}sessionId`,
       REFRESH_TOKEN: `${__CRDS_ENV__}refreshToken`,
-      IMPERSONATION_ID: `${__CRDS_ENV__}impersonateUserId`
+      IMPERSONATION_ID: `${__CRDS_ENV__}impersonateUserId`,
+      USER_ID: 'userId',
+      USERNAME: 'username'
     },
     EVENTS: {
       ROOM_AVAILABLE: null,
