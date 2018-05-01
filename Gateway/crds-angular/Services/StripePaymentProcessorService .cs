@@ -19,6 +19,7 @@ using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models;
 using RestSharp.Extensions;
 using log4net;
+using Constants = Crossroads.Utilities.Constants;
 
 namespace crds_angular.Services
 {

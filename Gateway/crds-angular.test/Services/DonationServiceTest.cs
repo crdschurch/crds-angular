@@ -16,6 +16,7 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using MPServices=MinistryPlatform.Translation.Repositories.Interfaces;
+using Constants = Crossroads.Utilities.Constants;
 
 namespace crds_angular.test.Services
 {
