@@ -279,4 +279,34 @@ describe('Session Service', function () {
 
   })
 
+  describe('function create(refreshToken, sessionId, userTokenExp, userId, username', function () {
+    it('should set session cookies when called', function () {
+      var refreshToken = 'abcdefg123456789';
+      var sessionId = 'afoobarsessionid0987';
+      var userTokenExp = 1800;
+      var userId = '123456789';
+      var username = 'Foobar User';
+      Session.create(refreshToken, sessionId, userTokenExp, userId, username);
+      expect($cookies.get('refreshToken')).toBe(refreshToken);
+      expect($cookies.get('sessionId')).toBe(sessionId);
+      expect($cookies.get('userId')).toBe(userId);
+      expect($cookies.get('username')).toBe(username);
+    });
+
+    it('should set session cookie expirations when called', function () {
+      var baseTime = new Date(2018, 01, 01);
+      jasmine.clock().mockDate(baseTime);
+      var refreshToken = 'abcdefg123456789';
+      var sessionId = 'afoobarsessionid0987';
+      var userTokenExp = 1800;
+      var userId = '123456789';
+      var username = 'Foobar User';
+      var expiration_time = "Thu Feb 01 2018 00:30:00 GMT-0500 (EST)"
+      spyOn($cookies, 'put');
+      Session.create(refreshToken, sessionId, userTokenExp, userId, username);
+      expect($cookies.put).toHaveBeenCalledWith('userId', '123456789', Object({ expires: Date(expiration_time) }) )
+      expect($cookies.put).toHaveBeenCalledWith('username', 'Foobar User', Object({ expires: Date(expiration_time) }) )
+    });
+  });
+
 });

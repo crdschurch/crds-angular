@@ -53,14 +53,10 @@
       $log.debug('creating cookies!');
       const expDate = new Date();
       expDate.setTime(expDate.getTime() + (userTokenExp * 1000));
-      $cookies.put(cookieNames.SESSION_ID, sessionId, {
-        expires: expDate
-      });
-      $cookies.put('userId', userId);
-      $cookies.put('username', username);
-      $cookies.put(cookieNames.REFRESH_TOKEN, refreshToken, {
-        expires: expDate
-      });
+      $cookies.put(cookieNames.SESSION_ID, sessionId, { expires: expDate });
+      $cookies.put(cookieNames.REFRESH_TOKEN, refreshToken, { expires: expDate });
+      $cookies.put(cookieNames.USER_ID, userId, { expires: expDate });
+      $cookies.put(cookieNames.USERNAME, username, { expires: expDate });
       $http.defaults.headers.common.Authorization = sessionId;
       $http.defaults.headers.common.RefreshToken = refreshToken;
     };
