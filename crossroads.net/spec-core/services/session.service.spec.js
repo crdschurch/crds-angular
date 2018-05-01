@@ -33,7 +33,6 @@ describe('Session Service', function () {
     Backend.verifyNoOutstandingRequest();
   });
 
-
   it('should save an array of family members', function () {
     Session.addFamilyMembers(family);
     expect($cookies.get('family')).toBe(family.join(','));
