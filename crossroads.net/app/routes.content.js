@@ -73,11 +73,11 @@
                   if (ContentPageService.page.pageType === 'RedirectorPage') {
                     if (ContentPageService.page.redirectionType === 'External') {
                       $window.location.href = ContentPageService.page.externalURL;
+                      return;
                     } else {
                       redirectFlag = true;
-                      PageById.get({ id: ContentPageService.page.linkTo }).$promise;
+                      return PageById.get({ id: ContentPageService.page.linkTo }).$promise;
                     }
-                    return;
                   } else if (ContentPageService.page.pageType === 'AngularRedirectPage') {
                     $state.go(ContentPageService.page.angularRoute);
                     return;
