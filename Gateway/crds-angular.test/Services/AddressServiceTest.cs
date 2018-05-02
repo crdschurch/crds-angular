@@ -52,8 +52,10 @@ namespace crds_angular.test.Services
                     Address_ID = 232323
                 }
             };
-
+            var coords = new GeoCoordinate(39.15946159999999, -84.42336390000003);
             _mpAddressServiceMock.Setup(mocked => mocked.FindMatches(It.IsAny<MpAddress>())).Returns(addressResults);
+            _mpAddressServiceMock.Setup(mocked => mocked.Update(It.IsAny<MpAddress>())).Returns(12345);
+            _addressGeocodingService.Setup(mocked => mocked.GetGeoCoordinates(It.IsAny<AddressDTO>())).Returns(coords);
 
             _fixture.FindOrCreateAddress(address);
 
@@ -94,11 +96,9 @@ namespace crds_angular.test.Services
             _fixture.FindOrCreateAddress(address, true);
 
             _mpAddressServiceMock.Verify(x => x.FindMatches(It.IsAny<MpAddress>()), Times.Once);
-            _mpAddressServiceMock.Verify(x => x.Update(It.Is<MpAddress>(a => a.Latitude == coords.Latitude && a.Longitude == coords.Longitude)), Times.Exactly(2));
-            _addressGeocodingService.Verify(mocked => mocked.GetGeoCoordinates(address));
+            _mpAddressServiceMock.Verify(x => x.Update(It.Is<MpAddress>(a => a.Latitude == coords.Latitude && a.Longitude == coords.Longitude)), Times.Exactly(1));
+            _addressGeocodingService.Verify(mocked => mocked.GetGeoCoordinates(It.IsAny<AddressDTO>()));
             Assert.AreEqual(address.AddressID, 67890);
-            Assert.AreEqual(address.Latitude, coords.Latitude);
-            Assert.AreEqual(address.Longitude, coords.Longitude);
         }
 
         [Test]
@@ -126,14 +126,18 @@ namespace crds_angular.test.Services
                     Address_ID = 232323
                 }
             };
+            var coords = new GeoCoordinate(39.15946159999999, -84.42336390000003);
 
             _mpAddressServiceMock.Setup(mocked => mocked.FindMatches(It.IsAny<MpAddress>())).Returns(addressResults);
+            _addressGeocodingService.Setup(mocked => mocked.GetGeoCoordinates(It.IsAny<AddressDTO>())).Returns(coords);
+            _mpAddressServiceMock.Setup(mocked => mocked.Update(It.IsAny<MpAddress>())).Returns(12345);
+            _addressGeocodingService.Setup(mocked => mocked.GetGeoCoordinates(It.IsAny<AddressDTO>())).Returns(coords);
 
             _fixture.FindOrCreateAddress(address, true);
 
             _mpAddressServiceMock.Verify(x => x.FindMatches(It.IsAny<MpAddress>()), Times.Once);
-            _mpAddressServiceMock.Verify(x => x.Update(It.IsAny<MpAddress>()), Times.Never);
-            _addressGeocodingService.Verify(mocked => mocked.GetGeoCoordinates(It.IsAny<AddressDTO>()), Times.Never());
+            _mpAddressServiceMock.Verify(x => x.Update(It.IsAny<MpAddress>()), Times.Once);
+            _addressGeocodingService.Verify(mocked => mocked.GetGeoCoordinates(It.IsAny<AddressDTO>()), Times.Once());
             Assert.AreEqual(address.AddressID, 12345);
         }
 
@@ -148,11 +152,12 @@ namespace crds_angular.test.Services
                 State = "OH",
                 PostalCode = "12312"
             };
-
+            var coords = new GeoCoordinate(39.15946159999999, -84.42336390000003);
             var addressResults = new List<MpAddress>();
 
             _mpAddressServiceMock.Setup(mocked => mocked.FindMatches(It.IsAny<MpAddress>())).Returns(addressResults);
             _mpAddressServiceMock.Setup(mocked => mocked.Create(It.IsAny<MpAddress>())).Returns(12345);
+            _addressGeocodingService.Setup(mocked => mocked.GetGeoCoordinates(It.IsAny<AddressDTO>())).Returns(coords);
 
             _fixture.FindOrCreateAddress(address);
 
@@ -185,11 +190,9 @@ namespace crds_angular.test.Services
 
             _mpAddressServiceMock.Verify(x => x.FindMatches(It.IsAny<MpAddress>()), Times.Once);
             _mpAddressServiceMock.Verify(x => x.Create(It.Is<MpAddress>(a => a.Latitude == coords.Latitude && a.Longitude == coords.Longitude)), Times.Once);
-            _addressGeocodingService.Verify(mocked => mocked.GetGeoCoordinates(address));
+            _addressGeocodingService.Verify(mocked => mocked.GetGeoCoordinates(It.IsAny<AddressDTO>()));
 
             Assert.AreEqual(address.AddressID, 12345);
-            Assert.AreEqual(address.Latitude, coords.Latitude);
-            Assert.AreEqual(address.Longitude, coords.Longitude);
         }
 
         [Test]

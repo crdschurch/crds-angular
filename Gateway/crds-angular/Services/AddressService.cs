@@ -24,22 +24,15 @@ namespace crds_angular.Services
 
         public void FindOrCreateAddress(AddressDTO address, bool updateGeoCoordinates = false)
         {
+            address.AddressID = null;
             var mpAddress = AutoMapper.Mapper.Map<MpAddress>(address);
             var found = FindExistingAddress(address, mpAddress);
-            if (found)
-            {
-                mpAddress.Address_ID = address.AddressID;
-                if (!updateGeoCoordinates || address.HasGeoCoordinates())
-                {
-                    return;
-                }
-            }
 
-            if (updateGeoCoordinates && !address.HasGeoCoordinates())
+            if (updateGeoCoordinates)
             {
-                SetGeoCoordinates(address);
-                mpAddress.Longitude = address.Longitude;
-                mpAddress.Latitude = address.Latitude;
+                var newAddress = GetGeoLocationCascading(address);
+                mpAddress.Longitude = newAddress.Longitude;
+                mpAddress.Latitude = newAddress.Latitude;
             }
 
             address.AddressID = found ? UpdateAddress(mpAddress) : CreateAddress(mpAddress);
@@ -168,6 +161,10 @@ namespace crds_angular.Services
                 address.AddressID = found.Address_ID;
                 address.Latitude = found.Latitude;
                 address.Longitude = found.Longitude;
+
+                mpAddress.Address_ID = found.Address_ID;
+                mpAddress.Latitude = found.Latitude;
+                mpAddress.Longitude = found.Longitude;
                 return true;
             }
 
