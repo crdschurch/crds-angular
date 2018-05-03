@@ -103,6 +103,10 @@
                   }
                 }
                 
+                if (link.match(new RegExp('^\/serve-signup'))){
+                  redirectToMaestro();
+                  return;
+                }
 
                 var notFoundPromise = Page.get({ url: '/page-not-found/' }).$promise;
                 notFoundPromise.then(function (promise) {
