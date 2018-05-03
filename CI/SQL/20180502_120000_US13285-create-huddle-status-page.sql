@@ -1,6 +1,6 @@
 USE MinistryPlatform
 
-DECLARE @PageID INT = 1019
+DECLARE @PageID INT = 644
 
 DECLARE @RoleIdSysAdmin INTEGER = 85;
 DECLARE @RoleIdAllStaff INTEGER = 100;
