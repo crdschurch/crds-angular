@@ -73,11 +73,11 @@
                   if (ContentPageService.page.pageType === 'RedirectorPage') {
                     if (ContentPageService.page.redirectionType === 'External') {
                       $window.location.href = ContentPageService.page.externalURL;
+                      return;
                     } else {
                       redirectFlag = true;
-                      PageById.get({ id: ContentPageService.page.linkTo }).$promise;
+                      return PageById.get({ id: ContentPageService.page.linkTo }).$promise;
                     }
-                    return;
                   } else if (ContentPageService.page.pageType === 'AngularRedirectPage') {
                     $state.go(ContentPageService.page.angularRoute);
                     return;
@@ -103,6 +103,10 @@
                   }
                 }
                 
+                if (link.match(new RegExp('^\/serve-signup'))){
+                  redirectToMaestro();
+                  return;
+                }
 
                 var notFoundPromise = Page.get({ url: '/page-not-found/' }).$promise;
                 notFoundPromise.then(function (promise) {
