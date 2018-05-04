@@ -12,7 +12,7 @@
 
     <!-- I Promise -->
     <div class="go-trip-document" ng-show="showIPromise(trip.contactId)">
-      <button class="btn btn-default go-trip-document-btn" ng-disabled="trip.iPromiseSigned" ng-click="signIPromise(trip.eventParticipantId)">
+      <button class="btn btn-default go-trip-document-btn" ng-disabled="trip.iPromiseSigned" ng-click="signIPromise(trip.eventParticipantId)" id="signIPromiseButton">
         <span ng-hide="trip.iPromiseSigned">
           <svg class="icon icon-2 text-warning" viewBox="0 0 256 256">
             <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/svgs/icons.svg#exclamation-circle"></use>
