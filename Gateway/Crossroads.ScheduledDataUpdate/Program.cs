@@ -9,6 +9,7 @@ using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using CommandLine;
 using Crossroads.Utilities.Services;
+using Crossroads.Web.Common.Configuration;
 
 
 namespace Crossroads.ScheduledDataUpdate
@@ -23,9 +24,10 @@ namespace Crossroads.ScheduledDataUpdate
 
             TlsHelper.AllowTls12();
 
-            var unitySections = new [] { "crossroadsCommonUnity", "unity", "scheduledDataUnity" };
-
             var container = new UnityContainer();
+            CrossroadsWebCommonConfig.Register(container);
+
+            var unitySections = new[] { "unity", "scheduledDataUnity" };
             foreach (var sectionName in unitySections)
             {
                 var section = (UnityConfigurationSection)ConfigurationManager.GetSection(sectionName);
