@@ -18,7 +18,6 @@
       GO_VOLUNTEER: 'crossroads.go_volunteer',
       MEDIA: 'crossroads.media',
       LIVE_STREAM: 'crossroads.live_stream',
-      GROUP_TOOL: 'crossroads.grouptool',
       MPTOOLS: 'crossroads.mptools',
       ONETIME_SIGNUP: 'crossroads.onetime',
       PROFILE: 'crossroads.profile',
