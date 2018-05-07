@@ -7,8 +7,8 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE OR ALTER PROCEDURE [dbo].[report_CRDS_GetGroupLeaderEmailUpdates]
-	@FROMDATE DATETIME,
-	@TODATE DATETIME	
+	@FROMDATE DATE,
+	@TODATE DATE
 AS
 BEGIN
 
@@ -22,8 +22,8 @@ INSERT INTO @FromSelection
 	join participants P on P.Participant_ID = GP.Participant_ID
 	join Contacts C on C.contact_id = P.Contact_ID
 	where GR.Group_Role_ID = 22
-	AND ((G.End_Date is null AND G.Start_Date < @FROMDATE) OR (@FROMDATE between G.Start_Date and G.End_Date))
-	AND ((GP.End_Date is null AND GP.Start_Date < @FROMDATE) OR (@FROMDATE between GP.Start_Date and GP.End_Date))
+	AND ((G.End_Date is null AND CAST(G.Start_Date AS DATE) <= @FROMDATE) OR (@FROMDATE between CAST(G.Start_Date AS DATE) and CAST(G.End_Date AS DATE)))
+	AND ((GP.End_Date is null AND CAST(GP.Start_Date AS DATE) <= @FROMDATE) OR (@FROMDATE between CAST(GP.Start_Date AS DATE) and CAST(GP.End_Date AS DATE)))
 	AND G.Group_Type_ID = 1
 
 
@@ -34,8 +34,8 @@ INSERT INTO @ToSelection
 	join participants P on P.Participant_ID = GP.Participant_ID
 	join Contacts C on C.contact_id = P.Contact_ID
 	where GR.Group_Role_ID = 22
-	AND ((G.End_Date is null AND G.Start_Date < @TODATE) OR (@TODATE between G.Start_Date and G.End_Date))
-	AND ((GP.End_Date is null AND GP.Start_Date < @TODATE) OR (@TODATE between GP.Start_Date and GP.End_Date))
+	AND ((G.End_Date is null AND CAST(G.Start_Date AS DATE) <= @TODATE) OR (@TODATE between CAST(G.Start_Date AS DATE) and CAST(G.End_Date AS DATE)))
+	AND ((GP.End_Date is null AND CAST(GP.Start_Date AS DATE) <= @TODATE) OR (@TODATE between CAST(GP.Start_Date AS DATE) and CAST(GP.End_Date AS DATE)))
 	AND G.Group_Type_ID = 1
 
 --EXCEPT

@@ -11,6 +11,7 @@ using CrossroadsStripeOnboarding.Services;
 using log4net;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
+using Crossroads.Web.Common.Configuration;
 
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 namespace CrossroadsStripeOnboarding
@@ -22,7 +23,9 @@ namespace CrossroadsStripeOnboarding
         public static void Main(string[] args)
         {
             var container = new UnityContainer();
-            var unitySections = new[] { "crossroadsCommonUnity", "unity" };
+            CrossroadsWebCommonConfig.Register(container);
+
+            var unitySections = new[] { "unity" };
 
             foreach (var section in unitySections.Select(sectionName => (UnityConfigurationSection)ConfigurationManager.GetSection(sectionName)))
             {
