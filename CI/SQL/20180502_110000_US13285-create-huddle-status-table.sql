@@ -25,15 +25,17 @@ GO
 ALTER TABLE [dbo].[cr_Huddle_Status] CHECK CONSTRAINT [FK_Huddle_Status_Domains]
 GO
 
-INSERT INTO cr_Huddle_Status(Huddle_Status,Domain_ID) VALUES ('Never Finished Huddle', 1)
-INSERT INTO cr_Huddle_Status(Huddle_Status,Domain_ID) VALUES ('Not Involved', 1)
-INSERT INTO cr_Huddle_Status(Huddle_Status,Domain_ID) VALUES ('Completed/Not interested', 1)
-INSERT INTO cr_Huddle_Status(Huddle_Status,Domain_ID) VALUES ('Completed/Hasn''t Led', 1)
-INSERT INTO cr_Huddle_Status(Huddle_Status,Domain_ID) VALUES ('Huddle Leader', 1)
-INSERT INTO cr_Huddle_Status(Huddle_Status,Domain_ID) VALUES ('Has Led/Not Currently', 1)
-INSERT INTO cr_Huddle_Status(Huddle_Status,Domain_ID) VALUES ('QTR 1', 1)
-INSERT INTO cr_Huddle_Status(Huddle_Status,Domain_ID) VALUES ('QTR 2', 1)
-INSERT INTO cr_Huddle_Status(Huddle_Status,Domain_ID) VALUES ('QTR 3', 1)
-INSERT INTO cr_Huddle_Status(Huddle_Status,Domain_ID) VALUES ('QTR 4', 1)
-INSERT INTO cr_Huddle_Status(Huddle_Status,Domain_ID) VALUES ('TBD', 1)
+SET IDENTITY_INSERT cr_Huddle_Status ON
+INSERT INTO cr_Huddle_Status(Huddle_Status_ID,Huddle_Status,Domain_ID) VALUES (1,'Not Involved', 1)
+INSERT INTO cr_Huddle_Status(Huddle_Status_ID,Huddle_Status,Domain_ID) VALUES (2,'Never Finished Huddle', 1)
+INSERT INTO cr_Huddle_Status(Huddle_Status_ID,Huddle_Status,Domain_ID) VALUES (3,'Completed/Not interested', 1)
+INSERT INTO cr_Huddle_Status(Huddle_Status_ID,Huddle_Status,Domain_ID) VALUES (4,'Completed/Hasn''t Led', 1)
+INSERT INTO cr_Huddle_Status(Huddle_Status_ID,Huddle_Status,Domain_ID) VALUES (5,'Huddle Leader', 1)
+INSERT INTO cr_Huddle_Status(Huddle_Status_ID,Huddle_Status,Domain_ID) VALUES (6,'Has Led/Not Currently', 1)
+INSERT INTO cr_Huddle_Status(Huddle_Status_ID,Huddle_Status,Domain_ID) VALUES (7,'QTR 1', 1)
+INSERT INTO cr_Huddle_Status(Huddle_Status_ID,Huddle_Status,Domain_ID) VALUES (8,'QTR 2', 1)
+INSERT INTO cr_Huddle_Status(Huddle_Status_ID,Huddle_Status,Domain_ID) VALUES (9,'QTR 3', 1)
+INSERT INTO cr_Huddle_Status(Huddle_Status_ID,Huddle_Status,Domain_ID) VALUES (10,'QTR 4', 1)
+INSERT INTO cr_Huddle_Status(Huddle_Status_ID,Huddle_Status,Domain_ID) VALUES (11,'TBD', 1)
+SET IDENTITY_INSERT cr_Huddle_Status OFF
 GO
