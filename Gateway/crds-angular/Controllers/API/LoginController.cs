@@ -156,7 +156,7 @@ namespace crds_angular.Controllers.API
             try
             {
                 // try to login
-                var authData = AuthenticationRepository.AuthenticateUser(cred.username, cred.password); //nothing we can do to speed this up
+                var authData = AuthenticationRepository.AuthenticateUser(cred.username, cred.password, true);
                 var token = authData.AccessToken;
                 var exp = authData.ExpiresIn+"";
                 var refreshToken = authData.RefreshToken;
