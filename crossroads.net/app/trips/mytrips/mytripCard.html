@@ -29,7 +29,7 @@
 
     <!-- Waivers -->
     <div ng-repeat="waiver in waivers" class="go-trip-document">
-      <button class="btn btn-default go-trip-document-btn" ng-show="showWaiver(trip.contactId)" ng-click="signWaiver(waiver.waiverId, trip.eventParticipantId, trip.tripName)" ng-disabled="waiver.accepted">
+      <button class="btn btn-default go-trip-document-btn" ng-show="showWaiver(trip.contactId)" ng-click="signWaiver(waiver.waiverId, trip.eventParticipantId, trip.tripName)" ng-disabled="waiver.accepted" data-automation-id="viewWaiverButton">
 
         <span ng-hide="waiver.accepted">
           <svg class="icon icon-2 text-warning" viewBox="0 0 256 256">
