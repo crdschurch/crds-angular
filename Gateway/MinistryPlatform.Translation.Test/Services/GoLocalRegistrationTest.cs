@@ -37,7 +37,7 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             const int projectId = 1;
 
-            _authenticationRepository.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authenticationRepository.Setup(m => m.AuthenticateUser(It.IsAny<string>(), It.IsAny<string>(), false)).Returns(new AuthToken
             {
                 AccessToken = "totallylegittoken",
                 ExpiresIn = 123

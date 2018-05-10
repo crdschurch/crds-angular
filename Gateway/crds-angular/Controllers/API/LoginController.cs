@@ -156,7 +156,7 @@ namespace crds_angular.Controllers.API
             try
             {
                 // try to login
-                var authData = AuthenticationRepository.Authenticate(cred.username, cred.password); //nothing we can do to speed this up
+                var authData = AuthenticationRepository.AuthenticateUser(cred.username, cred.password, true);
                 var token = authData.AccessToken;
                 var exp = authData.ExpiresIn+"";
                 var refreshToken = authData.RefreshToken;
@@ -208,7 +208,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var authData = AuthenticationRepository.Authenticate(cred.username, cred.password);
+                    var authData = AuthenticationRepository.AuthenticateUser(cred.username, cred.password);
 
                     // if the username or password is wrong, auth data will be null
                     if (authData == null)

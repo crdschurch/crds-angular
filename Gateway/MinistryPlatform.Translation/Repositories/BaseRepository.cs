@@ -38,7 +38,7 @@ namespace MinistryPlatform.Translation.Repositories
         {
             var apiUser = _configurationWrapper.GetEnvironmentVarAsString("API_USER");
             var apiPasword = _configurationWrapper.GetEnvironmentVarAsString("API_PASSWORD");
-            var authData = _authenticationService.Authenticate(apiUser, apiPasword);
+            var authData = _authenticationService.AuthenticateUser(apiUser, apiPasword);
             var token = authData.AccessToken;
 
             return (token);

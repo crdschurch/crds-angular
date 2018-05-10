@@ -43,7 +43,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _configuration.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRest.Object);
 
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateUser(It.IsAny<string>(), It.IsAny<string>(), false)).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
