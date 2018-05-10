@@ -69,7 +69,7 @@ namespace MinistryPlatform.Translation.Test.Services
         public void ShouldReturnSites()
         {
             string _tokenValue = "ABC";
-            _authenticationService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authenticationService.Setup(m => m.AuthenticateUser(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = _tokenValue,
                 ExpiresIn = 123

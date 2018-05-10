@@ -39,7 +39,7 @@ namespace MinistryPlatform.Translation.Test
             _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("api_user");
             _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
 
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateUser(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123

@@ -46,7 +46,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _configurationWrapper.Setup(m => m.GetConfigIntValue("GoTripFamilySignup")).Returns(goTripFamilySignup);
             _configurationWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("apiuser");
             _configurationWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
-            _authenticationRepository.Setup(m => m.Authenticate("apiuser", "password")).Returns(new AuthToken {AccessToken = apiToken});
+            _authenticationRepository.Setup(m => m.AuthenticateUser("apiuser", "password")).Returns(new AuthToken {AccessToken = apiToken});
         }
 
         [Test]

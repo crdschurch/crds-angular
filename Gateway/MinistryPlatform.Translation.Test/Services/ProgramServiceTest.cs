@@ -37,7 +37,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _configWrapper.Setup(m => m.GetConfigIntValue("OnlineGivingProgramsPageViewId")).Returns(OnlineGivingProgramsPageViewId);
             _configWrapper.Setup(m => m.GetConfigIntValue("Programs")).Returns(ProgramsPageId);
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateUser(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123

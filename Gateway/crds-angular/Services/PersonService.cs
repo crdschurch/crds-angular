@@ -88,7 +88,7 @@ namespace crds_angular.Services
             // update the user values if the email and/or password has changed
             if (!(String.IsNullOrEmpty(person.NewPassword)) || (person.EmailAddress != person.OldEmail && person.OldEmail != null))
             {
-                var authData = _authenticationService.Authenticate(person.OldEmail, person.OldPassword);
+                var authData = _authenticationService.AuthenticateUser(person.OldEmail, person.OldPassword);
 
                 if (authData == null)
                 {
