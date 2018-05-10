@@ -42,7 +42,7 @@ namespace MinistryPlatform.Translation.Test.Services
                     AccessToken = _tokenValue,
                     ExpiresIn = 123
                 };
-            _authService.Setup(m => m.AuthenticateUser(It.IsAny<string>(), It.IsAny<string>())).Returns(authenticateResults);
+            _authService.Setup(m => m.AuthenticateUser(It.IsAny<string>(), It.IsAny<string>(), false)).Returns(authenticateResults);
 
             _ministryPlatformRestService.Setup(mocked => mocked.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
 
