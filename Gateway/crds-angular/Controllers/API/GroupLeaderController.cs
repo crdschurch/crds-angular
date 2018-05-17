@@ -18,9 +18,14 @@ namespace crds_angular.Controllers.API
 {
     public class GroupLeaderController : MPAuth
     {
+        private readonly IAuthTokenExpiryService _authTokenExpiryService;
         private readonly IGroupLeaderService _groupLeaderService;
 
-        public GroupLeaderController(IGroupLeaderService groupLeaderService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public GroupLeaderController(IAuthTokenExpiryService authTokenExpiryService,
+                                     IGroupLeaderService groupLeaderService, 
+                                     IUserImpersonationService userImpersonationService, 
+                                     IAuthenticationRepository authenticationRepository) 
+          : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _groupLeaderService = groupLeaderService;
         }

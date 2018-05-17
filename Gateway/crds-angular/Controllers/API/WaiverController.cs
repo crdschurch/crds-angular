@@ -17,12 +17,15 @@ namespace crds_angular.Controllers.API
 {
     public class WaiverController : MPAuth
     {
+        private IAuthTokenExpiryService _authTokenExpiryService;
         public readonly IWaiverService _waiverService;
 
         public WaiverController(
+            IAuthTokenExpiryService authTokenExpiryService,
             IWaiverService waiverService,
             IUserImpersonationService userImpersonationService, 
-            IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+            IAuthenticationRepository authenticationRepository) 
+          : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _waiverService = waiverService;
         }

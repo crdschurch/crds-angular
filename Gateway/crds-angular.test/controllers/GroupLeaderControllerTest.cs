@@ -20,6 +20,7 @@ namespace crds_angular.test.controllers
     [TestFixture]
     public class GroupLeaderControllerTest
     {
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IGroupLeaderService> _groupLeaderService;
         private Mock<IUserImpersonationService> _userImpersonation;
         private Mock<IAuthenticationRepository> _authenticationRepo;
@@ -31,10 +32,14 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void Setup()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _groupLeaderService = new Mock<IGroupLeaderService>(MockBehavior.Strict);
             _userImpersonation = new Mock<IUserImpersonationService>();
             _authenticationRepo = new Mock<IAuthenticationRepository>();   
-            _fixture = new GroupLeaderController(_groupLeaderService.Object, _userImpersonation.Object, _authenticationRepo.Object)
+            _fixture = new GroupLeaderController(_authTokenExpiryService.Object, 
+                                                 _groupLeaderService.Object, 
+                                                 _userImpersonation.Object, 
+                                                 _authenticationRepo.Object)
             {
                 Request = new HttpRequestMessage(),
                 RequestContext = new HttpRequestContext()
