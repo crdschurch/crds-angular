@@ -14,6 +14,7 @@ describe('Session Service', function () {
   var timeout;
 
   beforeEach(angular.mock.module('crossroads.core'));
+  
 
   beforeEach(inject(function ($injector, _$cookies_, _$rootScope_, _Session_, _$modal_, _$timeout_) {
     $cookies = _$cookies_;
@@ -75,9 +76,12 @@ describe('Session Service', function () {
       expect(Session.reactiveSsoInterval).toBeDefined();
     });
 
-    it('should set credentials when login is detected', function () {
+    fit('should set credentials when login is detected', function () {
+      headers = {}
+      headers[cookieNames.SESSION_ID] = 'abcdef';
       $cookies.put(cookieNames.SESSION_ID, mockResponse.userToken);
-      Backend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/authenticated').respond(200, mockResponse);
+      Backend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/authenticated').respond(headers, mockResponse);
+      spyOn(Session, 'setupLoggedOutModal');
       Session.performReactiveSso();
       Backend.flush();
       expect(rootScope.userid).toBe(mockResponse.userId);

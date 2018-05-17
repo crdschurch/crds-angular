@@ -53,12 +53,16 @@
       $log.debug('creating cookies!');
       const expDate = new Date();
       expDate.setTime(expDate.getTime() + (userTokenExp * 1000));
+      
+      if ( refreshToken != null ) {
+        $cookies.put(cookieNames.REFRESH_TOKEN, refreshToken, { expires: expDate });
+        $http.defaults.headers.common.RefreshToken = refreshToken;
+      }
+      
       $cookies.put(cookieNames.SESSION_ID, sessionId, { expires: expDate });
-      $cookies.put(cookieNames.REFRESH_TOKEN, refreshToken, { expires: expDate });
       $cookies.put(cookieNames.USER_ID, userId, { expires: expDate });
       $cookies.put(cookieNames.USERNAME, username, { expires: expDate });
       $http.defaults.headers.common.Authorization = sessionId;
-      $http.defaults.headers.common.RefreshToken = refreshToken;
     };
 
     /**
@@ -66,16 +70,14 @@
      * new session token but we need to extend the expiration of 
      * the current session cookies
      */
-    vm.updateSessionExpiration = () => {
+    vm.updateSessionExpiration = (sessionLength, expDate) => {
+      this.setupLoggedOutModal(sessionLength);
       const sessionId = $cookies.get(cookieNames.SESSION_ID);
       const userId = $cookies.get(cookieNames.USER_ID);
       const username = $cookies.get(cookieNames.USERNAME);
+      const minutesTillExpired = 30;
 
-      const expDate = new Date();
-      expDate.setTime(expDate.getTime() + 30000);
-      $cookies.put(cookieNames.SESSION_ID, sessionId, { expires: expDate });
-      $cookies.put(cookieNames.USER_ID, userId, { expires: expDate });
-      $cookies.put(cookieNames.USERNAME, username, { expires: expDate });
+      this.create( null, sessionId, minutesTillExpired, userId, username );
     };
 
     /**
@@ -84,27 +86,24 @@
      * the session cookies
      */
 
-    vm.getNewRefreshTokenAndSession = (response) => {      
+    vm.getNewSessionFromHeaders = (response, sessionLength, expDate) => {      
       $log.debug('updating cookies!');
-      const expDate = new Date();
-      const sessionLength = 1800000;
-      expDate.setTime(expDate.getTime() + sessionLength);
+
       this.setupLoggedOutModal(sessionLength);
 
       $cookies.put(cookieNames.SESSION_ID, response.headers('sessionId'), {
         expires: expDate
       });
-      $cookies.put(cookieNames.REFRESH_TOKEN, response.headers('refreshToken'), {
-        expires: expDate
-      });
-      $http.defaults.headers.common.RefreshToken = response.headers('refreshToken');
+      $cookies.put(cookieNames.USER_ID, response.data.userId);
       $http.defaults.headers.common.Authorization = response.headers('sessionId');
     };
 
-    function setupLoggedOutModal (sessionLength) {
+    vm.setupLoggedOutModal = (sessionLength) => {
       const stayLoggedInTimeout = sessionLength - 5000;   // 5 seconds before cookie expiration
 
-      if (timeoutPromise) {$interval.cancel(timeoutPromise);}
+      if (timeoutPromise) {
+        $interval.cancel(timeoutPromise);
+      }
 
       timeoutPromise = $interval(
         () => {
@@ -210,6 +209,7 @@
 
     vm.verifyAuthentication = (event, stateName, stateData, stateToParams) => {
       if (vm.isActive()) {
+        console.log("in verifyAuth");
         const promise = $http({
           method: 'GET',
           url: `${__GATEWAY_CLIENT_ENDPOINT__}api/authenticated`,
@@ -219,6 +219,7 @@
             RefreshToken: $cookies.get(cookieNames.REFRESH_TOKEN)
           }
         }).then((response) => {
+          console.log('verifyauth in then')
           var user = response.data;
           $rootScope.userid = user.userId;
           $rootScope.username = user.username;
@@ -233,6 +234,7 @@
           vm.enableReactiveSso(event, stateName, stateData, stateToParams);
           vm.restoreImpersonation();
         }, (response) => {
+          console.log('verifyauth in error')
           if (response.status !== -1) {
             vm.clearAndRedirect(event, stateName, stateToParams);
             vm.enableReactiveSso(event, stateName, stateData, stateToParams);
