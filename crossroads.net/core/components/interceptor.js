@@ -20,7 +20,7 @@
       response: function(response) {
         if (response.headers('refreshToken')) {
           var Session = $injector.get('Session');
-          Session.refresh(response);
+          Session.getNewRefreshTokenAndSessionFromHeaders(response);
         }
 
         return response;

@@ -61,34 +61,35 @@
       $http.defaults.headers.common.RefreshToken = refreshToken;
     };
 
-    vm.refresh = (response) => {
+    /**
+     * update session to be used when mp has not given us back a 
+     * new session token but we need to extend the expiration of 
+     * the current session cookies
+     */
+    vm.updateSessionExpiration = () => {
+      const sessionId = $cookies.get(cookieNames.SESSION_ID);
+      const userId = $cookies.get(cookieNames.USER_ID);
+      const username = $cookies.get(cookieNames.USERNAME);
+
+      const expDate = new Date();
+      expDate.setTime(expDate.getTime() + 30000);
+      $cookies.put(cookieNames.SESSION_ID, sessionId, { expires: expDate });
+      $cookies.put(cookieNames.USER_ID, userId, { expires: expDate });
+      $cookies.put(cookieNames.USERNAME, username, { expires: expDate });
+    };
+
+    /**
+     * refresh is to be used when mp has given us back a 
+     * new session token and we need to assign it to the  
+     * the session cookies
+     */
+
+    vm.getNewRefreshTokenAndSession = (response) => {      
       $log.debug('updating cookies!');
       const expDate = new Date();
-      // TODO: Consider how we could make this less hard coded,
-      // put the timeout in the header also?
       const sessionLength = 1800000;
-
-      // We must ensure the timer for the stayLoggedInModal fires before the SESSION_ID cookie
-      // has expired.  The reactiveSso timer that fires every 3 seconds will automatically set
-      // $rootScope.email = null if the SESSION_ID cookie has expired.  If the reactiveSso timer
-      // fires AFTER the cookie has expired but BEFORE the stayLoggedInModal timer has fired,
-      // the stayLoggedInModal will end up with a null username (email) and any subsequent
-      // login attempts via that dialog will fail [reference DE2957]
-      // TODO: Can/should reactiveSso and stayLoggedInModal share a single timer to make the
-      // order of operations more predictable?
-      const stayLoggedInTimeout = sessionLength - 5000;   // 5 seconds before cookie expiration
-
       expDate.setTime(expDate.getTime() + sessionLength);
-      if (timeoutPromise) {
-        $interval.cancel(timeoutPromise);
-      }
-
-      timeoutPromise = $interval(
-        () => {
-          openStayLoggedInModal($injector, $state, $modal);
-        },
-        stayLoggedInTimeout
-      );
+      this.setupLoggedOutModal(sessionLength);
 
       $cookies.put(cookieNames.SESSION_ID, response.headers('sessionId'), {
         expires: expDate
@@ -99,6 +100,19 @@
       $http.defaults.headers.common.RefreshToken = response.headers('refreshToken');
       $http.defaults.headers.common.Authorization = response.headers('sessionId');
     };
+
+    function setupLoggedOutModal (sessionLength) {
+      const stayLoggedInTimeout = sessionLength - 5000;   // 5 seconds before cookie expiration
+
+      if (timeoutPromise) {$interval.cancel(timeoutPromise);}
+
+      timeoutPromise = $interval(
+        () => {
+          openStayLoggedInModal($injector, $state, $modal);
+        },
+        stayLoggedInTimeout
+      );
+    }
 
     /*
      * This formats the family as a comma seperated string before storing in the
