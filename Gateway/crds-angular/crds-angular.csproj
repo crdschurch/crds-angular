@@ -496,7 +496,6 @@
     <Compile Include="Models\MailChimp\BulkEmailSubscriberOptDTO.cs" />
     <Compile Include="Models\Crossroads\RsvpMember.cs" />
     <Compile Include="Processors\SendTextMessageJob.cs" />
-    <Compile Include="Security\ReactiveMPAuth.cs" />
     <Compile Include="Services\AddressService.cs" />
     <Compile Include="Services\Analytics\AnalyticsAstronomer.cs" />
     <Compile Include="Services\Analytics\AnalyticsService.cs" />

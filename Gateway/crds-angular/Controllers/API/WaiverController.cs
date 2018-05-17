@@ -15,7 +15,7 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class WaiverController : ReactiveMPAuth
+    public class WaiverController : MPAuth
     {
         public readonly IWaiverService _waiverService;
 
@@ -32,7 +32,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<IHttpActionResult> GetEventWaivers(int eventId)
         {
-            return await Authorized(token =>
+            return Authorized(token =>
             {
                 try
                 {
@@ -52,7 +52,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<IHttpActionResult> GetWaiver(int waiverId)
         {
-            return await Authorized(token =>
+            return Authorized(token =>
             {
                 try
                 {
@@ -71,7 +71,7 @@ namespace crds_angular.Controllers.API
         [HttpPost]
         public async Task<IHttpActionResult> SendAcceptWaiverEmail(int waiverId, int eventParticipantId)
         {
-            return await Authorized(token =>
+            return Authorized(token =>
             {
                 try
                 {
