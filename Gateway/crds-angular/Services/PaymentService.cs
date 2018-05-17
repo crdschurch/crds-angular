@@ -34,6 +34,7 @@ namespace crds_angular.Services
         private readonly IConfigurationWrapper _configWrapper;
         private readonly IApiUserRepository _apiUserRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IProgramRepository _programRepository;
 
         private readonly IPaymentProcessorService _paymentProcessorService;
 
@@ -53,6 +54,7 @@ namespace crds_angular.Services
             ICommunicationRepository communicationRepository,
             IApiUserRepository apiUserRepository,
             IProductRepository productRepository,
+            IProgramRepository programRepository,
             IPaymentProcessorService paymentProcessorService)
         {
             _invoiceRepository = invoiceRepository;
@@ -64,6 +66,7 @@ namespace crds_angular.Services
             _eventPRepository = eventRepository;
             _apiUserRepository = apiUserRepository;
             _productRepository = productRepository;
+            _programRepository = programRepository;
 
             _paymentProcessorService = paymentProcessorService;
 
@@ -364,9 +367,10 @@ namespace crds_angular.Services
             var me = _contactRepository.GetMyProfile(token);
             var invoiceDetail = Mapper.Map<MpInvoiceDetail, InvoiceDetailDTO>(_invoiceRepository.GetInvoiceDetailForInvoice(invoiceId));
             invoiceDetail.Product = Mapper.Map<MpProduct, ProductDTO>(_productRepository.GetProduct(invoiceDetail.ProductId));
-            
-            var templateId = _configWrapper.GetConfigIntValue("DefaultInvoicePaymentEmailTemplate");
-
+            var mpProgram = _programRepository.GetProgramByProductId(invoiceDetail.ProductId);
+           
+            int templateId = (int) ((mpProgram.CommunicationTemplateId != null) ? mpProgram.CommunicationTemplateId : _configWrapper.GetConfigIntValue("DefaultPaymentEmailTemplate"));
+      
             var primaryContactId = _configWrapper.GetConfigIntValue("CrossroadsFinanceClerkContactId");
             var primaryContact = _contactRepository.GetContactById(primaryContactId);
 
