@@ -13,8 +13,9 @@ namespace MinistryPlatform.Translation.Repositories
 {
     public class ParticipantRepository : BaseRepository, IParticipantRepository
     {
-        private IMinistryPlatformService _ministryPlatformService;
-        private IMinistryPlatformRestRepository _ministryPlatformRestRepository;
+        public const string UpdateHuddleGroupParticipantStatusProc = "crds_Huddle_Participant_Status_Refresh";
+        private readonly IMinistryPlatformService _ministryPlatformService;
+        private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
 
         public ParticipantRepository(IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IAuthenticationRepository authenticationService , IConfigurationWrapper configurationWrapper)
             : base(authenticationService, configurationWrapper)
@@ -165,6 +166,12 @@ namespace MinistryPlatform.Translation.Repositories
                 throw new ApplicationException(
                     string.Format("GetParticipantResponses failed.  Participant Id: {0}", participantId), ex);
             }
+        }
+        public void UpdateHuddleGroupParticipantStatus()
+        {
+            var param = new Dictionary<string, object>(){};
+            var token = ApiLogin();
+            _ministryPlatformRestRepository.UsingAuthenticationToken(token).PostStoredProc(UpdateHuddleGroupParticipantStatusProc, param);
         }
     }
 }
