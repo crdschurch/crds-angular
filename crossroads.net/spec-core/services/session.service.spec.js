@@ -1,4 +1,3 @@
-
 describe('Session Service', function () {
 
   var $cookies;
@@ -76,11 +75,14 @@ describe('Session Service', function () {
       expect(Session.reactiveSsoInterval).toBeDefined();
     });
 
-    fit('should set credentials when login is detected', function () {
-      headers = {}
-      headers[cookieNames.SESSION_ID] = 'abcdef';
+    it('should set credentials when login is detected', function () {
+      headersResp = {}
+      headersResp[cookieNames.SESSION_ID] = 'abcdef';
       $cookies.put(cookieNames.SESSION_ID, mockResponse.userToken);
-      Backend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/authenticated').respond(headers, mockResponse);
+      // Backend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/authenticated').respond(200, mockResponse);
+      Backend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/authenticated').respond(function (){
+        return [200, mockResponse];
+      });
       spyOn(Session, 'setupLoggedOutModal');
       Session.performReactiveSso();
       Backend.flush();

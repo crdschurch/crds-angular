@@ -24,20 +24,15 @@
         const sessionLength = 1800000;
         expDate.setTime(expDate.getTime() + sessionLength);
 
-        console.log("In interceptor");
-
         
         if (response.headers(cookieNames.SESSION_ID)) {
-          console.log("injector if");
           var Session = $injector.get('Session');
-          Session.getNewRefreshTokenAndSessionFromHeaders(response, sessionLength, expDate);
+          Session.getNewSessionFromHeaders(response, sessionLength, expDate);
         } 
-        else {
-          console.log("injector else");
-          var Session = $injector.get('Session');
-          Session.updateSessionExpiration(sessionLength, expDate);
-        }
-        console.log("WTF MATE???");
+        // else {
+        //   var Session = $injector.get('Session');
+        //   Session.updateSessionExpiration(sessionLength, expDate);
+        // }
 
         return response;
       }

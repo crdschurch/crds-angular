@@ -71,7 +71,7 @@
      * the current session cookies
      */
     vm.updateSessionExpiration = (sessionLength, expDate) => {
-      this.setupLoggedOutModal(sessionLength);
+      // this.setupLoggedOutModal(sessionLength);
       const sessionId = $cookies.get(cookieNames.SESSION_ID);
       const userId = $cookies.get(cookieNames.USER_ID);
       const username = $cookies.get(cookieNames.USERNAME);
@@ -209,7 +209,6 @@
 
     vm.verifyAuthentication = (event, stateName, stateData, stateToParams) => {
       if (vm.isActive()) {
-        console.log("in verifyAuth");
         const promise = $http({
           method: 'GET',
           url: `${__GATEWAY_CLIENT_ENDPOINT__}api/authenticated`,
@@ -219,7 +218,6 @@
             RefreshToken: $cookies.get(cookieNames.REFRESH_TOKEN)
           }
         }).then((response) => {
-          console.log('verifyauth in then')
           var user = response.data;
           $rootScope.userid = user.userId;
           $rootScope.username = user.username;
@@ -234,7 +232,6 @@
           vm.enableReactiveSso(event, stateName, stateData, stateToParams);
           vm.restoreImpersonation();
         }, (response) => {
-          console.log('verifyauth in error')
           if (response.status !== -1) {
             vm.clearAndRedirect(event, stateName, stateToParams);
             vm.enableReactiveSso(event, stateName, stateData, stateToParams);
