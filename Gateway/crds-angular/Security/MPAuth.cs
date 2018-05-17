@@ -7,6 +7,9 @@ using System.Reflection;
 using crds_angular.Services.Interfaces;
 using crds_angular.Util;
 using Crossroads.Web.Common.Security;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Net.Http.Headers;
 
 namespace crds_angular.Security
 {
@@ -57,7 +60,13 @@ namespace crds_angular.Security
                     impersonate = true;
                 }
 
-                if (Request.Headers.TryGetValues("RefreshToken", out refreshTokens) && refreshTokens.Any())
+                bool authTokenCloseToExpiry = isAuthtokenCloseToExpiry(Request.Headers);  
+                bool isRefreshTokenPresent =
+                    Request.Headers.TryGetValues("RefreshToken", out refreshTokens) && refreshTokens.Any();
+
+        HttpRequestHeaders headers = Request.Headers;
+
+            if (authTokenCloseToExpiry && isRefreshTokenPresent)
                 {
                     var authData = AuthenticationRepository.RefreshToken(refreshTokens.FirstOrDefault());
                     if (authData != null)
@@ -100,5 +109,21 @@ namespace crds_angular.Security
                 return actionWhenNotAuthorized();
             }
         }
+
+      private bool isAuthtokenCloseToExpiry(HttpRequestHeaders headers)
+      {
+        const int expirationBufferInSeconds = 60;
+
+        IEnumerable<string> authorizationHeaders;
+        headers.TryGetValues("Authorization", out authorizationHeaders);
+        string authTokenHeader = authorizationHeaders.FirstOrDefault();
+        JwtSecurityToken authToken = new JwtSecurityToken(authTokenHeader);
+        DateTime tokenValidTo = authToken.ValidTo;
+        var secondsToAuthTokenExpiry = (tokenValidTo - DateTime.UtcNow).TotalSeconds;
+
+        bool authTokenCloseToExpiry = secondsToAuthTokenExpiry < expirationBufferInSeconds;
+
+        return authTokenCloseToExpiry;
+    }
     }
 }
