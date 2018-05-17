@@ -1,25 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using crds_angular.Services;
+using Microsoft.IdentityModel.Tokens;
+using NUnit.Framework;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Text;
-using System.Web;
-using crds_angular.Exceptions;
-using crds_angular.Models.Crossroads;
-using crds_angular.Services;
-using crds_angular.Services.Interfaces;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.MinistryPlatform;
-using Crossroads.Web.Common.Security;
-using Microsoft.IdentityModel.Tokens;
-using MinistryPlatform.Translation.Repositories.Interfaces;
-using Moq;
-using NUnit.Framework;
 
 namespace crds_angular.test.Services
 {
