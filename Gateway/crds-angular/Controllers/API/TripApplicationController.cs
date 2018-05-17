@@ -28,7 +28,14 @@ namespace crds_angular.Controllers.API
         private readonly MessageQueue _eventQueue;
         private readonly ILog _logger;
 
-        public TripApplicationController(ITripService tripService, IConfigurationWrapper configuration, IMessageFactory messageFactory, IMessageQueueFactory messageQueueFactory, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public TripApplicationController(IAuthTokenExpiryService authTokenExpiryService, 
+                                         ITripService tripService, 
+                                         IConfigurationWrapper configuration, 
+                                         IMessageFactory messageFactory, 
+                                         IMessageQueueFactory messageQueueFactory, 
+                                         IUserImpersonationService userImpersonationService, 
+                                         IAuthenticationRepository authenticationRepository) 
+          : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _tripService = tripService;
             _messageFactory = messageFactory;

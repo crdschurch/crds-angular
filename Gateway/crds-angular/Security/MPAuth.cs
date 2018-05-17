@@ -17,13 +17,17 @@ namespace crds_angular.Security
     {
         protected readonly log4net.ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly IAuthTokenExpiryService _authTokenExpiryService;
         private readonly IUserImpersonationService _userImpersonationService;
         protected readonly IAuthenticationRepository AuthenticationRepository;
 
-        public MPAuth(IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository)
+        public MPAuth(IAuthTokenExpiryService authTokenExpiryService,
+                      IUserImpersonationService userImpersonationService, 
+                      IAuthenticationRepository authenticationRepository)
         {
-            _userImpersonationService = userImpersonationService;
-            AuthenticationRepository = authenticationRepository;
+          _authTokenExpiryService = authTokenExpiryService;
+          _userImpersonationService = userImpersonationService;
+          AuthenticationRepository = authenticationRepository;
         }
 
         /// <summary>
@@ -60,7 +64,7 @@ namespace crds_angular.Security
                     impersonate = true;
                 }
 
-                bool authTokenCloseToExpiry = isAuthtokenCloseToExpiry(Request.Headers);  
+                bool authTokenCloseToExpiry = _authTokenExpiryService.IsAuthtokenCloseToExpiry(Request.Headers);  
                 bool isRefreshTokenPresent =
                     Request.Headers.TryGetValues("RefreshToken", out refreshTokens) && refreshTokens.Any();
 
@@ -109,21 +113,5 @@ namespace crds_angular.Security
                 return actionWhenNotAuthorized();
             }
         }
-
-      private bool isAuthtokenCloseToExpiry(HttpRequestHeaders headers)
-      {
-        const int expirationBufferInSeconds = 60;
-
-        IEnumerable<string> authorizationHeaders;
-        headers.TryGetValues("Authorization", out authorizationHeaders);
-        string authTokenHeader = authorizationHeaders.FirstOrDefault();
-        JwtSecurityToken authToken = new JwtSecurityToken(authTokenHeader);
-        DateTime tokenValidTo = authToken.ValidTo;
-        var secondsToAuthTokenExpiry = (tokenValidTo - DateTime.UtcNow).TotalSeconds;
-
-        bool authTokenCloseToExpiry = secondsToAuthTokenExpiry < expirationBufferInSeconds;
-
-        return authTokenCloseToExpiry;
-    }
     }
 }

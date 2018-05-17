@@ -23,6 +23,7 @@ namespace crds_angular.test.controllers
     {
         private UserController _fixture;
 
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IAccountService> _accountService;
         private Mock<IUserRepository> _userRepository;
         private Mock<IContactRepository> _contactRepository;
@@ -34,12 +35,19 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _accountService = new Mock<IAccountService>();
             _userRepository = new Mock<IUserRepository>();
             _contactRepository = new Mock<IContactRepository>();
             _mockAnalyticService = new Mock<IAnalyticsService>();
 
-            _fixture = new UserController(_accountService.Object, _contactRepository.Object, _userRepository.Object, _mockAnalyticService.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);
+            _fixture = new UserController(_authTokenExpiryService.Object, 
+                                          _accountService.Object, 
+                                          _contactRepository.Object, 
+                                          _userRepository.Object, 
+                                          _mockAnalyticService.Object, 
+                                          new Mock<IUserImpersonationService>().Object,
+                                          new Mock<IAuthenticationRepository>().Object);
 
             _authType = "auth_type";
             _authToken = "auth_token";

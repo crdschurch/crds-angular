@@ -34,12 +34,14 @@ namespace crds_angular.Controllers.API
         private readonly IAnalyticsService _analyticsService;
 
 
-        public GroupToolController(Services.Interfaces.IGroupToolService groupToolService,
+        public GroupToolController(IAuthTokenExpiryService authTokenExpiryService, 
+                                   Services.Interfaces.IGroupToolService groupToolService,
                                    IConfigurationWrapper configurationWrapper, 
                                    IUserImpersonationService userImpersonationService, 
                                    IAuthenticationRepository authenticationRepository,
                                    IAnalyticsService analyticsService,
-                                   IGroupService groupService) : base(userImpersonationService, authenticationRepository)
+                                   IGroupService groupService) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _groupToolService = groupToolService;
             _groupService = groupService;

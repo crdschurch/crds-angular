@@ -22,6 +22,7 @@ namespace crds_angular.test.Security
     {
         private MPAuthTester fixture;
 
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<Func<string, IHttpActionResult>> actionWhenAuthorized;
         private Mock<Func<IHttpActionResult>> actionWhenNotAuthorized;
         private Mock<IUserImpersonationService> _userImpersonationMock;
@@ -36,8 +37,11 @@ namespace crds_angular.test.Security
         {
             _userImpersonationMock = new Mock<IUserImpersonationService>();
             _authenticationRepositoryMock = new Mock<IAuthenticationRepository>();
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
 
-            fixture = new MPAuthTester(_userImpersonationMock.Object, _authenticationRepositoryMock.Object);
+            fixture = new MPAuthTester(_authTokenExpiryService.Object, 
+                                       _userImpersonationMock.Object, 
+                                       _authenticationRepositoryMock.Object);
 
             actionWhenAuthorized = new Mock<Func<string, IHttpActionResult>>(MockBehavior.Strict);
             actionWhenNotAuthorized = new Mock<Func<IHttpActionResult>>(MockBehavior.Strict);
@@ -68,6 +72,7 @@ namespace crds_angular.test.Security
         {
             actionWhenAuthorized.Setup(mocked => mocked(authType + " " + authToken)).Returns(okResult);
             var result = fixture.AuthTest(actionWhenAuthorized.Object);
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             actionWhenAuthorized.VerifyAll();
 
             Assert.NotNull(result);
@@ -96,6 +101,7 @@ namespace crds_angular.test.Security
         public void testOptionalAuthorizedWhenAuthorized()
         {
             actionWhenAuthorized.Setup(mocked => mocked(authType + " " + authToken)).Returns(okResult);
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             var result = fixture.AuthTest(actionWhenAuthorized.Object, actionWhenNotAuthorized.Object);
             actionWhenAuthorized.VerifyAll();
             actionWhenNotAuthorized.VerifyAll();
@@ -129,7 +135,7 @@ namespace crds_angular.test.Security
             string auth = authType + " " + authToken;
             fixture.Request.Headers.Add("ImpersonateUserId", "impersonator@allowed.com");
             actionWhenAuthorized.Setup(mocked => mocked(auth)).Returns(okResult);
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _userImpersonationMock.Setup(m => m.WithImpersonation(auth, "impersonator@allowed.com", It.IsAny<Func<IHttpActionResult>>())).Returns((string lambdaToken, string userId, Func<IHttpActionResult> predicate) =>
             {
                 return predicate.Invoke();
@@ -146,7 +152,10 @@ namespace crds_angular.test.Security
 
         private class MPAuthTester : MPAuth
         {
-            public MPAuthTester(IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+            public MPAuthTester(IAuthTokenExpiryService authTokenExpiryService, 
+                                IUserImpersonationService userImpersonationService, 
+                                IAuthenticationRepository authenticationRepository) 
+                : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
             {
                 
             }

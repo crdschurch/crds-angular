@@ -22,7 +22,13 @@ namespace crds_angular.Controllers.API
         private readonly IApiUserRepository _apiUserService;
         private readonly IEventService _eventService;
 
-        public EventController(IMinistryPlatformService ministryPlatformService, IApiUserRepository apiUserService, IEventService eventService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public EventController(IAuthTokenExpiryService authTokenExpiryService, 
+                               IMinistryPlatformService ministryPlatformService, 
+                               IApiUserRepository apiUserService, 
+                               IEventService eventService, 
+                               IUserImpersonationService userImpersonationService, 
+                               IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             this._ministryPlatformService = ministryPlatformService;
             _eventService = eventService;

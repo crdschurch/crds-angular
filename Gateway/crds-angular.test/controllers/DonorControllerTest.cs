@@ -31,6 +31,8 @@ namespace crds_angular.test.controllers
     public class DonorControllerTest
     {
         private DonorController _fixture;
+
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IDonorService> _donorService;
         private Mock<IDonationService> _donationService;
         private Mock<IPaymentProcessorService> _paymentService;
@@ -58,6 +60,7 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _donorService = new Mock<IDonorService>();
             _donationService = new Mock<IDonationService>();
             _paymentService = new Mock<IPaymentProcessorService>();
@@ -65,7 +68,14 @@ namespace crds_angular.test.controllers
             _mpDonorService = new Mock<MPInterfaces.IDonorRepository>();
             _impersonationService = new Mock<IUserImpersonationService>();
             _analyticsService = new Mock<IAnalyticsService>();
-            _fixture = new DonorController(_donorService.Object, _paymentService.Object, _donationService.Object, _mpDonorService.Object, _authenticationService.Object, _impersonationService.Object, _analyticsService.Object);
+            _fixture = new DonorController(_authTokenExpiryService.Object, 
+                                           _donorService.Object, 
+                                           _paymentService.Object, 
+                                           _donationService.Object, 
+                                           _mpDonorService.Object, 
+                                           _authenticationService.Object, 
+                                           _impersonationService.Object, 
+                                           _analyticsService.Object);
 
             _authType = "auth_type";
             _authToken = "auth_token";
@@ -85,7 +95,7 @@ namespace crds_angular.test.controllers
             {
                 stripe_token_id = "tok_test"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(It.IsAny<string>())).Returns((MpContactDonor)null);
             _donorService.Setup(mocked => mocked.CreateOrUpdateContactDonor(null, string.Empty, string.Empty, string.Empty, string.Empty, "tok_test", It.IsAny<DateTime>())).Returns(_donor);
             
@@ -114,7 +124,7 @@ namespace crds_angular.test.controllers
                 brand = "Visa",
                 address_zip = "45454"
             };
-            
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(It.IsAny<string>())).Returns(contactDonor);
             _paymentService.Setup(mocked => mocked.GetDefaultSource(It.IsAny<string>())).Returns(defaultSource);
             IHttpActionResult result = _fixture.Get();
@@ -137,6 +147,7 @@ namespace crds_angular.test.controllers
                 DonorId = 2,
                 ProcessorId = null
             };
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(It.IsAny<string>())).Returns(contactDonor);
             IHttpActionResult result = _fixture.Get();
             Assert.IsNotNull(result);
@@ -405,7 +416,7 @@ namespace crds_angular.test.controllers
                 exp_month = "12",
                 exp_year = "19"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(It.IsAny<string>())).Returns(contactDonor);
             _paymentService.Setup(mocked => mocked.UpdateCustomerSource(contactDonor.ProcessorId, dto.StripeTokenId))
                 .Returns(sourceData);
@@ -550,6 +561,7 @@ namespace crds_angular.test.controllers
             };
 
             var stripeException = new PaymentProcessorException(HttpStatusCode.PaymentRequired, "auxMessage", "type", "message", "code", "decline", "param");
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(It.IsAny<string>())).Returns(contactDonor);
             _donorService.Setup(
                 (mocked => mocked.CreateOrUpdateContactDonor(contactDonor, string.Empty, string.Empty, string.Empty,  String.Empty, "456", It.IsAny<DateTime>())))
@@ -583,7 +595,7 @@ namespace crds_angular.test.controllers
             {
                 StripeTokenId = stripeToken
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(_authType + " " + _authToken)).Returns(contactDonor);
             _donorService.Setup(mocked => mocked.CreateOrUpdateContactDonor(contactDonor, string.Empty, string.Empty, string.Empty, string.Empty, null, null)).Returns(contactDonorUpdated);
             _donorService.Setup(mocked => mocked.CreateRecurringGift(_authType + " " + _authToken, recurringGiftDto, contactDonorUpdated, "me@here.com", "Bart Simpson")).Returns(123);
@@ -628,7 +640,7 @@ namespace crds_angular.test.controllers
                                                                 "decline code",
                                                                 "param",
                                                                 new ContentBlock());
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(_authType + " " + _authToken)).Returns(contactDonor);
             _donorService.Setup(mocked => mocked.CreateOrUpdateContactDonor(contactDonor, string.Empty, string.Empty, string.Empty, string.Empty, null, null)).Returns(contactDonorUpdated);
             _donorService.Setup(mocked => mocked.CreateRecurringGift(_authType + " " + _authToken, recurringGiftDto, contactDonorUpdated, "me@here.com", "Bart Simpson")).Throws(stripeException);
@@ -644,6 +656,7 @@ namespace crds_angular.test.controllers
         [Test]
         public void TestCreateRecurringGiftMinistryPlatformException()
         {
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(_authType + " " + _authToken)).Throws<ApplicationException>();
 
             try
@@ -663,7 +676,7 @@ namespace crds_angular.test.controllers
         {
             var authUserToken = _authType + " " + _authToken;
             const int recurringGiftId = 123;
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, recurringGiftId));
             var response = _fixture.CancelRecurringGift(recurringGiftId);
             _donorService.VerifyAll();
@@ -686,6 +699,7 @@ namespace crds_angular.test.controllers
                                                                 "param",
                                                                 new ContentBlock());
 
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, recurringGiftId)).Throws(stripeException);
 
             var response = _fixture.CancelRecurringGift(recurringGiftId);
@@ -701,6 +715,7 @@ namespace crds_angular.test.controllers
         {
             var authUserToken = _authType + " " + _authToken;
             const int recurringGiftId = 123;
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, recurringGiftId)).Throws<ApplicationException>();
 
             try
@@ -724,6 +739,7 @@ namespace crds_angular.test.controllers
             var newGift = new RecurringGiftDto();
             const int recurringGiftId = 123;
 
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(authorizedUserToken)).Returns(donor);
             _donorService.Setup(mocked => mocked.EditRecurringGift(authorizedUserToken, editGift, donor)).Returns(newGift);
 
@@ -754,7 +770,7 @@ namespace crds_angular.test.controllers
                                                                 "decline code",
                                                                 "param",
                                                                 new ContentBlock());
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(authorizedUserToken)).Returns(donor);
             _donorService.Setup(mocked => mocked.EditRecurringGift(authorizedUserToken, editGift, donor)).Throws(stripeException);
 
@@ -775,6 +791,7 @@ namespace crds_angular.test.controllers
             var editGift = new RecurringGiftDto();
             const int recurringGiftId = 123;
 
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _donorService.Setup(mocked => mocked.GetContactDonorForAuthenticatedUser(authorizedUserToken)).Returns(donor);
             _donorService.Setup(mocked => mocked.EditRecurringGift(authorizedUserToken, editGift, donor)).Throws<ApplicationException>();
 

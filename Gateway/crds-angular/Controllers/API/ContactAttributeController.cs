@@ -12,7 +12,12 @@ namespace crds_angular.Controllers.API
     {
         private readonly IObjectAttributeService _objectAttributeService;
 
-        public ContactAttributeController(IPersonService personService, IObjectAttributeService objectAttributeService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public ContactAttributeController(IAuthTokenExpiryService authTokenExpiryService, 
+                                          IPersonService personService, 
+                                          IObjectAttributeService objectAttributeService, 
+                                          IUserImpersonationService userImpersonationService, 
+                                          IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _objectAttributeService = objectAttributeService;
         }

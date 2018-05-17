@@ -28,9 +28,13 @@ namespace crds_angular.Controllers.API
         private readonly IApiUserRepository _apiUserService;
         private readonly int _defaultContactId;
 
-        public ImageController(MPInterfaces.IMinistryPlatformService mpService, IAuthenticationRepository authenticationService,
-            IApiUserRepository apiUserService, IUserImpersonationService userImpersonationService, IConfigurationWrapper configurationWrapper)
-            : base(userImpersonationService, authenticationService)
+        public ImageController(IAuthTokenExpiryService authTokenExpiryService, 
+                               MPInterfaces.IMinistryPlatformService mpService, 
+                               IAuthenticationRepository authenticationService,
+                               IApiUserRepository apiUserService, 
+                               IUserImpersonationService userImpersonationService, 
+                               IConfigurationWrapper configurationWrapper)
+            : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _apiUserService = apiUserService;
             _mpService = mpService;

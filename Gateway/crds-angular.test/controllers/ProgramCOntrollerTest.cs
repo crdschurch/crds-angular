@@ -17,14 +17,20 @@ namespace crds_angular.test.controllers
 
     {
         private ProgramController _fixture;
-        private Mock<IProgramService> _programServiceMock;
+
+          private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
+          private Mock<IProgramService> _programServiceMock;
 
 
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _programServiceMock = new Mock<IProgramService>();
-            _fixture = new ProgramController(_programServiceMock.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object)
+            _fixture = new ProgramController(_authTokenExpiryService.Object, 
+                                             _programServiceMock.Object, 
+                                             new Mock<IUserImpersonationService>().Object, 
+                                             new Mock<IAuthenticationRepository>().Object)
             {
                 Request = new HttpRequestMessage(),
                 RequestContext = new HttpRequestContext()

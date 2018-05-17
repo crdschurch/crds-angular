@@ -31,13 +31,15 @@ namespace crds_angular.Controllers.API
         private readonly IUserImpersonationService _impersonationService;
         private readonly IAnalyticsService _analyticsService;
 
-        public DonorController(IDonorService donorService,
+        public DonorController(IAuthTokenExpiryService authTokenExpiryService, 
+                                IDonorService donorService,
                                 IPaymentProcessorService stripePaymentService, 
                                 IDonationService donationService, 
                                 MPInterfaces.IDonorRepository mpDonorService, 
                                 IAuthenticationRepository authenticationService,
                                 IUserImpersonationService impersonationService,
-                                IAnalyticsService analyticsService) : base(impersonationService, authenticationService)
+                                IAnalyticsService analyticsService) 
+            : base(authTokenExpiryService, impersonationService, authenticationService)
         {
             _donorService = donorService;
             _stripePaymentService = stripePaymentService;

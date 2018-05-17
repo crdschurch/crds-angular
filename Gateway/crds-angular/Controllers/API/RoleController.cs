@@ -17,7 +17,11 @@ namespace crds_angular.Controllers.API
 
         private readonly IContactRepository _contactSerivce;
 
-        public RoleController(IContactRepository contactSerivce, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public RoleController(IAuthTokenExpiryService authTokenExpiryService, 
+                              IContactRepository contactSerivce,
+                              IUserImpersonationService userImpersonationService, 
+                              IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _contactSerivce = contactSerivce;
         }

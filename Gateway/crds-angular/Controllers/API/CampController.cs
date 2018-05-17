@@ -17,7 +17,11 @@ namespace crds_angular.Controllers.API
     {
         private readonly ICampService _campService;
 
-        public CampController(ICampService campService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public CampController(IAuthTokenExpiryService authTokenExpiryService, 
+                              ICampService campService, 
+                              IUserImpersonationService userImpersonationService, 
+                              IAuthenticationRepository authenticationRepository) 
+                              : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _campService = campService;
         }

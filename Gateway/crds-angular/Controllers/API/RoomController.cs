@@ -12,7 +12,11 @@ namespace crds_angular.Controllers.API
     {
         private readonly IRoomService _roomService;
 
-        public RoomController(IRoomService roomService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public RoomController(IAuthTokenExpiryService authTokenExpiryService, 
+                              IRoomService roomService, 
+                              IUserImpersonationService userImpersonationService, 
+                              IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _roomService = roomService;
         }

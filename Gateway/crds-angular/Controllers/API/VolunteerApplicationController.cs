@@ -18,7 +18,11 @@ namespace crds_angular.Controllers.API
         private readonly IVolunteerApplicationService _volunteerApplicationService;
 
 
-         public VolunteerApplicationController(IVolunteerApplicationService volunteerApplicationService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+         public VolunteerApplicationController(IAuthTokenExpiryService authTokenExpiryService, 
+                                               IVolunteerApplicationService volunteerApplicationService, 
+                                               IUserImpersonationService userImpersonationService, 
+                                               IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _volunteerApplicationService = volunteerApplicationService;
         }

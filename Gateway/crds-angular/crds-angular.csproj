@@ -502,6 +502,7 @@
     <Compile Include="Services\Analytics\AnalyticsService.cs" />
     <Compile Include="Services\Analytics\EventProperties.cs" />
     <Compile Include="Services\Analytics\IAnalyticsService.cs" />
+    <Compile Include="Services\AuthTokenExpiryService.cs" />
     <Compile Include="Services\AwsCloudsearchService.cs" />
     <Compile Include="Services\AwsTimeHelper.cs" />
     <Compile Include="Services\BulkEmailSyncService.cs" />
@@ -524,6 +525,7 @@
     <Compile Include="Services\GroupSearchService.cs" />
     <Compile Include="Services\FormBuilderService.cs" />
     <Compile Include="Services\Interfaces\GroupAttributeDTO.cs" />
+    <Compile Include="Services\Interfaces\IAuthTokenExpiryService.cs" />
     <Compile Include="Services\Interfaces\ICorkboardService.cs" />
     <Compile Include="Services\Interfaces\IGroupLeaderService.cs" />
     <Compile Include="Services\Interfaces\IAddressGeocodingService.cs" />
