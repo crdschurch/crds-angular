@@ -27,9 +27,11 @@
 
         
         if (response.headers(cookieNames.SESSION_ID)) {
+          console.log('interceptor: IF');
           Session.getNewSessionFromHeaders(response, sessionLength, expDate);
         } 
         else {
+          console.log('interceptor: ELSE');
           Session.updateSessionExpiration(sessionLength, expDate);
         }
 
