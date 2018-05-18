@@ -53,7 +53,8 @@
       $log.debug('creating cookies!');
       const expDate = new Date();
       const msTillExpired = userTokenExpInSeconds * 1000;
-      console.log(`ms till expired: ${msTillExpired}`);
+      console.log('ms till expired:');
+      console.log(msTillExpired);
       expDate.setTime(expDate.getTime() + msTillExpired);
       console.log(`SESSION: CREATE: expDate: ${expDate}`);
       
