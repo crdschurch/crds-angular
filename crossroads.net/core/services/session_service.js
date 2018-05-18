@@ -80,9 +80,9 @@
       const sessionId = $cookies.get(cookieNames.SESSION_ID);
       const userId = $cookies.get(cookieNames.USER_ID);
       const username = $cookies.get(cookieNames.USERNAME);
-      const minutesTillExpired = 30;
+      const secondsTillExpired = 1800;
 
-      this.create( null, sessionId, minutesTillExpired, userId, username );
+      this.create( null, sessionId, secondsTillExpired, userId, username );
     };
 
     /**
