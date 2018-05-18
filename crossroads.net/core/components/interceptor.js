@@ -25,8 +25,9 @@
         expDate.setTime(expDate.getTime() + sessionLength);
         var Session = $injector.get('Session');
 
-        
-        if (response.headers(cookieNames.SESSION_ID)) {
+        console.log(response);
+
+        if (response.headers('sessionId')) {
           console.log('interceptor: IF');
           Session.getNewSessionFromHeaders(response, sessionLength, expDate);
         } 
