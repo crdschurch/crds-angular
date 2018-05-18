@@ -101,7 +101,6 @@
       $cookies.put(cookieNames.SESSION_ID, response.headers('sessionId'), {
         expires: expDate
       });
-      $cookies.put(cookieNames.USER_ID, response.data.userId);
       $http.defaults.headers.common.Authorization = response.headers('sessionId');
     };
 
