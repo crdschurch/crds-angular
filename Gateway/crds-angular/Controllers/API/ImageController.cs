@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Results;
@@ -142,8 +143,16 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "image/profile", minimumVersion: "1.0.0")]
         [Route("image/profile")]
         [HttpPost]
-        public IHttpActionResult Post()
+        public async Task<IHttpActionResult> Post()
         {
+            // this needs to happen prior to Authorized() because ReadAsStringAsync() will
+            // sometimes deadlock if it's called syncronously
+            var base64String = await Request.Content.ReadAsStringAsync();
+            if (base64String.Length == 0)
+            {
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Request did not specify a \"file\" for the profile image."));
+            }
+
             return (Authorized(token =>
             {
                 const string fileName = "profile.png";
@@ -151,12 +160,6 @@ namespace crds_angular.Controllers.API
                 var contactId = _mpService.GetContactInfo(token).ContactId;
                 var files = _mpService.GetFileDescriptions("MyContact", contactId, token);
                 var file = files.FirstOrDefault(f => f.IsDefaultImage);
-                var base64String = Request.Content.ReadAsStringAsync().Result;
-
-                if (base64String.Length == 0)
-                {
-                    throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Request did not specify a \"file\" for the profile image."));
-                }
 
                 var imageBytes = Convert.FromBase64String(base64String.Split(',')[1]);
 
