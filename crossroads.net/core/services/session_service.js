@@ -73,12 +73,11 @@
      * new session token but we need to extend the expiration of 
      * the current session cookies
      */
-    vm.updateSessionExpiration = (sessionLength, expDate) => {
-      console.log(`SESSION: UPDATESESSIONEXPIRATION: expDate: ${expDate}`);
+    vm.updateSessionExpiration = (sessionLength) => {
       this.setupLoggedOutModal(sessionLength);
       const sessionId = $cookies.get(cookieNames.SESSION_ID);
       const userId = $cookies.get(cookieNames.USER_ID);
-      const username = $cookies.get(cookieNames.USERNAME);
+      const username = $cookies.get(cookieNames.USERNAME);  
       const secondsTillExpired = 1800;
 
       this.create( null, sessionId, secondsTillExpired, userId, username );

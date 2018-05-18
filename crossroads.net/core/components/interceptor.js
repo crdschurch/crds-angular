@@ -32,7 +32,7 @@
         } 
         else {
           console.log('interceptor: ELSE');
-          Session.updateSessionExpiration(sessionLength, expDate);
+          Session.updateSessionExpiration(sessionLength);
         }
 
         return response;
