@@ -1,5 +1,7 @@
 (function() {
   'use strict';
+  
+  const cookieNames = require('crds-constants').COOKIES;
   angular.module('crossroads.core').factory('InterceptorFactory', InterceptorFactory);
 
   InterceptorFactory.$inject = ['$injector'];
@@ -18,9 +20,17 @@
       },
 
       response: function(response) {
-        if (response.headers('refreshToken')) {
-          var Session = $injector.get('Session');
-          Session.getNewRefreshTokenAndSessionFromHeaders(response);
+        const expDate = new Date();
+        const sessionLength = 1800000;
+        expDate.setTime(expDate.getTime() + sessionLength);
+        var Session = $injector.get('Session');
+
+        
+        if (response.headers(cookieNames.SESSION_ID)) {
+          Session.getNewSessionFromHeaders(response, sessionLength, expDate);
+        } 
+        else {
+          Session.updateSessionExpiration(sessionLength, expDate);
         }
 
         return response;
