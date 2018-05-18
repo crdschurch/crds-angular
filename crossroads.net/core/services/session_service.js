@@ -53,10 +53,7 @@
       $log.debug('creating cookies!');
       const expDate = new Date();
       const msTillExpired = userTokenExpInSeconds * 1000;
-      console.log('ms till expired:');
-      console.log(msTillExpired);
       expDate.setTime(expDate.getTime() + msTillExpired);
-      console.log(`SESSION: CREATE: expDate: ${expDate}`);
       
       if ( refreshToken != null ) {
         $cookies.put(cookieNames.REFRESH_TOKEN, refreshToken, { expires: expDate });
@@ -92,7 +89,6 @@
 
     vm.getNewSessionFromHeaders = (response, sessionLength, expDate) => {      
       $log.debug('updating cookies!');
-      console.log(`SESSION: GETNEWSESSIONFROMHEADERS: response: ${response}`);
       this.setupLoggedOutModal(sessionLength);
 
       $cookies.put(cookieNames.SESSION_ID, response.headers('sessionId'), {

@@ -33,7 +33,7 @@ require('./invoices/invoices.module');
     .config(['$logProvider', function($logProvider) {
       // disable debug log in prod
       if (!__CRDS_ENV__) {
-        $logProvider.debugEnabled(true);
+        $logProvider.debugEnabled(false);
       }
     }]);
 

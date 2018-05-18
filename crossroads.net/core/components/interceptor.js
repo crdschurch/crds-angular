@@ -20,20 +20,17 @@
       },
 
       response: function(response) {
+        const url = response.config.url;
+        const isHttp = url.startsWith('http://') || url.startsWith('https://'); 
         const expDate = new Date();
         const sessionLength = 1800000;
+        // debugger;
         expDate.setTime(expDate.getTime() + sessionLength);
         var Session = $injector.get('Session');
-        console.log('method:');
-        console.log(response.config.method);
-
-        
-        if (response.headers(cookieNames.SESSION_ID)) {
-          console.log('interceptor: IF');
+        if (response.headers(cookieNames.SESSION_ID) && isHttp) {
           Session.getNewSessionFromHeaders(response, sessionLength, expDate);
         } 
-        else {
-          console.log('interceptor: ELSE');
+        else if (isHttp) {
           Session.updateSessionExpiration(sessionLength);
         }
 
