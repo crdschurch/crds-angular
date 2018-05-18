@@ -1282,12 +1282,10 @@ namespace crds_angular.Services
 
         public List<PinDto> AddPinMetaData(List<PinDto> pins, GeoCoordinate originCoords, int contactId = 0)
         {
-            PinDto currentPin;
             try
             {
                 foreach (var pin in pins)
                 {
-                    currentPin = pin;
                     pin.Title = GetPinTitle(pin, contactId);
                     pin.IconUrl = GetPinUrl(pin.PinType);
 
