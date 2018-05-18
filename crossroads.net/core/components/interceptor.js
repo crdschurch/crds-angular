@@ -24,10 +24,11 @@
         const sessionLength = 1800000;
         expDate.setTime(expDate.getTime() + sessionLength);
         var Session = $injector.get('Session');
+        console.log('method:');
+        console.log(response.config.method);
 
-        console.log(response);
-
-        if (response.headers('sessionId')) {
+        
+        if (response.headers(cookieNames.SESSION_ID)) {
           console.log('interceptor: IF');
           Session.getNewSessionFromHeaders(response, sessionLength, expDate);
         } 
