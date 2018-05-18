@@ -730,6 +730,7 @@ namespace crds_angular.Services
 
         private static decimal GetProximity(GeoCoordinate originCoords, GeoCoordinate pinCoords)
         {
+            if (originCoords.Latitude == pinCoords.Latitude && originCoords.Longitude == pinCoords.Longitude){return 0;}
             return (decimal) Proximity(originCoords.Latitude, originCoords.Longitude, pinCoords.Latitude, pinCoords.Longitude);
         }
 
@@ -1281,10 +1282,12 @@ namespace crds_angular.Services
 
         public List<PinDto> AddPinMetaData(List<PinDto> pins, GeoCoordinate originCoords, int contactId = 0)
         {
+            PinDto currentPin;
             try
             {
                 foreach (var pin in pins)
                 {
+                    currentPin = pin;
                     pin.Title = GetPinTitle(pin, contactId);
                     pin.IconUrl = GetPinUrl(pin.PinType);
 
