@@ -13,7 +13,6 @@
     authService.login = (credentials) => {
       return $http
         .post(__GATEWAY_CLIENT_ENDPOINT__ + 'api/login', credentials).then((res) => {
-          console.log('AUTH: LOGGED IN')
           Session.create(
             res.data.refreshToken,
             res.data.userToken,

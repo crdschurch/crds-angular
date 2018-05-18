@@ -49,12 +49,12 @@
   ) {
     const vm = this;
 
-    vm.create = (refreshToken, sessionId, userTokenExp, userId, username) => {
+    vm.create = (refreshToken, sessionId, userTokenExpInSeconds, userId, username) => {
       $log.debug('creating cookies!');
-      console.log('SESSION: CREATE');
-      console.log(`SESSION: CREATE: sessionId: ${sessionId}`);
       const expDate = new Date();
-      expDate.setTime(expDate.getTime() + (userTokenExp * 1000));
+      const msTillExpired = userTokenExpInSeconds * 1000;
+      console.log(`ms till expired: ${msTillExpired}`);
+      expDate.setTime(expDate.getTime() + msTillExpired);
       console.log(`SESSION: CREATE: expDate: ${expDate}`);
       
       if ( refreshToken != null ) {
@@ -74,7 +74,6 @@
      * the current session cookies
      */
     vm.updateSessionExpiration = (sessionLength, expDate) => {
-      console.log('SESSION: UPDATESESSIONEXPIRATION');
       console.log(`SESSION: UPDATESESSIONEXPIRATION: expDate: ${expDate}`);
       this.setupLoggedOutModal(sessionLength);
       const sessionId = $cookies.get(cookieNames.SESSION_ID);
@@ -93,8 +92,6 @@
 
     vm.getNewSessionFromHeaders = (response, sessionLength, expDate) => {      
       $log.debug('updating cookies!');
-
-      console.log('SESSION: GETNEWSESSIONFROMHEADERS');
       console.log(`SESSION: GETNEWSESSIONFROMHEADERS: response: ${response}`);
       this.setupLoggedOutModal(sessionLength);
 
