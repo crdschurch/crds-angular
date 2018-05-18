@@ -827,6 +827,11 @@ namespace crds_angular.Services
             _communicationService.SendMessage(message);
         }
 
+        public void UpdateHuddleGroupParticipantStatus()
+        {
+            _participantService.UpdateHuddleGroupParticipantStatus();
+        }
+
         public GroupDTO UpdateGroup(GroupDTO group)
         {
             try

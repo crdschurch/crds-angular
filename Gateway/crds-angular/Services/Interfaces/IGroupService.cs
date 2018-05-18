@@ -64,5 +64,7 @@ namespace crds_angular.Services.Interfaces
         void RemoveParticipantFromGroup(string token, int groupId, int groupParticipantId);
 
         void SendAllGroupLeadersMemberRemovedEmail(string token, int groupId);
+
+        void UpdateHuddleGroupParticipantStatus();
     }
 }
