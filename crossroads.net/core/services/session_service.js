@@ -71,7 +71,7 @@
      * the current session cookies
      */
     vm.updateSessionExpiration = (sessionLength, expDate) => {
-      // this.setupLoggedOutModal(sessionLength);
+      this.setupLoggedOutModal(sessionLength);
       const sessionId = $cookies.get(cookieNames.SESSION_ID);
       const userId = $cookies.get(cookieNames.USER_ID);
       const username = $cookies.get(cookieNames.USERNAME);

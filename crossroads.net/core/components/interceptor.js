@@ -23,16 +23,15 @@
         const expDate = new Date();
         const sessionLength = 1800000;
         expDate.setTime(expDate.getTime() + sessionLength);
+        var Session = $injector.get('Session');
 
         
         if (response.headers(cookieNames.SESSION_ID)) {
-          var Session = $injector.get('Session');
           Session.getNewSessionFromHeaders(response, sessionLength, expDate);
         } 
-        // else {
-        //   var Session = $injector.get('Session');
-        //   Session.updateSessionExpiration(sessionLength, expDate);
-        // }
+        else {
+          Session.updateSessionExpiration(sessionLength, expDate);
+        }
 
         return response;
       }
