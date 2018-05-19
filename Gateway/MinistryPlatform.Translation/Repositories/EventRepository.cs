@@ -9,7 +9,7 @@ using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
-using MinistryPlatform.Translation.Models.EventReservations;;
+using MinistryPlatform.Translation.Models.EventReservations;
 using MinistryPlatform.Translation.PlatformService;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 
