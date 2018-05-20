@@ -302,7 +302,7 @@ namespace MinistryPlatform.Translation.Repositories
             return GetEventParticipantId(eventId, participantId);
         }
     
-    public bool EventHasParticipant(int eventId, int participantId)
+        public bool EventHasParticipant(int eventId, int participantId)
         {
             return GetEventParticipantId(eventId, participantId) > 0;
         }
