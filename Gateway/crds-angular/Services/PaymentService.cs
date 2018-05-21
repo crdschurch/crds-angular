@@ -44,6 +44,7 @@ namespace crds_angular.Services
         private readonly int _defaultPaymentStatus;
         private readonly int _declinedPaymentStatus;
         private readonly int _bankErrorRefundContactId;
+        private readonly int _defaultPaymentEmailTemplate;
 
         public PaymentService(IInvoiceRepository invoiceRepository, 
             IPaymentRepository paymentRepository, 
@@ -76,7 +77,8 @@ namespace crds_angular.Services
             _defaultPaymentStatus = configurationWrapper.GetConfigIntValue("DonationStatusPending");
             _declinedPaymentStatus = configurationWrapper.GetConfigIntValue("DonationStatusDeclined");
             _bankErrorRefundContactId = configurationWrapper.GetConfigIntValue("ContactIdForBankErrorRefund");
-        }
+            _defaultPaymentEmailTemplate = configurationWrapper.GetConfigIntValue("DefaultPaymentEmailTemplate");
+    }
 
         public MpPaymentDetailReturn PostPayment(MpDonationAndDistributionRecord paymentRecord)
         {
@@ -368,9 +370,10 @@ namespace crds_angular.Services
             var invoiceDetail = Mapper.Map<MpInvoiceDetail, InvoiceDetailDTO>(_invoiceRepository.GetInvoiceDetailForInvoice(invoiceId));
             invoiceDetail.Product = Mapper.Map<MpProduct, ProductDTO>(_productRepository.GetProduct(invoiceDetail.ProductId));
             var mpProgram = _programRepository.GetProgramByProductId(invoiceDetail.ProductId);
-           
-            int templateId = (int) ((mpProgram.CommunicationTemplateId != null) ? mpProgram.CommunicationTemplateId : _configWrapper.GetConfigIntValue("DefaultPaymentEmailTemplate"));
-      
+
+          int templateId = (int) ((mpProgram.CommunicationTemplateId != null)? mpProgram.CommunicationTemplateId : _defaultPaymentEmailTemplate);
+
+
             var primaryContactId = _configWrapper.GetConfigIntValue("CrossroadsFinanceClerkContactId");
             var primaryContact = _contactRepository.GetContactById(primaryContactId);
 
