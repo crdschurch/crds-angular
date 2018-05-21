@@ -730,6 +730,7 @@ namespace crds_angular.Services
 
         private static decimal GetProximity(GeoCoordinate originCoords, GeoCoordinate pinCoords)
         {
+            if (originCoords.Latitude == pinCoords.Latitude && originCoords.Longitude == pinCoords.Longitude){return 0;}
             return (decimal) Proximity(originCoords.Latitude, originCoords.Longitude, pinCoords.Latitude, pinCoords.Longitude);
         }
 
