@@ -33,6 +33,7 @@ namespace crds_angular.test.Services
         private readonly Mock<IConfigurationWrapper> _configWrapper;
         private readonly Mock<IApiUserRepository> _apiUserRepository;
         private readonly Mock<IProductRepository> _productRepository;
+        private readonly Mock<IProgramRepository> _programRepository;
         private readonly Mock<IPaymentProcessorService> _paymentProcessorService;
 
         private readonly IPaymentService _fixture;
@@ -43,6 +44,7 @@ namespace crds_angular.test.Services
         private readonly int defaultPaymentStatus = 15;
         private readonly int declinedPaymentStatus = 20;
         private readonly int defaultCongregation = 5;
+        private readonly int defaultPaymentTemplate = 2022;
 
         public PaymentServiceTest()
         {
@@ -61,14 +63,18 @@ namespace crds_angular.test.Services
             _configWrapper = new Mock<IConfigurationWrapper>();
             _apiUserRepository = new Mock<IApiUserRepository>();
             _productRepository = new Mock<IProductRepository>();
+            _programRepository = new Mock<IProgramRepository>();
             _paymentProcessorService = new Mock<IPaymentProcessorService>();
             _configWrapper.Setup(m => m.GetConfigIntValue("PaidInFull")).Returns(paidInFull);
             _configWrapper.Setup(m => m.GetConfigIntValue("SomePaid")).Returns(somePaid);
             _configWrapper.Setup(m => m.GetConfigIntValue("NonePaid")).Returns(nonePaid);
             _configWrapper.Setup(m => m.GetConfigIntValue("DonationStatusPending")).Returns(defaultPaymentStatus);
             _configWrapper.Setup(m => m.GetConfigIntValue("DonationStatusDeclined")).Returns(declinedPaymentStatus);
+            _configWrapper.Setup(m => m.GetConfigIntValue("DefaultPaymentEmailTemplate")).Returns(defaultPaymentTemplate);
 
-            _fixture = new PaymentService(_invoiceRepository.Object, _paymentRepository.Object, _configWrapper.Object, _contactRepository.Object, _paymentTypeRepository.Object, _eventRepository.Object, _communicationRepository.Object, _apiUserRepository.Object, _productRepository.Object, _paymentProcessorService.Object);            
+            _fixture = new PaymentService(_invoiceRepository.Object, _paymentRepository.Object, _configWrapper.Object, _contactRepository.Object,
+              _paymentTypeRepository.Object, _eventRepository.Object, _communicationRepository.Object, _apiUserRepository.Object, _productRepository.Object,
+              _programRepository.Object, _paymentProcessorService.Object);            
         }         
 
         [Test]
@@ -660,7 +666,24 @@ namespace crds_angular.test.Services
             _productRepository.VerifyAll();
         }
 
-        private static List<MpPayment> fakePayments(int payerId, decimal paymentTotal, int paymentIdOfOne = 34525, int paymentStatus = 0)
+        [Test]
+        public void ShoudlDetermineCorrectEmailTemplate()
+        {
+          const int productId = 1234;
+
+          var programWithTemplate = fakeProgram1(productId);
+          int template = (programWithTemplate.CommunicationTemplateId ?? defaultPaymentTemplate);
+          Assert.AreEqual(template, programWithTemplate.CommunicationTemplateId);
+
+
+          var programNoTemplate = fakeProgram2(productId);
+          int templateId = (programNoTemplate.CommunicationTemplateId ?? defaultPaymentTemplate);
+
+          Assert.AreEqual(templateId, defaultPaymentTemplate);
+
+    }
+
+    private static List<MpPayment> fakePayments(int payerId, decimal paymentTotal, int paymentIdOfOne = 34525, int paymentStatus = 0)
         {
             return new List<MpPayment>
             {
@@ -733,6 +756,22 @@ namespace crds_angular.test.Services
             };
         }
 
-    }
+        private static MpProgram fakeProgram1(int productId)
+        {
+          return new MpProgram()
+          {
+            CommunicationTemplateId = 987
+          };
+        }
+
+        private static MpProgram fakeProgram2(int productId)
+        {
+          return new MpProgram()
+          {
+            CommunicationTemplateId = null
+          };
+        }
+
+  }
 }
 

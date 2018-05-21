@@ -34,6 +34,7 @@ namespace crds_angular.Services
         private readonly IConfigurationWrapper _configWrapper;
         private readonly IApiUserRepository _apiUserRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IProgramRepository _programRepository;
 
         private readonly IPaymentProcessorService _paymentProcessorService;
 
@@ -43,6 +44,7 @@ namespace crds_angular.Services
         private readonly int _defaultPaymentStatus;
         private readonly int _declinedPaymentStatus;
         private readonly int _bankErrorRefundContactId;
+        private readonly int _defaultPaymentEmailTemplate;
 
         public PaymentService(IInvoiceRepository invoiceRepository, 
             IPaymentRepository paymentRepository, 
@@ -53,6 +55,7 @@ namespace crds_angular.Services
             ICommunicationRepository communicationRepository,
             IApiUserRepository apiUserRepository,
             IProductRepository productRepository,
+            IProgramRepository programRepository,
             IPaymentProcessorService paymentProcessorService)
         {
             _invoiceRepository = invoiceRepository;
@@ -64,6 +67,7 @@ namespace crds_angular.Services
             _eventPRepository = eventRepository;
             _apiUserRepository = apiUserRepository;
             _productRepository = productRepository;
+            _programRepository = programRepository;
 
             _paymentProcessorService = paymentProcessorService;
 
@@ -73,7 +77,8 @@ namespace crds_angular.Services
             _defaultPaymentStatus = configurationWrapper.GetConfigIntValue("DonationStatusPending");
             _declinedPaymentStatus = configurationWrapper.GetConfigIntValue("DonationStatusDeclined");
             _bankErrorRefundContactId = configurationWrapper.GetConfigIntValue("ContactIdForBankErrorRefund");
-        }
+            _defaultPaymentEmailTemplate = configurationWrapper.GetConfigIntValue("DefaultPaymentEmailTemplate");
+    }
 
         public MpPaymentDetailReturn PostPayment(MpDonationAndDistributionRecord paymentRecord)
         {
@@ -363,9 +368,11 @@ namespace crds_angular.Services
             var payment = _paymentRepository.GetPaymentById(paymentId);
             var me = _contactRepository.GetMyProfile(token);
             var invoiceDetail = Mapper.Map<MpInvoiceDetail, InvoiceDetailDTO>(_invoiceRepository.GetInvoiceDetailForInvoice(invoiceId));
-            invoiceDetail.Product = Mapper.Map<MpProduct, ProductDTO>(_productRepository.GetProduct(invoiceDetail.ProductId));
-            
-            var templateId = _configWrapper.GetConfigIntValue("DefaultInvoicePaymentEmailTemplate");
+            var product = _productRepository.GetProduct(invoiceDetail.ProductId);
+            invoiceDetail.Product = Mapper.Map<MpProduct, ProductDTO>(product);
+            var mpProgram = product.ProgramId != null ? _programRepository.GetProgramById((int)product.ProgramId) : null ;
+
+            int templateId = mpProgram.CommunicationTemplateId ?? _defaultPaymentEmailTemplate;
 
             var primaryContactId = _configWrapper.GetConfigIntValue("CrossroadsFinanceClerkContactId");
             var primaryContact = _contactRepository.GetContactById(primaryContactId);
