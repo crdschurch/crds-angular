@@ -101,6 +101,16 @@
       $log.debug("updating cookies!");
       this.setupLoggedOutModal(sessionLength);
 
+      $cookies.put(
+        cookieNames.REFRESH_TOKEN,
+        response.headers("refreshToken"),
+        {
+          expires: expDate
+        }
+      );
+      $http.defaults.headers.common.RefreshToken = response.headers(
+        "refreshToken"
+      );
       $cookies.put(cookieNames.SESSION_ID, response.headers("sessionId"), {
         expires: expDate
       });
