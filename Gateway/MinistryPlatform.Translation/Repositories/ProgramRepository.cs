@@ -76,10 +76,5 @@ namespace MinistryPlatform.Translation.Repositories
         {
             return (WithApiLogin(token => (Mapper.Map<MpProgram>(_ministryPlatformService.GetRecordDict(_programsPageId, programId, token)))));
         }
-
-        public MpProgram GetProgramByProductId(int productId)
-        {
-          return (WithApiLogin(token => (Mapper.Map<MpProgram>(_ministryPlatformService.GetRecordDict(_programsPageId, productId, token)))));
-        }
     }
 }

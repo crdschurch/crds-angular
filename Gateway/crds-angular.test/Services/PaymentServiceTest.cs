@@ -672,14 +672,14 @@ namespace crds_angular.test.Services
           const int productId = 1234;
 
           var programWithTemplate = fakeProgram1(productId);
-          int templateId = (int)((programWithTemplate.CommunicationTemplateId != null) ? programWithTemplate.CommunicationTemplateId : defaultPaymentTemplate);
-          Assert.AreEqual(templateId, programWithTemplate.CommunicationTemplateId);
+          int template = (programWithTemplate.CommunicationTemplateId ?? defaultPaymentTemplate);
+          Assert.AreEqual(template, programWithTemplate.CommunicationTemplateId);
 
 
           var programNoTemplate = fakeProgram2(productId);
-          int template = (int)((programNoTemplate.CommunicationTemplateId != null) ? programNoTemplate.CommunicationTemplateId : defaultPaymentTemplate);
+          int templateId = (programNoTemplate.CommunicationTemplateId ?? defaultPaymentTemplate);
 
-          Assert.AreEqual(template, defaultPaymentTemplate);
+          Assert.AreEqual(templateId, defaultPaymentTemplate);
 
     }
 

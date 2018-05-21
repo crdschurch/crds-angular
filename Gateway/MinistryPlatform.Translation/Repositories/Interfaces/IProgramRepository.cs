@@ -9,6 +9,5 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         List<MpProgram> GetProgramsForEventTool();
         MpProgram GetProgramById(int programId);
         List<MpProgram> GetAllPrograms();
-        MpProgram GetProgramByProductId(int productId);
     }
 }

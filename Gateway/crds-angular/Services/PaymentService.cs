@@ -368,11 +368,11 @@ namespace crds_angular.Services
             var payment = _paymentRepository.GetPaymentById(paymentId);
             var me = _contactRepository.GetMyProfile(token);
             var invoiceDetail = Mapper.Map<MpInvoiceDetail, InvoiceDetailDTO>(_invoiceRepository.GetInvoiceDetailForInvoice(invoiceId));
-            invoiceDetail.Product = Mapper.Map<MpProduct, ProductDTO>(_productRepository.GetProduct(invoiceDetail.ProductId));
-            var mpProgram = _programRepository.GetProgramByProductId(invoiceDetail.ProductId);
+            var product = _productRepository.GetProduct(invoiceDetail.ProductId);
+            invoiceDetail.Product = Mapper.Map<MpProduct, ProductDTO>(product);
+            var mpProgram = product.ProgramId != null ? _programRepository.GetProgramById((int)product.ProgramId) : null ;
 
-          int templateId = (int) ((mpProgram.CommunicationTemplateId != null)? mpProgram.CommunicationTemplateId : _defaultPaymentEmailTemplate);
-
+            int templateId = mpProgram.CommunicationTemplateId ?? _defaultPaymentEmailTemplate;
 
             var primaryContactId = _configWrapper.GetConfigIntValue("CrossroadsFinanceClerkContactId");
             var primaryContact = _contactRepository.GetContactById(primaryContactId);
