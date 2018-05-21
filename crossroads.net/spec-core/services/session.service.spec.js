@@ -13,7 +13,7 @@ describe('Session Service', function () {
   var timeout;
 
   beforeEach(angular.mock.module('crossroads.core'));
-  
+
 
   beforeEach(inject(function ($injector, _$cookies_, _$rootScope_, _Session_, _$modal_, _$timeout_) {
     $cookies = _$cookies_;
@@ -80,9 +80,10 @@ describe('Session Service', function () {
       headersResp[cookieNames.SESSION_ID] = 'abcdef';
       $cookies.put(cookieNames.SESSION_ID, mockResponse.userToken);
       // Backend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/authenticated').respond(200, mockResponse);
-      Backend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/authenticated').respond(function (){
-        return [200, mockResponse];
+      Backend.whenGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/authenticated').respond(function () {
+        return [200, mockResponse, headersResp];
       });
+
       spyOn(Session, 'setupLoggedOutModal');
       Session.performReactiveSso();
       Backend.flush();
@@ -310,8 +311,8 @@ describe('Session Service', function () {
       var expiration_time = "Thu Feb 01 2018 00:30:00 GMT-0500 (EST)"
       spyOn($cookies, 'put');
       Session.create(refreshToken, sessionId, userTokenExp, userId, username);
-      expect($cookies.put).toHaveBeenCalledWith('userId', '123456789', Object({ expires: Date(expiration_time) }) )
-      expect($cookies.put).toHaveBeenCalledWith('username', 'Foobar User', Object({ expires: Date(expiration_time) }) )
+      expect($cookies.put).toHaveBeenCalledWith('userId', '123456789', Object({ expires: Date(expiration_time) }))
+      expect($cookies.put).toHaveBeenCalledWith('username', 'Foobar User', Object({ expires: Date(expiration_time) }))
     });
   });
 

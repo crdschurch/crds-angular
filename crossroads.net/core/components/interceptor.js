@@ -1,6 +1,6 @@
-(function() {
+(function () {
   'use strict';
-  
+
   const cookieNames = require('crds-constants').COOKIES;
   angular.module('crossroads.core').factory('InterceptorFactory', InterceptorFactory);
 
@@ -8,20 +8,20 @@
 
   function InterceptorFactory($injector) {
     return {
-      request: function(config) {
+      request: function (config) {
         // Make sure Crds-Api-Key is set on all requests using $http,
         // even those that explicitly specify other headers
-        if(config.headers && (config.headers['Crds-Api-Key'] === undefined ||
-            config.headers['Crds-Api-Key'].length === 0) && 
-            __CROSSROADS_API_TOKEN__.length > 0) {
+        if (config.headers && (config.headers['Crds-Api-Key'] === undefined ||
+          config.headers['Crds-Api-Key'].length === 0) &&
+          __CROSSROADS_API_TOKEN__.length > 0) {
           config.headers['Crds-Api-Key'] = __CROSSROADS_API_TOKEN__;
         }
         return config;
       },
 
-      response: function(response) {
+      response: function (response) {
         const url = response.config.url;
-        const isHttp = url.startsWith('http://') || url.startsWith('https://'); 
+        const isHttp = url.startsWith('http://') || url.startsWith('https://');
         const expDate = new Date();
         const sessionLength = 1800000;
         // debugger;
@@ -29,7 +29,7 @@
         var Session = $injector.get('Session');
         if (response.headers(cookieNames.SESSION_ID) && isHttp) {
           Session.getNewSessionFromHeaders(response, sessionLength, expDate);
-        } 
+        }
         else if (isHttp) {
           Session.updateSessionExpiration(sessionLength);
         }

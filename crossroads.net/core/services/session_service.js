@@ -54,12 +54,12 @@
       const expDate = new Date();
       const msTillExpired = userTokenExpInSeconds * 1000;
       expDate.setTime(expDate.getTime() + msTillExpired);
-      
-      if ( refreshToken != null ) {
+
+      if (refreshToken != null) {
         $cookies.put(cookieNames.REFRESH_TOKEN, refreshToken, { expires: expDate });
         $http.defaults.headers.common.RefreshToken = refreshToken;
       }
-      
+
       $cookies.put(cookieNames.SESSION_ID, sessionId, { expires: expDate });
       $cookies.put(cookieNames.USER_ID, userId, { expires: expDate });
       $cookies.put(cookieNames.USERNAME, username, { expires: expDate });
@@ -75,10 +75,10 @@
       this.setupLoggedOutModal(sessionLength);
       const sessionId = $cookies.get(cookieNames.SESSION_ID);
       const userId = $cookies.get(cookieNames.USER_ID);
-      const username = $cookies.get(cookieNames.USERNAME);  
+      const username = $cookies.get(cookieNames.USERNAME);
       const secondsTillExpired = 1800;
 
-      this.create( null, sessionId, secondsTillExpired, userId, username );
+      this.create(null, sessionId, secondsTillExpired, userId, username);
     };
 
     /**
@@ -87,7 +87,7 @@
      * the session cookies
      */
 
-    vm.getNewSessionFromHeaders = (response, sessionLength, expDate) => {      
+    vm.getNewSessionFromHeaders = (response, sessionLength, expDate) => {
       $log.debug('updating cookies!');
       this.setupLoggedOutModal(sessionLength);
 
@@ -168,8 +168,7 @@
 
           // check if absolute url
           const absoluteUrlRegex = /^https?:\/\//i;
-          if (absoluteUrlRegex.test(url))
-          {
+          if (absoluteUrlRegex.test(url)) {
             $window.location.href = url;
           } else {
             const foundState = $state.get().filter(state => state.name === url);
@@ -208,6 +207,7 @@
 
     vm.verifyAuthentication = (event, stateName, stateData, stateToParams) => {
       if (vm.isActive()) {
+        debugger;
         const promise = $http({
           method: 'GET',
           url: `${__GATEWAY_CLIENT_ENDPOINT__}api/authenticated`,
