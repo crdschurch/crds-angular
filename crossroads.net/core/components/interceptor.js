@@ -28,13 +28,13 @@
         const url = response.config.url;
         const isHttp = url.startsWith("http://") || url.startsWith("https://");
         const expDate = new Date();
-        const sessionLength = 1800000;
-        expDate.setTime(expDate.getTime() + sessionLength);
+        const sessionLengthMs = 1800000;
+        expDate.setTime(expDate.getTime() + sessionLengthMs);
         var Session = $injector.get("Session");
         if (response.headers("sessionId") && isHttp) {
-          Session.getNewSessionFromHeaders(response, sessionLength, expDate);
+          Session.getNewSessionFromHeaders(response, sessionLengthMs, expDate);
         } else if (isHttp) {
-          Session.updateSessionExpiration(sessionLength);
+          Session.updateSessionExpiration(sessionLengthMs);
         }
         return response;
       }

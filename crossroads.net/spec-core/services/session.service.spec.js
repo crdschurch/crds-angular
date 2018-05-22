@@ -79,7 +79,6 @@ describe('Session Service', function () {
       headersResp = {}
       headersResp[cookieNames.SESSION_ID] = 'abcdef';
       $cookies.put(cookieNames.SESSION_ID, mockResponse.userToken);
-      // Backend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/authenticated').respond(200, mockResponse);
       Backend.whenGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/authenticated').respond(function () {
         return [200, mockResponse, headersResp];
       });

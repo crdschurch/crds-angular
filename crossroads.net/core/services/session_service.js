@@ -166,10 +166,10 @@
       $cookies.remove(cookieNames.SESSION_ID);
       $cookies.remove(cookieNames.REFRESH_TOKEN);
       $cookies.remove(cookieNames.IMPERSONATION_ID);
-      $cookies.remove("userId");
-      $cookies.remove("username");
-      $cookies.remove("family");
-      $cookies.remove("age");
+      $cookies.remove('userId');
+      $cookies.remove('username');
+      $cookies.remove('family');
+      $cookies.remove('age');
       $http.defaults.headers.common.Authorization = undefined;
       $http.defaults.headers.common.RefreshToken = undefined;
       $http.defaults.headers.common.ImpersonateUserId = undefined;
