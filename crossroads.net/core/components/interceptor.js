@@ -29,7 +29,6 @@
         const isHttp = url.startsWith("http://") || url.startsWith("https://");
         const expDate = new Date();
         const sessionLength = 1800000;
-        // debugger;
         expDate.setTime(expDate.getTime() + sessionLength);
         var Session = $injector.get("Session");
         if (response.headers("sessionId") && isHttp) {
@@ -37,7 +36,6 @@
         } else if (isHttp) {
           Session.updateSessionExpiration(sessionLength);
         }
-
         return response;
       }
     };
