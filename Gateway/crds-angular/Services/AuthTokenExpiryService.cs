@@ -16,7 +16,9 @@ namespace crds_angular.Services
       IEnumerable<string> authorizationHeaders;
       headers.TryGetValues("Authorization", out authorizationHeaders);
 
-      if (authorizationHeaders == null || !authorizationHeaders.Any())
+      bool isAuthHeaderMissing = authorizationHeaders == null || !authorizationHeaders.Any();
+
+      if (isAuthHeaderMissing)
       {
         return true;
       }
