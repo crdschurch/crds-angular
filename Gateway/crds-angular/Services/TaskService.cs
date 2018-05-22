@@ -47,7 +47,7 @@ namespace crds_angular.Services
         {
             try
             {
-                var apiUserToken = _apiUserService.GetDefaultApiUserToken();
+                var apiUserToken = _apiUserService.GetDefaultApiClientToken();
                 var tasksToComplete = _taskRepository.GetTasksToAutostart();
 
                 _logger.InfoFormat("Number of tasks to autocomplete: {0} ", tasksToComplete.Count);
@@ -88,7 +88,7 @@ namespace crds_angular.Services
         {
             try
             {
-                var apiUserToken = _apiUserService.GetDefaultApiUserToken();
+                var apiUserToken = _apiUserService.GetDefaultApiClientToken();
                 var rejectedReservations = _taskRepository.GetRejectedRoomReservations();
 
                 _logger.InfoFormat("Number of rejected room reservation notifications to send: {0} ", rejectedReservations.Count);

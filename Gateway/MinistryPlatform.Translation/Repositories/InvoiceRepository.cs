@@ -123,13 +123,13 @@ namespace MinistryPlatform.Translation.Repositories
         EventParticipantId = eventParticipantId
       };
       
-      var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+      var apiToken = _apiUserRepository.GetDefaultApiClientToken();
       _ministryPlatformRest.UsingAuthenticationToken(apiToken).Put(new List<MpNestedInvoiceDetail> { updatedInvoice });
     }
 
     public Result<MpInvoiceDetail> GetInvoiceDetailsForProductAndCamper(int productId, int camperId, int eventId)
     {
-      var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+      var apiToken = _apiUserRepository.GetDefaultApiClientToken();
       var invoiceDetails = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpInvoiceDetail>($"Recipient_Contact_ID_Table.[Contact_ID]={camperId} AND Product_ID_Table.[Product_ID]={productId} AND Event_Participant_ID_Table_Event_ID_Table.[Event_ID]={eventId} AND Invoice_Status_ID!={_invoiceCancelled}", "Invoice_ID_Table.[Invoice_ID]");
       if (!invoiceDetails.Any())
       {
