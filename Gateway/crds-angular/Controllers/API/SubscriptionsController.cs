@@ -16,7 +16,12 @@ namespace crds_angular.Controllers.API
         private readonly MPInterfaces.IContactRepository _contactRepository;
         private readonly ISubscriptionsService _subscriptionService;
 
-        public SubscriptionsController(ISubscriptionsService subscriptionService, IAuthenticationRepository authenticationService, IUserImpersonationService userImpersonationService, MPInterfaces.IContactRepository contactRepository) : base(userImpersonationService, authenticationService)
+        public SubscriptionsController(IAuthTokenExpiryService authTokenExpiryService, 
+                                       ISubscriptionsService subscriptionService, 
+                                       IAuthenticationRepository authenticationService, 
+                                       IUserImpersonationService userImpersonationService, 
+                                       MPInterfaces.IContactRepository contactRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _subscriptionService = subscriptionService;
             _contactRepository = contactRepository;

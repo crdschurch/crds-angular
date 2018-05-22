@@ -18,7 +18,12 @@ namespace crds_angular.Controllers.API
         private readonly IEmailCommunication _emailCommunication;
         private readonly IConfigurationWrapper _configurationWrapper;
 
-        public EmailCommunicationController(IEmailCommunication emailCommunication, IConfigurationWrapper configurationWrapper, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public EmailCommunicationController(IAuthTokenExpiryService authTokenExpiryService, 
+                                            IEmailCommunication emailCommunication, 
+                                            IConfigurationWrapper configurationWrapper, 
+                                            IUserImpersonationService userImpersonationService, 
+                                            IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _emailCommunication = emailCommunication;
             _configurationWrapper = configurationWrapper;

@@ -15,7 +15,11 @@ namespace crds_angular.Controllers.API
     {
         private readonly IEventParticipantService _eventParticipantService;
 
-        public EventParticipantController(IEventParticipantService eventParticipantService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public EventParticipantController(IAuthTokenExpiryService authTokenExpiryService, 
+                                          IEventParticipantService eventParticipantService, 
+                                          IUserImpersonationService userImpersonationService, 
+                                          IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _eventParticipantService = eventParticipantService;
         }

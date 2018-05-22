@@ -11,7 +11,11 @@ namespace crds_angular.Controllers.API
     public class ParticipantController : MPAuth
     {
         private readonly IGroupService _groupService;
-        public ParticipantController(IGroupService groupService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public ParticipantController(IAuthTokenExpiryService authTokenExpiryService, 
+                                     IGroupService groupService, 
+                                     IUserImpersonationService userImpersonationService, 
+                                     IAuthenticationRepository authenticationRepository) 
+          : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _groupService = groupService;
         }

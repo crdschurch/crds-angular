@@ -34,7 +34,8 @@ namespace crds_angular.Controllers.API
 
         private readonly int _crossroadsFinanceClerkContactId;
 
-        public CheckScannerController(IConfigurationWrapper configuration,
+        public CheckScannerController(IAuthTokenExpiryService authTokenExpiryService,
+                                      IConfigurationWrapper configuration,
                                       ICheckScannerService checkScannerService,
                                       IAuthenticationRepository authenticationService,
                                       IContactRepository contactRepository,
@@ -42,7 +43,8 @@ namespace crds_angular.Controllers.API
                                       ICryptoProvider cryptoProvider,
                                       IUserImpersonationService userImpersonationService,
                                       IMessageQueueFactory messageQueueFactory = null,
-                                      IMessageFactory messageFactory = null) : base(userImpersonationService, authenticationService)
+                                      IMessageFactory messageFactory = null) 
+                                      : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _checkScannerService = checkScannerService;
             _contactRepository = contactRepository;

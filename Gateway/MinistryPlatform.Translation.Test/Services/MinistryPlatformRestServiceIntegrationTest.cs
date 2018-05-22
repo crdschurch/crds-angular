@@ -38,7 +38,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
             var authenticationRepository = new AuthenticationRepository(authRestClient, mpRestClient);
             var apiUserRepository = new ApiUserRepository(config, authenticationRepository, mpRestClient);
-            _authToken = apiUserRepository.GetDefaultApiUserToken();
+            _authToken = apiUserRepository.GetDefaultApiClientToken();
         }
 
         [SetUp]

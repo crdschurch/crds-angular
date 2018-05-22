@@ -28,13 +28,15 @@ namespace crds_angular.Controllers.API
         private readonly IContactRepository _contactRepository;
         private readonly IAnalyticsService _analyticsService;
 
-        public LoginController(ILoginService loginService, 
+        public LoginController(IAuthTokenExpiryService authTokenExpiryService, 
+                                ILoginService loginService, 
                                 IPersonService personService, 
                                 IUserRepository userService, 
                                 IAnalyticsService analyticsService,
                                 IUserImpersonationService userImpersonationService, 
                                 IAuthenticationRepository authenticationRepository,
-                                IContactRepository contactRepository) : base(userImpersonationService, authenticationRepository)
+                                IContactRepository contactRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
 
         {
             _loginService = loginService;

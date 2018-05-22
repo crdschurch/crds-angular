@@ -25,6 +25,8 @@ namespace crds_angular.test.controllers
     public class GroupControllerTest
     {
         private GroupController _fixture;
+
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<crds_angular.Services.Interfaces.IGroupService> _groupServiceMock;
         private Mock<IAuthenticationRepository> _authenticationServiceMock;
         private Mock<IContactRepository> _contactRepositoryMock;
@@ -38,6 +40,7 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _groupServiceMock = new Mock<crds_angular.Services.Interfaces.IGroupService>();
             _authenticationServiceMock = new Mock<IAuthenticationRepository>();
             _contactRepositoryMock = new Mock<IContactRepository>();
@@ -46,7 +49,15 @@ namespace crds_angular.test.controllers
             _groupSearchServiceMock = new Mock<IGroupSearchService>();
             _groupToolServiceMock = new Mock<IGroupToolService>();
 
-            _fixture = new GroupController(_groupServiceMock.Object, _authenticationServiceMock.Object, _contactRepositoryMock.Object, _participantServiceMock.Object, _addressServiceMock.Object, _groupSearchServiceMock.Object, _groupToolServiceMock.Object, new Mock<IUserImpersonationService>().Object);
+            _fixture = new GroupController(_authTokenExpiryService.Object,
+                                          _groupServiceMock.Object, 
+                                          _authenticationServiceMock.Object, 
+                                          _contactRepositoryMock.Object, 
+                                          _participantServiceMock.Object, 
+                                          _addressServiceMock.Object, 
+                                          _groupSearchServiceMock.Object, 
+                                          _groupToolServiceMock.Object, 
+                                          new Mock<IUserImpersonationService>().Object);
 
             _authType = "auth_type";
             _authToken = "auth_token";
@@ -95,6 +106,7 @@ namespace crds_angular.test.controllers
                     {"abc", "def"}
                 },
             };
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.addParticipantsToGroup(groupId, particpantIdToAdd));
 
             IHttpActionResult result = _fixture.Post(groupId, particpantIdToAdd);
@@ -130,6 +142,7 @@ namespace crds_angular.test.controllers
                 }
             };
 
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.addParticipantsToGroup(groupId, particpantIdToAdd));
 
             IHttpActionResult result = _fixture.Post(groupId, particpantIdToAdd);
@@ -161,7 +174,7 @@ namespace crds_angular.test.controllers
                     SendConfirmationEmail = true
                 }
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.addParticipantsToGroup(groupId, particpantIdToAdd)).Throws(ex);
 
             IHttpActionResult result = _fixture.Post(groupId, particpantIdToAdd);
@@ -205,7 +218,7 @@ namespace crds_angular.test.controllers
             var groupDto = new GroupDTO
             {
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.getGroupDetails(groupId, contactId, participant, _fixture.Request.Headers.Authorization.ToString())).Returns(groupDto);
 
 
@@ -224,6 +237,7 @@ namespace crds_angular.test.controllers
         public void TestCallGroupServiceFailsUnauthorized()
         {
             _fixture.Request.Headers.Authorization = null;
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             IHttpActionResult result = _fixture.Post(3, new List<ParticipantSignup>());
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof (UnauthorizedResult), result);
@@ -275,6 +289,7 @@ namespace crds_angular.test.controllers
                 }
             };
             var groupFull = new GroupFullException(g);
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.addParticipantsToGroup(groupId, particpantIdToAdd)).Throws(groupFull);
 
             try
@@ -303,7 +318,7 @@ namespace crds_angular.test.controllers
             };
 
             var groups = new List<GroupDTO>();
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(
                 mocked => mocked.GetParticipantRecord(_fixture.Request.Headers.Authorization.ToString()))
                 .Returns(participant);
@@ -332,7 +347,7 @@ namespace crds_angular.test.controllers
                     GroupName = "This will work"
                 }
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
            _groupServiceMock.Setup(
                mocked => mocked.GetParticipantRecord(_fixture.Request.Headers.Authorization.ToString()))
                .Returns(participant);
@@ -356,7 +371,7 @@ namespace crds_angular.test.controllers
             {
                 GroupName = "This will work"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.CreateGroup(group)).Returns(returnGroup);
 
             IHttpActionResult result = _fixture.PostGroup(group);
@@ -373,7 +388,7 @@ namespace crds_angular.test.controllers
             {
                 GroupName = "This will work"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.CreateGroup(group)).Throws(ex);
 
             IHttpActionResult result = _fixture.PostGroup(group);
@@ -405,7 +420,7 @@ namespace crds_angular.test.controllers
             {
                 GroupName = "This will work"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.CreateGroup(group)).Returns(returnGroup);            
 
             IHttpActionResult result = _fixture.PostGroup(group);
@@ -435,7 +450,7 @@ namespace crds_angular.test.controllers
             {
                 GroupName = "This will work"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.CreateGroup(group)).Returns(returnGroup);
 
             IHttpActionResult result = _fixture.PostGroup(group);
@@ -465,7 +480,7 @@ namespace crds_angular.test.controllers
             {
                 GroupName = "This will work"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.CreateGroup(group)).Returns(returnGroup);
 
             IHttpActionResult result = _fixture.PostGroup(group);
@@ -486,7 +501,7 @@ namespace crds_angular.test.controllers
             {
                 GroupName = "This will work"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.CreateGroup(group)).Returns(returnGroup);
 
             IHttpActionResult result = _fixture.PostGroup(group);
@@ -501,7 +516,7 @@ namespace crds_angular.test.controllers
             {
                 emailAddress  = "wonderwoman@marvel.com"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
            _groupServiceMock.Setup(mocked => mocked.SendJourneyEmailInvite(communication, _fixture.Request.Headers.Authorization.ToString()));
 
             IHttpActionResult result = _fixture.PostInvitation(communication);
@@ -516,7 +531,7 @@ namespace crds_angular.test.controllers
             {
                 emailAddress = "wonderwoman@marvel.com"
             };
-            
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.SendJourneyEmailInvite(communication, _fixture.Request.Headers.Authorization.ToString())).Throws<InvalidOperationException>();
 
             IHttpActionResult result = _fixture.PostInvitation(communication);
@@ -533,7 +548,7 @@ namespace crds_angular.test.controllers
             const int groupId = 170656;
 
             var participant = new List<GroupParticipantDTO>();
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.GetGroupParticipants(groupId, true)).Returns(participant);
 
             IHttpActionResult result = _fixture.GetGroupParticipants(groupId);
@@ -548,7 +563,7 @@ namespace crds_angular.test.controllers
             const int groupId = 1234;
 
             var participant = new List<GroupParticipantDTO>();
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.GetGroupParticipants(groupId, true)).Returns(participant);
 
             IHttpActionResult result = _fixture.GetGroupParticipants(groupId);
@@ -577,7 +592,7 @@ namespace crds_angular.test.controllers
             {
                 GroupName = "This will work"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.UpdateGroup(group)).Returns(returnGroup);
             _addressServiceMock.Setup(mocked => mocked.FindOrCreateAddress(It.IsAny<AddressDTO>(), true));
 
@@ -603,7 +618,7 @@ namespace crds_angular.test.controllers
                     PostalCode = "zip"
                 }
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(mocked => mocked.UpdateGroup(group)).Throws(ex);
             _addressServiceMock.Setup(mocked => mocked.FindOrCreateAddress(It.IsAny<AddressDTO>(), true));
 
@@ -623,7 +638,7 @@ namespace crds_angular.test.controllers
                 GroupRoleId = 22,
                 GroupRoleTitle = "Group Leader"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupServiceMock.Setup(x => x.UpdateGroupParticipantRole(It.IsAny<GroupParticipantDTO>()));
             _fixture.UpdateParticipant(participant);
             _groupServiceMock.Verify();

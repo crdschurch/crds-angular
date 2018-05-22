@@ -18,6 +18,7 @@ namespace crds_angular.test.controllers
 {
     public class EventParticipantControllerTest
     {
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private readonly Mock<IEventParticipantService> _eventParticipantService;
         private readonly EventParticipantController _fixture;
         private readonly string authToken;
@@ -26,8 +27,12 @@ namespace crds_angular.test.controllers
         public EventParticipantControllerTest()
         {
             Factories.EventParticipantDTO();
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _eventParticipantService = new Mock<IEventParticipantService>();
-            _fixture = new EventParticipantController(_eventParticipantService.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);
+            _fixture = new EventParticipantController(_authTokenExpiryService.Object, 
+                                                      _eventParticipantService.Object, 
+                                                      new Mock<IUserImpersonationService>().Object, 
+                                                      new Mock<IAuthenticationRepository>().Object);
             authType = "auth_type";
             authToken = "auth_token";
             _fixture.Request = new HttpRequestMessage();
@@ -47,6 +52,7 @@ namespace crds_angular.test.controllers
             const int contactId = 2345;
             const int eventId = 6532;                        
             var dto = FactoryGirl.NET.FactoryGirl.Build<EventParticipantDTO>();
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _eventParticipantService.Setup(m => m.GetEventParticipantByContactAndEvent(contactId, eventId)).Returns(dto);
             _eventParticipantService.Setup(m => m.IsParticipantInvalid(dto)).Returns(false);
 
@@ -62,6 +68,7 @@ namespace crds_angular.test.controllers
             const int interested = 5;
             var endDate = DateTime.Now.AddMinutes(-1);
             var dto = FactoryGirl.NET.FactoryGirl.Build<EventParticipantDTO>();
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _eventParticipantService.Setup(m => m.GetEventParticipantByContactAndEvent(contactId, eventId)).Returns(dto);
             _eventParticipantService.Setup(m => m.IsParticipantInvalid(dto)).Returns(true);
 
@@ -76,6 +83,7 @@ namespace crds_angular.test.controllers
             const int eventId = 6532;
             var endDate = DateTime.Now.AddMinutes(-1);
             var dto = FactoryGirl.NET.FactoryGirl.Build<EventParticipantDTO>();
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _eventParticipantService.Setup(m => m.GetEventParticipantByContactAndEvent(contactId, eventId)).Returns(dto);
             _eventParticipantService.Setup(m => m.IsParticipantInvalid(dto)).Throws<Exception>();
             var response = _fixture.IsParticipantValid(contactId, eventId);

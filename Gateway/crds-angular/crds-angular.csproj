@@ -91,7 +91,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Crossroads.Web.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Crossroads.Web.Common.2.0.2\lib\net461\Crossroads.Web.Common.dll</HintPath>
+      <HintPath>..\packages\Crossroads.Web.Common.2.0.5\lib\net461\Crossroads.Web.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -131,6 +131,12 @@
       <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.5.2.2\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.2.2\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
@@ -212,6 +218,9 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Device" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.2.2\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
     <Reference Include="System.Messaging" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -487,12 +496,12 @@
     <Compile Include="Models\MailChimp\BulkEmailSubscriberOptDTO.cs" />
     <Compile Include="Models\Crossroads\RsvpMember.cs" />
     <Compile Include="Processors\SendTextMessageJob.cs" />
-    <Compile Include="Security\ReactiveMPAuth.cs" />
     <Compile Include="Services\AddressService.cs" />
     <Compile Include="Services\Analytics\AnalyticsAstronomer.cs" />
     <Compile Include="Services\Analytics\AnalyticsService.cs" />
     <Compile Include="Services\Analytics\EventProperties.cs" />
     <Compile Include="Services\Analytics\IAnalyticsService.cs" />
+    <Compile Include="Services\AuthTokenExpiryService.cs" />
     <Compile Include="Services\AwsCloudsearchService.cs" />
     <Compile Include="Services\AwsTimeHelper.cs" />
     <Compile Include="Services\BulkEmailSyncService.cs" />
@@ -515,6 +524,7 @@
     <Compile Include="Services\GroupSearchService.cs" />
     <Compile Include="Services\FormBuilderService.cs" />
     <Compile Include="Services\Interfaces\GroupAttributeDTO.cs" />
+    <Compile Include="Services\Interfaces\IAuthTokenExpiryService.cs" />
     <Compile Include="Services\Interfaces\ICorkboardService.cs" />
     <Compile Include="Services\Interfaces\IGroupLeaderService.cs" />
     <Compile Include="Services\Interfaces\IAddressGeocodingService.cs" />

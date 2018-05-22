@@ -28,6 +28,8 @@ namespace crds_angular.test.controllers
     public class CheckScannerControllerTest
     {
         private CheckScannerController _fixture;
+
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IConfigurationWrapper> _configuration;
         private Mock<ICheckScannerService> _checkScannerService;
         private Mock<IAuthenticationRepository> _authenticationService;
@@ -43,6 +45,7 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _configuration = new Mock<IConfigurationWrapper>();
             _contactRepository = new Mock<IContactRepository>();
             _checkScannerService = new Mock<ICheckScannerService>(MockBehavior.Strict);
@@ -55,7 +58,16 @@ namespace crds_angular.test.controllers
             _configuration.Setup(mocked => mocked.GetConfigValue("CheckScannerDonationsAsynchronousProcessingMode")).Returns("false");
             _configuration.Setup(mocked => mocked.GetConfigValue("CheckScannerDonationsQueueName")).Returns("CheckScannerBatchQueue");
 
-            _fixture = new CheckScannerController(_configuration.Object, _checkScannerService.Object, _authenticationService.Object, _contactRepository.Object, _communicationService.Object, _cryptoProvider.Object, new Mock<IUserImpersonationService>().Object, _messageQueueFactory.Object, _messageFactory.Object);
+            _fixture = new CheckScannerController(_authTokenExpiryService.Object, 
+                                                  _configuration.Object, 
+                                                  _checkScannerService.Object, 
+                                                  _authenticationService.Object, 
+                                                  _contactRepository.Object, 
+                                                  _communicationService.Object, 
+                                                  _cryptoProvider.Object, 
+                                                  new Mock<IUserImpersonationService>().Object, 
+                                                  _messageQueueFactory.Object, 
+                                                  _messageFactory.Object);
 
             _fixture.Request = new HttpRequestMessage();
             _fixture.Request.Headers.Authorization = new AuthenticationHeaderValue(AuthType, AuthToken);
@@ -82,6 +94,8 @@ namespace crds_angular.test.controllers
                     Status = BatchStatus.NotExported
                 }
             };
+
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _checkScannerService.Setup(mocked => mocked.GetBatches(true)).Returns(batches);
 
             var result = _fixture.GetBatches();
@@ -113,6 +127,8 @@ namespace crds_angular.test.controllers
                     Status = BatchStatus.NotExported
                 }
             };
+
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _checkScannerService.Setup(mocked => mocked.GetBatches(false)).Returns(batches);
 
             var result = _fixture.GetBatches(false);
@@ -142,6 +158,8 @@ namespace crds_angular.test.controllers
                     Amount = 222M
                 },
             };
+
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _checkScannerService.Setup(mocked => mocked.GetChecksForBatch("batch123")).Returns(checks);
 
             var result = _fixture.GetChecksForBatch("batch123");
@@ -177,7 +195,9 @@ namespace crds_angular.test.controllers
                 AccountNumber = "333",
                 RoutingNumber = "444"
             });
-            _checkScannerService.Setup(mocked => mocked.CreateDonationsForBatch(batch)).Returns(batchResult);
+
+           _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
+           _checkScannerService.Setup(mocked => mocked.CreateDonationsForBatch(batch)).Returns(batchResult);
 
             var result = _fixture.CreateDonationsForBatch(batch);
             _checkScannerService.VerifyAll();
@@ -215,6 +235,7 @@ namespace crds_angular.test.controllers
                   }
             };
 
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _checkScannerService.Setup(mocked => mocked.GetContactDonorForCheck(encryptedAccountNumber, encryptedRoutingNumber)).Returns(donorDetail);
 
             var result = _fixture.GetDonorForCheck(checkAccount);
@@ -231,6 +252,7 @@ namespace crds_angular.test.controllers
         [Test]
         public void TestGetDonorForCheckUnauthenticated()
         {
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _contactRepository.Setup(mocked => mocked.GetContactId(It.IsAny<string>())).Throws<Exception>();
             var result = _fixture.GetDonorForCheck(new CheckAccount
             {
@@ -251,6 +273,7 @@ namespace crds_angular.test.controllers
         [Test]
         public void TestCreateDonorUnauthenticated()
         {
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _contactRepository.Setup(mocked => mocked.GetContactId(It.IsAny<string>())).Throws<Exception>();
             var result = _fixture.CreateDonor(new CheckScannerCheck());
 

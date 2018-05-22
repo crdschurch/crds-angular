@@ -21,6 +21,7 @@ namespace crds_angular.test.controllers
     [TestFixture]
     public class WaiverControllerTest
     {
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private readonly Mock<IWaiverService> _waiverService;
         private readonly Mock<IUserImpersonationService> _userImpersonationService;
         private readonly Mock<IAuthenticationRepository> _authenticationService;
@@ -32,10 +33,14 @@ namespace crds_angular.test.controllers
 
         public WaiverControllerTest()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _waiverService = new Mock<IWaiverService>();
             _userImpersonationService = new Mock<IUserImpersonationService>();
             _authenticationService = new Mock<IAuthenticationRepository>();
-            _fixture = new WaiverController(_waiverService.Object, _userImpersonationService.Object, _authenticationService.Object)
+            _fixture = new WaiverController(_authTokenExpiryService.Object, 
+                                            _waiverService.Object, 
+                                            _userImpersonationService.Object, 
+                                            _authenticationService.Object)
             {
                 Request = new HttpRequestMessage(),
                 RequestContext = new HttpRequestContext()

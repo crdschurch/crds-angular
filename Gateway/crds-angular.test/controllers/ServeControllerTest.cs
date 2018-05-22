@@ -26,6 +26,7 @@ namespace crds_angular.test.controllers
         private ServeController _fixture;
 
         //private Mock<IPersonService> _personServiceMock;
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IServeService> _serveServiceMock;
         private Mock<IAuthenticationRepository> _authenticationServiceMock;
         private Mock<IMessageFactory> _messageFactoryMock;
@@ -39,13 +40,20 @@ namespace crds_angular.test.controllers
         public void SetUp()
         {
             //_personServiceMock = new Mock<IPersonService>();
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _serveServiceMock = new Mock<IServeService>();
             _authenticationServiceMock= new Mock<IAuthenticationRepository>();
             _messageFactoryMock = new Mock<IMessageFactory>();
             _messageQueryFactoryMock = new Mock<IMessageQueueFactory>();
             _configurationMock = new Mock<IConfigurationWrapper>();
 
-            _fixture = new ServeController(_serveServiceMock.Object, _configurationMock.Object, _messageFactoryMock.Object, _messageQueryFactoryMock.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);
+            _fixture = new ServeController(_authTokenExpiryService.Object, 
+                                           _serveServiceMock.Object, 
+                                           _configurationMock.Object, 
+                                           _messageFactoryMock.Object, 
+                                           _messageQueryFactoryMock.Object, 
+                                           new Mock<IUserImpersonationService>().Object, 
+                                           new Mock<IAuthenticationRepository>().Object);
 
             _authType = "auth_type";
             _authToken = "auth_token";
@@ -58,11 +66,9 @@ namespace crds_angular.test.controllers
         public void GetFamilyServeSignUpTest()
         {
             const int contactId = 123456;
-            //var servingTeams = SetUpServingTeams();
             var servingDays = SetUpServingDays();
 
-            //_serveServiceMock.Setup(mocked => mocked.GetServingTeams(It.IsAny<string>()))
-            //    .Returns(servingTeams);
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _serveServiceMock.Setup(mocked => mocked.GetServingDays(It.IsAny<string>(),contactId, It.IsAny<long>(), It.IsAny<long>()))
                 .Returns(servingDays);
 

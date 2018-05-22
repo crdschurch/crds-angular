@@ -23,7 +23,13 @@ namespace crds_angular.Controllers.API
         private readonly IAuthenticationRepository _authenticationRepository;
         private readonly IUserRepository _userService;
 
-        public LookupController(IConfigurationWrapper configurationWrapper, LookupRepository lookupRepository, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository, IUserRepository userService) : base(userImpersonationService, authenticationRepository)
+        public LookupController(IAuthTokenExpiryService authTokenExpiryService, 
+                                IConfigurationWrapper configurationWrapper, 
+                                LookupRepository lookupRepository, 
+                                IUserImpersonationService userImpersonationService, 
+                                IAuthenticationRepository authenticationRepository, 
+                                IUserRepository userService) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _configurationWrapper = configurationWrapper;
             _lookupRepository = lookupRepository;

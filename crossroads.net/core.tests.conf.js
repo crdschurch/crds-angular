@@ -5,7 +5,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var environmentVars = require(path.resolve(__dirname, 'environment.config.js'));
 var definePlugin = new webpack.DefinePlugin(environmentVars.getTest());
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -13,7 +13,7 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'phantomjs-shim'],
 
     // list of files / patterns to load in the browser
     files: [
@@ -28,7 +28,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'spec-core/spec_index.js': ['webpack','env']
+      'spec-core/spec_index.js': ['webpack', 'env']
     },
 
     envPreprocessor: [
@@ -85,8 +85,8 @@ module.exports = function(config) {
             loader: 'ng-cache?prefix=[dir]'
           },
           {
-           test: /\.json$/,
-           loaders: ["json-loader"]
+            test: /\.json$/,
+            loaders: ["json-loader"]
           }
         ]
       },
@@ -122,8 +122,10 @@ module.exports = function(config) {
       require('karma-webpack'),
       require('karma-jasmine'),
       require('karma-mocha-reporter'),
+      //require('karma-chrome-launcher'),
       require('karma-phantomjs-launcher'),
-      require('karma-env-preprocessor')
+      require('karma-env-preprocessor'),
+      require('karma-phantomjs-shim')
     ]
 
   });

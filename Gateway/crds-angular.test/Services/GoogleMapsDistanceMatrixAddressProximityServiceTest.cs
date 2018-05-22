@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http.Headers;
 using crds_angular.Exceptions;
 using crds_angular.Models.Crossroads;
 using crds_angular.Services;
@@ -75,7 +76,9 @@ namespace crds_angular.test.Services
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count);
             Assert.IsNotNull(result[0]);
-            Assert.AreEqual(16.6, (double)result[0], .009);
+            double resultProximity = (double)result[0];
+            double acceptableErrrorDistance = .5d;
+            Assert.AreEqual(16.6, resultProximity, acceptableErrrorDistance);
         }
 
         [Test]

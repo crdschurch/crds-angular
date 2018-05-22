@@ -27,6 +27,7 @@ namespace crds_angular.test.controllers
     {
         private ProfileController _fixture;
 
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<crds_angular.Services.Interfaces.IPersonService> _personServiceMock;
         private Mock<IServeService> _serveServiceMock;
         private Mock<IAuthenticationRepository> _authenticationServiceMock;
@@ -45,6 +46,7 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _personServiceMock = new Mock<crds_angular.Services.Interfaces.IPersonService>();
             _serveServiceMock = new Mock<IServeService>();
             _donorService = new Mock<IDonorService>();
@@ -56,7 +58,16 @@ namespace crds_angular.test.controllers
 
             _config.Setup(mocked => mocked.GetConfigValue("AdminGetProfileRoles")).Returns("123,456");
 
-            _fixture = new ProfileController(_personServiceMock.Object, _serveServiceMock.Object, _impersonationService.Object, _donorService.Object, _authenticationService.Object, _userService.Object, _contactRelationshipService.Object, _config.Object, new Mock<IUserImpersonationService>().Object);
+            _fixture = new ProfileController(_authTokenExpiryService.Object, 
+                                             _personServiceMock.Object, 
+                                             _serveServiceMock.Object, 
+                                             _impersonationService.Object, 
+                                             _donorService.Object, 
+                                             _authenticationService.Object, 
+                                             _userService.Object, 
+                                             _contactRelationshipService.Object, 
+                                             _config.Object, 
+                                             new Mock<IUserImpersonationService>().Object);
             _authenticationServiceMock = new Mock<IAuthenticationRepository>();
 
             _authType = "auth_type";
@@ -74,6 +85,8 @@ namespace crds_angular.test.controllers
             {
                 UserRecordId = 987
             };
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _userService.Setup(mocked => mocked.GetByAuthenticationToken(_authType + " " + _authToken)).Returns(user);
             _userService.Setup(mocked => mocked.GetUserRoles(987)).Returns((List<MpRoleDto>) null);
 
@@ -91,6 +104,7 @@ namespace crds_angular.test.controllers
             {
                 UserRecordId = 987
             };
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _userService.Setup(mocked => mocked.GetByAuthenticationToken(_authType + " " + _authToken)).Returns(user);
             _userService.Setup(mocked => mocked.GetUserRoles(987)).Returns(new List<MpRoleDto>
             {
@@ -204,6 +218,7 @@ namespace crds_angular.test.controllers
                 }
             };
 
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _contactRelationshipService.Setup(x => x.GetMyImmediateFamilyRelationships(myContactId, _authType + " " + _authToken)).Returns(familyList);
 
             IHttpActionResult result = _fixture.GetMySpouse(myContactId);
@@ -229,6 +244,7 @@ namespace crds_angular.test.controllers
                 }
             };
 
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _contactRelationshipService.Setup(x => x.GetMyImmediateFamilyRelationships(myContactId, _authType + " " + _authToken)).Returns(familyList);
 
             IHttpActionResult result = _fixture.GetMySpouse(myContactId);

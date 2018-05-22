@@ -29,14 +29,16 @@ namespace crds_angular.Controllers.API
         private readonly IGroupSearchService _groupSearchService;
         private readonly IGroupToolService _groupToolService;
 
-        public GroupController(IGroupService groupService,
+        public GroupController(IAuthTokenExpiryService authTokenExpiryService, 
+                               IGroupService groupService,
                                IAuthenticationRepository authenticationService,
                                IContactRepository contactRepository,
                                IParticipantRepository participantService,
                                IAddressService addressService,
                                IGroupSearchService groupSearchService,
                                IGroupToolService groupToolService, 
-                               IUserImpersonationService userImpersonationService) : base(userImpersonationService, authenticationService)
+                               IUserImpersonationService userImpersonationService) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _groupService = groupService;
             _contactRepository = contactRepository;

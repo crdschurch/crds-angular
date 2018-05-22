@@ -25,7 +25,13 @@ namespace crds_angular.Controllers.API
         private readonly IEventService _eventService;
         private readonly IPersonService _personService;
 
-        public ChildcareController(IChildcareService childcareService, IEventService eventService, IPersonService personService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public ChildcareController(IAuthTokenExpiryService authTokenExpiryService, 
+                                   IChildcareService childcareService, 
+                                   IEventService eventService, 
+                                   IPersonService personService, 
+                                   IUserImpersonationService userImpersonationService, 
+                                   IAuthenticationRepository authenticationRepository) 
+                                  : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _childcareService = childcareService;
             _eventService = eventService;

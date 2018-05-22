@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Results;
 using crds_angular.Controllers.API;
@@ -25,6 +26,7 @@ namespace crds_angular.test.controllers
     {
         private GroupToolController _fixture;
 
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IGroupToolService> _groupToolService;
         private Mock<IGroupService> _groupService;
         private Mock<IConfigurationWrapper> _configurationWrapper;
@@ -40,12 +42,19 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _groupToolService = new Mock<IGroupToolService>(MockBehavior.Strict);
             _groupService = new Mock<IGroupService>(MockBehavior.Strict);
             _configurationWrapper = new Mock<IConfigurationWrapper>();
             _mockAnalyticsService = new Mock<IAnalyticsService>();
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("SmallGroupTypeId")).Returns(1);
-            _fixture = new GroupToolController(_groupToolService.Object, _configurationWrapper.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object, _mockAnalyticsService.Object, _groupService.Object);
+            _fixture = new GroupToolController(_authTokenExpiryService.Object,
+                                               _groupToolService.Object, 
+                                               _configurationWrapper.Object, 
+                                               new Mock<IUserImpersonationService>().Object, 
+                                               new Mock<IAuthenticationRepository>().Object, 
+                                               _mockAnalyticsService.Object, 
+                                               _groupService.Object);
             _fixture.SetupAuthorization(AuthType, AuthToken);
 
         }
@@ -53,6 +62,7 @@ namespace crds_angular.test.controllers
         [Test]
         public void TestRemoveParticipantFromMyGroup()
         {
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupService.Setup(mocked => mocked.RemoveParticipantFromGroup(_auth, 2, 3));
             var groupInfo = new GroupParticipantRemovalDto();
             groupInfo.GroupId = 2;
@@ -67,6 +77,7 @@ namespace crds_angular.test.controllers
         [Test]
         public void TestRemoveSelfParticipantFromGroup()
         {
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupToolService.Setup(mocked => mocked.RemoveParticipantFromMyGroup(_auth, 2, 3, "test"));
             var result = _fixture.RemoveParticipantFromMyGroup(2, 3, "test");
             _groupToolService.VerifyAll();
@@ -79,6 +90,7 @@ namespace crds_angular.test.controllers
         public void TestRemoveParticipantFromMyGroupWithGroupParticipantRemovalException()
         {
             var ex = new GroupParticipantRemovalException("message");
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupToolService.Setup(mocked => mocked.RemoveParticipantFromMyGroup(_auth, 2, 3, "test")).Throws(ex);
             try
             {
@@ -97,6 +109,7 @@ namespace crds_angular.test.controllers
         public void TestRemoveParticipantFromMyGroupWithOtherException()
         {
             var ex = new Exception();
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupToolService.Setup(mocked => mocked.RemoveParticipantFromMyGroup(_auth, 2, 3, "test")).Throws(ex);
             try
             {
@@ -114,6 +127,7 @@ namespace crds_angular.test.controllers
 	    [Test]
         public void TestPostGroupMessage()
         {
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupToolService.Setup(mocked => mocked.SendAllGroupParticipantsEmail(_auth, 123, 1, "subject", "message"));
             var result = _fixture.PostGroupMessage(123, 1, new GroupMessageDTO
             {
@@ -133,6 +147,7 @@ namespace crds_angular.test.controllers
             var groupReasonEndedId = 1;
             string token = "abc 123";
          
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupToolService.Setup(mocked => mocked.EndGroup(It.IsAny<int>(), It.IsAny<int>())).Verifiable();
             _groupToolService.Setup(mocked => mocked.VerifyCurrentUserIsGroupLeader(token, groupId)).Returns(new MyGroup());
 
@@ -151,7 +166,7 @@ namespace crds_angular.test.controllers
             var groupReasonEndedId = 1;
             string token = "1234frd32";
             Exception ex = new Exception();
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupToolService.Setup(mocked => mocked.EndGroup(It.IsAny<int>(), It.IsAny<int>())).Throws(ex);
             _groupToolService.Setup(mocked => mocked.VerifyCurrentUserIsGroupLeader(It.IsAny<string>(), It.IsAny<int>())).Returns(new MyGroup());
             IHttpActionResult result = _fixture.EndSmallGroup(groupId);
@@ -167,7 +182,7 @@ namespace crds_angular.test.controllers
             var groupId = 1234;
             var groupReasonEndedId = 1;
             string token = "abc 123";
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _groupToolService.Setup(mocked => mocked.VerifyCurrentUserIsGroupLeader(It.IsAny<string>(), It.IsAny<int>())).Throws(new NotGroupLeaderException("User is not a leader"));
 
             IHttpActionResult result = _fixture.EndSmallGroup(groupId);
