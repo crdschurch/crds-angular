@@ -93,7 +93,7 @@ namespace crds_angular.Controllers.API
         [IgnoreClientApiKey]
         public IHttpActionResult GetProfileImage(int contactId, bool defaultIfMissing = true)
         {
-            var apiToken = _apiUserService.GetDefaultApiUserToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
 
             IHttpActionResult result = GetContactImage(contactId, apiToken);
             if (result is NotFoundResult && defaultIfMissing)
