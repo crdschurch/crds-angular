@@ -59,7 +59,6 @@
       userId,
       username
     ) => {
-      $log.debug("creating cookies!");
       const expDate = new Date();
       const msTillExpired = userTokenExpInSeconds * 1000;
       expDate.setTime(expDate.getTime() + msTillExpired);
@@ -87,7 +86,6 @@
       const username = $cookies.get(cookieNames.USERNAME);
       const refresh = $cookies.get(cookieNames.REFRESH_TOKEN);
       const secondsTillExpired = 1800;
-
       this.create(refresh, sessionId, secondsTillExpired, userId, username);
     };
 

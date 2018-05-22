@@ -1,4 +1,4 @@
-(function() {
+(function () {
   "use strict";
 
   const cookieNames = require("crds-constants").COOKIES;
@@ -10,7 +10,7 @@
 
   function InterceptorFactory($injector) {
     return {
-      request: function(config) {
+      request: function (config) {
         // Make sure Crds-Api-Key is set on all requests using $http,
         // even those that explicitly specify other headers
         if (
@@ -24,7 +24,7 @@
         return config;
       },
 
-      response: function(response) {
+      response: function (response) {
         const url = response.config.url;
         const isHttp = url.startsWith("http://") || url.startsWith("https://");
         const expDate = new Date();
