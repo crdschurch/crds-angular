@@ -372,27 +372,27 @@ namespace crds_angular.Services
             invoiceDetail.Product = Mapper.Map<MpProduct, ProductDTO>(product);
             var mpProgram = product.ProgramId != null ? _programRepository.GetProgramById((int)product.ProgramId) : null ;
 
-            int templateId = mpProgram.CommunicationTemplateId ?? _defaultPaymentEmailTemplate;
+            int templateId = mpProgram == null ? _defaultPaymentEmailTemplate : mpProgram.CommunicationTemplateId ?? _defaultPaymentEmailTemplate;
 
             var primaryContactId = _configWrapper.GetConfigIntValue("CrossroadsFinanceClerkContactId");
             var primaryContact = _contactRepository.GetContactById(primaryContactId);
 
             var mergeData = new Dictionary<string, object>
             {
-                {"Product_Name", invoiceDetail.Product.ProductName},
-                {"Payment_Total", payment.PaymentTotal.ToString(".00") },
-                {"Primary_Contact_Email", primaryContact.Email_Address },
-                {"Primary_Contact_Display_Name", primaryContact.Display_Name}
+              {"Product_Name", invoiceDetail.Product.ProductName},
+              {"Payment_Total", payment.PaymentTotal.ToString(".00") },
+              {"Primary_Contact_Email", primaryContact.Email_Address },
+              {"Primary_Contact_Display_Name", primaryContact.Display_Name}
             };
 
             var comm = _communicationRepository.GetTemplateAsCommunication(templateId,
-                                                                primaryContactId,
-                                                                primaryContact.Email_Address,
-                                                                primaryContactId,
-                                                                primaryContact.Email_Address,
-                                                                me.Contact_ID,
-                                                                me.Email_Address,
-                                                                mergeData);
+              primaryContactId,
+              primaryContact.Email_Address,
+              primaryContactId,
+              primaryContact.Email_Address,
+              me.Contact_ID,
+              me.Email_Address,
+              mergeData);
             _communicationRepository.SendMessage(comm);
         }
     }
