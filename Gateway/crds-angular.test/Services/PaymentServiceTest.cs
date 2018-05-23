@@ -675,12 +675,13 @@ namespace crds_angular.test.Services
           int template = (programWithTemplate.CommunicationTemplateId ?? defaultPaymentTemplate);
           Assert.AreEqual(template, programWithTemplate.CommunicationTemplateId);
 
-
           var programNoTemplate = fakeProgram2(productId);
           int templateId = (programNoTemplate.CommunicationTemplateId ?? defaultPaymentTemplate);
-
           Assert.AreEqual(templateId, defaultPaymentTemplate);
 
+          var noProgram = fakeProgram3(productId);
+          int templateId2 = noProgram == null ? defaultPaymentTemplate : noProgram.CommunicationTemplateId ?? defaultPaymentTemplate;
+          Assert.AreEqual(templateId2, defaultPaymentTemplate);
     }
 
     private static List<MpPayment> fakePayments(int payerId, decimal paymentTotal, int paymentIdOfOne = 34525, int paymentStatus = 0)
@@ -770,6 +771,11 @@ namespace crds_angular.test.Services
           {
             CommunicationTemplateId = null
           };
+        }
+
+        private static MpProgram fakeProgram3(int productId)
+        {
+          return new MpProgram();
         }
 
   }
