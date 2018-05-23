@@ -129,7 +129,7 @@ namespace crds_angular.Services
         {
             try
             {
-                var apiToken = _apiUserRepository.GetToken();
+                var apiToken = _apiUserRepository.GetDefaultApiClientToken();
                 var mpGroupConnector = _groupConnectorService.GetGroupConnectorByProjectId(projectId, apiToken);
                 registration.GroupConnectorId = mpGroupConnector.Id;
 
@@ -239,7 +239,7 @@ namespace crds_angular.Services
 
         public List<ProjectCity> GetParticipatingCities(int initiativeId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var projects = _projectRepository.GetProjectsByInitiative(initiativeId, apiToken);
             // filter out projects that are not 'ANYWHERE' projects
             var anywhereId = _configurationWrapper.GetConfigIntValue("AnywhereCongregation");
@@ -250,7 +250,7 @@ namespace crds_angular.Services
         
         public Project GetProject(int projectId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var project = _projectRepository.GetProject(projectId, apiToken);
             if (!project.Status) throw new ApplicationException(project.ErrorMessage);
             var groupConnector = _projectRepository.GetGroupConnector(projectId, apiToken);

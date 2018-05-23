@@ -24,7 +24,7 @@ namespace crds_angular.Services
             
         public void SyncPosts()
         {
-            var token = _apiUserRepository.GetToken();                    
+            var token = _apiUserRepository.GetDefaultApiClientToken();                    
             var request = new RestRequest("corkboard/api/v1.0.0/syncposts", Method.POST);
             request.AddParameter("Authorization",$"Bearer {token}", ParameterType.HttpHeader);
 

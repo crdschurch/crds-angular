@@ -36,10 +36,10 @@ namespace MinistryPlatform.Translation.Test
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("TasksNeedingAutoStarted")).Returns(2212);
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("TasksPageId")).Returns(400);
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("RoomReservationPageId")).Returns(384);
-            _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("api_user");
-            _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
+            _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
+            _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");
 
-            _authService.Setup(m => m.AuthenticateUser(It.IsAny<string>(), It.IsAny<string>(), false)).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123

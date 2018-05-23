@@ -25,7 +25,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _apiUserRepository = new Mock<IApiUserRepository>();
             _mpRestRepository = new Mock<IMinistryPlatformRestRepository>();
             _fixture = new RulesetRepository(_apiUserRepository.Object, _mpRestRepository.Object);
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(_mockToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(_mockToken);
             _mpRestRepository.Setup(m => m.UsingAuthenticationToken(_mockToken)).Returns(_mpRestRepository.Object);
         }
 

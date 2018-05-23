@@ -119,7 +119,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpDeposit GetDepositByProcessorTransferId(string processorTransferId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var searchString = $"Processor_Transfer_ID='{processorTransferId}'";
 
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpDeposit>(searchString).ToList().FirstOrDefault();
@@ -815,7 +815,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<int> GetPredefinedDonationAmounts()
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             string tableName = "cr_Predefined_Donation_Amounts";
 
             List<PredefinedDonationAmountDTO> predefinedAmounts = _ministryPlatformRest

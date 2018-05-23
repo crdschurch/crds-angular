@@ -63,7 +63,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _config.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _config.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
-            _authService.Setup(m => m.AuthenticateUser(It.IsAny<string>(), It.IsAny<string>(), false)).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
@@ -126,7 +126,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             List<int> expectedResults = new List<int> {5, 10, 25, 50, 100, 500};
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns(apiToken);
 
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRest.Object);
 

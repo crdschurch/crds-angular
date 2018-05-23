@@ -47,7 +47,7 @@ namespace MinistryPlatform.Translation.Test.Services
       const string token = "letmein";
       var filter = $"Invoice_ID={invoiceId} AND Invoice_Status_ID!={4}";
 
-      _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+      _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
       _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRest.Object);
       _ministryPlatformRest.Setup(m => m.Search<MpInvoice>(filter, null as string, null, false)).Returns(new List<MpInvoice>());
 

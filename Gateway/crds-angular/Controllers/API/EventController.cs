@@ -66,7 +66,7 @@ namespace crds_angular.Controllers.API
         [Route("events/{site}")]
         public IHttpActionResult Get(string site)
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
 
             var todaysEvents = _ministryPlatformService.GetRecordsDict("TodaysEventLocationRecords", token, site, "5 asc");//Why 5 you ask... Think Ministry
 

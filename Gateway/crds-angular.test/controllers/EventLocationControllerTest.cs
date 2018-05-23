@@ -36,7 +36,7 @@ namespace crds_angular.test.controllers
             _ministryPlatfromServiceMock = new Mock<IMinistryPlatformService>();
 
             _apiUserService = new Mock<IApiUserRepository>();
-            _apiUserService.Setup(m => m.GetToken()).Returns("something");
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("something");
 
             _eventService = new Mock<IEventService>();
 

@@ -44,9 +44,9 @@ namespace MinistryPlatform.Translation.Test.Services
             _configurationWrapper.Setup(m => m.GetConfigIntValue("FormAnswerPageId")).Returns(formAnswerPageId);
             _configurationWrapper.Setup(m => m.GetConfigIntValue("AllFormFieldsView")).Returns(allFormFieldsView);
             _configurationWrapper.Setup(m => m.GetConfigIntValue("GoTripFamilySignup")).Returns(goTripFamilySignup);
-            _configurationWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("apiuser");
-            _configurationWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
-            _authenticationRepository.Setup(m => m.AuthenticateUser("apiuser", "password", false)).Returns(new AuthToken {AccessToken = apiToken});
+            _configurationWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
+            _configurationWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");
+            _authenticationRepository.Setup(m => m.AuthenticateClient("client", "secret")).Returns(new AuthToken {AccessToken = apiToken});
         }
 
         [Test]

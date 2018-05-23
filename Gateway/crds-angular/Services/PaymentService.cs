@@ -149,7 +149,7 @@ namespace crds_angular.Services
 
         public PaymentDetailDTO GetPaymentDetails(int invoiceId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             return GetPaymentDetails(0, invoiceId, apiToken, true);
         }
 

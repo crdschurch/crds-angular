@@ -135,7 +135,7 @@ namespace crds_angular.Services
 
         public List<CampFamilyMember> GetEligibleFamilyMembers(int eventId, string token)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var myContact = _contactRepository.GetMyProfile(token);
             var family = _contactRepository.GetHouseholdFamilyMembers(myContact.Household_ID);
             var me = family.Where(member => member.ContactId == myContact.Contact_ID).ToList();
@@ -323,7 +323,7 @@ namespace crds_angular.Services
             _objectAttributeService.SaveObjectAttributes(contactId, campReservation.AttributeTypes, campReservation.SingleAttributes, configuration);
 
             // Save students in selected grade group
-            var group = _groupRepository.GetGradeGroupForContact(contactId, _apiUserRepository.GetToken());
+            var group = _groupRepository.GetGradeGroupForContact(contactId, _apiUserRepository.GetDefaultApiClientToken());
 
             if (group.Status && group.Value.GroupId != campReservation.CurrentGrade)
             {
@@ -434,7 +434,7 @@ namespace crds_angular.Services
 
         public List<MyCampDTO> GetMyCampInfo(string token)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var campType = _configurationWrapper.GetConfigValue("CampEventTypeName");
 
             var dashboardData = new List<MyCampDTO>();
@@ -779,7 +779,7 @@ namespace crds_angular.Services
             }
             var camperContact = _contactRepository.GetContactById(contactId);
 
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
 
             // get camper grade if they have one
             var groupResult = _groupRepository.GetGradeGroupForContact(contactId, apiToken);

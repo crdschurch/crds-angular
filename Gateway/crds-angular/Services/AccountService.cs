@@ -170,7 +170,7 @@ namespace crds_angular.Services
 
         public User RegisterPerson(User newUserData, int? householdSourceId = null)
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var exists = _lookupService.EmailSearch(newUserData.email, token);
             if (exists != null && exists.Any())
             {
@@ -190,7 +190,7 @@ namespace crds_angular.Services
 
         public int RegisterPersonWithoutUserAccount(User newUserData)
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var householdRecordId = CreateHouseholdRecord(newUserData, token, null);
             var contactRecordId = CreateContactRecord(newUserData, token, householdRecordId);
            

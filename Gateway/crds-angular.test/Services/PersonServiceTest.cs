@@ -129,7 +129,7 @@ namespace crds_angular.test.Services
 
             _contactService.Setup(mocked => mocked.GetContactById(contactId)).Returns(_myContact);
             _contactService.Setup(mocked => mocked.GetHouseholdFamilyMembers(7)).Returns(_householdMembers);
-            _apiUserService.Setup(m => m.GetToken()).Returns("something");
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("something");
             var allAttributesDto = new ObjectAllAttributesDTO();
             _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>())).Returns(allAttributesDto);
             var person = _fixture.GetPerson(contactId);

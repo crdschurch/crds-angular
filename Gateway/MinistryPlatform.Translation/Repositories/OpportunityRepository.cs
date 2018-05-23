@@ -167,7 +167,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<Models.Opportunities.MpResponse> SearchResponseByGroupAndEvent(String searchString)
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var records = _ministryPlatformService.GetPageViewRecords("ResponsesByEventAndGroup", token, searchString);
             return ConvertToMPResponse(records);
         } 
@@ -175,7 +175,7 @@ namespace MinistryPlatform.Translation.Repositories
         public List<Models.Opportunities.MpResponse> GetContactsOpportunityResponseByGroupAndEvent(int groupId, int eventId)
         {
             var search = string.Format("{0}, {1}", groupId, eventId);
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var records = _ministryPlatformService.GetPageViewRecords("ResponsesByEventAndGroup", token, search);
             return ConvertToMPResponse(records);
 
@@ -198,7 +198,7 @@ namespace MinistryPlatform.Translation.Repositories
         {
             string searchString = $"Opportunity_ID = {opportunityId} AND Event_ID = {eventId}";
 
-            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpResponse>(searchString);
+            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).Search<MpResponse>(searchString);
         }
 
         public int GetOpportunitySignupCount(int opportunityId, int eventId, string token)

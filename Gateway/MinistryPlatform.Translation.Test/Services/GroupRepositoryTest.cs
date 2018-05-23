@@ -48,9 +48,9 @@ namespace MinistryPlatform.Translation.Test.Services
             _objectAttributeRepository = new Mock<IObjectAttributeRepository>();
             _fixture = new GroupRepository(_ministryPlatformService.Object, _ministryPlatformRestService.Object, _configWrapper.Object, _authService.Object, _communicationService.Object, _contactService.Object, _contentBlockService.Object, _addressRepository.Object, _objectAttributeRepository.Object);
 
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
-            _authService.Setup(m => m.AuthenticateUser(It.IsAny<string>(), It.IsAny<string>(), false)).Returns(AuthenticateResponse());
+            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
+            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");
+            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(AuthenticateResponse());
         }
 
         private AuthToken AuthenticateResponse()

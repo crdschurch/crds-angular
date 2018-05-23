@@ -237,11 +237,12 @@ namespace crds_angular.Controllers.API
 
             if (authorizedWithCookie is UnauthorizedResult)
             {
-                var apiUser = _configurationWrapper.GetEnvironmentVarAsString("API_USER");
-                var apiPassword = _configurationWrapper.GetEnvironmentVarAsString("API_PASSWORD");
-
-                var authData = _authenticationRepository.AuthenticateUser(apiUser, apiPassword);
+                // TODO: Refactor this to use IApiUserRepository.GetDefaultApiClientToken
+                var clientId = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID");
+                var clientSecret = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET");
+                var authData = _authenticationRepository.AuthenticateClient(clientId, clientSecret);
                 var token = authData?.AccessToken;
+
                 var exists = _lookupRepository.EmailSearch(email, token);
                 if (exists.Count == 0)
                 {

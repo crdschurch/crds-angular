@@ -136,7 +136,7 @@ namespace crds_angular.Controllers.API
         [IgnoreClientApiKey]
         public IHttpActionResult GetCampaignImage(int recordId)
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var files = _mpService.GetFileDescriptions("Pledge_Campaigns", recordId, token);
             var file = files.FirstOrDefault(f => f.IsDefaultImage);
             return file != null ?

@@ -36,9 +36,10 @@ namespace MinistryPlatform.Translation.Repositories
 
         protected string ApiLogin()
         {
-            var apiUser = _configurationWrapper.GetEnvironmentVarAsString("API_USER");
-            var apiPasword = _configurationWrapper.GetEnvironmentVarAsString("API_PASSWORD");
-            var authData = _authenticationService.AuthenticateUser(apiUser, apiPasword);
+            // TODO: Refactor this to use IApiUserRepository.GetDefaultApiClientToken
+            var clientId = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID");
+            var clientSecret = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET");
+            var authData = _authenticationService.AuthenticateClient(clientId, clientSecret);
             var token = authData.AccessToken;
 
             return (token);
