@@ -373,7 +373,7 @@ namespace crds_angular.Services
             var mpProgram = product.ProgramId != null ? _programRepository.GetProgramById((int)product.ProgramId) : null ;
 
             int templateId = mpProgram == null ? _defaultPaymentEmailTemplate : mpProgram.CommunicationTemplateId ?? _defaultPaymentEmailTemplate;
-           
+
             var primaryContactId = _configWrapper.GetConfigIntValue("CrossroadsFinanceClerkContactId");
             var primaryContact = _contactRepository.GetContactById(primaryContactId);
 
@@ -394,6 +394,6 @@ namespace crds_angular.Services
               me.Email_Address,
               mergeData);
             _communicationRepository.SendMessage(comm);
-          }
+        }
     }
 }
