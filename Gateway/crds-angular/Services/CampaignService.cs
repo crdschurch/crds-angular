@@ -22,7 +22,7 @@ namespace crds_angular.Services
 
         public PledgeCampaignSummaryDto GetSummary(int pledgeCampaignId)
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var campaignSummary = _campaignRepository.GetPledgeCampaignSummary(token, pledgeCampaignId);
 
             int totalDays = DaysInRange(campaignSummary.StartDate, campaignSummary.EndDate);

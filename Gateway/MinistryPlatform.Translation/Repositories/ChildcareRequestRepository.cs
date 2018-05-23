@@ -48,7 +48,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public int CreateChildcareRequest(MpChildcareRequest request)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
 
             var requestDict = new Dictionary<string, object>
             {
@@ -70,7 +70,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public void UpdateChildcareRequest(MpChildcareRequest request)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
 
             var requestDict = new Dictionary<string, object>
             {
@@ -145,7 +145,7 @@ namespace MinistryPlatform.Translation.Repositories
         public void DeleteAllChildcareRequestDates(int childcareRequestId)
         {
             // using new api
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
 
             var parms = new Dictionary<string, object>()
             {
@@ -157,7 +157,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpChildcareRequestDate> GetChildcareRequestDates(int childcareRequestId)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
             var searchString = String.Format("{0},", childcareRequestId);
             var records = _ministryPlatformService.GetRecordsDict(_childcareRequestDatesPageId, apiToken, searchString);
 
@@ -172,7 +172,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public void DecisionChildcareRequest(int childcareRequestId, int requestStatusId, MpChildcareRequest childcareRequest)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
             
 
             var requestDict = new Dictionary<string, object>
@@ -190,7 +190,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public void DecisionChildcareRequestDate(int childcareRequestDateId, bool decision)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
 
             var requestDateDict = new Dictionary<string, object>
             {
@@ -203,7 +203,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpChildcareRequestDate GetChildcareRequestDates(int childcareRequestId, DateTime date, string token)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
             var searchString = String.Format("{0},", childcareRequestId);
             var mpRecords = _ministryPlatformService.GetRecordsDict(_childcareRequestDatesPageId, apiToken, searchString);
             var requestedDate = new MpChildcareRequestDate();
@@ -220,14 +220,14 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpEvent> FindChildcareEvents(int childcareRequestId, List<MpChildcareRequestDate> requestedDates, MpChildcareRequest request)
         {
-           var apiToken = _apiUserService.GetToken();
+           var apiToken = _apiUserService.GetDefaultApiClientToken();
            var events = _eventService.GetEventsByTypeForRange(_childcareEventType, request.StartDate, request.EndDate, apiToken, false);
            return events;
         }
 
         public MpChildcareRequest GetChildcareRequestForReview(int childcareRequestId)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
             var record = _ministryPlatformService.GetRecordDict(_childcareRequestPageId, childcareRequestId, apiToken);
             List<MpChildcareRequestDate> daterecords = GetChildcareRequestDates(childcareRequestId);
             var datesList = daterecords.Select(dateRec => dateRec.RequestDate).ToList();
@@ -258,7 +258,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpChildcareRequestDate> GetChildcareRequestDatesForReview(int childcareRequestId)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
             var searchString = String.Format("{0},", childcareRequestId);
             var records = _ministryPlatformService.GetRecordsDict(_childcareRequestDatesPageId, apiToken, searchString);
 

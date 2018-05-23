@@ -40,7 +40,7 @@ namespace MinistryPlatform.Translation.Repositories
         public int Get(int groupId, int participantId)
         {
             var searchString = string.Format(",{0},{1}", groupId, participantId);
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var groupParticipant = _ministryPlatformService.GetPageViewRecords("GroupParticipantsById", token, searchString).FirstOrDefault();
             return groupParticipant != null ? groupParticipant.ToInt("Group_Participant_ID") : 0;
         }
@@ -64,7 +64,7 @@ namespace MinistryPlatform.Translation.Repositories
                             "AND Event_Start_Date >= Participant_Start_Date AND (Event_Start_Date <= Participant_End_Date OR Participant_End_Date IS NULL)";
 
             //Finish out search string and call the rest backend
-            var groupServingParticipants = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpGroupServingParticipant>(searchFilter);
+            var groupServingParticipants = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).Search<MpGroupServingParticipant>(searchFilter);
             var rownum = 0;
             groupServingParticipants.ForEach(p =>
             {
@@ -109,7 +109,7 @@ namespace MinistryPlatform.Translation.Repositories
                 "Responses.opportunity_id,Responses.participant_id,Responses.event_id, opportunity_ID_Table.Group_Role_ID, Participant_ID_Table_Contact_ID_Table.NickName, Participant_ID_Table_Contact_ID_table.Last_Name,Responses.Response_Result_Id,Participant_ID_Table_Contact_ID_Table.__Age AS Age,Participant_ID_Table_Contact_ID_Table.Contact_ID";
             string search = $"Responses.Event_ID = {eventId} And Opportunity_ID_Table.Add_To_Group = {groupId}";
 
-            var opportunityResponse = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpRsvpMember>(search, COLUMNS);
+            var opportunityResponse = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).Search<MpRsvpMember>(search, COLUMNS);
 
             return opportunityResponse;
         }
@@ -122,7 +122,7 @@ namespace MinistryPlatform.Translation.Repositories
                 {"@EventID", eventId}
             };
 
-            var results = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).GetFromStoredProc<MpSU2SOpportunity>(GetOpportunitiesForTeamStoredProc, parms);
+            var results = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).GetFromStoredProc<MpSU2SOpportunity>(GetOpportunitiesForTeamStoredProc, parms);
             return results?.FirstOrDefault();
         }
 
@@ -131,7 +131,7 @@ namespace MinistryPlatform.Translation.Repositories
             const string COLUMNS = "Count(*) As RsvpYesCount";
             string search = $"Responses.Event_ID = {eventId} And Opportunity_ID_Table.Add_To_Group = {groupId} AND Response_Result_Id = 1";
 
-            var response = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpResponse>(search, COLUMNS);
+            var response = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).Search<MpResponse>(search, COLUMNS);
 
             return response[0]?.RsvpYesCount ?? 0;
         }
@@ -150,7 +150,7 @@ namespace MinistryPlatform.Translation.Repositories
                 search += $" AND Group_ID_Table.Group_Type_ID = {groupType}";
             }
 
-            var groupParticipantRecords = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpGroupParticipant>(search, COLUMNS);
+            var groupParticipantRecords = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).Search<MpGroupParticipant>(search, COLUMNS);
 
             List<MpGroup> groups = new List<MpGroup>();
             foreach (var groupParticipant in groupParticipantRecords)
@@ -184,7 +184,7 @@ namespace MinistryPlatform.Translation.Repositories
                 search += $" AND Group_Participants.GROUP_ID = {groupId}";
             }
 
-            var mpGroupParticipants = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpGroupParticipant>(search, COLUMNS);
+            var mpGroupParticipants = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).Search<MpGroupParticipant>(search, COLUMNS);
 
             return mpGroupParticipants.Any();
         }
@@ -214,7 +214,7 @@ namespace MinistryPlatform.Translation.Repositories
                 string orderBy = "Participant_ID_table_contact_id_table.Last_name";
                 bool distinct = true;
 
-                var mpGroupParticipants = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken())
+                var mpGroupParticipants = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken())
                     .Search<MpGroupParticipant>(search, columns, orderBy, distinct);
 
                 return mpGroupParticipants.DistinctBy(x => x.Email).ToList();
@@ -234,7 +234,7 @@ namespace MinistryPlatform.Translation.Repositories
             if (groupType != null)
                 groupIdSearch += $" AND Group_ID_Table.Group_Type_ID = {groupType}";
 
-            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpGroupParticipant>(groupIdSearch, groupIdColumns);
+            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).Search<MpGroupParticipant>(groupIdSearch, groupIdColumns);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _eventService = new Mock<IEventRepository>();
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _apiUserService = new Mock<IApiUserRepository>();
-            _apiUserService.Setup(m => m.GetToken()).Returns("useme");
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("useme");
             _eventService = new Mock<IEventRepository>();
             _groupService = new Mock<IGroupRepository>();
             _configuration = new Mock<IConfigurationWrapper>();

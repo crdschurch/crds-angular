@@ -26,24 +26,24 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpProduct GetProduct(int productId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Get<MpProduct>(productId);
         }
         public MpProduct GetProductForEvent(int eventId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var productId = GetProductIdForEvent(eventId);
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpProduct>($"Product_ID = {productId}").FirstOrDefault();
         }
         public MpProductOptionPrice GetProductOptionPrice(int productOptionPriceId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Get<MpProductOptionPrice>(productOptionPriceId);
         }
         public List<MpProductOptionPrice> GetProductOptionPricesForProduct(int productId)
         {
             var productOptionPrices = new List<MpProductOptionPrice>();
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
 
             //get the product option groups
             var productOptionGroups = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpProductOptionGroup>($"Product_ID = {productId}");
@@ -60,7 +60,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         private int GetProductIdForEvent(int eventId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<int>("Events", $"Event_ID = {eventId}", "Online_Registration_Product", null, false);
         }
     }

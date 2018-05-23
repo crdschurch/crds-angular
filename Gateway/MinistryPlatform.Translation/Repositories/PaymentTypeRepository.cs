@@ -17,7 +17,7 @@ namespace MinistryPlatform.Translation.Repositories
         }
         public MpPaymentType GetPaymentType(int paymentTypeId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Get<MpPaymentType>(paymentTypeId);
         }
 

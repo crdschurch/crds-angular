@@ -577,7 +577,7 @@ namespace crds_angular.test.Services
             var returnVal = new Ok<MpProject>(mpProject);
             var groupConnectorReturn = new Ok<MpGroupConnector>(mpGroupConnector);
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _projectRepository.Setup(m => m.GetProject(projectId, apiToken)).Returns(returnVal);
             _projectRepository.Setup(m => m.GetGroupConnector(projectId, apiToken)).Returns(groupConnectorReturn);
 
@@ -622,7 +622,7 @@ namespace crds_angular.test.Services
             var returnVal = new Ok<MpProject>(mpProject);
             var groupConnectorReturn = new Ok<MpGroupConnector>(mpGroupConnector);
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _projectRepository.Setup(m => m.GetProject(projectId, apiToken)).Returns(returnVal);
             _projectRepository.Setup(m => m.GetGroupConnector(projectId, apiToken)).Returns(groupConnectorReturn);
 
@@ -643,7 +643,7 @@ namespace crds_angular.test.Services
             
             var returnVal = new Err<MpProject>("Project not found!");
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _projectRepository.Setup(m => m.GetProject(projectId, apiToken)).Returns(returnVal);
 
             Assert.Throws<ApplicationException>(() =>
@@ -667,7 +667,7 @@ namespace crds_angular.test.Services
             const int numberOfChildren = 0;          
             var user = new MpUser() {};
             var registration = BuildRegistration(numberOfChildren);
-            _apiUserRepository.Setup(m => m.GetToken())
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken())
                 .Returns(apiToken);
             _groupConnectorService.Setup(m => m.GetGroupConnectorByProjectId(projectId, apiToken))
                 .Returns(new MpGroupConnector {Id = groupConnectorId});
@@ -729,7 +729,7 @@ namespace crds_angular.test.Services
             var user = new MpUser() { };
             var registration = BuildRegistration();           
 
-            _apiUserRepository.Setup(m => m.GetToken())
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken())
                 .Returns(apiToken);
             _groupConnectorService.Setup(m => m.GetGroupConnectorByProjectId(projectId, apiToken))
                 .Returns(new MpGroupConnector { Id = groupConnectorId });
@@ -814,7 +814,7 @@ namespace crds_angular.test.Services
             var user = new MpUser() { };
             var registration = BuildRegistration();            
 
-            _apiUserRepository.Setup(m => m.GetToken())
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken())
                 .Returns(apiToken);
             _groupConnectorService.Setup(m => m.GetGroupConnectorByProjectId(projectId, apiToken))
                 .Returns(new MpGroupConnector { Id = groupConnectorId });

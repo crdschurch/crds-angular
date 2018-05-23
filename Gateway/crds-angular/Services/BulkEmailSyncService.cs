@@ -45,7 +45,7 @@ namespace crds_angular.Services
             _apiUserService = apiUserService;
             _configWrapper = configWrapper;
 
-            _token = _apiUserService.GetToken();
+            _token = _apiUserService.GetDefaultApiClientToken();
             
             ConfigureRefreshTokenTimer();
         }
@@ -62,7 +62,7 @@ namespace crds_angular.Services
         private void RefreshTokenTimerElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             _logger.Info("Refreshing token");
-            _token = _apiUserService.GetToken();            
+            _token = _apiUserService.GetDefaultApiClientToken();            
         }
 
 

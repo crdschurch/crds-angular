@@ -68,7 +68,7 @@ namespace MinistryPlatform.Translation.Repositories
             const string orderBy = "Attribute_Category_ID_table.Sort_Order";
             const bool distinct = true;
 
-            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpAttribute, MpAttributeCategory>(catSearch, catCols, orderBy, distinct);
+            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).Search<MpAttribute, MpAttributeCategory>(catSearch, catCols, orderBy, distinct);
         }
 
         public MpAttribute GetOneAttributeByCategoryId(int categoryId)
@@ -77,7 +77,7 @@ namespace MinistryPlatform.Translation.Repositories
             atSearch += " AND (Attributes.Start_Date Is Null OR Attributes.Start_Date <= GetDate())";
             atSearch += " AND (Attributes.End_Date Is Null OR Attributes.End_Date >= GetDate())";
 
-            var ret = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpAttribute>(atSearch, (string)null, (string)null, true);
+            var ret = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).Search<MpAttribute>(atSearch, (string)null, (string)null, true);
             return ret.FirstOrDefault();
 
         }

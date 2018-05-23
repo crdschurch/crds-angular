@@ -37,7 +37,7 @@ namespace crds_angular.test.Services
                 const string tk = "somerandomstring";
                 if (token == null)
                 {
-                    _apiUserService.Setup(m => m.GetToken()).Returns(tk);
+                    _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns(tk);
                     token = tk;
                 }
                 _lookupService.Setup(m => m.GetList<MpOtherOrganization>(token)).Returns(otherOrgs);

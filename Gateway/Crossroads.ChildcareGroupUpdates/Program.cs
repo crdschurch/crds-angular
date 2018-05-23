@@ -53,7 +53,7 @@ namespace Crossroads.ChildcareGroupUpdates
                 // Update the childcare events that are properly set up in a series
                 ////////////////////////////////////////////////////////////////////////
                 Log.Info("Updating Childcare events in series.");
-                var apiToken = userApiService.GetToken();
+                var apiToken = userApiService.GetDefaultApiClientToken();
                 AutoMapperConfig.RegisterMappings();
 
                 var parms = new Dictionary<string, object>()

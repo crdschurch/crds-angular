@@ -25,7 +25,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpChildcareDashboard> GetChildcareDashboard(int contactId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var parms = new Dictionary<string, object> {{"Contact_ID", contactId}, {"Domain_ID", 1} };
             var dashboardData = _ministryPlatformRest.UsingAuthenticationToken(apiToken).GetFromStoredProc<MpChildcareDashboard>(_configurationWrapper.GetConfigValue("ChildcareDashboardStoredProc"), parms);
             var childcareDashboard = dashboardData.FirstOrDefault() ?? new List<MpChildcareDashboard>();
@@ -57,7 +57,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpChildcareCancelledNotification> GetChildcareCancellations()
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var parms = new Dictionary<string, object>
             {
                 {"@ChildcareGroupType", _configurationWrapper.GetConfigIntValue("ChildcareGroupType") }

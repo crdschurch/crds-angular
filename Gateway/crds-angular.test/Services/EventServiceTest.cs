@@ -115,7 +115,7 @@ namespace crds_angular.test.Services
                 testEvent
             };
 
-            _apiUserService.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _eventService.Setup(m => m.EventsByPageViewId(apiToken, 2205, search)).Returns(testEventList);
             var eventList = testEventList.Select(evt => new crds_angular.Models.Crossroads.Events.Event()
             {

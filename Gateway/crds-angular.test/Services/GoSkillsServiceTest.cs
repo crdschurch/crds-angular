@@ -47,7 +47,7 @@ namespace crds_angular.test.Services
             Prop.ForAll<string>( token =>
             {
                 var skills = TestHelpers.MPSkills();
-                _apiUserService.Setup(m => m.GetToken()).Returns(token);
+                _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
                 _skillsService.Setup(m => m.GetGoVolunteerSkills(token)).Returns(skills);
                 var returned = _fixture.RetrieveGoSkills(string.Empty);
                 Assert.IsInstanceOf<List<GoSkills>>(returned);

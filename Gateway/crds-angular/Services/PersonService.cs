@@ -136,7 +136,7 @@ namespace crds_angular.Services
             person.HouseholdMembers = family;
 
             // TODO: Should this move to _contactService or should update move it's call out to this service?
-            var apiUser = _apiUserService.GetToken();
+            var apiUser = _apiUserService.GetDefaultApiClientToken();
             var configuration = MpObjectAttributeConfigurationFactory.Contact();
             var attributesTypes = _objectAttributeService.GetObjectAttributes(apiUser, contactId, configuration);
             person.AttributeTypes = attributesTypes.MultiSelect;

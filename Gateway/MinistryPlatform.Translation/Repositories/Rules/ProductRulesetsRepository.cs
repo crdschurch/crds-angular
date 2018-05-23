@@ -23,7 +23,7 @@ namespace MinistryPlatform.Translation.Repositories.Rules
 
         public List<MPProductRuleSet> GetProductRulesets(int productId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var searchString = $"Product_ID_Table.[Product_ID] = {productId}";
             const string columnList = "Product_ID_Table.[Product_ID],Ruleset_ID_Table.[Ruleset_ID],cr_Product_Ruleset.[Start_Date],cr_Product_Ruleset.[End_Date]";
             return _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Search<MPProductRuleSet>(searchString, columnList);

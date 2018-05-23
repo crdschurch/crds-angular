@@ -87,7 +87,7 @@ namespace crds_angular.Services
 
             string searchFilter = $"Attribute_Type_ID={attributeType} AND (" + String.Join(" OR ", attributesToSearch) + ")";
 
-            var foundNames = _ministryPlatformRestRepository.UsingAuthenticationToken(_apiUserRepository.GetToken()).Search<MpRestAttribute>(searchFilter, "Attribute_ID, Attribute_Name, ATTRIBUTE_CATEGORY_ID");
+            var foundNames = _ministryPlatformRestRepository.UsingAuthenticationToken(_apiUserRepository.GetDefaultApiClientToken()).Search<MpRestAttribute>(searchFilter, "Attribute_ID, Attribute_Name, ATTRIBUTE_CATEGORY_ID");
 
             foreach (var attribute in attributes)
             {
