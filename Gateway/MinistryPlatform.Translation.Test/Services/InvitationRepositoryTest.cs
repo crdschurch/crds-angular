@@ -31,10 +31,10 @@ namespace MinistryPlatform.Translation.Test.Services
             var auth = new Mock<IAuthenticationRepository>(MockBehavior.Strict);
 
             config.Setup(mocked => mocked.GetConfigIntValue("InvitationPageID")).Returns(InvitationPageId);
-            config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("api_user");
-            config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
+            config.Setup(mocked => mocked.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
+            config.Setup(mocked => mocked.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");
 
-            auth.Setup(m => m.AuthenticateUser(It.IsAny<string>(), It.IsAny<string>(), false)).Returns(new AuthToken
+            auth.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
