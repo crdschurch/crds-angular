@@ -48,12 +48,6 @@ UPDATE @Huddlers SET huddleStatusId = 5 WHERE
                                (huddlerole = 22 and huddleEnd is null) and
 							   (huddlestatusid = 0)
 
---Never Finished
-UPDATE @Huddlers SET huddleStatusId = 2 WHERE 
-                               (participantEnd < huddleEnd) OR 
-							   (huddleEnd is null AND participantEnd < GETDATE()) and 
-							   huddlestatusid = 0;
-
 -- Has Led/Not Currently
 UPDATE @Huddlers SET huddleStatusId = 6 WHERE 
                                (huddleEnd < GETDATE() AND huddleRole=22) AND
@@ -88,6 +82,12 @@ UPDATE @Huddlers SET huddleStatusId = 10 WHERE
 								(GETDATE() < DATEADD(year, 1, huddleStart)) AND
 								(huddlestatusid = 0)
 
+--Never Finished
+UPDATE @Huddlers SET huddleStatusId = 2 WHERE 
+                               (participantEnd < huddleEnd) OR 
+							   (huddleEnd is null AND participantEnd < GETDATE()) and 
+							   huddlestatusid = 0;
+
 -- TBD
 UPDATE @Huddlers SET huddleStatusId = 11 WHERE huddlestatusid = 0;
 
@@ -100,3 +100,5 @@ JOIN @Huddlers H ON H.participantID = P.Participant_ID
 
 END
 GO
+
+
