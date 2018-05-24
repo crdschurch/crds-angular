@@ -77,7 +77,7 @@ namespace crds_angular.Services
             _defaultPaymentStatus = configurationWrapper.GetConfigIntValue("DonationStatusPending");
             _declinedPaymentStatus = configurationWrapper.GetConfigIntValue("DonationStatusDeclined");
             _bankErrorRefundContactId = configurationWrapper.GetConfigIntValue("ContactIdForBankErrorRefund");
-            _defaultPaymentEmailTemplate = configurationWrapper.GetConfigIntValue("DefaultPaymentEmailTemplate");
+            _defaultPaymentEmailTemplate = configurationWrapper.GetConfigIntValue("DefaultInvoicePaymentEmailTemplate");
     }
 
         public MpPaymentDetailReturn PostPayment(MpDonationAndDistributionRecord paymentRecord)
