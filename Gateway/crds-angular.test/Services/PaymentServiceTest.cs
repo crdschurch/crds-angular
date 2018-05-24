@@ -44,7 +44,7 @@ namespace crds_angular.test.Services
         private readonly int defaultPaymentStatus = 15;
         private readonly int declinedPaymentStatus = 20;
         private readonly int defaultCongregation = 5;
-        private readonly int defaultPaymentTemplate = 2022;
+        private readonly int defaultInvoicePaymentTemplate = 2022;
 
         public PaymentServiceTest()
         {
@@ -70,7 +70,7 @@ namespace crds_angular.test.Services
             _configWrapper.Setup(m => m.GetConfigIntValue("NonePaid")).Returns(nonePaid);
             _configWrapper.Setup(m => m.GetConfigIntValue("DonationStatusPending")).Returns(defaultPaymentStatus);
             _configWrapper.Setup(m => m.GetConfigIntValue("DonationStatusDeclined")).Returns(declinedPaymentStatus);
-            _configWrapper.Setup(m => m.GetConfigIntValue("DefaultPaymentEmailTemplate")).Returns(defaultPaymentTemplate);
+            _configWrapper.Setup(m => m.GetConfigIntValue("DefaultInvoicePaymentEmailTemplate")).Returns(defaultInvoicePaymentTemplate);
 
             _fixture = new PaymentService(_invoiceRepository.Object, _paymentRepository.Object, _configWrapper.Object, _contactRepository.Object,
               _paymentTypeRepository.Object, _eventRepository.Object, _communicationRepository.Object, _apiUserRepository.Object, _productRepository.Object,
@@ -672,16 +672,16 @@ namespace crds_angular.test.Services
           const int productId = 1234;
 
           var programWithTemplate = fakeProgram1(productId);
-          int template = (programWithTemplate.CommunicationTemplateId ?? defaultPaymentTemplate);
+          int template = (programWithTemplate.CommunicationTemplateId ?? defaultInvoicePaymentTemplate);
           Assert.AreEqual(template, programWithTemplate.CommunicationTemplateId);
 
           var programNoTemplate = fakeProgram2(productId);
-          int templateId = (programNoTemplate.CommunicationTemplateId ?? defaultPaymentTemplate);
-          Assert.AreEqual(templateId, defaultPaymentTemplate);
+          int templateId = (programNoTemplate.CommunicationTemplateId ?? defaultInvoicePaymentTemplate);
+          Assert.AreEqual(templateId, defaultInvoicePaymentTemplate);
 
           var noProgram = fakeProgram3(productId);
-          int templateId2 = noProgram == null ? defaultPaymentTemplate : noProgram.CommunicationTemplateId ?? defaultPaymentTemplate;
-          Assert.AreEqual(templateId2, defaultPaymentTemplate);
+          int templateId2 = noProgram == null ? defaultInvoicePaymentTemplate : noProgram.CommunicationTemplateId ?? defaultInvoicePaymentTemplate;
+          Assert.AreEqual(templateId2, defaultInvoicePaymentTemplate);
     }
 
     private static List<MpPayment> fakePayments(int payerId, decimal paymentTotal, int paymentIdOfOne = 34525, int paymentStatus = 0)
