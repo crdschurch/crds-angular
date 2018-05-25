@@ -2,10 +2,6 @@ USE [MinistryPlatform]
 GO
 
 /****** Object:  StoredProcedure [dbo].[report_CRDS_ActiveOrInactive_Campaign_Pledges]    Script Date: 4/17/2018 1:16:14 PM ******/
-DROP PROCEDURE [dbo].[report_CRDS_ActiveOrInactive_Campaign_Pledges]
-GO
-
-/****** Object:  StoredProcedure [dbo].[report_CRDS_ActiveOrInactive_Campaign_Pledges]    Script Date: 4/17/2018 1:16:14 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -25,7 +21,7 @@ GO
 -- This list should also have the list of people who have given into the I'm in campaign, 
 -- whether they have made a pledge or not. 
 
-CREATE PROCEDURE [dbo].[report_CRDS_ActiveOrInactive_Campaign_Pledges] 
+CREATE OR ALTER PROCEDURE [dbo].[report_CRDS_ActiveOrInactive_Campaign_Pledges] 
 	@pledge_campaign_id AS VARCHAR(MAX),
 	@pledge_status_id as varchar(MAX)
 
