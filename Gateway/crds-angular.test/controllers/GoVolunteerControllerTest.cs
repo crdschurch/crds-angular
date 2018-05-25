@@ -25,6 +25,7 @@ namespace crds_angular.test.controllers
 {
     public class GoVolunteerControllerTest
     {
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IAttributeService> _attributeService;
         private Mock<IConfigurationWrapper> _configurationWrapper;
         private GoVolunteerController _fixture;
@@ -40,6 +41,7 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void Setup()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _organizationService = new Mock<IOrganizationService>();
             _gatewayLookupService = new Mock<IGatewayLookupService>();
             _goVolunteerService = new Mock<IGoVolunteerService>();
@@ -51,7 +53,8 @@ namespace crds_angular.test.controllers
             authType = "authType";
             authToken = "authToken";
 
-            _fixture = new GoVolunteerController(_organizationService.Object,
+            _fixture = new GoVolunteerController(_authTokenExpiryService.Object, 
+                                                 _organizationService.Object,
                                                  _groupConnectorService.Object,
                                                  _gatewayLookupService.Object,
                                                  _skillsService.Object,
@@ -75,6 +78,7 @@ namespace crds_angular.test.controllers
             string token = $"{authType} {authToken}";
             const int listSize = 20;
             var skills = TestHelpers.ListOfGoSkills(listSize);
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _skillsService.Setup(m => m.RetrieveGoSkills(token)).Returns(skills);
             var response = _fixture.GetGoSkills();
             Assert.IsNotNull(response);
@@ -228,6 +232,7 @@ namespace crds_angular.test.controllers
         {
             var projectId = 123;
             var stream = new MemoryStream();
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _goVolunteerService.Setup(m => m.CreateGroupLeaderExport(projectId)).Returns(stream);
 
             var response = _fixture.GetGroupLeaderExportFile(projectId);
@@ -241,6 +246,7 @@ namespace crds_angular.test.controllers
         {
             var projectId = 123;
             var stream = new MemoryStream();
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _goVolunteerService.Setup(m => m.CreateGroupLeaderExport(projectId)).Throws<Exception>();
             Assert.Throws<HttpResponseException>(() =>
             {
@@ -255,7 +261,7 @@ namespace crds_angular.test.controllers
             const int projectId = 123;
             string token = $"{authType} {authToken}";
             var registration = BuildAnywhereRegistration();
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _goVolunteerService.Setup(m => m.CreateAnywhereRegistration(registration, projectId, token))
                 .Throws(new DuplicateUserException(registration.Self.EmailAddress));
 

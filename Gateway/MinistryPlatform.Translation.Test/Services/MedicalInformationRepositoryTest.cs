@@ -25,7 +25,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _fixture = new MedicalInformationRepository(_ministryPlatformRestRepository.Object, _apiUserRepository.Object);
 
             const string token = "token";
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRestRepository.Object);
         }
 

@@ -41,7 +41,7 @@ namespace crds_angular.test.Services
             var evtPar = FactoryGirl.NET.FactoryGirl.Build<MpEventParticipant>();
             var eventParticpant = new Ok<MpEventParticipant>(evtPar);
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _eventParticipantRepository.Setup(m => m.GetEventParticipantByContactAndEvent(contactId, eventId, token)).Returns(eventParticpant);
 
             var res = _fixture.GetEventParticipantByContactAndEvent(contactId, eventId);
@@ -58,7 +58,7 @@ namespace crds_angular.test.Services
             var evtPar = FactoryGirl.NET.FactoryGirl.Build<MpEventParticipant>();
             var eventParticpant = new Err<MpEventParticipant>("No Event Participant Found with those parameters");
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _eventParticipantRepository.Setup(m => m.GetEventParticipantByContactAndEvent(contactId, eventId, token)).Returns(eventParticpant);
 
 

@@ -23,7 +23,13 @@ namespace crds_angular.Controllers.API
         private readonly IAuthenticationRepository _authenticationRepository;
         private readonly IUserRepository _userService;
 
-        public LookupController(IConfigurationWrapper configurationWrapper, LookupRepository lookupRepository, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository, IUserRepository userService) : base(userImpersonationService, authenticationRepository)
+        public LookupController(IAuthTokenExpiryService authTokenExpiryService, 
+                                IConfigurationWrapper configurationWrapper, 
+                                LookupRepository lookupRepository, 
+                                IUserImpersonationService userImpersonationService, 
+                                IAuthenticationRepository authenticationRepository, 
+                                IUserRepository userService) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _configurationWrapper = configurationWrapper;
             _lookupRepository = lookupRepository;
@@ -231,11 +237,12 @@ namespace crds_angular.Controllers.API
 
             if (authorizedWithCookie is UnauthorizedResult)
             {
-                var apiUser = _configurationWrapper.GetEnvironmentVarAsString("API_USER");
-                var apiPassword = _configurationWrapper.GetEnvironmentVarAsString("API_PASSWORD");
-
-                var authData = _authenticationRepository.Authenticate(apiUser, apiPassword);
+                // TODO: Refactor this to use IApiUserRepository.GetDefaultApiClientToken
+                var clientId = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID");
+                var clientSecret = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET");
+                var authData = _authenticationRepository.AuthenticateClient(clientId, clientSecret);
                 var token = authData?.AccessToken;
+
                 var exists = _lookupRepository.EmailSearch(email, token);
                 if (exists.Count == 0)
                 {

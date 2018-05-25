@@ -1,4 +1,3 @@
-require('./group_tool');
 require('./childcare');
 require('./mp_tools');
 require('./live_stream');
@@ -16,11 +15,9 @@ require('./invoices/invoices.module');
     constants.MODULES.CORKBOARD,
     constants.MODULES.FORM_BUILDER,
     constants.MODULES.GO_VOLUNTEER,
-    constants.MODULES.GROUP_TOOL,
     constants.MODULES.MEDIA,
     constants.MODULES.LIVE_STREAM,
     constants.MODULES.MPTOOLS,
-    constants.MODULES.MY_SERVE,
     constants.MODULES.PROFILE,
     constants.MODULES.SEARCH,
     constants.MODULES.SIGNUP,
@@ -46,7 +43,6 @@ require('./invoices/invoices.module');
   require('./styleguide');
   /// #endif
   require('./thedaily');
-  require('./my_serve');
   require('./volunteer_signup');
   require('./volunteer_application');
   require('./giving_history');

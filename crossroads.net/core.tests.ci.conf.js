@@ -13,7 +13,7 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'phantomjs-shim'],
 
     // list of files / patterns to load in the browser
     files: [
@@ -117,7 +117,8 @@ module.exports = function(config) {
       require('karma-jasmine'),
       require('karma-teamcity-reporter'),
       require('karma-phantomjs-launcher'),
-      require('karma-env-preprocessor')
+      require('karma-env-preprocessor'),
+      require('karma-phantomjs-shim'),
     ]
 
   });

@@ -42,7 +42,7 @@ namespace MinistryPlatform.Translation.Test.Services
             config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("api_user");
             config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
 
-            auth.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            auth.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
@@ -72,7 +72,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             const int groupId = 199846;
             const string token = "abc123";
-            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiUserToken()).Returns(token);
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns(token);
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("abc123")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(
                 m =>
@@ -104,7 +104,7 @@ namespace MinistryPlatform.Translation.Test.Services
                     PhoneNumber = "513-555-1212"
                 }
             };
-            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiUserToken()).Returns(token);
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns(token);
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("abc123")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(
                 m =>
@@ -126,7 +126,7 @@ namespace MinistryPlatform.Translation.Test.Services
                     Name = "This is not the best journey in the world"
                 }
             };
-            _apiUserRepository.Setup(m => m.GetDefaultApiUserToken()).Returns("TheBestToken");
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns("TheBestToken");
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("TheBestToken")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(
                 m =>
@@ -144,7 +144,7 @@ namespace MinistryPlatform.Translation.Test.Services
         [Test]
         public void GetCurrentJourneyShouldReturnNull()
         {
-            _apiUserRepository.Setup(m => m.GetDefaultApiUserToken()).Returns("TheBestToken");
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns("TheBestToken");
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("TheBestToken")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(
                 m =>

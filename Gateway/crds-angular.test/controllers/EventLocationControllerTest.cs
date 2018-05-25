@@ -22,6 +22,7 @@ namespace crds_angular.test.controllers
     {
         private EventController controller;
 
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IMinistryPlatformService> _ministryPlatfromServiceMock;
         private Mock<IApiUserRepository> _apiUserService;
         private Mock<IEventService> _eventService;
@@ -31,14 +32,20 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _ministryPlatfromServiceMock = new Mock<IMinistryPlatformService>();
 
             _apiUserService = new Mock<IApiUserRepository>();
-            _apiUserService.Setup(m => m.GetToken()).Returns("something");
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("something");
 
             _eventService = new Mock<IEventService>();
 
-            controller = new EventController(_ministryPlatfromServiceMock.Object, _apiUserService.Object, _eventService.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);
+            controller = new EventController(_authTokenExpiryService.Object, 
+                                             _ministryPlatfromServiceMock.Object, 
+                                             _apiUserService.Object, 
+                                             _eventService.Object, 
+                                             new Mock<IUserImpersonationService>().Object, 
+                                             new Mock<IAuthenticationRepository>().Object);
         }
 
 

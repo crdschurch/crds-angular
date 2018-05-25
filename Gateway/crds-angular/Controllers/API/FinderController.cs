@@ -34,14 +34,15 @@ namespace crds_angular.Controllers.API
         private readonly IAnalyticsService _analyticsService;
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public FinderController(IFinderService finderService,
+        public FinderController(IAuthTokenExpiryService authTokenExpiryService, 
+                                IFinderService finderService,
                                 IGroupToolService groupToolService,
                                 IUserImpersonationService userImpersonationService,
                                 IAuthenticationRepository authenticationRepository,
                                 IAwsCloudsearchService awsCloudsearchService,
                                 IAnalyticsService analyticsService,
                                  IConfigurationWrapper configurationWrapper)
-            : base(userImpersonationService, authenticationRepository)
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _finderService = finderService;
             _groupToolService = groupToolService;

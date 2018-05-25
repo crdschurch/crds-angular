@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -26,11 +27,18 @@ namespace MinistryPlatform.Translation.Test.Services
         public void SetupAll()
         {
             var config = new ConfigurationWrapper();
-            var authenticationRepository = new AuthenticationRepository(new RestClient(config.GetEnvironmentVarAsString("MP_OAUTH_BASE_URL")),
-                                                                        new RestClient(config.GetEnvironmentVarAsString("MP_REST_API_ENDPOINT")));
-            var ministryPlatformRestClient = new RestClient(config.GetEnvironmentVarAsString("MP_REST_API_ENDPOINT"));
-            var apiUserRepository = new ApiUserRepository(config, authenticationRepository, ministryPlatformRestClient);
-            _authToken = apiUserRepository.GetDefaultApiUserToken();
+            var authRestClient = new HttpClient
+            {
+                BaseAddress = new Uri(config.GetEnvironmentVarAsString("MP_OAUTH_BASE_URL"))
+            };
+
+            var mpRestClient = new HttpClient
+            {
+                BaseAddress = new Uri(config.GetEnvironmentVarAsString("MP_REST_API_ENDPOINT"))
+            };
+            var authenticationRepository = new AuthenticationRepository(authRestClient, mpRestClient);
+            var apiUserRepository = new ApiUserRepository(config, authenticationRepository, mpRestClient);
+            _authToken = apiUserRepository.GetDefaultApiClientToken();
         }
 
         [SetUp]

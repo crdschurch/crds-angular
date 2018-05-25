@@ -13,7 +13,11 @@ namespace crds_angular.Controllers.API
     {
         private readonly IAttributeService _attributeService;
 
-        public AttributeTypeController(IAttributeService attributeService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public AttributeTypeController(IAuthTokenExpiryService authTokenExpiryService, 
+                                       IAttributeService attributeService, 
+                                       IUserImpersonationService userImpersonationService, 
+                                       IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _attributeService = attributeService;
         }

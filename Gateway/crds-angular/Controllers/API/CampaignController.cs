@@ -20,10 +20,11 @@ namespace crds_angular.Controllers.API
 
         private readonly ICampaignService _campaignService;
 
-        public CampaignController(ICampaignService campaignService,
-            IUserImpersonationService userImpersonationService,
-            IAuthenticationRepository authenticationRepository)
-            : base(userImpersonationService, authenticationRepository)
+        public CampaignController(IAuthTokenExpiryService authTokenExpiryService, 
+                                  ICampaignService campaignService,
+                                  IUserImpersonationService userImpersonationService,
+                                  IAuthenticationRepository authenticationRepository)
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _campaignService = campaignService;
         }

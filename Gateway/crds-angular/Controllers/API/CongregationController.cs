@@ -16,7 +16,11 @@ namespace crds_angular.Controllers.API
     {
         private readonly ICongregationService _congregationService;
 
-        public CongregationController(ICongregationService congregationService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public CongregationController(IAuthTokenExpiryService authTokenExpiryService, 
+                                      ICongregationService congregationService, 
+                                      IUserImpersonationService userImpersonationService, 
+                                      IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _congregationService = congregationService;
         }

@@ -17,9 +17,7 @@
       FORMLY_BUILDER: 'crossroads.formly_builder',
       GO_VOLUNTEER: 'crossroads.go_volunteer',
       MEDIA: 'crossroads.media',
-      MY_SERVE: 'crossroads.my_serve',
       LIVE_STREAM: 'crossroads.live_stream',
-      GROUP_TOOL: 'crossroads.grouptool',
       MPTOOLS: 'crossroads.mptools',
       ONETIME_SIGNUP: 'crossroads.onetime',
       PROFILE: 'crossroads.profile',
@@ -116,7 +114,6 @@
       GROUP_TYPE_ID: {
         UNDIVIDED: 26,
         SMALL_GROUPS: 1,
-        MY_SERVE: 9,
         ONSITE_GROUPS: 8
       },
       ROLES: {
@@ -168,7 +165,9 @@
     COOKIES: {
       SESSION_ID: `${__CRDS_ENV__}sessionId`,
       REFRESH_TOKEN: `${__CRDS_ENV__}refreshToken`,
-      IMPERSONATION_ID: `${__CRDS_ENV__}impersonateUserId`
+      IMPERSONATION_ID: `${__CRDS_ENV__}impersonateUserId`,
+      USER_ID: 'userId',
+      USERNAME: 'username'
     },
     EVENTS: {
       ROOM_AVAILABLE: null,

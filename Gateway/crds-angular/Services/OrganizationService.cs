@@ -22,7 +22,7 @@ namespace crds_angular.Services
 
         public Organization GetOrganizationByName(string name)
         {
-            var apiUserToken = _mpApiUserService.GetToken();
+            var apiUserToken = _mpApiUserService.GetDefaultApiClientToken();
             var org = new Organization();
             var mpOrg = _mpOrganizationService.GetOrganization(name, apiUserToken);
             if (mpOrg != null)
@@ -34,7 +34,7 @@ namespace crds_angular.Services
 
         public List<Organization> GetOrganizations()
         {
-            var apiUserToken = _mpApiUserService.GetToken();
+            var apiUserToken = _mpApiUserService.GetDefaultApiClientToken();
             var mpOrgs = _mpOrganizationService.GetOrganizations(apiUserToken);
             return mpOrgs.Select(o =>
             {
@@ -45,7 +45,7 @@ namespace crds_angular.Services
 
         public List<OrgLocation> GetLocationsForOrganization(int orgId)
         {
-            var apiUserToken = _mpApiUserService.GetToken();
+            var apiUserToken = _mpApiUserService.GetDefaultApiClientToken();
             var locs = _mpOrganizationService.GetLocationsForOrganization(orgId, apiUserToken);
             return locs.Select(l =>
             {

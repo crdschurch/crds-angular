@@ -112,7 +112,7 @@ namespace crds_angular.test.Services
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact));
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(new List<MpHouseholdMember>());
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _groupRepository.Setup(m => m.IsMemberOfEventGroup(123, eventId, apiToken)).Returns(true);
             _eventParticipantRepository.Setup(m => m.GetEventParticipantEligibility(It.IsAny<int>(), It.IsAny<int>())).Returns(eventParticipant);
 
@@ -227,7 +227,7 @@ namespace crds_angular.test.Services
                                                                      It.IsAny<Dictionary<int, ObjectAttributeTypeDTO>>(),
                                                                      It.IsAny<Dictionary<int, ObjectSingleAttributeDTO>>(),
                                                                      It.IsAny<MpObjectAttributeConfiguration>()));
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
 
             _campRules.Setup(m => m.VerifyCampRules(eventId, campReservation.Gender)).Returns(true);
 
@@ -299,7 +299,7 @@ namespace crds_angular.test.Services
                                                                      It.IsAny<Dictionary<int, ObjectAttributeTypeDTO>>(),
                                                                      It.IsAny<Dictionary<int, ObjectSingleAttributeDTO>>(),
                                                                      It.IsAny<MpObjectAttributeConfiguration>()));
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _groupRepository.Setup(g => g.GetGradeGroupForContact(contactId, token)).Returns(new Result<MpGroupParticipant>(true, group));
 
 
@@ -364,7 +364,7 @@ namespace crds_angular.test.Services
                                                                      It.IsAny<Dictionary<int, ObjectAttributeTypeDTO>>(),
                                                                      It.IsAny<Dictionary<int, ObjectSingleAttributeDTO>>(),
                                                                      It.IsAny<MpObjectAttributeConfiguration>()));
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _groupRepository.Setup(g => g.GetGradeGroupForContact(contactId, token)).Returns(new Result<MpGroupParticipant>(true, group));
             _campRules.Setup(m => m.VerifyCampRules(eventId, campReservation.Gender)).Returns(true);
             _configurationWrapper.Setup(m => m.GetConfigIntValue("SummerCampFormID")).Returns(formId);
@@ -392,7 +392,7 @@ namespace crds_angular.test.Services
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact));
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(new List<MpHouseholdMember>());
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _groupRepository.Setup(m => m.IsMemberOfEventGroup(123, eventId, apiToken)).Returns(true);
             _eventParticipantRepository.Setup(m => m.GetEventParticipantEligibility(eventId, It.IsAny<int>())).Returns(eventParticipant);
 
@@ -416,7 +416,7 @@ namespace crds_angular.test.Services
 
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact, false, "Adult Child"));            
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _groupRepository.Setup(m => m.IsMemberOfEventGroup(myContact.Contact_ID, eventId, apiToken)).Returns(true);
             _eventParticipantRepository.Setup(m => m.GetEventParticipantEligibility(eventId, It.IsAny<int>())).Returns(eventParticipant);
 
@@ -441,7 +441,7 @@ namespace crds_angular.test.Services
 
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact, false));
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _groupRepository.Setup(m => m.IsMemberOfEventGroup(myContact.Contact_ID, eventId, apiToken)).Returns(true);
             _eventParticipantRepository.Setup(m => m.GetEventParticipantEligibility(eventId, It.IsAny<int>())).Returns(eventParticipant);
 
@@ -471,7 +471,7 @@ namespace crds_angular.test.Services
 
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact, false, "Adult Child"));
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _eventParticipantRepository.Setup(m => m.GetEventParticipantEligibility(eventId, It.IsAny<int>())).Returns(eventParticipant);
 
             var result = _fixture.GetEligibleFamilyMembers(eventId, token);
@@ -505,7 +505,7 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(m => m.GetConfigIntValue("Participant_Status_Interested")).Returns(interestedStatus);
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact, false, "Adult Child"));
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _eventParticipantRepository.Setup(m => m.GetEventParticipantEligibility(eventId, It.IsAny<int>())).Returns(eventParticipant);
 
             var result = _fixture.GetEligibleFamilyMembers(eventId, token);
@@ -584,7 +584,7 @@ namespace crds_angular.test.Services
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(family);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(new List<MpHouseholdMember>());
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);            
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);            
 
             var result = _fixture.GetEligibleFamilyMembers(eventId, token);
             Assert.AreEqual(result.Count, 0);
@@ -647,7 +647,7 @@ namespace crds_angular.test.Services
             // Get a family list with only me in it i.e. no family
             var family = getFakeHouseholdMembers(myContact).ToList();
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _configurationWrapper.Setup(m => m.GetConfigValue("CampEventTypeName")).Returns(campType);
             _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(family);
@@ -1006,7 +1006,7 @@ namespace crds_angular.test.Services
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(loggedInContact.Household_ID)).Returns(householdfamily);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(loggedInContact.Household_ID)).Returns(otherHouseholdfamily);
             _contactService.Setup(m => m.GetContactById(contactId)).Returns(myContact);
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _groupRepository.Setup(m => m.GetGradeGroupForContact(contactId, apiToken)).Returns(participant);
             _objectAttributeService.Setup(m => m.GetObjectAttributes(apiToken, contactId, It.IsAny<MpObjectAttributeConfiguration>())).Returns(attributesDto);
 
@@ -1059,7 +1059,7 @@ namespace crds_angular.test.Services
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(loggedInContact.Household_ID)).Returns(householdfamily);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(loggedInContact.Household_ID)).Returns(otherHouseholdfamily);
             _contactService.Setup(m => m.GetContactById(contactId)).Returns(myContact);
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _groupRepository.Setup(m => m.GetGradeGroupForContact(contactId, apiToken)).Returns(participant);
             _objectAttributeService.Setup(m => m.GetObjectAttributes(apiToken, contactId, It.IsAny<MpObjectAttributeConfiguration>())).Returns(attributesDto);
 

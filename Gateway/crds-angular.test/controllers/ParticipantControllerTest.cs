@@ -1,4 +1,5 @@
-﻿using System.Web.Http.Results;
+﻿using System.Net.Http.Headers;
+using System.Web.Http.Results;
 using crds_angular.Controllers.API;
 using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Services.Interfaces;
@@ -12,6 +13,8 @@ namespace crds_angular.test.controllers
     public class ParticipantControllerTest
     {
         private ParticipantController _fixture;
+
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IGroupService> _groupService;
         private const string AuthType = "Bearer";
         private const string AuthToken = "tok123";
@@ -20,8 +23,12 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _groupService = new Mock<IGroupService>(MockBehavior.Strict);
-            _fixture = new ParticipantController(_groupService.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);
+            _fixture = new ParticipantController(_authTokenExpiryService.Object, 
+                                                 _groupService.Object, 
+                                                 new Mock<IUserImpersonationService>().Object, 
+                                                 new Mock<IAuthenticationRepository>().Object);
 
             _fixture.SetupAuthorization(AuthType, AuthToken);
         }
@@ -30,6 +37,7 @@ namespace crds_angular.test.controllers
         public void TestGetParticipant()
         {
             var participant = new Participant();
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true); 
             _groupService.Setup(mocked => mocked.GetParticipantRecord(string.Format("{0} {1}", AuthType, AuthToken))).Returns(participant);
 
             var result = _fixture.GetParticipant();

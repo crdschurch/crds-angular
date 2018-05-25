@@ -25,7 +25,12 @@ namespace crds_angular.Controllers.API
         private readonly ITripService _tripService;
         private readonly IContactRepository _contactRepository;
 
-        public TripController(ITripService tripService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository, IContactRepository contactRepository) : base(userImpersonationService, authenticationRepository)
+        public TripController(IAuthTokenExpiryService authTokenExpiryService, 
+                              ITripService tripService, 
+                              IUserImpersonationService userImpersonationService, 
+                              IAuthenticationRepository authenticationRepository, 
+                              IContactRepository contactRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _tripService = tripService;
             _contactRepository = contactRepository;

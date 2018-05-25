@@ -8,6 +8,7 @@ using Crossroads.AsyncJobs.App_Start;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Unity;
+using Crossroads.Web.Common.Configuration;
 using Unity.WebApi;
 
 
@@ -29,7 +30,9 @@ namespace Crossroads.AsyncJobs
                 }
 
                 var container = new UnityContainer();
-                var unitySections = new[] { "crossroadsCommonUnity", "unity", "asyncJobsUnity" };
+                CrossroadsWebCommonConfig.Register(container);
+
+                var unitySections = new[] { "unity", "asyncJobsUnity" };
 
                 foreach (var section in unitySections.Select(sectionName => (UnityConfigurationSection)ConfigurationManager.GetSection(sectionName)))
                 {

@@ -31,7 +31,7 @@ namespace crds_angular.test.Services
             _fixture = new CampaignService(_apiUserService.Object, _campaignRepository.Object, _dateTimeWrapper.Object);
 
             const string apiToken = "qwerty1234";
-            _apiUserService.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
 
             MpPledgeCampaignSummaryDto dto = new MpPledgeCampaignSummaryDto()
             {

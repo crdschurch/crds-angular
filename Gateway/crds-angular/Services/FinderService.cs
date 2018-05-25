@@ -730,7 +730,19 @@ namespace crds_angular.Services
 
         private static decimal GetProximity(GeoCoordinate originCoords, GeoCoordinate pinCoords)
         {
-            return (decimal) Proximity(originCoords.Latitude, originCoords.Longitude, pinCoords.Latitude, pinCoords.Longitude);
+            var proxval = Proximity(originCoords.Latitude, originCoords.Longitude, pinCoords.Latitude, pinCoords.Longitude);
+            decimal retval = 0;
+
+            try
+            {
+                retval = Convert.ToDecimal(proxval);
+            }
+            catch
+            {
+                retval = 0;
+            }
+
+            return retval;
         }
 
         private static double Proximity(double lat1, double lon1, double lat2, double lon2)

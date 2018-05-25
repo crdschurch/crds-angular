@@ -105,7 +105,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpTripRecord> GetGoTripDetailsByCampaign(int pledgeCampaignId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var parms = new Dictionary<string, object> { { "@Pledge_Campaign_ID", pledgeCampaignId } };
             var tripRecords = _ministryPlatformRest.UsingAuthenticationToken(apiToken).GetFromStoredProc<MpTripRecord>(_configurationWrapper.GetConfigValue("TripRecordProc"), parms);
             List<MpTripRecord> tripRecord = tripRecords.FirstOrDefault()?? new List<MpTripRecord>();

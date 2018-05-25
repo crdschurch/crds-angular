@@ -140,7 +140,7 @@ namespace crds_angular.test.Services
             var mockFamily = new List<FamilyMember> { new FamilyMember { ContactId = 12345 }, new FamilyMember { ContactId = 98765 } };
             _serveService.Setup(m => m.GetImmediateFamilyParticipants(token)).Returns(mockFamily);
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _configurationWrapper.Setup(m => m.GetConfigIntValue(It.IsAny<string>())).Returns(10);
             _donationService.Setup(m => m.GetMyTripDistributions(It.IsAny<int>())).Returns(MockTripDonationsResponse());
             _eventParticipantService.Setup(m => m.TripParticipants(It.IsAny<string>())).Returns(mockTripParticipants());
@@ -164,7 +164,7 @@ namespace crds_angular.test.Services
             var mockFamily = new List<FamilyMember> { new FamilyMember { ContactId = 12345 } };
             _serveService.Setup(m => m.GetImmediateFamilyParticipants(token)).Returns(mockFamily);
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _configurationWrapper.Setup(m => m.GetConfigIntValue(It.IsAny<string>())).Returns(10);
             _donationService.Setup(m => m.GetMyTripDistributions(It.IsAny<int>())).Returns(MockFundingPastTripDonationsResponse());
             _eventParticipantService.Setup(m => m.TripParticipants(It.IsAny<string>())).Returns(mockTripParticipants());
@@ -186,7 +186,7 @@ namespace crds_angular.test.Services
 
             var tripPledgeDto = new Result<MpPledge>(true, mockPledge);
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _tripRepository.Setup(m => m.AddAsTripParticipant(contactId, pledgeCampaignId, token)).Returns(tripPledgeDto);
             _fixture.CreateTripParticipant(contactId, pledgeCampaignId);
 
@@ -244,7 +244,7 @@ namespace crds_angular.test.Services
 
             var eventDetails = EventDetails(campaign.EventId);
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _campaignService.Setup(m => m.GetPledgeCampaign(pledgeCampaignId, token)).Returns(campaign);
             _pledgeService.Setup(m => m.GetPledgesByCampaign(pledgeCampaignId, token)).Returns(pledges);        
 
@@ -285,7 +285,7 @@ namespace crds_angular.test.Services
             var campaign = mockPledgeCampaign(pledgeCampaignId);
             var pledges = mockPledges(campaign);
             
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _campaignService.Setup(m => m.GetPledgeCampaign(pledgeCampaignId, token)).Returns(campaign);
             _pledgeService.Setup(m => m.GetPledgesByCampaign(pledgeCampaignId, token)).Returns(pledges);
             
@@ -305,7 +305,7 @@ namespace crds_angular.test.Services
 
             var pledgeRes = new Result<MpPledge>(false, "Trip is Full");
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _tripRepository.Setup(m => m.AddAsTripParticipant(contactId, pledgeCampaignId, token)).Returns(pledgeRes);
             Assert.Throws<TripFullException>(() => _fixture.CreateTripParticipant(contactId, pledgeCampaignId));
 
@@ -349,7 +349,7 @@ namespace crds_angular.test.Services
 
 
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _campaignService.Setup(m => m.GetPledgeCampaign(pledgeCampaignId, apiToken)).Returns(campaign);
             _pledgeService.Setup(m => m.GetPledgesByCampaign(pledgeCampaignId, apiToken)).Returns(mockPledges(campaign));
 
@@ -389,7 +389,7 @@ namespace crds_angular.test.Services
                 }
             );
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _campaignService.Setup(m => m.GetPledgeCampaign(pledgeCampaignId, apiToken)).Returns(campaign);
             _pledgeService.Setup(m => m.GetPledgesByCampaign(pledgeCampaignId, apiToken)).Returns(pledges);
 
@@ -431,7 +431,7 @@ namespace crds_angular.test.Services
                 }
             );
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _campaignService.Setup(m => m.GetPledgeCampaign(pledgeCampaignId, apiToken)).Returns(campaign);
             _pledgeService.Setup(m => m.GetPledgesByCampaign(pledgeCampaignId, apiToken)).Throws<Exception>();
 
@@ -472,7 +472,7 @@ namespace crds_angular.test.Services
                 }
             );
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _campaignService.Setup(m => m.GetPledgeCampaign(pledgeCampaignId, apiToken)).Returns(campaign);
 
             var tripcampaign = _fixture.GetTripCampaign(pledgeCampaignId);
@@ -505,7 +505,7 @@ namespace crds_angular.test.Services
                 }
             };
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _configurationWrapper.Setup(m => m.GetConfigIntValue("IPromiseDocumentId")).Returns(10);
             _tripRepository.Setup(m => m.GetTripDocuments(eventParticipantId, token)).Returns(mockDocs);
 
@@ -536,7 +536,7 @@ namespace crds_angular.test.Services
                 }
             };
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _configurationWrapper.Setup(m => m.GetConfigIntValue("IPromiseDocumentId")).Returns(10);
             _tripRepository.Setup(m => m.GetTripDocuments(eventParticipantId, token)).Returns(mockDocs);
 
@@ -551,7 +551,7 @@ namespace crds_angular.test.Services
             const string token = "faketoken";
             var mockDocs = new List<MpEventParticipantDocument>();
 
-            _apiUserReposity.Setup(m => m.GetToken()).Returns(token);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _configurationWrapper.Setup(m => m.GetConfigIntValue("IPromiseDocumentId")).Returns(10);
             _tripRepository.Setup(m => m.GetTripDocuments(eventParticipantId, token)).Returns(mockDocs);
 

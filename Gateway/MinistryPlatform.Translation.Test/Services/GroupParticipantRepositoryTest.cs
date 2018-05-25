@@ -41,7 +41,7 @@ namespace MinistryPlatform.Translation.Test.Services
             config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("api_user");
             config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
 
-            auth.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            auth.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
@@ -127,7 +127,7 @@ namespace MinistryPlatform.Translation.Test.Services
                             $" AND \\(Group_Participants.End_Date > '(.*?)' OR Group_Participants.End_Date Is Null\\)" +
                             $" AND Group_ID_Table.Group_Type_ID = {groupType}";
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)), 
@@ -239,7 +239,7 @@ namespace MinistryPlatform.Translation.Test.Services
                             $" AND \\(Group_ID_Table.End_Date > '(.*?)' OR Group_ID_Table.End_Date Is Null\\)" +
                             $" AND \\(Group_Participants.End_Date > '(.*?)' OR Group_Participants.End_Date Is Null\\)";
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)), 
@@ -325,7 +325,7 @@ namespace MinistryPlatform.Translation.Test.Services
             string search = $"group_participants.group_id in ({csvGroupIds})" +
                             $" AND (Group_Participants.End_Date > GetDate() OR Group_Participants.End_Date Is Null)";
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.IsAny<string>(),
@@ -416,7 +416,7 @@ namespace MinistryPlatform.Translation.Test.Services
             string search = $"group_participants.group_id in ({csvGroupIds})" +
                             $" AND (Group_Participants.End_Date > GetDate() OR Group_Participants.End_Date Is Null)";
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.IsAny<string>(),
@@ -506,7 +506,7 @@ namespace MinistryPlatform.Translation.Test.Services
             string search = $"group_participants.group_id in ({groupId})" +
                             $" AND (Group_Participants.End_Date > GetDate() OR Group_Participants.End_Date Is Null)";
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
         
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
@@ -576,7 +576,7 @@ namespace MinistryPlatform.Translation.Test.Services
                             $" AND \\(Group_ID_Table.End_Date > '(.*?)' OR Group_ID_Table.End_Date Is Null\\)" +
                             $" AND \\(Group_Participants.End_Date > '(.*?)' OR Group_Participants.End_Date Is Null\\)";
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)), 
@@ -642,7 +642,7 @@ namespace MinistryPlatform.Translation.Test.Services
                             $" AND \\(Group_Participants.End_Date > '(.*?)' OR Group_Participants.End_Date Is Null\\)" +
                             $" AND Group_ID_Table.Group_Type_ID = {groupType}";
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)),
@@ -663,7 +663,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             List<MpGroupParticipant> groupParticipantReturn = new List<MpGroupParticipant>();
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.IsAny<string>(),
@@ -728,7 +728,7 @@ namespace MinistryPlatform.Translation.Test.Services
                                    $" AND \\(Group_ID_Table.End_Date > '(.*?)' OR Group_ID_Table.End_Date Is Null\\)" +
                                    $" AND \\(Group_Participants.End_Date > '(.*?)' OR Group_Participants.End_Date Is Null\\)";
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)),
@@ -800,7 +800,7 @@ namespace MinistryPlatform.Translation.Test.Services
                             $" AND \\(Group_Participants.End_Date > '(.*?)' OR Group_Participants.End_Date Is Null\\)" +
                             $" AND Group_ID_Table.Group_Type_ID = {groupType}";
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)),

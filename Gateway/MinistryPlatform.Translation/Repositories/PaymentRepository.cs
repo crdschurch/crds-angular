@@ -24,7 +24,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public Result<MpPaymentDetailReturn> CreatePaymentAndDetail(MpPaymentDetail paymentInfo)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var paymentList = new List<MpPaymentDetail>
             {
                 paymentInfo
@@ -37,7 +37,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpPayment> GetPaymentsForInvoice(int invoiceId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             
             var parms = new Dictionary<string, object>
             {
@@ -50,7 +50,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpPayment GetPaymentByTransactionCode(string stripePaymentId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var searchString = $"Transaction_Code='{stripePaymentId}'";
             var payment = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpPayment>(searchString);
             return payment.FirstOrDefault() ?? new MpPayment();
@@ -58,13 +58,13 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpPayment GetPaymentById(int paymentId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Get<MpPayment>(paymentId);
         }
 
         public int UpdatePaymentStatus(int paymentId, int statusId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
 
             var payment = GetPaymentById(paymentId);
             payment.PaymentStatus = statusId;
@@ -74,7 +74,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public void AddPaymentToBatch(int batchId, int paymentId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var parms = new Dictionary<string, object>
             {
                 {"Payment_ID", paymentId},
@@ -95,7 +95,7 @@ namespace MinistryPlatform.Translation.Repositories
         public int CreatePaymentBatch(string batchName, DateTime setupDateTime, decimal batchTotalAmount, int itemCount,
             int batchEntryType, int? depositId, DateTime finalizedDateTime, string processorTransferId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var batchRecord = new MpBatch
             {
                 BatchName = batchName,
@@ -122,7 +122,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpBatch GetPaymentBatch(int batchId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Get<MpBatch>(batchId);
         }
     }

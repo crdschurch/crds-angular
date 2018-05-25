@@ -58,7 +58,7 @@ namespace crds_angular.Services
 
         public OptInResponse AddListSubscriber(string emailAddress, string listName)
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             return _emailListHandler.AddListSubscriber(emailAddress, listName, token);
         }
     }

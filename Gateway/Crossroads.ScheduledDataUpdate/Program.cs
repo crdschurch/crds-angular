@@ -9,6 +9,7 @@ using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using CommandLine;
 using Crossroads.Utilities.Services;
+using Crossroads.Web.Common.Configuration;
 
 
 namespace Crossroads.ScheduledDataUpdate
@@ -23,9 +24,10 @@ namespace Crossroads.ScheduledDataUpdate
 
             TlsHelper.AllowTls12();
 
-            var unitySections = new [] { "crossroadsCommonUnity", "unity", "scheduledDataUnity" };
-
             var container = new UnityContainer();
+            CrossroadsWebCommonConfig.Register(container);
+
+            var unitySections = new[] { "unity", "scheduledDataUnity" };
             foreach (var sectionName in unitySections)
             {
                 var section = (UnityConfigurationSection)ConfigurationManager.GetSection(sectionName);
@@ -47,13 +49,19 @@ namespace Crossroads.ScheduledDataUpdate
         private readonly IGroupToolService _groupToolService;
         private readonly IAwsCloudsearchService _awsService;
         private readonly ICorkboardService _corkboardService;
+        private readonly IGroupService _groupService;
 
-        public Program(ITaskService taskService, IGroupToolService groupToolService, IAwsCloudsearchService awsService, ICorkboardService corkboardService)
+        public Program(ITaskService taskService, 
+                       IGroupToolService groupToolService, 
+                       IAwsCloudsearchService awsService, 
+                       ICorkboardService corkboardService,
+                       IGroupService groupService)
         {
             _taskService = taskService;
             _groupToolService = groupToolService;
             _awsService = awsService;
             _corkboardService = corkboardService;
+            _groupService = groupService;
         }
 
         public int Run(string[] args)
@@ -166,6 +174,22 @@ namespace Crossroads.ScheduledDataUpdate
                 catch (Exception ex)
                 {
                     Log.Error("Corkboard AWS Refresh failed.", ex);
+                    exitCode = 9999;
+                }
+            }
+
+            if (options.HuddleStatusParticipantUpdateMode)
+            {
+                modeSelected = true;
+                try
+                {
+                    Log.Info("Starting Huddle Status Participant Update");
+                    _groupService.UpdateHuddleGroupParticipantStatus();
+                    Log.Info("Finished Huddle Status Participant Update successfully");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Huddle Status Participant Update failed.", ex);
                     exitCode = 9999;
                 }
             }

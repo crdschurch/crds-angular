@@ -410,7 +410,7 @@ namespace crds_angular.Services
                     c => signupRelations.Select(s => s.RelationshipId).Contains(c.Relationship_Id)).ToArray();
             }
 
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
             var configuration = MpObjectAttributeConfigurationFactory.Group();
             var attributesTypes = _objectAttributeService.GetObjectAttributes(apiToken, groupId, configuration);
 
@@ -731,7 +731,7 @@ namespace crds_angular.Services
 
             var configuration = MpObjectAttributeConfigurationFactory.GroupParticipant();
 
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
 
             foreach (var participant in participants)
             {
@@ -827,6 +827,11 @@ namespace crds_angular.Services
             _communicationService.SendMessage(message);
         }
 
+        public void UpdateHuddleGroupParticipantStatus()
+        {
+            _participantService.UpdateHuddleGroupParticipantStatus();
+        }
+
         public GroupDTO UpdateGroup(GroupDTO group)
         {
             try
@@ -874,7 +879,7 @@ namespace crds_angular.Services
         {
             try
             {
-                var apiToken = _apiUserService.GetToken();
+                var apiToken = _apiUserService.GetDefaultApiClientToken();
                 var group = new MpGroup()
                 {
                     GroupDescription = "this is the description",
@@ -903,7 +908,7 @@ namespace crds_angular.Services
         {
             try
             {
-                var apiToken = _apiUserService.GetToken();
+                var apiToken = _apiUserService.GetDefaultApiClientToken();
                 var participantList = GetGroupParticipantsWithoutAttributes(groupId);
                 var groupParticipant = participantList.Single(s => s.ParticipantId == participantId);
                 var mpParticipant = Mapper.Map<MpGroupParticipant>(groupParticipant);
@@ -934,7 +939,7 @@ namespace crds_angular.Services
 
         public int GetPrimaryContactParticipantId(int groupId)
         {
-            return _mpGroupRepository.GetParticipantIdFromGroup(groupId, _apiUserService.GetToken());
+            return _mpGroupRepository.GetParticipantIdFromGroup(groupId, _apiUserService.GetDefaultApiClientToken());
         }
 
         public void SendParticipantsEmail(string token, List<GroupParticipantDTO> participants, string subject, string body)

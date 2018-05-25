@@ -47,7 +47,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public FinderPinDto GetPinDetails(int participantId)
         {
-            var token = _apiUserRepository.GetDefaultApiUserToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
 
             const string pinSearch = "Email_Address, Nickname as FirstName, Last_Name as LastName, Participant_Record_Table.*, Household_ID";
             string filter = $"Participant_Record = {participantId}";
@@ -71,7 +71,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public FinderGatheringDto UpdateGathering(FinderGatheringDto finderGathering)
         {
-            var token = _apiUserRepository.GetDefaultApiUserToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             return _ministryPlatformRest.UsingAuthenticationToken(token).Update(finderGathering, _groupColumns);
         }
 
@@ -79,7 +79,7 @@ namespace MinistryPlatform.Translation.Repositories
         {
             string filter = $"Participant_Record = {participantId}";
             const string addressSearch = "Household_ID_Table_Address_ID_Table.*";
-            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserRepository.GetDefaultApiUserToken()).Search<MpContact, MpAddress>(filter, addressSearch)?.First();
+            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserRepository.GetDefaultApiClientToken()).Search<MpContact, MpAddress>(filter, addressSearch)?.First();
         }
         
         public void EnablePin(int participantId)
@@ -88,7 +88,7 @@ namespace MinistryPlatform.Translation.Repositories
 
             var update = new List<Dictionary<string, object>> { dict };
 
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             _ministryPlatformRest.UsingAuthenticationToken(apiToken).Put("Participants", update);
         }
 
@@ -98,13 +98,13 @@ namespace MinistryPlatform.Translation.Repositories
 
             var update = new List<Dictionary<string, object>> { dict };
 
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             _ministryPlatformRest.UsingAuthenticationToken(apiToken).Put("Participants", update);
         }
 
         public List<SpPinDto> GetPinsInRadius(GeoCoordinate originCoords)
         {
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
 
             var parms = new Dictionary<string, object>()
             {
@@ -130,7 +130,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpConnectAws> GetAllPinsForAws()
         {
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             const string spName = "api_crds_Get_Connect_AWS_Data_v2";
 
             try
@@ -149,7 +149,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpConnectAws GetSingleGroupRecordFromMpInAwsPinFormat(int groupId)
         {
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             const string spName = "api_crds_Get_Finder_AWS_Data_For_Single_Group";
             Dictionary <string, object> spParams = new Dictionary<string, object>()
             {
@@ -173,7 +173,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public void RecordConnection(MpConnectCommunication connection)
         {
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
 
             try
             {

@@ -581,7 +581,7 @@ namespace crds_angular.Services
 
         public void SendReminderEmails()
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var eventList = EventsReadyForReminder(token);
 
             eventList.ForEach(evt =>
@@ -607,7 +607,7 @@ namespace crds_angular.Services
 
         public void SendPrimaryContactReminderEmails()
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var eventList = EventsReadyForPrimaryContactReminder(token);
 
             eventList.ForEach(evt =>

@@ -18,6 +18,7 @@ using MinistryPlatform.Translation.Enum;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
+using Constants = Crossroads.Utilities.Constants;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -62,7 +63,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _config.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _config.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
@@ -125,7 +126,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             List<int> expectedResults = new List<int> {5, 10, 25, 50, 100, 500};
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns(apiToken);
 
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRest.Object);
 

@@ -39,7 +39,7 @@ namespace crds_angular.Services
         public List<GoSkills> RetrieveGoSkills(string token)
         {
             // get all the skill attributes
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
             var skills = _skillsService.GetGoVolunteerSkills(apiToken);
 
             // if the user is logged in, check if they have skills
@@ -69,7 +69,7 @@ namespace crds_angular.Services
             MpObjectAttributeConfiguration configuration;
             if (token == String.Empty)
             {
-                token = _apiUserService.GetToken();
+                token = _apiUserService.GetDefaultApiClientToken();
                 configuration = MpObjectAttributeConfigurationFactory.Contact();
             }
             else

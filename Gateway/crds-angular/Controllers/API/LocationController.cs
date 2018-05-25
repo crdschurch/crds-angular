@@ -22,9 +22,11 @@ namespace crds_angular.Controllers.API
     {
         private readonly ILocationService _locationService;
 
-        public LocationController(ILocationService locationService,
+        public LocationController(IAuthTokenExpiryService authTokenExpiryService, 
+                                  ILocationService locationService,
                                   IUserImpersonationService userImpersonationService,
-                                  IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+                                  IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _locationService = locationService;
         }

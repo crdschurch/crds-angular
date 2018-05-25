@@ -9,6 +9,7 @@ using Crossroads.Utilities.Services;
 using log4net;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
+using Crossroads.Web.Common.Configuration;
 using EventService = crds_angular.Services.EventService;
 using IEventService = crds_angular.Services.Interfaces.IEventService;
 
@@ -26,7 +27,9 @@ namespace EventReminder
             AutoMapperConfig.RegisterMappings();
 
             var container = new UnityContainer();
-            var unitySections = new[] { "crossroadsCommonUnity", "unity" };
+            CrossroadsWebCommonConfig.Register(container);
+
+            var unitySections = new[] { "unity" };
 
             foreach (var section in unitySections.Select(sectionName => (UnityConfigurationSection)ConfigurationManager.GetSection(sectionName)))
             {

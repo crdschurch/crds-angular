@@ -20,7 +20,12 @@ namespace crds_angular.Controllers.API
         private readonly IApiUserRepository _apiUserService;
         private readonly IEventService _eventService;
 
-        public EventToolController(IApiUserRepository apiUserService, IEventService eventService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public EventToolController(IAuthTokenExpiryService authTokenExpiryService, 
+                                   IApiUserRepository apiUserService, 
+                                   IEventService eventService, 
+                                   IUserImpersonationService userImpersonationService, 
+                                   IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _eventService = eventService;
             _apiUserService = apiUserService;
