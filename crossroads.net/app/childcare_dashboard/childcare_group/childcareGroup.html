@@ -24,7 +24,8 @@
         on-label="Yes"
         off-label="No"
         class="pull-right"
-        ng-click="childcareGroup.validateAndRsvp(child, child.rsvpness)" >
+        ng-click="childcareGroup.validateAndRsvp(child, child.rsvpness)"
+        data-automation-id="toggle-switch" >
       </toggle-switch>
       <span class="label label-success" data-ng-if="child.rsvpness">Signed Up</span>
       <span ng-if="!child.eligible" class="pull-right hidden-xs hidden-sm" dynamic-content='$root.MESSAGES.childexceedsMaxAge.content | html'></span>
@@ -32,4 +33,3 @@
     </li>
   </ul>
 </div>
-
