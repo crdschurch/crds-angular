@@ -124,7 +124,7 @@ namespace crds_angular.Services
 
         public TripCampaignDto GetTripCampaign(int pledgeCampaignId)
         {
-            var token = _apiUserRepository.GetToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var campaign = _campaignService.GetPledgeCampaign(pledgeCampaignId, token);
             var response = new TripCampaignDto()
             {
@@ -390,7 +390,7 @@ namespace crds_angular.Services
 
         public TripParticipantPledgeDto CreateTripParticipant(int contactId, int pledgeCampaignId)
         {
-            var token = _apiUserRepository.GetToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var result = _tripRepository.AddAsTripParticipant(contactId, pledgeCampaignId, token);
             if (!result.Status)
             {
@@ -744,7 +744,7 @@ namespace crds_angular.Services
 
         public bool GetIPromise(int eventParticipantId)
         {
-            var token = _apiUserRepository.GetToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var iPromiseDocId = _configurationWrapper.GetConfigIntValue("IPromiseDocumentId");
             var docs = _tripRepository.GetTripDocuments(eventParticipantId, token);
             return docs.Any(d => d.DocumentId == iPromiseDocId && d.Received);
@@ -752,7 +752,7 @@ namespace crds_angular.Services
 
         public TripDocument GetIPromiseDocument(int eventParticipantId)
         {
-            var token = _apiUserRepository.GetToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var iPromiseDocId = _configurationWrapper.GetConfigIntValue("IPromiseDocumentId");
             var docs = _tripRepository.GetTripDocuments(eventParticipantId, token);
             return docs.Where(d => d.DocumentId == iPromiseDocId).Select(d => new TripDocument{ DocumentId = d.DocumentId, EventParticipantId = d.EventParticipantId, EventParticipantDocumentId = d.EventParticipantDocumentId, Received = d.Received, Notes = d.Notes, TripName = d.EventTitle}).FirstOrDefault();
@@ -760,7 +760,7 @@ namespace crds_angular.Services
 
         public void ReceiveIPromiseDocument(TripDocument iPromiseDoc)
         {
-            var token = _apiUserRepository.GetToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             _tripRepository.ReceiveTripDocument(new MpEventParticipantDocument
             {
                 DocumentId = iPromiseDoc.DocumentId,

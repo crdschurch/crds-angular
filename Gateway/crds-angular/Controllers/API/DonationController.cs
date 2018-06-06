@@ -40,7 +40,8 @@ namespace crds_angular.Controllers.API
         private readonly MPInterfaces.IInvoiceRepository _invoiceRepository;
         private readonly IAnalyticsService _analyticsService;
 
-        public DonationController(MPInterfaces.IDonorRepository mpDonorService,
+        public DonationController(IAuthTokenExpiryService authTokenExpiryService, 
+                                  MPInterfaces.IDonorRepository mpDonorService,
                                   IPaymentProcessorService stripeService,
                                   IAuthenticationRepository authenticationService,
                                   MPInterfaces.IContactRepository contactRepository,
@@ -51,7 +52,8 @@ namespace crds_angular.Controllers.API
                                   IUserImpersonationService impersonationService,
                                   IPaymentService paymentService,
                                   MPInterfaces.IInvoiceRepository invoiceRepository,
-                                  IAnalyticsService analyticsService) : base(impersonationService, authenticationService)
+                                  IAnalyticsService analyticsService) 
+            : base(authTokenExpiryService, impersonationService, authenticationService)
         {
             _mpDonorService = mpDonorService;
             _stripeService = stripeService;

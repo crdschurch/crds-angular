@@ -7,6 +7,9 @@ using System.Reflection;
 using crds_angular.Services.Interfaces;
 using crds_angular.Util;
 using Crossroads.Web.Common.Security;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Net.Http.Headers;
 
 namespace crds_angular.Security
 {
@@ -14,13 +17,17 @@ namespace crds_angular.Security
     {
         protected readonly log4net.ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly IAuthTokenExpiryService _authTokenExpiryService;
         private readonly IUserImpersonationService _userImpersonationService;
         protected readonly IAuthenticationRepository AuthenticationRepository;
 
-        public MPAuth(IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository)
+        public MPAuth(IAuthTokenExpiryService authTokenExpiryService,
+                      IUserImpersonationService userImpersonationService, 
+                      IAuthenticationRepository authenticationRepository)
         {
-            _userImpersonationService = userImpersonationService;
-            AuthenticationRepository = authenticationRepository;
+          _authTokenExpiryService = authTokenExpiryService;
+          _userImpersonationService = userImpersonationService;
+          AuthenticationRepository = authenticationRepository;
         }
 
         /// <summary>
@@ -57,7 +64,13 @@ namespace crds_angular.Security
                     impersonate = true;
                 }
 
-                if (Request.Headers.TryGetValues("RefreshToken", out refreshTokens) && refreshTokens.Any())
+                bool authTokenCloseToExpiry = _authTokenExpiryService.IsAuthtokenCloseToExpiry(Request.Headers);  
+                bool isRefreshTokenPresent =
+                    Request.Headers.TryGetValues("RefreshToken", out refreshTokens) && refreshTokens.Any();
+
+        HttpRequestHeaders headers = Request.Headers;
+
+            if (authTokenCloseToExpiry && isRefreshTokenPresent)
                 {
                     var authData = AuthenticationRepository.RefreshToken(refreshTokens.FirstOrDefault());
                     if (authData != null)

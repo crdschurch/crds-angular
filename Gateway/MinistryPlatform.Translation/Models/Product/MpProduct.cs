@@ -1,5 +1,4 @@
-﻿using Crossroads.Web.Common;
-using Crossroads.Web.Common.MinistryPlatform;
+﻿using Crossroads.Web.Common.MinistryPlatform;
 using Newtonsoft.Json;
 
 namespace MinistryPlatform.Translation.Models.Product
@@ -18,5 +17,8 @@ namespace MinistryPlatform.Translation.Models.Product
 
         [JsonProperty(PropertyName = "Deposit_Price")]
         public decimal? DepositPrice { get; set; }
+
+        [JsonProperty(PropertyName = "Program_Id")]
+        public int? ProgramId { get; set; }
     }
 }

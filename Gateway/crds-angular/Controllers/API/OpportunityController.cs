@@ -22,7 +22,11 @@ namespace crds_angular.Controllers.API
     {
         private readonly IOpportunityRepository _opportunityService;
 
-        public OpportunityController(IOpportunityRepository opportunityService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public OpportunityController(IAuthTokenExpiryService authTokenExpiryService, 
+                                     IOpportunityRepository opportunityService, 
+                                     IUserImpersonationService userImpersonationService, 
+                                     IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _opportunityService = opportunityService;
         }

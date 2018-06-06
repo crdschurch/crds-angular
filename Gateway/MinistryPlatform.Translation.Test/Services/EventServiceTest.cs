@@ -30,11 +30,11 @@ namespace MinistryPlatform.Translation.Test.Services
             _groupService = new Mock<IGroupRepository>(MockBehavior.Strict);
             _eventParticipantRepository = new Mock<IEventParticipantRepository>(MockBehavior.Strict);
 
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
+            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
+            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupsByEventId")).Returns(2221);
             _configWrapper.Setup(m => m.GetConfigIntValue("EventsBySite")).Returns(2222);
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123

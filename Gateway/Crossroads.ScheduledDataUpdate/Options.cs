@@ -33,6 +33,10 @@ namespace Crossroads.ScheduledDataUpdate
             HelpText = "Execute 'api_crds_Archive_Pending_Group_Inquiries_Older_Than_90_Days'")]
         public bool ArchivePendingGroupInquiriesMode { get; set; }
 
+        [Option("HuddleStatusParticipantUpdateMode", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
+            HelpText = "Execute 'Huddle Status Participant Updates'")]
+        public bool HuddleStatusParticipantUpdateMode { get; set; }
+
         [ParserState]
         public IParserState LastParserState { get; set; }
 

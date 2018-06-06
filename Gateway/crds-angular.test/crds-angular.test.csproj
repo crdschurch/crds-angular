@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>crds_angular.test</RootNamespace>
     <AssemblyName>crds-angular.test</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -20,6 +20,7 @@
     <RestorePackages>true</RestorePackages>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -94,10 +95,12 @@
       <HintPath>..\packages\Crossroads.ApiVersioning.1.0.4\lib\net45\Crossroads.ApiVersioning.dll</HintPath>
     </Reference>
     <Reference Include="Crossroads.ClientApiKeys, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Crossroads.ClientApiKeys.1.0.9\lib\net45\Crossroads.ClientApiKeys.dll</HintPath>
+      <HintPath>..\packages\Crossroads.ClientApiKeys.2.0.6\lib\net461\Crossroads.ClientApiKeys.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Crossroads.Web.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Crossroads.Web.Common.1.0.23\lib\net45\Crossroads.Web.Common.dll</HintPath>
+      <HintPath>..\packages\Crossroads.Web.Common.2.0.6\lib\net461\Crossroads.Web.Common.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.dll</HintPath>
@@ -109,6 +112,10 @@
     </Reference>
     <Reference Include="FactoryGirl.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FactoryGirl.NET.1.0.0.0\lib\net40-Client\FactoryGirl.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Flurl, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Flurl.2.4.0\lib\net40\Flurl.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FsCheck, Version=2.2.4.0, Culture=neutral, processorArchitecture=MSIL">
@@ -131,9 +138,16 @@
       <HintPath>..\packages\GoogleMapsAPI.NET.1.0.0\lib\net40\GoogleMapsAPI.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=2.0.7.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.7\lib\net45-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.5.2.2\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.2.2\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
@@ -172,8 +186,8 @@
     <Reference Include="MvcContrib.TestHelper">
       <HintPath>..\packages\MvcContrib.TestHelper.2.0.95.0\lib\net\MvcContrib.TestHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.core">
@@ -193,7 +207,7 @@
       <HintPath>..\packages\Quartz.Unity.1.4.0\lib\net45\Quartz.Unity.45.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.105.2.3\lib\net45\RestSharp.dll</HintPath>
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net46\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Rhino.Mocks">
@@ -204,9 +218,15 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Device" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.2.2\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
     <Reference Include="System.Messaging" />
     <Reference Include="System.Net" />
-    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.4.3.2\lib\net46\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
@@ -223,8 +243,26 @@
       <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
     </Reference>
@@ -256,8 +294,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml" />
     <Reference Include="Twilio.Api, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Twilio.4.7.2\lib\3.5\Twilio.Api.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Unity.WebApi, Version=5.2.3.0, Culture=neutral, PublicKeyToken=43da31bc42a85347, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.WebAPI.5.2.3\lib\net45\Unity.WebApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -300,6 +343,7 @@
     <Compile Include="controllers\WaiverControllerTest.cs" />
     <Compile Include="DataAccess\EzScanCheckScannerDaoTest.cs" />
     <Compile Include="Exceptions\GroupParticipantRemovalExceptionTest.cs" />
+    <Compile Include="Services\AuthTokenExpiryServiceTest.cs" />
     <Compile Include="Services\AwsCloudsearchServiceTest.cs" />
     <Compile Include="Services\AwsTimeHelperTest.cs" />
     <Compile Include="Services\CampaignServiceTest.cs" />
@@ -411,6 +455,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Start\" />
     <Folder Include="IntegrationTests\" />
   </ItemGroup>
   <ItemGroup>
@@ -446,13 +491,11 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\packages\Crossroads.ClientApiKeys.1.0.9\build\Crossroads.ClientApiKeys.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Crossroads.ClientApiKeys.1.0.9\build\Crossroads.ClientApiKeys.targets'))" />
-    <Error Condition="!Exists('..\packages\Crossroads.Web.Common.1.0.23\build\Crossroads.Web.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Crossroads.Web.Common.1.0.23\build\Crossroads.Web.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\Crossroads.ClientApiKeys.2.0.6\build\Crossroads.ClientApiKeys.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Crossroads.ClientApiKeys.2.0.6\build\Crossroads.ClientApiKeys.targets'))" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <Import Project="..\packages\AutoMapper.3.3.1\tools\AutoMapper.targets" Condition="Exists('..\packages\AutoMapper.3.3.1\tools\AutoMapper.targets')" />
-  <Import Project="..\packages\Crossroads.ClientApiKeys.1.0.9\build\Crossroads.ClientApiKeys.targets" Condition="Exists('..\packages\Crossroads.ClientApiKeys.1.0.9\build\Crossroads.ClientApiKeys.targets')" />
-  <Import Project="..\packages\Crossroads.Web.Common.1.0.23\build\Crossroads.Web.Common.targets" Condition="Exists('..\packages\Crossroads.Web.Common.1.0.23\build\Crossroads.Web.Common.targets')" />
+  <Import Project="..\packages\Crossroads.ClientApiKeys.2.0.6\build\Crossroads.ClientApiKeys.targets" Condition="Exists('..\packages\Crossroads.ClientApiKeys.2.0.6\build\Crossroads.ClientApiKeys.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

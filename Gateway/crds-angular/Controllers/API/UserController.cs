@@ -25,12 +25,13 @@ namespace crds_angular.Controllers.API
         // Do not change this string without also changing the same in the corejs register_controller
         private const string DUPLICATE_USER_MESSAGE = "Duplicate User";
 
-        public UserController(IAccountService accountService, 
+        public UserController(IAuthTokenExpiryService authTokenExpiryService,
+                                IAccountService accountService, 
                                 IContactRepository contactRepository, 
                                 IUserRepository userRepository, 
                                 IAnalyticsService analyticsService,
                                 IUserImpersonationService userImpersonationService, 
-                                IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+                                IAuthenticationRepository authenticationRepository) : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _accountService = accountService;
             _contactRepository = contactRepository;

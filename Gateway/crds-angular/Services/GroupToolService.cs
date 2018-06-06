@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Device.Location;
 using System.Linq;
 using AutoMapper;
 using crds_angular.Exceptions;
@@ -13,7 +12,6 @@ using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using System.Text.RegularExpressions;
 using crds_angular.Services.Analytics;
-using Crossroads.ApiVersioning;
 using Crossroads.Utilities.Extensions;
 using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models.Finder;
@@ -558,23 +556,7 @@ namespace crds_angular.Services
         public void EndGroup(int groupId, int reasonEndedId)
         {
             _awsCloudsearchService.DeleteGroupFromAws(groupId);
-
-            //get all participants before we end the group so they are not endDated and still
-            //available from this call.
-            // ReSharper disable once RedundantArgumentDefaultValue
-            var participants = _groupService.GetGroupParticipants(groupId, true);
             _groupService.EndDateGroup(groupId, reasonEndedId);
-            var group = _groupService.GetGroupDetails(groupId);
-            foreach (var participant in participants)
-            {
-                var mergeData = new Dictionary<string, object>
-                {
-                    {"Participant_Name", participant.NickName},
-                    {"Group_Name", group.GroupName },
-                    {"Group_Tool_Url", @"https://" + _baseUrl + "/groups/search"}
-                };
-                SendSingleGroupParticipantEmail(participant, _groupEndedParticipantEmailTemplate, mergeData);
-            }
         }
 
         /// <summary>

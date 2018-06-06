@@ -30,6 +30,8 @@ namespace crds_angular.test.controllers
     class DonationControllerTest
     {
         private DonationController fixture;
+
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<MinistryPlatform.Translation.Repositories.Interfaces.IDonorRepository> donorServiceMock;
         private Mock<MinistryPlatform.Translation.Repositories.Interfaces.IInvoiceRepository> invoiceServiceMock;
         private Mock<IPaymentProcessorService> stripeServiceMock;
@@ -48,6 +50,7 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             donorServiceMock = new Mock<MinistryPlatform.Translation.Repositories.Interfaces.IDonorRepository>();
             invoiceServiceMock = new Mock<MinistryPlatform.Translation.Repositories.Interfaces.IInvoiceRepository>();
             gatewayDonorServiceMock = new Mock<IDonorService>();
@@ -61,7 +64,7 @@ namespace crds_angular.test.controllers
             mpDonationService = new Mock<MinistryPlatform.Translation.Repositories.Interfaces.IDonationRepository>();
             analyticsService = new Mock<IAnalyticsService>();
 
-            fixture = new DonationController(donorServiceMock.Object, stripeServiceMock.Object
+            fixture = new DonationController(_authTokenExpiryService.Object, donorServiceMock.Object, stripeServiceMock.Object
                 , authenticationServiceMock.Object, contactRepositoryMock.Object, gatewayDonorServiceMock.Object, gatewayDonationServiceMock.Object
                 , mpDonationService.Object, mpPledgeService.Object, impersonationService.Object, paymentServiceMock.Object, invoiceServiceMock.Object, analyticsService.Object);
 
@@ -98,6 +101,7 @@ namespace crds_angular.test.controllers
             var dto = new DonationsDTO();
             dto.Donations.AddRange(donations);
 
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             gatewayDonationServiceMock.Setup(mocked => mocked.GetDonationsForAuthenticatedUser(authType + " " + authToken, "1999", null, true, true)).Returns(dto);
             var response = fixture.GetDonations("1999", null, true);
             gatewayDonationServiceMock.VerifyAll();
@@ -112,6 +116,7 @@ namespace crds_angular.test.controllers
         [Test]
         public void TestGetDonationsNoDonationsFound()
         {
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             gatewayDonationServiceMock.Setup(mocked => mocked.GetDonationsForAuthenticatedUser(authType + " " + authToken, "1999", null, true, true)).Returns((DonationsDTO)null);
             var response = fixture.GetDonations("1999", null, true);
             gatewayDonationServiceMock.VerifyAll();
@@ -130,6 +135,7 @@ namespace crds_angular.test.controllers
             {
                 Email = "me@here.com"
             });
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true); 
             impersonationService.Setup(mocked => mocked.WithImpersonation(authType + " " + authToken, "me@here.com", It.IsAny<Func<DonationsDTO>>()))
                 .Throws<ImpersonationNotAllowedException>();
             var response = fixture.GetDonations("1999", null, true, 123);
@@ -150,6 +156,7 @@ namespace crds_angular.test.controllers
             {
                 Email = "me@here.com"
             });
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             impersonationService.Setup(mocked => mocked.WithImpersonation(authType + " " + authToken, "me@here.com", It.IsAny<Func<DonationsDTO>>()))
                 .Throws(new ImpersonationUserNotFoundException("me@here.com"));
             var response = fixture.GetDonations("1999", null, true, 123);
@@ -174,7 +181,7 @@ namespace crds_angular.test.controllers
             };
             var dto = new DonationYearsDTO();
             dto.AvailableDonationYears.AddRange(donationYears);
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             gatewayDonationServiceMock.Setup(mocked => mocked.GetDonationYearsForAuthenticatedUser(authType + " " + authToken)).Returns(dto);
             var response = fixture.GetDonationYears();
             gatewayDonationServiceMock.VerifyAll();
@@ -189,6 +196,7 @@ namespace crds_angular.test.controllers
         [Test]
         public void TestGetDonationYearsNoYearsFound()
         {
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             gatewayDonationServiceMock.Setup(mocked => mocked.GetDonationYearsForAuthenticatedUser(authType + " " + authToken)).Returns((DonationYearsDTO)null);
             var response = fixture.GetDonationYears();
             gatewayDonationServiceMock.VerifyAll();
@@ -272,7 +280,7 @@ namespace crds_angular.test.controllers
                                                     d.DonationStatus == null &&
                                                     d.CheckNumber == null), true))
                 .Returns(donationId);
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);  
             IHttpActionResult result = fixture.Post(createDonationDTO);
 
             authenticationServiceMock.VerifyAll();
@@ -376,6 +384,7 @@ namespace crds_angular.test.controllers
                                                     d.CheckNumber == null), true))
                     .Returns(donationId);
 
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             IHttpActionResult result = fixture.Post(createDonationDTO);
 
             authenticationServiceMock.VerifyAll();
@@ -642,7 +651,7 @@ namespace crds_angular.test.controllers
             stripeServiceMock.Setup(
                 mocked => mocked.ChargeCustomer(donor.ProcessorId, createDonationDTO.Amount, donor.DonorId, true, "moc.tset@tset", "Bart Simpson")) 
                 .Returns(charge);
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             invoiceServiceMock.Setup(mocked => mocked.InvoiceExists(It.IsAny<int>()))
                 .Returns(true);
 

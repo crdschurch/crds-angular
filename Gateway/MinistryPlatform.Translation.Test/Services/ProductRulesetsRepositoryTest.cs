@@ -54,7 +54,7 @@ namespace MinistryPlatform.Translation.Test.Services
                FactoryGirl.NET.FactoryGirl.Build<MPProductRuleSet>( r => { r.ProductId = r.ProductId + 4; r.RulesetId = r.RulesetId + 4; })
             };
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MPProductRuleSet>(It.IsAny<string>(), It.IsAny<string>(), null as string, false)).Returns(rulesets);
 
@@ -69,7 +69,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const int productId = 351;
             var rulesets = new List<MPProductRuleSet>();
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MPProductRuleSet>(It.IsAny<string>(), It.IsAny<string>(), null as string, false)).Returns(rulesets);
 
@@ -84,7 +84,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const int productId = 351;
             var rulesets = new List<MPProductRuleSet>();
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MPProductRuleSet>(It.IsAny<string>(), It.IsAny<string>(), null as string, false)).Throws(new Exception());
 

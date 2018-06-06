@@ -1,20 +1,20 @@
 
 
-describe('Email Field Directive', function() {
+describe('Email Field Directive', function () {
   var mockSession, mockUser;
 
   var templateString, scope, callback;
 
   var $compile, $rootScope, $templateCache, $httpBackend, $timeout;
 
-  beforeEach(function(){
-    angular.mock.module('crossroads.core', function($provide){
-      mockSession = jasmine.createSpyObj('Session', ['exists', 'isActive']);
-      mockSession.exists.and.callFake(function(something){
+  beforeEach(function () {
+    angular.mock.module('crossroads.core', function ($provide) {
+      mockSession = jasmine.createSpyObj('Session', ['exists', 'isActive', 'updateSessionExpiration']);
+      mockSession.exists.and.callFake(function (something) {
         return undefined;
       });
-      mockSession.isActive.and.callFake(function() {
-        return(false);
+      mockSession.isActive.and.callFake(function () {
+        return (false);
       });
       $provide.value('Session', mockSession);
 
@@ -24,7 +24,7 @@ describe('Email Field Directive', function() {
   });
 
   beforeEach(
-    inject(function(_$compile_, _$rootScope_, _$templateCache_, _$httpBackend_, _$timeout_) {
+    inject(function (_$compile_, _$rootScope_, _$templateCache_, _$httpBackend_, _$timeout_) {
       $compile = _$compile_;
       $rootScope = _$rootScope_;
       $templateCache = _$templateCache_;
@@ -63,20 +63,20 @@ describe('Email Field Directive', function() {
     })
   );
 
-  describe('markup', function(){
+  describe('markup', function () {
     var element;
-    beforeEach(function() {
+    beforeEach(function () {
       $httpBackend.whenGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/lookup/0/find/?email=me@here.com').respond(404, 'not found');
 
       element = $compile(templateString)(scope);
       scope.$digest();
     });
 
-    it('should have an id set with the prefix value', function(){
+    it('should have an id set with the prefix value', function () {
       expect(element.html()).toContain('id=\"' + scope.model.emailPrefix + '-email\"');
     });
 
-    it('should have focused the email element', function() {
+    it('should have focused the email element', function () {
       var emailInput = element.find('input')[0];
       spyOn(emailInput, 'focus');
       $timeout.flush();
@@ -84,9 +84,9 @@ describe('Email Field Directive', function() {
     });
   });
 
-  describe('checkUniqueEmail', function() {
+  describe('checkUniqueEmail', function () {
     var element, form, isolateScope;
-    beforeEach(function() {
+    beforeEach(function () {
       scope.model.emailModel = 'me+you@here.com';
       $httpBackend.whenGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/lookup/0/find/?email=me%2Byou@here.com').respond(404, 'not found');
       element = $compile(templateString)(scope);
@@ -100,12 +100,12 @@ describe('Email Field Directive', function() {
       form.email.$options.updateOn = 'default blur';
     });
 
-    afterEach(function() {
+    afterEach(function () {
       //$httpBackend.verifyNoOutstandingExpectation();
       //$httpBackend.verifyNoOutstandingRequest();
     });
 
-    it('should lookup an email with an encoded plus sign', function() {
+    it('should lookup an email with an encoded plus sign', function () {
       $httpBackend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/lookup/0/find/?email=me%2Byou%2Bus@there.com').respond(404, 'existing email');
 
       form.email.$setViewValue('me+you+us@there.com');
@@ -113,7 +113,7 @@ describe('Email Field Directive', function() {
       $httpBackend.flush();
     });
 
-    it('should call onEmailNotFound callback if API returns a 200', function() {
+    it('should call onEmailNotFound callback if API returns a 200', function () {
       $httpBackend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/lookup/0/find/?email=me%2Byou@there.com').respond(200, 'email ok');
 
       form.email.$setViewValue('me+you@there.com');
@@ -126,7 +126,7 @@ describe('Email Field Directive', function() {
       expect(callback.onEmailFound).not.toHaveBeenCalledWith('me+you@there.com');
     });
 
-    it('should call onEmailFound callback if API returns a 404', function() {
+    it('should call onEmailFound callback if API returns a 404', function () {
       $httpBackend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/lookup/0/find/?email=me%2Byou@there.com').respond(404, 'existing email');
 
       form.email.$setViewValue('me+you@there.com');

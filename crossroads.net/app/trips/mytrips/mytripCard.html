@@ -12,7 +12,7 @@
 
     <!-- I Promise -->
     <div class="go-trip-document" ng-show="showIPromise(trip.contactId)">
-      <button class="btn btn-default go-trip-document-btn" ng-disabled="trip.iPromiseSigned" ng-click="signIPromise(trip.eventParticipantId)">
+      <button class="btn btn-default go-trip-document-btn" ng-disabled="trip.iPromiseSigned" ng-click="signIPromise(trip.eventParticipantId)" data-automation-id="signIPromiseButton">
         <span ng-hide="trip.iPromiseSigned">
           <svg class="icon icon-2 text-warning" viewBox="0 0 256 256">
             <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/svgs/icons.svg#exclamation-circle"></use>
@@ -29,7 +29,7 @@
 
     <!-- Waivers -->
     <div ng-repeat="waiver in waivers" class="go-trip-document">
-      <button class="btn btn-default go-trip-document-btn" ng-show="showWaiver(trip.contactId)" ng-click="signWaiver(waiver.waiverId, trip.eventParticipantId, trip.tripName)" ng-disabled="waiver.accepted">
+      <button class="btn btn-default go-trip-document-btn" ng-show="showWaiver(trip.contactId)" ng-click="signWaiver(waiver.waiverId, trip.eventParticipantId, trip.tripName)" ng-disabled="waiver.accepted" data-automation-id="viewWaiverButton">
 
         <span ng-hide="waiver.accepted">
           <svg class="icon icon-2 text-warning" viewBox="0 0 256 256">

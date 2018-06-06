@@ -276,7 +276,7 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldGetPersonPinDetails()
         {
-            _apiUserRepository.Setup(ar => ar.GetToken()).Returns("abc123");
+            _apiUserRepository.Setup(ar => ar.GetDefaultApiClientToken()).Returns("abc123");
             _mpFinderRepository.Setup(m => m.GetPinDetails(123))
                 .Returns(new FinderPinDto
                 {

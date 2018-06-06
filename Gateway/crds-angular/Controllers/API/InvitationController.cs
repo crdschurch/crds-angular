@@ -21,7 +21,11 @@ namespace crds_angular.Controllers.API
         private readonly Services.Interfaces.IInvitationService _invitationService;        
 
 
-        public InvitationController(Services.Interfaces.IInvitationService invitationService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public InvitationController(IAuthTokenExpiryService authTokenExpiryService, 
+                                    Services.Interfaces.IInvitationService invitationService, 
+                                    IUserImpersonationService userImpersonationService, 
+                                    IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _invitationService = invitationService;
 

@@ -239,7 +239,7 @@ namespace crds_angular.Services
 
         public void SendChildcareReminders()
         {
-            var token = _apiUserService.GetToken();                     
+            var token = _apiUserService.GetDefaultApiClientToken();                     
             var toEmails = _childcareRepository.GetChildcareReminderEmails(token);
             var threeDaysOut = DateTime.Now.AddDays(3);
 
@@ -372,7 +372,7 @@ namespace crds_angular.Services
         {
 
             var dashboard = new ChildcareDashboardDto();
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
 
             // Add members of other household(s)
             // Doesn't this really belong in the getHouseholds method?
@@ -607,7 +607,7 @@ namespace crds_angular.Services
             var template = _communicationService.GetTemplate(templateId);
             var fromContact = _contactService.GetContactById(_configurationWrapper.GetConfigIntValue("DefaultContactEmailId"));
             const int domainId = 1;
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
 
             var participants = _eventParticipantService.GetChildCareParticipants(daysBeforeEvent);
             foreach (var participant in participants)

@@ -45,7 +45,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public string GetCurrentJourney()
         {
-            var token = _apiUserRepository.GetDefaultApiUserToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var filter = $"ATTRIBUTE_CATEGORY_ID_TABLE.ATTRIBUTE_CATEGORY_ID = {JourneyCategoryID} AND GETDATE() BETWEEN START_DATE AND ISNULL(END_DATE, GETDATE())";
             var attribute = _mpRestRepository.UsingAuthenticationToken(token).Search<MpAttribute>(filter, "Attribute_Name").FirstOrDefault();
             return attribute?.Name;
@@ -108,7 +108,7 @@ namespace MinistryPlatform.Translation.Repositories
             var mpInquiries = new List<MpInquiry>();
             try
             {
-                var token = _apiUserRepository.GetDefaultApiUserToken();
+                var token = _apiUserRepository.GetDefaultApiClientToken();
                 var filter = $"Group_ID_Table.Group_Type_ID in ({_smallGroupTypeId}, {_gatheringTypeId}) AND Placed is null";
 
                 if (groupId.HasValue)

@@ -11,6 +11,7 @@ using log4net;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
+using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Repositories;
 
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
@@ -24,8 +25,9 @@ namespace Crossroads.ChildcareGroupUpdates
         private static void Main()
         {
             var container = new UnityContainer();
-            var unitySections = new[] { "crossroadsCommonUnity", "unity" };
+            CrossroadsWebCommonConfig.Register(container);
 
+            var unitySections = new[] { "unity" };
             foreach (var section in unitySections.Select(sectionName => (UnityConfigurationSection)ConfigurationManager.GetSection(sectionName)))
             {
                 container.LoadConfiguration(section);
@@ -51,7 +53,7 @@ namespace Crossroads.ChildcareGroupUpdates
                 // Update the childcare events that are properly set up in a series
                 ////////////////////////////////////////////////////////////////////////
                 Log.Info("Updating Childcare events in series.");
-                var apiToken = userApiService.GetToken();
+                var apiToken = userApiService.GetDefaultApiClientToken();
                 AutoMapperConfig.RegisterMappings();
 
                 var parms = new Dictionary<string, object>()

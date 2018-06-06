@@ -21,7 +21,7 @@ namespace MinistryPlatform.Translation.Repositories.Rules
 
         public MPRuleSet GetRulesetFromMP(int ruleSetId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             return _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Get<MPRuleSet>(ruleSetId);
         }
 
@@ -61,7 +61,7 @@ namespace MinistryPlatform.Translation.Repositories.Rules
 
         private IEnumerable<GenderRule> GetGenderRules(int ruleSetId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var searchString = $"Ruleset_ID = {ruleSetId}";
             var genderRules = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Search<MPGenderRule>(searchString);
             return genderRules.Select(g => new GenderRule(g.StartDate, g.EndDate, g.AllowedGenderId));
@@ -69,7 +69,7 @@ namespace MinistryPlatform.Translation.Repositories.Rules
 
         private IEnumerable<RegistrationRule> GetRegistrantRules(int ruleSetId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var searchString = $"Ruleset_ID = {ruleSetId}";
             var registrantRules = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Search<MPRegistrationRule>(searchString);
             return registrantRules.Select(g => new RegistrationRule(g.StartDate, g.EndDate, g.MaximumRegistrants));

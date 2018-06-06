@@ -4,8 +4,6 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using Crossroads.Utilities.FunctionalHelpers;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -303,7 +301,7 @@ namespace MinistryPlatform.Translation.Repositories
         {
             return GetEventParticipantId(eventId, participantId);
         }
-
+    
         public bool EventHasParticipant(int eventId, int participantId)
         {
             return GetEventParticipantId(eventId, participantId) > 0;

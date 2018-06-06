@@ -31,7 +31,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public int Create(MpAddress address)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
 
             var values = MapAddressDictionary(address);
 
@@ -42,7 +42,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public int Update(MpAddress address)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
 
             var updatedAddress = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Update(address);    
 
@@ -69,7 +69,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpAddress> FindMatches(MpAddress address)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
             var search = string.Format("{0}, {1}, {2}, {3}, {4}, {5}",
                                        AddQuotesIfNotEmpty(address.Address_Line_1),
                                        AddQuotesIfNotEmpty(address.Address_Line_2),

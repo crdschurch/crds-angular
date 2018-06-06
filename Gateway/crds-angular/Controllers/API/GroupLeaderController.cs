@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -14,15 +13,19 @@ using crds_angular.Security;
 using crds_angular.Services.Interfaces;
 using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
-using ThirdParty.Json.LitJson;
 
 namespace crds_angular.Controllers.API
 {
-    public class GroupLeaderController : ReactiveMPAuth
+    public class GroupLeaderController : MPAuth
     {
+        private readonly IAuthTokenExpiryService _authTokenExpiryService;
         private readonly IGroupLeaderService _groupLeaderService;
 
-        public GroupLeaderController(IGroupLeaderService groupLeaderService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public GroupLeaderController(IAuthTokenExpiryService authTokenExpiryService,
+                                     IGroupLeaderService groupLeaderService, 
+                                     IUserImpersonationService userImpersonationService, 
+                                     IAuthenticationRepository authenticationRepository) 
+          : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _groupLeaderService = groupLeaderService;
         }
@@ -31,7 +34,7 @@ namespace crds_angular.Controllers.API
         [HttpPost]
         public async Task<IHttpActionResult> InterestedInGroupLeadership()
         {
-            return await Authorized(token =>
+            return Authorized(token =>
             {
                 try
                 {
@@ -52,7 +55,7 @@ namespace crds_angular.Controllers.API
         {
             if (ModelState.IsValid)
             {
-                return await Authorized(token =>
+                return Authorized(token =>
                 {
                     try
                     {                                                
@@ -96,7 +99,7 @@ namespace crds_angular.Controllers.API
         {
             if (ModelState.IsValid)
             {
-                return await Authorized(token =>
+                return Authorized(token =>
                 {
                     try
                     {
@@ -137,7 +140,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<IHttpActionResult> GetLeaderStatus()
         {
-            return await Authorized(token =>
+            return Authorized(token =>
             {
                 try
                 {

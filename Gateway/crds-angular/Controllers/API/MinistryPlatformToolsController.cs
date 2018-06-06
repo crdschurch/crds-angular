@@ -16,7 +16,11 @@ namespace crds_angular.Controllers.API
     {
         private readonly ISelectionRepository _selectionService;
 
-        public MinistryPlatformToolsController(ISelectionRepository selectionService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public MinistryPlatformToolsController(IAuthTokenExpiryService authTokenExpiryService, 
+                                               ISelectionRepository selectionService, 
+                                               IUserImpersonationService userImpersonationService, 
+                                               IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _selectionService = selectionService;
         }

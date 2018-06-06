@@ -23,7 +23,7 @@ namespace crds_angular.Services
 
         public EventParticipantDTO GetEventParticipantByContactAndEvent(int contactId, int eventId)
         {
-            var token = _apiUserRepository.GetToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var res = _eventParticipantRepository.GetEventParticipantByContactAndEvent(contactId, eventId, token);
             if (res.Status)
             {

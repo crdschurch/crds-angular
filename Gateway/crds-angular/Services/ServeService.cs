@@ -426,7 +426,7 @@ namespace crds_angular.Services
 
         public void SendReminderEmails()
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
 
             var reminders = _responseService.GetServeReminders(token);
             var serveReminders = reminders.Select(Mapper.Map<ServeReminder>);

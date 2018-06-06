@@ -85,7 +85,7 @@ namespace crds_angular.test.Services
             bool rejected = false;
             string comments = "Auto Completed";
 
-            _apiUserService.Setup(m => m.GetDefaultApiUserToken()).Returns("1a2b3c4d5e6f7g8h");
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("1a2b3c4d5e6f7g8h");
             _userService.Setup(m => m.GetUserByRecordId(It.IsAny<int>())).Returns(user);
             _impersonationService.Setup(m => m.WithImpersonation(token, user.UserId, It.IsAny<Func<bool>>())).Returns((string lambdaToken, string userId, Func<bool> predicate) =>
             {
@@ -106,7 +106,7 @@ namespace crds_angular.test.Services
         public void ShouldCallRoomReservationRejectionNotification()
         {
             _configurationWrapper.Setup(m => m.GetConfigIntValue("RoomReservationRejectedEmailTemplateId")).Returns(It.IsAny<int>());
-            _apiUserService.Setup(m => m.GetDefaultApiUserToken()).Returns("1a2b3c4d5e6f7g8h");
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("1a2b3c4d5e6f7g8h");
 
             var testReturnValues = new List<MpRoomReservationRejectionDto>()
             {

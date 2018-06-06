@@ -19,6 +19,7 @@ namespace crds_angular.test.controllers
     {
         private LocationController _fixture;
 
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<ILocationService> _locationServiceMock;
 
         private LocationDTO _location1;
@@ -27,6 +28,7 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void Setup()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _locationServiceMock = new Mock<ILocationService>();
             _location1 = new LocationDTO()
             {
@@ -40,7 +42,10 @@ namespace crds_angular.test.controllers
                 LocationName = "Location 2",
                 Address = new AddressDTO("Address 2", null, "City 2", "State 2", "Zip 2", 2, 2)
             };
-            _fixture = new LocationController(_locationServiceMock.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);
+            _fixture = new LocationController(_authTokenExpiryService.Object, 
+                                              _locationServiceMock.Object, 
+                                              new Mock<IUserImpersonationService>().Object, 
+                                              new Mock<IAuthenticationRepository>().Object);
         }
 
         [Test]

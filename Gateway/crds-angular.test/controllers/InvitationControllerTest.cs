@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Results;
 using crds_angular.Controllers.API;
@@ -16,6 +17,7 @@ namespace crds_angular.test.controllers
     {
         private InvitationController _fixture;
 
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IInvitationService> _invitationService;
         private const string AuthType = "type";
         private const string AuthToken = "token";
@@ -24,9 +26,13 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _invitationService = new Mock<IInvitationService>(MockBehavior.Strict);
 
-            _fixture = new InvitationController(_invitationService.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);
+            _fixture = new InvitationController(_authTokenExpiryService.Object,
+                                                _invitationService.Object, 
+                                                new Mock<IUserImpersonationService>().Object, 
+                                                new Mock<IAuthenticationRepository>().Object);
             _fixture.SetupAuthorization(AuthType, AuthToken);
         }
 
@@ -48,7 +54,7 @@ namespace crds_angular.test.controllers
                 InvitationId = 123,
                 InvitationGuid = "456"
             };
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _invitationService.Setup(mocked => mocked.ValidateInvitation(dto, _token)).Verifiable();
             _invitationService.Setup(mocked => mocked.CreateInvitation(dto, _token)).Returns(created);
 
@@ -75,6 +81,7 @@ namespace crds_angular.test.controllers
             };
 
             var validationException = new ValidationException("doh!");
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _invitationService.Setup(mocked => mocked.ValidateInvitation(dto, _token)).Throws(validationException).Verifiable();
 
             try
@@ -106,6 +113,7 @@ namespace crds_angular.test.controllers
             };
 
             var exception = new Exception("doh!");
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _invitationService.Setup(mocked => mocked.ValidateInvitation(dto, _token)).Verifiable();
             _invitationService.Setup(mocked => mocked.CreateInvitation(dto, _token)).Throws(exception);
 

@@ -16,7 +16,11 @@ namespace crds_angular.Controllers.API
     {
         private readonly crds_angular.Services.Interfaces.IStaffContactService _contactService;
 
-        public StaffContactController(crds_angular.Services.Interfaces.IStaffContactService contactService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public StaffContactController(IAuthTokenExpiryService authTokenExpiryService, 
+                                      crds_angular.Services.Interfaces.IStaffContactService contactService, 
+                                      IUserImpersonationService userImpersonationService, 
+                                      IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _contactService = contactService;
         }

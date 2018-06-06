@@ -25,6 +25,7 @@ namespace crds_angular.test.controllers
     {
         private FinderController _fixture;
 
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IAddressService> _addressService;
         private Mock<IAddressGeocodingService> _addressGeocodingService;
         private Mock<IGroupToolService> _groupToolService;
@@ -40,6 +41,7 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _finderService = new Mock<IFinderService>();
             _userImpersonationService = new Mock<IUserImpersonationService>();
             _authenticationRepository = new Mock<IAuthenticationRepository>();
@@ -51,7 +53,8 @@ namespace crds_angular.test.controllers
             _authType = "authType";
             _authToken = "authToken";
 
-            _fixture = new FinderController(_finderService.Object,
+            _fixture = new FinderController(_authTokenExpiryService.Object,
+                                            _finderService.Object,
                                             _groupToolService.Object,
                                             _userImpersonationService.Object,
                                             _authenticationRepository.Object,
@@ -83,6 +86,7 @@ namespace crds_angular.test.controllers
             var listPinDto = GetListOfPinDto();
             var address = new AddressDTO("123 Main st","","Independence","KY","41051",32,-84);
 
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _finderService.Setup(m => m.GetGeoCoordsFromAddressOrLatLang(It.IsAny<string>(), It.IsAny<GeoCoordinates>())).Returns(geoCoordinate);
             _finderService.Setup(m => m.GetMyPins(It.IsAny<string>(), It.IsAny<GeoCoordinate>(), It.IsAny<int>(), It.IsAny<string>())).Returns(listPinDto);
             _finderService.Setup(m => m.RandomizeLatLong(It.IsAny<AddressDTO>())).Returns(address);
@@ -111,7 +115,7 @@ namespace crds_angular.test.controllers
             ));
 
             _authenticationRepository.Setup(m => m.GetContactId(It.IsAny<string>())).Returns(12345);
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _analyticsService.Setup(m => m.Track(
                                         It.Is<string>(contactId => contactId.Equals("12345")),
                                         It.Is<string>(eventName => eventName.Equals("HostInvitationSent")),
@@ -148,7 +152,7 @@ namespace crds_angular.test.controllers
                         && dto.Address.PostalCode.Equals(fakeRequest.Address.PostalCode)
                         && dto.ContactId.Equals(fakeRequest.ContactId))
                 ));
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _analyticsService.Setup(m => m.Track(
                                         It.Is<string>(contactId => contactId.Equals(fakeRequest.ContactId.ToString())),
                                         It.Is<string>(eventName => eventName.Equals("RegisteredAsHost")),
@@ -172,6 +176,7 @@ namespace crds_angular.test.controllers
             fakeQueryParams.FinderType = "CONNECT";
             var geoCoordinate = new GeoCoordinate(39.123, -84.456);
 
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _finderService.Setup(m => m.GetGeoCoordsFromAddressOrLatLang(It.IsAny<string>(), It.IsAny<GeoCoordinates>())).Returns(geoCoordinate);
             _finderService.Setup(m => m.GetMyPins(It.IsAny<string>(), It.IsAny<GeoCoordinate>(), It.IsAny<int>(), It.IsAny<string>())).Returns(new List<PinDto>());
 
@@ -193,7 +198,7 @@ namespace crds_angular.test.controllers
             };
             var groupId = 1;
             var roleId = 2;
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _finderService.Setup(m => m.AddUserDirectlyToGroup(It.Is<string>(toke => toke.Equals(token)),It.Is<User>(u => u.Equals(fakePerson)), 1, 2));
 
             _fixture.AddToGroup(groupId, fakePerson, roleId);
@@ -204,6 +209,7 @@ namespace crds_angular.test.controllers
         [ExpectedException(typeof(HttpResponseException))]
         public void TestNotAuthorized()
         {
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _authenticationRepository.Setup(mocked => mocked.GetContactId("abc")).Returns(123456);
             _fixture.EditGatheringPin(GetListOfPinDto()[0]);
         }

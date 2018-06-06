@@ -12,5 +12,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         void UpdateParticipantHostStatus(MpParticipant participant);
         void UpdateParticipant(Dictionary<string, object> getDictionary);
         int CreateParticipantRecord(int contactId);
+        void UpdateHuddleGroupParticipantStatus();
     }
 }

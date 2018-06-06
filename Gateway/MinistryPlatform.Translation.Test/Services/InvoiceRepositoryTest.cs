@@ -47,7 +47,7 @@ namespace MinistryPlatform.Translation.Test.Services
       const string token = "letmein";
       var filter = $"Invoice_ID={invoiceId} AND Invoice_Status_ID!={4}";
 
-      _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+      _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
       _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRest.Object);
       _ministryPlatformRest.Setup(m => m.Search<MpInvoice>(filter, null as string, null, false)).Returns(new List<MpInvoice>());
 
@@ -65,7 +65,7 @@ namespace MinistryPlatform.Translation.Test.Services
       const string token = "letmein";
       var invoiceDetail = InvoiceDetail(productId, camperId, expectedInvoiceId);
 
-      _apiUserRepository.Setup(m => m.GetDefaultApiUserToken()).Returns(token);
+      _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
       _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRest.Object);
       _ministryPlatformRest.Setup(m => m.Search<MpInvoiceDetail>(
                                     $"Recipient_Contact_ID_Table.[Contact_ID]={camperId} AND Product_ID_Table.[Product_ID]={productId} AND Event_Participant_ID_Table_Event_ID_Table.[Event_ID]={eventId} AND Invoice_Status_ID!=4",
@@ -87,7 +87,7 @@ namespace MinistryPlatform.Translation.Test.Services
       const string token = "letmein";
       var invoiceDetail = InvoiceDetail(productId, camperId, expectedInvoiceId);
 
-      _apiUserRepository.Setup(m => m.GetDefaultApiUserToken()).Returns(token);
+      _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
       _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRest.Object);
       _ministryPlatformRest.Setup(m => m.Search<MpInvoiceDetail>(
                                     $"Recipient_Contact_ID_Table.[Contact_ID]={camperId} AND Product_ID_Table.[Product_ID]={productId} AND Event_Participant_ID_Table_Event_ID_Table.[Event_ID]={eventId} AND Invoice_Status_ID!=4",
@@ -107,7 +107,7 @@ namespace MinistryPlatform.Translation.Test.Services
       const int eventId = 1111;
       const string token = "letmein";
 
-      _apiUserRepository.Setup(m => m.GetDefaultApiUserToken()).Returns(token);
+      _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
       _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRest.Object);
       _ministryPlatformRest.Setup(m => m.Search<MpInvoiceDetail>(
                                     $"Recipient_Contact_ID_Table.[Contact_ID]={camperId} AND Product_ID_Table.[Product_ID]={productId} AND Event_Participant_ID_Table_Event_ID_Table.[Event_ID]={eventId} AND Invoice_Status_ID!=4",

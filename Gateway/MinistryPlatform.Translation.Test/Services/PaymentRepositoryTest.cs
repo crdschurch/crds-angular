@@ -43,7 +43,7 @@ namespace MinistryPlatform.Translation.Test.Services
                         PaymentAmount = paymentDetail.PaymentAmount
                     }
                 });
-            _apiUserRepository.Setup(a => a.GetToken()).Returns(token);
+            _apiUserRepository.Setup(a => a.GetDefaultApiClientToken()).Returns(token);
 
             var response = _fixture.CreatePaymentAndDetail(paymentDetail);
             Assert.AreEqual(true, response.Status);
@@ -57,7 +57,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var paymentList = new List<MpPaymentDetail> { paymentDetail };
             _ministryPlatformRest.Setup(p => p.PostWithReturn<MpPaymentDetail, MpPaymentDetailReturn>(paymentList)).Returns(
                 new List<MpPaymentDetailReturn>());
-            _apiUserRepository.Setup(a => a.GetToken()).Returns(token);
+            _apiUserRepository.Setup(a => a.GetDefaultApiClientToken()).Returns(token);
 
             var response = _fixture.CreatePaymentAndDetail(paymentDetail);
             Assert.AreEqual(false, response.Status);

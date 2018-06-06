@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Results;
@@ -28,9 +29,13 @@ namespace crds_angular.Controllers.API
         private readonly IApiUserRepository _apiUserService;
         private readonly int _defaultContactId;
 
-        public ImageController(MPInterfaces.IMinistryPlatformService mpService, IAuthenticationRepository authenticationService,
-            IApiUserRepository apiUserService, IUserImpersonationService userImpersonationService, IConfigurationWrapper configurationWrapper)
-            : base(userImpersonationService, authenticationService)
+        public ImageController(IAuthTokenExpiryService authTokenExpiryService, 
+                               MPInterfaces.IMinistryPlatformService mpService, 
+                               IAuthenticationRepository authenticationService,
+                               IApiUserRepository apiUserService, 
+                               IUserImpersonationService userImpersonationService, 
+                               IConfigurationWrapper configurationWrapper)
+            : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _apiUserService = apiUserService;
             _mpService = mpService;
@@ -89,7 +94,7 @@ namespace crds_angular.Controllers.API
         [IgnoreClientApiKey]
         public IHttpActionResult GetProfileImage(int contactId, bool defaultIfMissing = true)
         {
-            var apiToken = _apiUserService.GetDefaultApiUserToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
 
             IHttpActionResult result = GetContactImage(contactId, apiToken);
             if (result is NotFoundResult && defaultIfMissing)
@@ -131,7 +136,7 @@ namespace crds_angular.Controllers.API
         [IgnoreClientApiKey]
         public IHttpActionResult GetCampaignImage(int recordId)
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var files = _mpService.GetFileDescriptions("Pledge_Campaigns", recordId, token);
             var file = files.FirstOrDefault(f => f.IsDefaultImage);
             return file != null ?
@@ -142,8 +147,16 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "image/profile", minimumVersion: "1.0.0")]
         [Route("image/profile")]
         [HttpPost]
-        public IHttpActionResult Post()
+        public async Task<IHttpActionResult> Post()
         {
+            // this needs to happen prior to Authorized() because ReadAsStringAsync() will
+            // sometimes deadlock if it's called syncronously
+            var base64String = await Request.Content.ReadAsStringAsync();
+            if (base64String.Length == 0)
+            {
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Request did not specify a \"file\" for the profile image."));
+            }
+
             return (Authorized(token =>
             {
                 const string fileName = "profile.png";
@@ -151,12 +164,6 @@ namespace crds_angular.Controllers.API
                 var contactId = _mpService.GetContactInfo(token).ContactId;
                 var files = _mpService.GetFileDescriptions("MyContact", contactId, token);
                 var file = files.FirstOrDefault(f => f.IsDefaultImage);
-                var base64String = Request.Content.ReadAsStringAsync().Result;
-
-                if (base64String.Length == 0)
-                {
-                    throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, "Request did not specify a \"file\" for the profile image."));
-                }
 
                 var imageBytes = Convert.FromBase64String(base64String.Split(',')[1]);
 
