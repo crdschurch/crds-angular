@@ -21,7 +21,6 @@ class InvoiceController {
           console.log(this.url);
         },
         (err) => {
-          console.log('error in invoice controller ', err);
           console.error(err); // eslint-disable-line no-console
         })
     ]).then(() => {
