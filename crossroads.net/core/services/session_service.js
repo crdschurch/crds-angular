@@ -225,8 +225,7 @@
     };
 
     vm.verifyAuthentication = (event, stateName, stateData, stateToParams) => {
-      if (vm.isActive()) {
-        debugger;
+      if (vm.isActive()) {       
         const promise = $http({
           method: "GET",
           url: `${__GATEWAY_CLIENT_ENDPOINT__}api/authenticated`,
