@@ -12,18 +12,20 @@ class InvoiceController {
 
   $onInit() {
     this.setGatewayUrls();
-    this.q.all([
+    this.q.all([     
       this.invoicesService.getInvoiceDetails(this.invoiceId),
       this.invoicesService.getPaymentDetails(this.invoiceId).then(
         (data) => {
           this.alreadyPaid = (data.paymentLeft === 0);
           this.url = this.buildUrl(this.invoiceId, data.paymentLeft, data.paymentLeft);
+          console.log(this.url);
         },
         (err) => {
           console.error(err); // eslint-disable-line no-console
         })
     ]).then(() => {
       this.viewReady = true;
+      console.log ('view is ready ', this.viewRedy);
     });
   }
 
