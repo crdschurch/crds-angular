@@ -23,6 +23,7 @@ IF NOT EXISTS ( SELECT  *
 	@group_name nvarchar(75),
 	@group_role_id int,
 	@start_date datetime,
+	@preferred_serve_event_type_id int,
 	@error_message nvarchar(500) OUTPUT,
 	@group_participant_id int OUTPUT AS SET NOCOUNT ON;')
 GO
@@ -31,6 +32,7 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Group_Participant]
 	@group_name nvarchar(75),
 	@group_role_id int,
 	@start_date datetime,
+	@preferred_serve_event_type_id int,
 	@error_message nvarchar(500) OUTPUT,
 	@group_participant_id int OUTPUT
 AS
@@ -48,6 +50,7 @@ BEGIN
 	--Required fields
 	SET @group_role_id = ISNULL(@group_role_id, 1); --Participant
 	SET @start_date = ISNULL(@start_date, GETDATE());
+	SET @preferred_serve_event_type_id = ISNULL(@preferred_serve_event_type_id, 487); --No Preferred Serving Time
 
 	DECLARE @auto_promote bit = 1;
 			
@@ -90,8 +93,8 @@ BEGIN
 	IF @group_participant_id is null
 	BEGIN
 		INSERT INTO [dbo].Group_Participants 
-		(Group_ID ,Participant_ID ,Group_Role_ID ,Start_Date ,Employee_Role ,Auto_Promote ,Domain_ID) VALUES
-		(@group_id,@participant_id,@group_role_id,@start_date,@employee_role,@auto_promote,1        );
+		(Group_ID ,Participant_ID ,Group_Role_ID ,Start_Date ,Employee_Role ,Auto_Promote ,Preferred_Serving_Event_Type_ID,Domain_ID) VALUES
+		(@group_id,@participant_id,@group_role_id,@start_date,@employee_role,@auto_promote,@preferred_serve_event_type_id ,1        );
 
 		SET @group_participant_id = SCOPE_IDENTITY();
 	END;
@@ -102,7 +105,8 @@ BEGIN
 		SET Group_Role_ID = @group_role_id,
 		Start_Date = @start_date,
 		Employee_Role = @employee_role,
-		Auto_Promote = @auto_promote
+		Auto_Promote = @auto_promote,
+		Preferred_Serving_Event_Type_ID = @preferred_serve_event_type_id
 		WHERE Group_Participant_ID = @group_participant_id;
 	END;
 END
