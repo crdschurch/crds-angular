@@ -4,7 +4,7 @@
     <h1 id="InvoiceHeader" class="page-header">{{invoice.invoicesService.invoiceDetails.product.productName}} Invoice Payment</h1>
     <h3 id="InvoiceRecipientName" class="font-size-smaller">For {{invoice.invoicesService.invoiceDetails.recipientName}}</h3>
     <div class="push-top row">
-      <div ng-if="invoice.alreadyPaid">
+      <div ng-if="invoice.alreadyPaid" data-automation-id="invoiceAlreadyPaid">
         <div dynamic-content="$root.MESSAGES.invoiceAlreadyPaid.content | html"></div>
       </div>
       <div ng-if="!invoice.alreadyPaid && invoice.url">
