@@ -66,6 +66,7 @@ function CreateGroupParticipants($DBConnection){
 			AddStringParameter $command "@participant_email" $participantRow.R_Participant_Email
 			AddIntParameter $command "@group_role_id" $participantRow.R_Group_Role_ID
 			AddDateParameter $command "@start_date" $participantRow.R_Start_Date
+            AddIntParameter $command "@preferred_serve_event_type_id" $participantRow.Preferred_Serving_Event_Type_ID
 			AddOutputParameter $command "@error_message" "String"
 			AddOutputParameter $command "@group_participant_id" "Int32"
 				
