@@ -25,6 +25,8 @@ $errors += $LASTEXITCODE
 $errors += $LASTEXITCODE
 . "$($root_path)\02.TestData\06.PledgeCampaign+Pledge\DeletePledgeCampaigns.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 $errors += $LASTEXITCODE
+. "$($root_path)\02.TestData\08.Product+Invoice+Payment\DeleteProducts.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
+$errors += $LASTEXITCODE
 
 if($errors -ne 0){
 	exit 1

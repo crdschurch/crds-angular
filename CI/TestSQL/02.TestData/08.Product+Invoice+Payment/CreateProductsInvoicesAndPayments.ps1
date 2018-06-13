@@ -1,4 +1,5 @@
 param (
+    [string]$productDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateProducts.csv"),
     [string]$invoiceAndPaymentDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateInvoicesAndPayments.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
@@ -12,6 +13,38 @@ function OpenConnection{
 	$DBConnection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;User Id=$DBUser;Password=$DBPassword"
 	$DBConnection.Open();
 	return $DBConnection
+}
+
+#Create all products in list
+function CreateProducts($DBConnection){
+	$productDataList = import-csv $productDataCSV
+	$error_count = 0
+	foreach($productRow in $productDataList)
+	{
+		if(![string]::IsNullOrEmpty($productRow.R_Product_Name))
+		{
+			#Create command to be executed
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_Create_Product"
+			
+			#Add parameters to command - parameter names must match stored proc parameter names
+			AddStringParameter $command "@product_name" $productRow.R_Product_Name			
+			AddMoneyParameter $command "@base_price" $productRow.R_Base_Price
+            AddMoneyParameter $command "@deposit_price" $productRow.Deposit_Price
+            AddStringParameter $command "@program_name" $productRow.ProgramName
+			AddOutputParameter $command "@error_message" "String"
+			AddOutputParameter $command "@product_id" "Int32"
+				
+			#Execute and report results
+			$result = $command.ExecuteNonQuery()
+			$error_found = LogResult $command "@error_message" "ERROR"
+			$product_created = LogResult $command "@product_id" "Product created"
+			
+			if(!$product_created){
+				$error_count += 1
+			}
+		}
+	}
+	return $error_count
 }
 
 #Create all invoices in list
@@ -81,6 +114,7 @@ function CreateInvoicesWithPayment($DBConnection){
 try{
 	$DBConnection = OpenConnection
 	$errors = 0
+    $errors += CreateProducts $DBConnection
 	$errors += CreateInvoicesWithPayment $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_

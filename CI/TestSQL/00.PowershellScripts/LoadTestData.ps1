@@ -34,7 +34,7 @@ $errors += $LASTEXITCODE
 $errors += $LASTEXITCODE
 . "$($root_path)\02.TestData\07.Donation+Distribution\CreateDonations.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 $errors += $LASTEXITCODE
-. "$($root_path)\02.TestData\08.Invoice+Payment\CreateInvoicesAndPayments.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
+. "$($root_path)\02.TestData\08.Product+Invoice+Payment\CreateProductsInvoicesAndPayments.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 $errors += $LASTEXITCODE
 . "$($root_path)\02.TestData\09.EventParticipants+GroupParticipants\CreateEventAndGroupParticipants.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 $errors += $LASTEXITCODE
