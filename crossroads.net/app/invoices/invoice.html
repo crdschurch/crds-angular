@@ -7,7 +7,7 @@
       <div ng-if="invoice.alreadyPaid">
         <div dynamic-content="$root.MESSAGES.invoiceAlreadyPaid.content | html"></div>
       </div>
-      <div ng-if="!invoice.alreadyPaid">
+      <div ng-if="!invoice.alreadyPaid && invoice.url">
         <crds-embed
           href="{{invoice.url}}"
           frameborder="0"
