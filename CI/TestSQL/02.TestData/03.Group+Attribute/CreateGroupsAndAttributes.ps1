@@ -3,6 +3,7 @@ param (
     [string]$addChildGroupDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\AddChildGroup.csv"),
     [string]$attributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateAttributes.csv"),
     [string]$groupAttributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateGroupAttributes.csv"),
+    [string]$contactAttributeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateContactAttributes.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -158,6 +159,37 @@ function CreateGroupAttributes($DBConnection){
 	return $error_count
 }
 
+#Creates group attributes
+function CreateContactAttributes($DBConnection){
+	$contactAttributeDataList = import-csv $contactAttributeDataCSV
+	$error_count = 0
+	foreach($attributeRow in $contactAttributeDataList)
+	{
+		if(![string]::IsNullOrEmpty($attributeRow.R_Contact_Email))
+		{
+		#Create command to be executed
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_Create_Contact_Attribute"
+						
+			#Add parameters to command - parameter names must match stored proc parameter names
+			AddStringParameter $command "@attribute_name" $attributeRow.R_Attribute_Name
+			AddStringParameter $command "@contact_email" $attributeRow.R_Contact_Email
+			AddDateParameter $command "@start_date" $attributeRow.R_Start_Date
+			AddOutputParameter $command "@error_message" "String"
+			AddOutputParameter $command "@contact_attribute_id" "Int32"
+			
+			#Execute and report results
+			$result = $command.ExecuteNonQuery()
+			$error_found = LogResult $command "@error_message" "ERROR"
+			$attribute_created = LogResult $command "@contact_attribute_id" "Contact Attribute created"
+			
+			if(!$attribute_created){
+				$error_count += 1
+			}
+		}
+	}
+	return $error_count
+}
+
 #Execute all the Create functions
 try{
 	$DBConnection = OpenConnection
@@ -166,7 +198,7 @@ try{
 	$errors += AddChildGroup $DBConnection
 	$errors += CreateAttributes $DBConnection
 	$errors += CreateGroupAttributes $DBConnection
-	
+    $errors += CreateContactAttributes $DBConnection	
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
 	exit 1

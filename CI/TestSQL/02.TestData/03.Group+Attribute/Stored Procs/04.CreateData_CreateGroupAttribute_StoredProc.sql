@@ -9,7 +9,7 @@ GO
 -- Author:      Henney, Sarah
 -- Create date: 02/05/2018
 -- Description: Creates (if nonexistent) or Updates group attribute
--- Output:      @attribute_group_id contains the group attribute id, @error_message contains basic error message
+-- Output:      @group_attribute_id contains the group attribute id, @error_message contains basic error message
 -- =============================================
 
 
