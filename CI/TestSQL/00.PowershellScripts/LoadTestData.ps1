@@ -22,7 +22,7 @@ $errors += $LASTEXITCODE
 #Load TestData folder
 . "$($root_path)\02.TestData\01.Batch+Deposit\CreateDepositsAndBatches.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 $errors += $LASTEXITCODE
-. "$($root_path)\02.TestData\02.Program\CreatePrograms.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
+. "$($root_path)\02.TestData\02.Program+Product\CreateProgramsAndProducts.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 $errors += $LASTEXITCODE
 . "$($root_path)\02.TestData\03.Group+Attribute\CreateGroupsAndAttributes.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 $errors += $LASTEXITCODE

@@ -15,7 +15,7 @@ $errors += $LASTEXITCODE
 #Delete from TestData folder
 . "$($root_path)\02.TestData\01.Batch+Deposit\DeleteDepositsAndBatches.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 $errors += $LASTEXITCODE
-. "$($root_path)\02.TestData\02.Program\DeletePrograms.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
+. "$($root_path)\02.TestData\02.Program+Product\DeleteProgramsAndProducts.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 $errors += $LASTEXITCODE
 . "$($root_path)\02.TestData\03.Group+Attribute\DeleteGroupsAndAttributes.ps1" -DBServer $DBServer -DBUser $DBUser -DBPassword $DBPassword
 $errors += $LASTEXITCODE
