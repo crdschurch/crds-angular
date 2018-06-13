@@ -66,6 +66,9 @@ function CreateEvents($DBConnection){
 			AddStringParameter $command "@program_name" $eventRow.R_Program_Name
 			AddIntParameter $command "@location_id" $eventRow.Location_ID
 			AddStringParameter $command "@group_name" $eventRow.Group_Name
+            AddDateParameter $command "@registration_start_date" $eventRow.Registration_Start_Date
+			AddDateParameter $command "@registration_end_date" $eventRow.Registration_End_Date
+            AddStringParameter $command "@online_registration_product_name" $eventRow.Online_Registration_Product_Name
 			AddOutputParameter $command "@error_message" "String" 1000
 			AddOutputParameter $command "@event_id" "Int32"
 			AddOutputParameter $command "@event_group_id" "Int32"
