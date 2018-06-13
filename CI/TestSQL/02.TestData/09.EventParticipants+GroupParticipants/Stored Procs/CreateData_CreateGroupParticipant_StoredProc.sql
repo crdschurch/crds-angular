@@ -88,7 +88,7 @@ BEGIN
 	
 	--Create/Update group participant
 	SET @group_participant_id = (SELECT TOP 1 Group_Participant_ID FROM [dbo].Group_Participants WHERE Participant_ID = @participant_id
-	AND Group_ID = @group_id ORDER BY Group_Participant_ID ASC);
+	AND Group_ID = @group_id AND Group_Role_ID = @group_role_id ORDER BY Group_Participant_ID ASC);
 
 	IF @group_participant_id is null
 	BEGIN
@@ -102,8 +102,7 @@ BEGIN
 	IF @group_participant_id is not null
 	BEGIN
 		UPDATE [dbo].Group_Participants
-		SET Group_Role_ID = @group_role_id,
-		Start_Date = @start_date,
+		SET Start_Date = @start_date,
 		Employee_Role = @employee_role,
 		Auto_Promote = @auto_promote,
 		Preferred_Serving_Event_Type_ID = @preferred_serve_event_type_id
