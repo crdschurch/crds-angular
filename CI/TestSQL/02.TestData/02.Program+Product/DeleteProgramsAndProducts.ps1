@@ -1,4 +1,5 @@
 param (
+    [string]$programListCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreatePrograms.csv"),
     [string]$productDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateProducts.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
@@ -14,6 +15,36 @@ function OpenConnection{
 	return $DBConnection
 }
 
+#Deletes all programs in the list
+function DeletePrograms($DBConnection){
+	$programList = import-csv $programListCSV
+	$error_count = 0
+	foreach($program in $programList)
+	{
+		if(![string]::IsNullOrEmpty($program.R_Program_Name))
+		{
+			#Create command
+			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Program_By_Name"
+			
+			#Add variables for stored proc
+			AddStringParameter $command "@program_name" $program.R_Program_Name
+			
+			#Execute command
+			$adapter = new-object System.Data.SqlClient.SqlDataAdapter
+			$adapter.SelectCommand = $command		
+			$dataset = new-object System.Data.Dataset
+			try { 
+				write-host "Removing Program" $program.R_Program_Name
+				$results = $adapter.Fill($dataset) 
+			} catch {
+				write-host "There was an error deleting data related to program "$program.R_Program_Name
+				write-host "Error: " $Error
+				$error_count += 1
+			}
+		}
+	}
+	return $error_count
+}
 
 #Deletes all products in the list
 function DeleteProducts($DBConnection){
@@ -50,6 +81,7 @@ function DeleteProducts($DBConnection){
 try{
 	$DBConnection = OpenConnection
 	$errors = 0
+	$errors += DeletePrograms $DBConnection
 	$errors += DeleteProducts $DBConnection
 } catch {
 	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
