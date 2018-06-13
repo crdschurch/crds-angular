@@ -7,7 +7,7 @@ GO
 
 -- =============================================
 -- Author:      Henney, Sarah
--- Create date: 02/05/2018
+-- Create date: 06/13/2018
 -- Description: Creates (if nonexistent) or Updates contact attribute
 -- Output:      @contact_attribute_id contains the contact attribute id, @error_message contains basic error message
 -- =============================================

@@ -159,7 +159,7 @@ function CreateGroupAttributes($DBConnection){
 	return $error_count
 }
 
-#Creates group attributes
+#Creates contact attributes
 function CreateContactAttributes($DBConnection){
 	$contactAttributeDataList = import-csv $contactAttributeDataCSV
 	$error_count = 0
