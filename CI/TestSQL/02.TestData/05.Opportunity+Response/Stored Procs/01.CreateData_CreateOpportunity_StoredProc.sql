@@ -116,7 +116,14 @@ BEGIN
 		IF @group_id is null
 			SET @error_message = @error_message+'Could not find group with name '+@group_name+'. Group not included in opportunity '+@opportunity_name+CHAR(13);
 	END;
-	
+
+	DECLARE @signup_deadline_id int = null;
+	IF @signup_deadline is not null
+	BEGIN
+		SET @signup_deadline_id = (SELECT TOP 1 Sign_Up_Deadline_ID FROM [dbo].cr_Sign_Up_Deadline WHERE Sign_Up_Deadline = @signup_deadline ORDER BY Sign_Up_Deadline_ID ASC);
+		IF @signup_deadline_id is null
+			SET @error_message = @error_message+'Could not find sign up deadline with value '+@signup_deadline+'. Sign up deadline not included in opportunity '+@opportunity_name+CHAR(13);
+	END;	
 	
 	--Create/Update opportunity
 	SET @opportunity_id = (SELECT TOP 1 Opportunity_ID FROM [dbo].Opportunities WHERE Opportunity_Title = @opportunity_name ORDER BY Opportunity_ID ASC);
@@ -146,7 +153,7 @@ BEGIN
 		Shift_Start = @shift_start,
 		Shift_End = @shift_end,
 		Event_Type_ID = @event_type_id,
-		Sign_Up_Deadline_ID = @signup_deadline,
+		Sign_Up_Deadline_ID = @signup_deadline_id,
 		Room = @room_name,
 		Reminder_Days_Prior = @reminder_days_prior,
 		Description = @description,  

@@ -66,8 +66,8 @@ BEGIN
 	IF @product_id is null
 	BEGIN
 		INSERT INTO [dbo].Products 
-		(Product_Name ,Base_Price ,Deposit_Price ,Active ,Domain_ID,Price_Currency ,Program_ID ,Description               ) VALUES
-		(@product_name,@base_price,@deposit_price,@active,1        ,@price_currency,@program_id,cast(@description as text));
+		(Product_Name ,Base_Price ,Active ,Domain_ID) VALUES
+		(@product_name,@base_price,@active,1        );
 
 		SET @product_id = SCOPE_IDENTITY();
 	END;
