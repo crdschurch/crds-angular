@@ -43,3 +43,6 @@ R_Opportunity_Title,R_Contact_Email,R_Program_Name,R_Group_Role_ID,Shift_Sart,Sh
 (t) Superbowl Oakley 10:00,mpcrds+chell@aperture.com,Spiritual Growth,16,9:45:00,15:15:00,5,10,,(t) Superbowl Oakley Group,(t) Superbowl Oakley daily 10:00,,11/1/2015,3
 (t) Superbowl Leader Oakley 3:00,mpcrds+chell@aperture.com,Spiritual Growth,22,14:45:00,16:15:00,1,1,,(t) Superbowl Oakley Group,(t) Superbowl Oakley daily 3:00,,11/1/2015,3
 (t) Superbowl Oakley 3:00,mpcrds+chell@aperture.com,Spiritual Growth,16,14:45:00,16:15:00,5,10,,(t) Superbowl Oakley Group,(t) Superbowl Oakley daily 3:00,,11/1/2015,3
+(t+auto) Another Opportunity in Another Event,mpcrds+chell@aperture.com,First Impressions,16,14:00:00,16:00:00,1,250,Atrium,(t+auto) Verify UI,Service - Florence Sunday at 11:30am,Test Data,11/27/2015,0
+(t+auto) Another Opportunity in Same Event,mpcrds+chell@aperture.com,First Impressions,16,14:00:00,16:00:00,1,250,Atrium,(t+auto) Verify UI,Service - Florence Sunday at 5:30am,Test Data,11/27/2015,0
+(t+auto) Hey Serve UI,mpcrds+chell@aperture.com,First Impressions,16,4:00:00,5:00:00,1,250,UI Room,(t+auto) Verify UI,Service - Florence Sunday at 5:30am,Test Data,11/27/2015,0
