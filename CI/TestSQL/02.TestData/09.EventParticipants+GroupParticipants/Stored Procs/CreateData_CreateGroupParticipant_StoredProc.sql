@@ -80,7 +80,7 @@ BEGIN
 			RETURN;
 		END;
 	END;
-
+	
 	DECLARE @employee_role bit = 0;
 	IF @participant_email like '%@crossroads.net'
 		SET @employee_role = 1;
