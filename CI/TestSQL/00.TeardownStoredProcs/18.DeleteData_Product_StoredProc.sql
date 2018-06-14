@@ -135,10 +135,10 @@ IF NOT EXISTS ( SELECT  *
 	WHERE   object_id = OBJECT_ID(N'cr_QA_Delete_Product_By_Name')
 			AND type IN ( N'P', N'PC' ) )
 	EXEC('CREATE PROCEDURE dbo.cr_QA_Delete_Product_By_Name
-	@product_id int AS SET NOCOUNT ON;')
+	@product_id nvarchar(50) AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Delete_Product_By_Name] 
-	@product_name int
+	@product_name nvarchar(50)
 AS
 BEGIN
 	SET NOCOUNT ON;
