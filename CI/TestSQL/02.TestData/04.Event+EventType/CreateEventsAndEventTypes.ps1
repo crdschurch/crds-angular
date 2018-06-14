@@ -1,6 +1,7 @@
 param (
     [string]$eventTypeDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateEventTypes.csv"),
     [string]$eventDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\CreateEvents.csv"),
+    [string]$addChildEventDataCSV = ((Split-Path $MyInvocation.MyCommand.Definition)+"\AddChildEvents.csv"),
     [string]$DBServer = "mp-int-db.centralus.cloudapp.azure.com",
     [string]$DBUser = $(Get-ChildItem Env:MP_SOURCE_DB_USER).Value, # Default to environment variable
     [string]$DBPassword = $(Get-ChildItem Env:MP_SOURCE_DB_PASSWORD).Value # Default to environment variable
@@ -88,12 +89,45 @@ function CreateEvents($DBConnection){
     return $error_count
 }
 
+#Add child event to parent event
+function AddChildEvent($DBConnection){
+    $addChildEventDataList = import-csv $addChildEventDataCSV
+    $error_count = 0
+    foreach($eventRow in $addChildEventDataList)
+    {
+        if(![string]::IsNullOrEmpty($eventRow.R_Parent_Event_Name))
+        {
+            #Create command to be executed
+            $command = CreateStoredProcCommand $DBConnection "cr_QA_Add_Child_Event"
+            
+            #Add parameters to command - parameter names must match stored proc parameter names
+            AddStringParameter $command "@parent_event_name" $eventRow.R_Parent_Event_Name            
+            AddStringParameter $command "@child_event_name" $eventRow.R_Child_Event_Name        
+            AddOutputParameter $command "@error_message" "String"
+            AddOutputParameter $command "@parent_event_id" "Int32"
+            AddOutputParameter $command "@child_event_id" "Int32"
+            
+            #Execute and report results
+            $result = $command.ExecuteNonQuery()
+            $error_found = LogResult $command "@error_message" "ERROR"
+            $child_found = LogResult $command "@child_event_id" "Added Event"
+            $parent_found = LogResult $command "@parent_event_id" "        to parent Event"
+            
+            if(!$child_found -or !$parent_found){
+                $error_count += 1
+            }
+        }
+    }
+    return $error_count
+}
+
 #Execute all the update functions
 try{
     $DBConnection = OpenConnection
     $errors = 0
     $errors += CreateEventTypes $DBConnection
     $errors += CreateEvents $DBConnection
+    $errors += AddChildEvent $DBConnection
 } catch {
     write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
     exit 1
