@@ -50,8 +50,8 @@ BEGIN
 	--Required fields
 	SET @group_role_id = ISNULL(@group_role_id, 1); --Participant
 	SET @start_date = ISNULL(@start_date, GETDATE());
-	SET @preferred_serve_event_type_id = ISNULL(@preferred_serve_event_type_id, 487); --No Preferred Serving Time
-
+	SET @preferred_serve_event_type_id = ISNULL(@preferred_serve_event_type_id, 475); --No Preferred Serving Time
+	
 	DECLARE @auto_promote bit = 1;
 			
 	DECLARE @group_id int = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @group_name ORDER BY Group_ID ASC);
@@ -80,7 +80,7 @@ BEGIN
 			RETURN;
 		END;
 	END;
-	
+		
 	DECLARE @employee_role bit = 0;
 	IF @participant_email like '%@crossroads.net'
 		SET @employee_role = 1;
