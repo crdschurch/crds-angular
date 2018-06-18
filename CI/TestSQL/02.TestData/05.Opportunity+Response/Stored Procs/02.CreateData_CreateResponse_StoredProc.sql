@@ -38,9 +38,9 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @participant_email is null OR @opportunity_id is null
+	IF @opportunity_id is null
 	BEGIN
-		SET @error_message = 'Participant email and opportunity id cannot be null'+CHAR(13);
+		SET @error_message = 'Opportunity id cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
@@ -50,16 +50,19 @@ BEGIN
 
 	DECLARE @closed bit = 0;
 
-	DECLARE @contact_id int;
-	SET @contact_id = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @participant_email);
+	IF @participant_email is null
+	BEGIN
+		SET @error_message = 'Participant email cannot be null'+CHAR(13);
+		RETURN;
+	END;
+	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @participant_email);
 	IF @contact_id is null
 	BEGIN
 		SET @error_message = 'Could not find contact with email '+@participant_email+CHAR(13);
 		RETURN;
 	END;
 
-	DECLARE @participant_id int;
-	SET @participant_id = (SELECT Participant_Record FROM [dbo].Contacts WHERE Contact_ID = @contact_id);
+	DECLARE @participant_id int = (SELECT Participant_Record FROM [dbo].Contacts WHERE Contact_ID = @contact_id);
 	IF @participant_id is null
 	BEGIN
 		--Use defaults

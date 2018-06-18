@@ -40,9 +40,9 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @donor_email is null OR @campaign_name is null 
+	IF @campaign_name is null 
 	BEGIN
-		SET @error_message = 'Donor email and pledge campaign name cannot be null'+CHAR(13);
+		SET @error_message = 'Pledge campaign name cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
@@ -53,6 +53,11 @@ BEGIN
 
 	DECLARE @pledge_status_id int = 1; --Active
 
+	IF @donor_email is null
+	BEGIN
+		SET @error_message = 'Donor email cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @donor_email);
 	IF @contact_id is null
 	BEGIN
@@ -74,8 +79,7 @@ BEGIN
 		END;
 	END;
 
-	DECLARE @campaign_id INT;
-	SET @campaign_id = (SELECT TOP 1 Pledge_Campaign_ID FROM [dbo].Pledge_Campaigns WHERE Campaign_Name = @campaign_name ORDER BY Pledge_Campaign_ID ASC);
+	DECLARE @campaign_id int = (SELECT TOP 1 Pledge_Campaign_ID FROM [dbo].Pledge_Campaigns WHERE Campaign_Name = @campaign_name ORDER BY Pledge_Campaign_ID ASC);
 	IF @campaign_id is null
 	BEGIN
 		SET @error_message = 'Could not find pledge campaign with name '+@campaign_name+CHAR(13);

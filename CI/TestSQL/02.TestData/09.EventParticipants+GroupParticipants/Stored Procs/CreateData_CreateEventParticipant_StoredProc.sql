@@ -43,27 +43,28 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Event_Participant]
 AS
 BEGIN
 	SET NOCOUNT ON;
-
-	--Enforce required parameters
-	IF @participant_email is null OR @event_name is null
-	BEGIN
-		SET @error_message = 'Participant email and event name cannot be null'+CHAR(13);
-		RETURN;
-	END;
 	
-
 	--Required fields
 	SET @participant_status_id = ISNULL(@participant_status_id, 2); --Registered
 	SET @event_start_date = ISNULL(@event_start_date, DATEADD(yy, DATEDIFF(yy, 0, GETDATE()), 0)); --Defaults to 1/1/[current year]
 
-	DECLARE @event_id int;
-	SET @event_id = (SELECT TOP 1 Event_ID FROM [dbo].Events WHERE Event_Title = @event_name AND Event_Start_Date = @event_start_date ORDER BY Event_ID ASC);
+	IF @event_name is null
+	BEGIN
+		SET @error_message = 'Event Name cannot be null'+CHAR(13);
+		RETURN;
+	END;
+	DECLARE @event_id int = (SELECT TOP 1 Event_ID FROM [dbo].Events WHERE Event_Title = @event_name AND Event_Start_Date = @event_start_date ORDER BY Event_ID ASC);
 	IF @event_id is null
 	BEGIN
 		SET @error_message = 'Event with name '+@event_name+' and start date '+convert(nvarchar, @event_start_date)+' could not be found'+CHAR(13);
 		RETURN;
 	END;
 
+	IF @participant_email is null
+	BEGIN
+		SET @error_message = 'Participant email cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @participant_email);
 	IF @contact_id is null
 	BEGIN
@@ -79,7 +80,10 @@ BEGIN
 		@error_message = @error_message OUTPUT, @participant_id = @participant_id OUTPUT;
 
 		IF @participant_id is null
+		BEGIN
+			SET @error_message = @error_message+'Could not find participant with email '+@participant_email+CHAR(13);
 			RETURN;
+		END;
 	END;
 
 	

@@ -38,14 +38,7 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Participant]
 AS
 BEGIN
 	SET NOCOUNT ON;
-	
-	--Enforce required parameters
-	IF @participant_email is null
-	BEGIN
-		SET @error_message = 'Participant email cannot be null'+CHAR(13);
-		RETURN;
-	END;
-	
+		
 	--Required fields
 	SET @start_date = ISNULL(@start_date, GETDATE());
 	SET @show_on_map = ISNULL(@show_on_map, 0);
@@ -54,8 +47,12 @@ BEGIN
 	
 	DECLARE @participant_type_id int = 1;--*Temp Participant Type
 
-	DECLARE @contact_id int;
-	SET @contact_id = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @participant_email);
+	IF @participant_email is null
+	BEGIN
+		SET @error_message = 'Participant email cannot be null'+CHAR(13);
+		RETURN;
+	END;
+	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @participant_email);
 	IF @contact_id is null
 	BEGIN
 		SET @error_message = 'Could not find contact with email '+@participant_email+CHAR(13);

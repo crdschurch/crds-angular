@@ -35,12 +35,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	--Enforce required parameters
-	IF @parent_group_name is null OR @child_group_name is null
-		RETURN;
-
-
 	--Required fields
+	IF @parent_group_name is null
+	BEGIN
+		SET @error_message = 'Parent group name cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	SET @parent_group_id = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @parent_group_name ORDER BY Group_ID ASC);
 	IF @parent_group_id is null
 	BEGIN
@@ -48,6 +48,11 @@ BEGIN
 		RETURN;
 	END;
 
+	IF @child_group_name is null
+	BEGIN
+		SET @error_message = 'Child group name cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	SET @child_group_id = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @child_group_name ORDER BY Group_ID ASC);
 	IF @child_group_id is null
 	BEGIN
