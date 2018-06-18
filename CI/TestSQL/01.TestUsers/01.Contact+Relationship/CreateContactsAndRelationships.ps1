@@ -37,6 +37,7 @@ function UpdateContacts($DBConnection){
 			AddStringParameter $command "@mobile_phone_number" $userRow.Mobile_Phone
 			AddStringParameter $command "@company_phone_number" $userRow.Company_Phone
 			AddIntParameter $command "@prefix_id" $userRow.Prefix_ID
+            AddIntParameter $command "@contact_status_id" $userRow.Contact_Status_ID
 			AddOutputParameter $command "@error_message" "String"
 			AddOutputParameter $command "@contact_id" "Int32"
 
