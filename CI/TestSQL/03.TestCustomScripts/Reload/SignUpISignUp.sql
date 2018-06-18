@@ -1,6 +1,5 @@
 DECLARE @eventTypeID as int
 DECLARE @opportunityID as int
-DECLARE @groupParticipant as int
 
 SELECT @eventTypeID =  Event_Type_ID, @opportunityID = Opportunity_ID 
 FROM Opportunities 
@@ -12,10 +11,6 @@ SET @groupID = (SELECT Group_ID FROM Groups WHERE Group_Name = '(t+auto) Verify 
 SET @participantID = (SELECT Participant_ID FROM Participants 
 	WHERE Contact_ID = (SELECT TOP 1 Contact_ID 
 	FROM Contacts WHERE Email_Address = 'mpcrds+auto+ISignUp@gmail.com' ))
-SET @groupParticipant = (SELECT Group_Participant_ID 
-	FROM Group_Participants 
-	WHERE Group_ID = @groupID AND Participant_ID = @participantID)
-
 
 SELECT Event_ID
 INTO #eventTable  
