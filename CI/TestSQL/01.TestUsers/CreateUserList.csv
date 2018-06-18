@@ -78,5 +78,10 @@ Sherlock,Holmes,mpcrds+sherlock@gmail.com,Groups Leader
 John,Watson,mpcrds+watson@gmail.com,approved member
 Load,Test,loadtest@gmail.com,(Automation/Load Test) basic load test user
 Isaac,Newton,mpcrds+newton@gmail.com,Connect Host
-UI,Serve,mpcrds+auto+verifyui@gmail.com,Sign Up To Serve
-Sign Up,I,mpcrds+auto+ISignUp@gmail.com,Sign Up To Serve
+Serve,UI,mpcrds+auto+verifyui@gmail.com,Sign Up To Serve
+I,Sign Up,mpcrds+auto+ISignUp@gmail.com,Sign Up To Serve
+UI,Leader,mpcrds+auto+uileader@gmail.com,Sign Up To Serve
+Member,Avalanche,mpcrds+auto+memberofavalanche@gmail.com,Sign Up To Serve
+No,Preferred Serving Time,mpcrds+auto+nopreferred@gmail.com,Sign Up To Serve
+Not,Active,mpcrds+auto+inactive@gmail.com,Sign Up To Serve
+Test,User,mpcrds+auto+deceased@gmail.com,Sign Up To Serve
