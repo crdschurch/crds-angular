@@ -1,4 +1,3 @@
-
 DECLARE @eventTypeID as int
 DECLARE @opportunityID as int
 DECLARE @groupParticipant as int
@@ -17,26 +16,24 @@ SET @groupParticipant = (SELECT Group_Participant_ID
 	FROM Group_Participants 
 	WHERE Group_ID = @groupID AND Participant_ID = @participantID)
 
-DECLARE @eventIDs as table
-(
-	eventId int
-)
 
 SELECT Event_ID
-INTO eventIds  
+INTO #eventTable  
 FROM Events
 WHERE Event_Type_ID = @eventTypeID AND Event_Start_Date > DATEADD(year,-1,GETDATE())
 
-DECLARE @eventId as int
-WHILE EXISTS(SELECT * FROM eventIds)
+DECLARE @ID as int
+WHILE EXISTS(SELECT * FROM #eventTable)
 BEGIN
-	SELECT TOP 1 @eventId = eventId FROM eventIDs
+	SELECT TOP 1 @ID = Event_ID FROM #eventTable
 
-	INSERT INTO Responses (Response_Date, Opportunity_ID, Participant_ID, Response_Result_ID, Domain_ID, Event_ID)
-	VALUES (GETDATE(), @opportunityID, @participantID, 1, 1, @eventId)
+	INSERT INTO Responses (Response_Date, Opportunity_ID, Participant_ID, Response_Result_ID, Domain_ID, Event_ID, Closed)
+	VALUES (GETDATE(), @opportunityID, @participantID, 1, 1, @ID, 0)
 
 	INSERT INTO Event_Participants (Event_ID, Participant_ID, Participation_Status_ID, Group_ID, Domain_ID)
-	VALUES (@eventId, @participantID, 2, @groupID, 1)
+	VALUES (@ID, @participantID, 2, @groupID, 1)
 		
-	DELETE FROM eventIds WHERE eventId = @eventId	
+	DELETE FROM #eventTable WHERE Event_ID = @ID	
 END
+
+DROP TABLE #eventTable 
