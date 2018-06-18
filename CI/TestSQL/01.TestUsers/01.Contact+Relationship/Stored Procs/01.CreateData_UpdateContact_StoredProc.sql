@@ -28,6 +28,7 @@ IF NOT EXISTS ( SELECT  *
 	@household_position_id int,
 	@mobile_phone_number nvarchar(25),
 	@company_phone_number nvarchar(25),
+	@contact_status_id int,
 	@error_message nvarchar(500) OUTPUT,
 	@contact_id int OUTPUT AS SET NOCOUNT ON;')
 GO
@@ -41,6 +42,7 @@ ALTER PROCEDURE [dbo].[cr_QA_Update_Contact]
 	@household_position_id int,
 	@mobile_phone_number nvarchar(25),
 	@company_phone_number nvarchar(25),
+	@contact_status_id int,
 	@error_message nvarchar(500) OUTPUT,
 	@contact_id int OUTPUT
 AS
@@ -53,9 +55,11 @@ BEGIN
 		SET @error_message = 'Contact email cannot be null'+CHAR(13);
 		RETURN;
 	END;
-
+	
 
 	--Required fields
+	SET @contact_status_id = ISNULL(@contact_status_id, 1); --Active
+
 	SET @contact_id = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @contact_email);
 	IF @contact_id is null
 	BEGIN
@@ -73,7 +77,8 @@ BEGIN
 	Prefix_ID = @prefix_id,
 	Household_Position_ID = @household_position_id,
 	Mobile_Phone = @mobile_phone_number,
-	Company_Phone = @company_phone_number
+	Company_Phone = @company_phone_number,
+	Contact_Status_ID = @contact_status_id
 	WHERE Contact_ID = @contact_id;
 END
 GO

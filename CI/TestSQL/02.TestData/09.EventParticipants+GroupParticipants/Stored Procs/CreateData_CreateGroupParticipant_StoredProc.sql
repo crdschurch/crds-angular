@@ -40,12 +40,11 @@ BEGIN
 	SET NOCOUNT ON;
 
 	--Enforce required parameters
-	IF @participant_email is null OR @group_name is null
+	IF @group_role_id is null
 	BEGIN
-		SET @error_message = 'Participant email and group name cannot be null'+CHAR(13);
+		SET @error_message = 'Group role id cannot be null'+CHAR(13);
 		RETURN;
 	END;
-	
 
 	--Required fields
 	SET @group_role_id = ISNULL(@group_role_id, 1); --Participant
@@ -53,7 +52,12 @@ BEGIN
 	SET @preferred_serve_event_type_id = ISNULL(@preferred_serve_event_type_id, 475); --No Preferred Serving Time
 	
 	DECLARE @auto_promote bit = 1;
-			
+	
+	IF @group_name is null
+	BEGIN
+		SET @error_message = 'Group name cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @group_id int = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @group_name ORDER BY Group_ID ASC);
 	IF @group_id is null
 	BEGIN
@@ -61,6 +65,11 @@ BEGIN
 		RETURN;
 	END;
 
+	IF @participant_email is null
+	BEGIN
+		SET @error_message = 'Participant email cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @participant_email);
 	IF @contact_id is null
 	BEGIN
@@ -77,6 +86,7 @@ BEGIN
 
 		IF @participant_id is null
 		BEGIN
+			SET @error_message = @error_message+'Could not find participant with email '+@participant_email+CHAR(13);
 			RETURN;
 		END;
 	END;

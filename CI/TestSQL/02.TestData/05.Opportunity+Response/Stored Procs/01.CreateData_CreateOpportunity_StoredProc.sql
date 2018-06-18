@@ -58,9 +58,9 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @opportunity_name is null OR @contact_email is null OR @program_name is null
+	IF @opportunity_name is null
 	BEGIN
-		SET @error_message = 'Opportunity name, program name and contact email cannot be null'+CHAR(13);
+		SET @error_message = 'Opportunity name cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
@@ -72,6 +72,11 @@ BEGIN
 	DECLARE @send_reminder bit = 1;
 	DECLARE @visibility_level int = 4; --Public
 
+	IF @contact_email is null
+	BEGIN
+		SET @error_message = 'Contact email cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @contact_email);
 	IF @contact_id is null
 	BEGIN
@@ -79,6 +84,11 @@ BEGIN
 		RETURN;
 	END;
 
+	IF @program_name is null
+	BEGIN
+		SET @error_message = 'Program Name cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @program_id int = (SELECT TOP 1 Program_ID FROM [dbo].Programs where Program_Name = @program_name ORDER BY Program_ID ASC);
 	IF @program_id is null
 	BEGIN
@@ -100,27 +110,25 @@ BEGIN
 		SET @reminder_template_id = 108700;
 	IF @program_id in (106, 111) --First impressions, Spiritual Growth
 		SET @reminder_template_id = 14567;
-
-	DECLARE @event_type_id int = null;
+		
 	IF @event_type is not null
 	BEGIN
-		SET @event_type_id = (SELECT TOP 1 Event_Type_ID FROM [dbo].Event_Types WHERE Event_Type = @event_type ORDER BY Event_Type_ID ASC);
+		DECLARE @event_type_id int = (SELECT TOP 1 Event_Type_ID FROM [dbo].Event_Types WHERE Event_Type = @event_type ORDER BY Event_Type_ID ASC);
 		IF @event_type_id is null
 			SET @error_message = 'Could not find event type with name '+@event_type+'. Event type not included in opportunity '+@opportunity_name+CHAR(13);
 	END;
 
-	DECLARE @group_id int = null;
 	IF @group_name is not null
 	BEGIN
-		SET @group_id = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @group_name ORDER BY Group_ID ASC);
+		DECLARE @group_id int = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @group_name ORDER BY Group_ID ASC);
 		IF @group_id is null
 			SET @error_message = @error_message+'Could not find group with name '+@group_name+'. Group not included in opportunity '+@opportunity_name+CHAR(13);
 	END;
-
-	DECLARE @signup_deadline_id int = null;
+		
 	IF @signup_deadline is not null
 	BEGIN
-		SET @signup_deadline_id = (SELECT TOP 1 Sign_Up_Deadline_ID FROM [dbo].cr_Sign_Up_Deadline WHERE Sign_Up_Deadline = @signup_deadline ORDER BY Sign_Up_Deadline_ID ASC);
+		DECLARE @signup_deadline_id int = (SELECT TOP 1 Sign_Up_Deadline_ID FROM [dbo].cr_Sign_Up_Deadline 
+		WHERE Sign_Up_Deadline = @signup_deadline ORDER BY Sign_Up_Deadline_ID ASC);
 		IF @signup_deadline_id is null
 			SET @error_message = @error_message+'Could not find sign up deadline with value '+@signup_deadline+'. Sign up deadline not included in opportunity '+@opportunity_name+CHAR(13);
 	END;	

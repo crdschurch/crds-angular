@@ -61,9 +61,9 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @contact_id is null OR @donation_amount is null
+	IF @donation_amount is null
 	BEGIN
-		SET @error_message = 'Contact id and amount cannot be null'+CHAR(13);
+		SET @error_message = 'Donation Amount cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
@@ -74,14 +74,12 @@ BEGIN
 	SET @payment_type_id = ISNULL(@payment_type_id, 5); --Bank
 	SET @receipted = ISNULL(@receipted, 0);
 
-	DECLARE @contact_count int = (SELECT count(Contact_ID) FROM [dbo].Contacts WHERE Contact_ID = @contact_id);
-	IF @contact_count = 0
+	--Create donor record if does not exist
+	IF @contact_id is null
 	BEGIN
-		SET @error_message = 'Could not find contact with id '+@contact_id+CHAR(13);
+		SET @error_message = 'Contact id cannot be null'+CHAR(13);
 		RETURN;
 	END;
-
-	--Create donor record if does not exist
 	DECLARE @donor_id int = (SELECT Donor_Record FROM [dbo].Contacts WHERE Contact_ID = @contact_id);
 	IF @donor_id is null
 	BEGIN
@@ -117,15 +115,13 @@ BEGIN
 			SET @processor_fee_amount = @processor_fee_amount * -1; --Reimbursements
 	END;
 	
-	DECLARE @batch_id int = null;
-	DECLARE @batch_position int = null;
 	IF @batch_name is not null
 	BEGIN
-		SET @batch_id = (SELECT TOP 1 Batch_ID FROM [dbo].Batches WHERE Batch_Name = @batch_name ORDER BY Batch_ID ASC);
+		DECLARE @batch_id int = (SELECT TOP 1 Batch_ID FROM [dbo].Batches WHERE Batch_Name = @batch_name ORDER BY Batch_ID ASC);
 		IF @batch_id is null
 			SET @error_message = 'Could not find batch with name '+@batch_name+', so will not be added to donation'+CHAR(13);
 		ELSE
-			SET @batch_position = (SELECT COUNT(Donation_ID) FROM [dbo].Donations WHERE Batch_ID = @batch_id) + 1;
+			DECLARE @batch_position int = (SELECT COUNT(Donation_ID) FROM [dbo].Donations WHERE Batch_ID = @batch_id) + 1;
 	END;
 	
 

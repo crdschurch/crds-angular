@@ -40,14 +40,6 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	--Enforce required parameters
-	IF @purchaser_email is null OR @product_name is null
-	BEGIN
-		SET @error_message = 'Purchaser email and product name cannot be null'+CHAR(13);
-		RETURN;
-	END;
-
-
 	--Required fields
 	SET @invoice_total = ISNULL(@invoice_total, 500);
 	SET @invoice_date = ISNULL(@invoice_date, GETDATE()); --Defaults to today
@@ -55,15 +47,24 @@ BEGIN
 	DECLARE @invoice_status_id int = 2; --Some paid
 	DECLARE @item_quantity int = 1; --This is always 1. Always.
 
-	DECLARE @product_id int;
-	SET @product_id = (SELECT TOP 1 Product_ID FROM [dbo].Products WHERE Product_Name = @product_name ORDER BY Product_ID ASC);
+	IF @product_name is null
+	BEGIN
+		SET @error_message = 'Product name cannot be null'+CHAR(13);
+		RETURN;
+	END;
+	DECLARE @product_id int = (SELECT TOP 1 Product_ID FROM [dbo].Products WHERE Product_Name = @product_name ORDER BY Product_ID ASC);
 	IF @product_id is null
 	BEGIN
 		SET @error_message = 'Could not find product with name '+@product_name+CHAR(13);
 		RETURN;
 	END;
 
-	DECLARE @purchaser_contact_id INT = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @purchaser_email);
+	IF @purchaser_email is null
+	BEGIN
+		SET @error_message = 'Purchaser email cannot be null'+CHAR(13);
+		RETURN;
+	END;
+	DECLARE @purchaser_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @purchaser_email);
 	IF @purchaser_contact_id is null
 	BEGIN
 		SET @error_message = 'Could not find contact with email '+@purchaser_email+CHAR(13);

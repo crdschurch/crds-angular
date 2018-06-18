@@ -35,17 +35,14 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	--Enforce required parameters
-	IF @attribute_name is null OR @contact_email is null
-	BEGIN
-		SET @error_message = 'Attribute name and contact email cannot be null'+CHAR(13);
-		RETURN;
-	END;
-	
-
 	--Required fields
 	SET @start_date = ISNULL(@start_date, GETDATE());
 
+	IF @attribute_name is null
+	BEGIN
+		SET @error_message = 'Attribute name cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @attribute_id int = (SELECT TOP 1 Attribute_ID FROM [dbo].Attributes WHERE Attribute_Name = @attribute_name ORDER BY Attribute_ID ASC);
 	IF @attribute_id is null
 	BEGIN
@@ -53,6 +50,11 @@ BEGIN
 		RETURN;
 	END;
 	
+	IF @contact_email is null
+	BEGIN
+		SET @error_message = 'Contact email cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @contact_email);
 	IF @contact_id is null
 	BEGIN
@@ -62,7 +64,8 @@ BEGIN
 
 	
 	--Create/Update group attribute
-	SET @contact_attribute_id = (SELECT TOP 1 Contact_Attribute_ID FROM [dbo].Contact_Attributes WHERE Attribute_ID = @attribute_id AND Contact_ID = @contact_id ORDER BY Contact_Attribute_ID ASC);
+	SET @contact_attribute_id = (SELECT TOP 1 Contact_Attribute_ID FROM [dbo].Contact_Attributes 
+	WHERE Attribute_ID = @attribute_id AND Contact_ID = @contact_id ORDER BY Contact_Attribute_ID ASC);
 	IF @contact_attribute_id is null
 	BEGIN
 		INSERT INTO [dbo].Contact_Attributes 

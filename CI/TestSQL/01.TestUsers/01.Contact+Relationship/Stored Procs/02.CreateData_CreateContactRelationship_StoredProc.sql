@@ -37,30 +37,36 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	--Enforce required parameters
-	IF @contact_email is null OR @related_contact_email is null OR @relationship_id is null
+	--Required fields
+	IF @contact_email is null
 	BEGIN
-		SET @error_message = 'Contact and related contact emails, and relationship id cannot be null'+CHAR(13);
+		SET @error_message = 'Contact email cannot be null'+CHAR(13);
 		RETURN;
 	END;
-
-	--Required fields
-	DECLARE @contact_id int;
-	SET @contact_id = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @contact_email);
+	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @contact_email);
 	IF @contact_id is null
 	BEGIN
 		SET @error_message = 'Could not find contact with email '+@contact_email+CHAR(13);
 		RETURN;
 	END;
 
-	DECLARE @related_contact_id int;
-	SET @related_contact_id = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @related_contact_email);
+	IF @related_contact_email is null
+	BEGIN
+		SET @error_message = 'Related contact emails cannot be null'+CHAR(13);
+		RETURN;
+	END;
+	DECLARE @related_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @related_contact_email);
 	IF @contact_id is null
 	BEGIN
 		SET @error_message = 'Could not find contact with email '+@related_contact_email+CHAR(13);
 		RETURN;
 	END;
 
+	IF @related_contact_id is null
+	BEGIN
+		SET @error_message = 'Relationship id cannot be null'+CHAR(13);
+		RETURN;
+	END;
 
 	--Create/Update relationship
 	SET @contact_relationship_id = (SELECT Contact_Relationship_ID FROM [dbo].Contact_Relationships 

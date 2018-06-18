@@ -67,7 +67,6 @@ BEGIN
 	--Optional fields
 	SET @congregation_id = ISNULL(@congregation_id, 5); --Not site specific
 
-	DECLARE @pledge_id int;
 	IF @pledge_donor_email is not null
 	BEGIN
 		DECLARE @pledge_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @pledge_donor_email);
@@ -77,7 +76,7 @@ BEGIN
 			DECLARE @pledge_campaign_id int = (SELECT Pledge_Campaign_ID FROM [dbo].Programs WHERE Program_ID = @program_id);
 
 			IF @pledge_donor_id is not null AND @pledge_campaign_id is not null
-				SET @pledge_id = (SELECT Pledge_ID FROM [dbo].Pledges WHERE Donor_ID = @pledge_donor_id AND Pledge_Campaign_ID = @pledge_campaign_id);
+				DECLARE @pledge_id int = (SELECT Pledge_ID FROM [dbo].Pledges WHERE Donor_ID = @pledge_donor_id AND Pledge_Campaign_ID = @pledge_campaign_id);
 			ELSE
 				SET @error_message = @error_message+'Could not find pledge for donor '+@pledge_donor_email+' towards pledge campaign for program '+@program_name+CHAR(13);
 		END
@@ -85,13 +84,12 @@ BEGIN
 			SET @error_message = @error_message+'Could not find pledge contact with email '+@pledge_donor_email+CHAR(13);
 	END;
 
-	DECLARE @soft_credit_donor_id int;
 	IF @soft_credit_donor_email is not null
 	BEGIN
 		DECLARE @sc_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @soft_credit_donor_email);
 		IF @sc_contact_id is not null
 		BEGIN 
-			SET @soft_credit_donor_id = (SELECT Donor_Record FROM [dbo].Contacts WHERE Contact_ID = @sc_contact_id);
+			DECLARE @soft_credit_donor_id int = (SELECT Donor_Record FROM [dbo].Contacts WHERE Contact_ID = @sc_contact_id);
 			IF @soft_credit_donor_id is null
 			BEGIN
 				--Use defaults

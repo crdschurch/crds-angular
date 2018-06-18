@@ -60,13 +60,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	--Enforce required parameters
+	--Required Fields
 	IF @donor_email is null
 	BEGIN
 		SET @error_message = 'Donor email cannot be null'+CHAR(13);
 		RETURN;
 	END;
-
 	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @donor_email);
 	IF @contact_id is null
 	BEGIN

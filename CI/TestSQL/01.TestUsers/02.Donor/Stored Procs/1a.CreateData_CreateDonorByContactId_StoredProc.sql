@@ -41,14 +41,6 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	--Enforce required parameters
-	IF @contact_id is null
-	BEGIN
-		SET @error_message = 'Contact id cannot be null'+CHAR(13);
-		RETURN;
-	END;
-
-
 	--Required fields
 	SET @statement_type_id = ISNULL(@statement_type_id, 1); --Individual
 	SET @setup_date = ISNULL(@setup_date, GETDATE()); --Today
@@ -56,7 +48,12 @@ BEGIN
 	SET @statement_method_id = ISNULL(@statement_method_id, 2); --Email/Online
 
 	DECLARE @cancel_envelopes bit = 0;
-		
+	
+	IF @contact_id is null
+	BEGIN
+		SET @error_message = 'Contact id cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @contact_count int = (SELECT count(Contact_ID) FROM [dbo].Contacts WHERE Contact_ID = @contact_id);
 	IF @contact_count = 0
 	BEGIN

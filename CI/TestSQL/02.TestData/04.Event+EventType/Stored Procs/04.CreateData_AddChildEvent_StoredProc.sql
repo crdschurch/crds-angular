@@ -35,12 +35,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	--Enforce required parameters
-	IF @parent_event_name is null OR @child_event_name is null
-		RETURN;
-
-
 	--Required fields
+	IF @parent_event_name is null
+	BEGIN
+		SET @error_message = 'Parent Event Name cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	SET @parent_event_id = (SELECT TOP 1 Event_ID FROM [dbo].Events WHERE Event_Title = @parent_event_name ORDER BY Event_ID ASC);
 	IF @parent_event_id is null
 	BEGIN
@@ -48,6 +48,11 @@ BEGIN
 		RETURN;
 	END;
 
+	IF @child_event_name is null
+	BEGIN
+		SET @error_message = 'Child Event Name cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	SET @child_event_id = (SELECT TOP 1 Event_ID FROM [dbo].Events WHERE Event_Title = @child_event_name ORDER BY Event_ID ASC);
 	IF @child_event_id is null
 	BEGIN

@@ -33,15 +33,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	--Enforce required parameters
-	IF @household_member_email is null OR @new_member_email is null
+	--Required fields
+	IF @household_member_email is null
 	BEGIN
-		SET @error_message = 'Household member and new member emails cannot be null'+CHAR(13);
+		SET @error_message = 'Household member email cannot be null'+CHAR(13);
 		RETURN;
 	END;
-
-	
-	--Required fields
 	DECLARE @household_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @household_member_email);
 	IF @household_contact_id is null
 	BEGIN
@@ -61,7 +58,12 @@ BEGIN
 			RETURN;
 		END;
 	END;
-
+		
+	IF @new_member_email is null
+	BEGIN
+		SET @error_message = 'New member email cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @new_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @new_member_email);
 	IF @new_contact_id is null
 	BEGIN

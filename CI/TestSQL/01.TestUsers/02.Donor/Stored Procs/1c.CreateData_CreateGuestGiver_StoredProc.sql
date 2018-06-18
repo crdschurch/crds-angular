@@ -35,15 +35,13 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	--Enforce required parameters
+	--Create Contact record
 	IF @contact_email is null
 	BEGIN
 		SET @error_message = 'Contact email cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
-
-	--Create Contact record
 	DECLARE @contact_id int;
 	DECLARE @throwaway_error nvarchar(500); --We don't expect the guest giver to exist, so the error message isn't useful and shouldn't be reported
 	DECLARE @display_name nvarchar(75) = 'Guest Giver';
