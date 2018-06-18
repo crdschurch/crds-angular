@@ -53,10 +53,9 @@ BEGIN
 	DECLARE @price_currency int = 1; --USD
 	DECLARE @description varchar(MAX) = null;
 
-	DECLARE @program_id int = null;
 	IF @program_name is not null
 	BEGIN
-		SET @program_id = (SELECT TOP 1 Program_ID FROM [dbo].Programs WHERE Program_Name = @program_name ORDER BY Program_ID ASC);
+		DECLARE @program_id int = (SELECT TOP 1 Program_ID FROM [dbo].Programs WHERE Program_Name = @program_name ORDER BY Program_ID ASC);
 		IF @program_id is null
 			SET @error_message = 'Could not find program with name '+@program_name+' so it will not be added to the product.'+CHAR(13);
 	END;

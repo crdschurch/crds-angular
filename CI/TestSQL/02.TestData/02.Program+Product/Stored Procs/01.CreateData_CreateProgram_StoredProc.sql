@@ -52,9 +52,9 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @program_name is null OR @primary_contact_email is null
+	IF @program_name is null
 	BEGIN
-		SET @error_message = 'Program name and primary contact email cannot be null'+CHAR(13);
+		SET @error_message = 'Program name cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
@@ -71,6 +71,11 @@ BEGIN
 	DECLARE @statement_title nvarchar(50) = SUBSTRING(@program_name, 1, 50);
 	DECLARE @tax_deductible bit = 1;
 
+	IF @primary_contact_email is null
+	BEGIN
+		SET @error_message = 'Primary contact email cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @primary_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @primary_contact_email);
 	IF @primary_contact_id is null
 	BEGIN
@@ -83,7 +88,6 @@ BEGIN
 	SET @program_type_id = ISNULL(@program_type_id, 1); --Default to Fuel
 
 	DECLARE @online_sort_order smallint = 2;
-	DECLARE @pledge_campaign_id int = null;	
 
 	--Update fields based on program type	
 	IF @program_type_id = 3 --Trips
@@ -94,7 +98,7 @@ BEGIN
 
 	IF @pledge_campaign_name is not null
 	BEGIN
-		SET @pledge_campaign_id = (SELECT TOP 1 Pledge_Campaign_ID FROM [dbo].Pledge_Campaigns WHERE Campaign_Name = @pledge_campaign_name);
+		DECLARE @pledge_campaign_id int = (SELECT TOP 1 Pledge_Campaign_ID FROM [dbo].Pledge_Campaigns WHERE Campaign_Name = @pledge_campaign_name);
 		IF @pledge_campaign_id is null
 			SET @error_message = 'Could not find pledge campaign with name '+@pledge_campaign_name+', so will not be added to program'+CHAR(13);
 	END;	

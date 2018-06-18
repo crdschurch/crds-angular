@@ -51,17 +51,13 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	--Enforce required parameters
-	IF @household_member_email is null OR @line_1 is null
+	--Required fields
+	IF @household_member_email is null
 	BEGIN
-		SET @error_message = 'Household member email and address line 1 cannot be null'+CHAR(13);
+		SET @error_message = 'Household member email cannot be null'+CHAR(13);
 		RETURN;
 	END;
-
-
-	--Required fields
-	DECLARE @contact_id int;
-	SET @contact_id = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @household_member_email);
+	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @household_member_email);
 	IF @contact_id is null
 	BEGIN
 		SET @error_message = 'Could not find contact with email '+@household_member_email+CHAR(13);
@@ -79,6 +75,12 @@ BEGIN
 			SET @error_message = @error_message + 'Could not create household.'+CHAR(13);
 			RETURN;
 		END;
+	END;
+
+	IF @line_1 is null
+	BEGIN
+		SET @error_message = 'Address line 1 cannot be null'+CHAR(13);
+		RETURN;
 	END;
 
 	--Create/Update address

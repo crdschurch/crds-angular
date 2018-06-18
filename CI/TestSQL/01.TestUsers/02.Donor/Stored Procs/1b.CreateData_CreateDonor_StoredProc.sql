@@ -40,16 +40,13 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Donor]
 AS
 BEGIN
 	SET NOCOUNT ON;
-	
-	--Enforce required parameters
+		
+	--Required fields
 	IF @donor_email is null
 	BEGIN
 		SET @error_message = 'Donor email cannot be null'+CHAR(13);
 		RETURN;
 	END;
-
-
-	--Required fields
 	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @donor_email);
 	IF @contact_id is null
 	BEGIN

@@ -57,9 +57,9 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @event_name is null
+	IF @event_name is null OR @start_date is null OR @end_date is null
 	BEGIN
-		SET @error_message = 'Event name cannot be null'+CHAR(13);
+		SET @error_message = 'Event name cannot be null, Start Date and End Date'+CHAR(13);
 		RETURN;
 	END;
 
@@ -81,8 +81,12 @@ BEGIN
 	DECLARE @visibility_level int = 4; --Public
 	DECLARE @force_login bit = 0;
 
-	DECLARE @event_type_id int;
-	SET @event_type_id = (SELECT TOP 1 Event_Type_ID FROM [dbo].Event_Types WHERE Event_Type = @event_type_name ORDER BY Event_Type_ID ASC);
+	IF @event_type_name is null
+	BEGIN
+		SET @error_message = 'Event Type Name cannot be null'+CHAR(13);
+		RETURN;
+	END;
+	DECLARE @event_type_id int = (SELECT TOP 1 Event_Type_ID FROM [dbo].Event_Types WHERE Event_Type = @event_type_name ORDER BY Event_Type_ID ASC);
 	--Some event types in int are prefixed with *. Loosen the search up to make more compatible.
 	IF @event_type_id is null
 	BEGIN
@@ -94,6 +98,11 @@ BEGIN
 		RETURN;
 	END;
 
+	IF @primary_contact_email is null
+	BEGIN
+		SET @error_message = 'Primary Contact Email cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @primary_contact_email);
 	IF @contact_id is null
 	BEGIN
@@ -101,6 +110,11 @@ BEGIN
 		RETURN;
 	END;
 
+	IF @program_name is null
+	BEGIN
+		SET @error_message = 'Program Name cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @program_id int = (SELECT TOP 1 Program_ID FROM [dbo].Programs where Program_Name = @program_name ORDER BY Program_ID ASC);
 	IF @program_id is null
 	BEGIN

@@ -68,9 +68,9 @@ BEGIN
 	SET NOCOUNT ON;
 
 	--Enforce required parameters
-	IF @group_name is null OR @primary_contact_email is null
+	IF @group_name is null
 	BEGIN
-		SET @error_message = 'Group name and primary contact email cannot be null'+CHAR(13);
+		SET @error_message = 'Group name cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
@@ -86,8 +86,12 @@ BEGIN
 	DECLARE @kids_welcome bit = 0;
 	DECLARE @promote_participants_only bit = 0;
 
-	DECLARE @primary_contact_id int;
-	SET @primary_contact_id = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @primary_contact_email);
+	IF @primary_contact_email is null
+	BEGIN
+		SET @error_message = 'Primary contact email cannot be null'+CHAR(13);
+		RETURN;
+	END;
+	DECLARE @primary_contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @primary_contact_email);
 	IF @primary_contact_id is null
 	BEGIN
 		SET @error_message = 'Could not find contact with email '+@primary_contact_email+CHAR(13);
@@ -108,18 +112,16 @@ BEGIN
 			SET @error_message = 'Contact '+@primary_contact_email+' does not have an address. Cannot set group meeting location to host address.'+CHAR(13);
 	END;
 
-	DECLARE @meeting_day_id int = null;
 	IF @meeting_day is not null
 	BEGIN
-		SET @meeting_day_id = (SELECT Meeting_Day_ID FROM [dbo].Meeting_Days WHERE Meeting_Day = @meeting_day);
+		DECLARE @meeting_day_id int = (SELECT Meeting_Day_ID FROM [dbo].Meeting_Days WHERE Meeting_Day = @meeting_day);
 		IF @meeting_day_id is null
 		BEGIN
 			SET @error_message = @error_message + 'Meeting day called '+@meeting_day+' could not be found. Using default day instead.';
 			SET @meeting_day_id = 2; --Monday
 		END;
 	END
-
-
+	
 	
 	--Create/Update group
 	SET @group_id = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @group_name ORDER BY Group_ID ASC);

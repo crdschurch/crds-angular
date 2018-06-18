@@ -34,16 +34,20 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @group_name is null OR @event_id is null
+	IF @event_id is null
 	BEGIN
-		SET @error_message = 'Group name and event id cannot be null'+CHAR(13);
+		SET @error_message = 'Event id cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
 
 	--Required fields
-	DECLARE @group_id int;
-	SET @group_id = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @group_name ORDER BY Group_ID ASC);
+	IF @group_name is null
+	BEGIN
+		SET @error_message = 'Group name cannot be null'+CHAR(13);
+		RETURN;
+	END;
+	DECLARE @group_id int = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @group_name ORDER BY Group_ID ASC);
 	IF @group_id is null
 	BEGIN
 		SET @error_message = 'Could not find group with name '+@group_name+CHAR(13);

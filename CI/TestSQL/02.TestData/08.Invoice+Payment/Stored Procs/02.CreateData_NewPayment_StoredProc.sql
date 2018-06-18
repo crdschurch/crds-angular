@@ -48,14 +48,6 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	--Enforce required parameters
-	IF @contact_email is null OR @invoice_id is null
-	BEGIN
-		SET @error_message = 'User email and invoice id cannot be null'+CHAR(13);
-		RETURN;
-	END;
-
-
 	--Required fields
 	SET @payment_date = ISNULL(@payment_date, GETDATE()); --Defaults to today
 	SET @payment_total = ISNULL(@payment_total, 100);
@@ -63,6 +55,11 @@ BEGIN
 
 	DECLARE @payment_status_id int = 1; --Pending
 
+	IF @contact_email is null
+	BEGIN
+		SET @error_message = 'Contact email cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @contact_id int = (SELECT Contact_ID FROM [dbo].dp_Users WHERE User_Name = @contact_email);
 	IF @contact_id is null
 	BEGIN
@@ -70,8 +67,12 @@ BEGIN
 		RETURN;
 	END;
 
-	DECLARE @invoice_detail_id int;
-	SET @invoice_detail_id = (SELECT TOP 1 Invoice_Detail_ID FROM [dbo].Invoice_Detail where Invoice_ID = @invoice_id ORDER BY Invoice_Detail_ID ASC);
+	IF @invoice_id is null
+	BEGIN
+		SET @error_message = 'Invoice id cannot be null'+CHAR(13);
+		RETURN;
+	END;
+	DECLARE @invoice_detail_id int = (SELECT TOP 1 Invoice_Detail_ID FROM [dbo].Invoice_Detail where Invoice_ID = @invoice_id ORDER BY Invoice_Detail_ID ASC);
 	IF @invoice_detail_id is null
 	BEGIN
 		SET @error_message = 'Could not find invoice detail on invoice'+CHAR(13);
@@ -86,10 +87,9 @@ BEGIN
 	DECLARE @notes nvarchar(4000) = null;
 	DECLARE @item_number nvarchar(15) = null;
 	
-	DECLARE @batch_id int = null;
 	IF @batch_name is not null
 	BEGIN
-		SET @batch_id = (SELECT TOP 1 Batch_ID FROM [dbo].Batches WHERE Batch_Name = @batch_name ORDER BY Batch_ID ASC);
+		DECLARE @batch_id int = (SELECT TOP 1 Batch_ID FROM [dbo].Batches WHERE Batch_Name = @batch_name ORDER BY Batch_ID ASC);
 		IF @batch_id is null
 			SET @error_message = 'Could not find batch with name '+@batch_name+' so it will not be added to the payment.'+CHAR(13);
 	END;

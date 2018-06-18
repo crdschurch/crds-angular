@@ -35,15 +35,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	
-	--Enforce required parameters
-	IF @deposit_name is null OR @batch_name is null
+	--Retrieve deposit
+	IF @deposit_name is null
 	BEGIN
-		SET @error_message = 'Deposit name and batch name cannot be null'+CHAR(13);
+		SET @error_message = 'Deposit name cannot be null'+CHAR(13);
 		RETURN;
 	END;
-
-
-	--Retrieve deposit
 	SET @deposit_id = (SELECT TOP 1 Deposit_ID FROM [dbo].Deposits WHERE Deposit_Name = @deposit_name ORDER BY Deposit_ID ASC);
 	IF @deposit_id is null
 	BEGIN
@@ -52,6 +49,11 @@ BEGIN
 	END;
 
 	--Retrieve batch
+	IF @batch_name is null
+	BEGIN
+		SET @error_message = 'Batch name cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	SET @batch_id = (SELECT TOP 1 Batch_ID FROM [dbo].Batches WHERE Batch_Name = @batch_name ORDER BY Batch_ID ASC);
 	IF @batch_id is null
 	BEGIN

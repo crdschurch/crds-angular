@@ -63,10 +63,9 @@ BEGIN
 	DECLARE @default_payment_type int = 4; --Credit Card
 	DECLARE @currency varchar(25) = 'USD';
 	
-	DECLARE @operator_user_id int = null;
 	IF @user_email is not null
 	BEGIN
-		SET @operator_user_id = (SELECT User_ID FROM [dbo].dp_Users WHERE User_Name = @user_email);
+		DECLARE @operator_user_id int = (SELECT User_ID FROM [dbo].dp_Users WHERE User_Name = @user_email);
 		IF @operator_user_id is null
 			SET @error_message = 'Could not find contact with email '+@user_email+', so operator user will not be added to batch'+CHAR(13);
 	END

@@ -35,17 +35,14 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	--Enforce required parameters
-	IF @attribute_name is null OR @group_name is null
-	BEGIN
-		SET @error_message = 'Attribute name and group name cannot be null'+CHAR(13);
-		RETURN;
-	END;
-	
-
 	--Required fields
 	SET @start_date = ISNULL(@start_date, GETDATE());
 
+	IF @attribute_name is null
+	BEGIN
+		SET @error_message = 'Attribute name cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @attribute_id int = (SELECT TOP 1 Attribute_ID FROM [dbo].Attributes WHERE Attribute_Name = @attribute_name ORDER BY Attribute_ID ASC);
 	IF @attribute_id is null
 	BEGIN
@@ -53,6 +50,11 @@ BEGIN
 		RETURN;
 	END;
 	
+	IF @group_name is null
+	BEGIN
+		SET @error_message = 'Group name cannot be null'+CHAR(13);
+		RETURN;
+	END;
 	DECLARE @group_id int = (SELECT TOP 1 Group_ID FROM [dbo].Groups WHERE Group_Name = @group_name ORDER BY Group_ID ASC);
 	IF @group_id is null
 	BEGIN
