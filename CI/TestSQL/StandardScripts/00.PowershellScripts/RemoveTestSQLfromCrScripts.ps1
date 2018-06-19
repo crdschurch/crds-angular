@@ -1,4 +1,4 @@
-# Given a string of comma separated directories, parses files and removes meta data from the cr_Build_Scripts	
+# Given a string of comma separated directories, parses files and removes meta data from the cr_Build_Scripts    
 # table so that test SQL can be rerun on a database. 
 
 param (
@@ -19,18 +19,18 @@ $DBConnection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;Use
 $DBConnection.Open();
 
 try {
-	$command = New-Object System.Data.SQLClient.SQLCommand
-	$command.Connection = $DBConnection
-	$command.CommandText = "DELETE FROM [MinistryPlatform].[dbo].[cr_Scripts] WHERE Name in ($sqlfiles)";
+    $command = New-Object System.Data.SQLClient.SQLCommand
+    $command.Connection = $DBConnection
+    $command.CommandText = "DELETE FROM [MinistryPlatform].[dbo].[cr_Scripts] WHERE Name in ($sqlfiles)";
 
-	$command.ExecuteNonQuery() | Out-Null
+    $command.ExecuteNonQuery() | Out-Null
     Write-Output "Removed scripts: $sqlfiles"
 }
 catch {         
-	Write-Output "File: $_"
-	Write-Output "Error: $_.Exception.Message"
-	$exitCode = 8
+    Write-Output "File: $_"
+    Write-Output "Error: $_.Exception.Message"
+    $exitCode = 8
 }
 finally {
-	$DBConnection.close()
+    $DBConnection.close()
 }
