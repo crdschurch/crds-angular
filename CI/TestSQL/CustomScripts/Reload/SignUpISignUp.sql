@@ -3,7 +3,7 @@ GO
 DECLARE @eventTypeID as int
 DECLARE @opportunityID as int
 
-SELECT @eventTypeID =  Event_Type_ID, @opportunityID = Opportunity_ID 
+SELECT @eventTypeID = Event_Type_ID, @opportunityID = Opportunity_ID 
 FROM [dbo].Opportunities 
 WHERE Opportunity_Title = '(t+auto) Hey Serve UI'
 
