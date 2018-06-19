@@ -32,14 +32,32 @@ function DeleteContacts($DBConnection){
 			$adapter = new-object System.Data.SqlClient.SqlDataAdapter
 			$adapter.SelectCommand = $command		
 			$dataset = new-object System.Data.Dataset
-			try { 
-				write-host "Removing User" $user.first $user.last "with email" $user.email;
-				$results = $adapter.Fill($dataset) 
-			} catch {
-				write-host "There was an error deleting data related to user "$user.email
-				write-host "Error: " $Error
-				$error_count += 1
-			}
+            
+            $retries = 0
+            $complete = false
+            while(-not $complete){
+                try { 
+                    write-host "Removing User" $user.first $user.last "with email" $user.email;
+                    $results = $adapter.Fill($dataset)
+                    $complete = true
+                } catch [System.Data.SqlClient.SqlException]{
+                    if ($_.Exception.Number -eq 1205 -and $retries -le 2) #deadlock issue
+                    {
+                        Start-Sleep -s 3
+                        $retries += 1
+                    } else {
+                        write-host "There was an error after $retries attempts deleting data related to user "$user.email
+                        write-host "Error: " $Error
+                        $error_count += 1
+                        $complete = true
+                    }
+                } catch {
+                    write-host "There was an error deleting data related to user "$user.email
+                    write-host "Error: " $Error
+                    $error_count += 1
+                    $complete = true
+                }
+            }
 		}
 	}
 	return $error_count
