@@ -24,6 +24,7 @@ try {
 	$command.CommandText = "DELETE FROM [MinistryPlatform].[dbo].[cr_Scripts] WHERE Name in ($sqlfiles)";
 
 	$command.ExecuteNonQuery() | Out-Null
+    Write-Output "Removed scripts: $sqlfiles"
 }
 catch {         
 	Write-Output "File: $_"
