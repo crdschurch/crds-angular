@@ -34,6 +34,8 @@ IF NOT EXISTS ( SELECT  *
 	@youngest_age int,
 	@program_name nvarchar(130),
 	@event_name nvarchar(75),
+	@nickname nvarchar(50),
+	@maximum_registrants int,
 	@error_message nvarchar(500) OUTPUT,
 	@campaign_id int OUTPUT AS SET NOCOUNT ON;')
 GO
@@ -53,6 +55,8 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Pledge_Campaign]
 	@youngest_age int,
 	@program_name nvarchar(130),
 	@event_name nvarchar(75),
+	@nickname nvarchar(50),
+	@maximum_registrants int,
 	@error_message nvarchar(500) OUTPUT,
 	@campaign_id int OUTPUT
 AS
@@ -87,6 +91,7 @@ BEGIN
 
 	--Optional fields
 	SET @description = ISNULL(@description, @campaign_name);
+	SET @nickname = ISNULL(@nickname, @campaign_name);
 
 	DECLARE @external_trip_id int = 40; --No idea. 
 	DECLARE @external_fund_id int = 99; --No idea.
@@ -119,7 +124,7 @@ BEGIN
 	IF @campaign_id is not null
 	BEGIN
 		UPDATE [dbo].Pledge_Campaigns
-		SET Nickname = @campaign_name,
+		SET Nickname = @nickname,
 		Pledge_Campaign_Type_ID = @campaign_type_id,
 		Description = @description,
 		Campaign_Goal = @goal,
@@ -138,7 +143,8 @@ BEGIN
 		Pledge_Beyond_End_Date = @pledge_beyond_end_date,
 		Show_On_My_Pledges = @show_on_my_pledges,
 		__ExternalTripID = @external_trip_id,
-		__ExternalFundID = @external_fund_id
+		__ExternalFundID = @external_fund_id,
+		Maximum_Registrants = @maximum_registrants
 		WHERE Pledge_Campaign_ID = @campaign_id;
 	END
 	ELSE
