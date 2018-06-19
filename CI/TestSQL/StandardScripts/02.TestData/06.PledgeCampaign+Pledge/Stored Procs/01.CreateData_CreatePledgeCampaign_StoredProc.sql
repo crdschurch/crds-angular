@@ -34,6 +34,7 @@ IF NOT EXISTS ( SELECT  *
 	@youngest_age int,
 	@program_name nvarchar(130),
 	@event_name nvarchar(75),
+	@nickname nvarchar(50),
 	@error_message nvarchar(500) OUTPUT,
 	@campaign_id int OUTPUT AS SET NOCOUNT ON;')
 GO
@@ -53,6 +54,7 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Pledge_Campaign]
 	@youngest_age int,
 	@program_name nvarchar(130),
 	@event_name nvarchar(75),
+	@nickname nvarchar(50),
 	@error_message nvarchar(500) OUTPUT,
 	@campaign_id int OUTPUT
 AS
@@ -138,7 +140,8 @@ BEGIN
 		Pledge_Beyond_End_Date = @pledge_beyond_end_date,
 		Show_On_My_Pledges = @show_on_my_pledges,
 		__ExternalTripID = @external_trip_id,
-		__ExternalFundID = @external_fund_id
+		__ExternalFundID = @external_fund_id,
+		Nickname = @nickname
 		WHERE Pledge_Campaign_ID = @campaign_id;
 	END
 	ELSE
