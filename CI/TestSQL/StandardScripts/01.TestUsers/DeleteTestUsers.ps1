@@ -8,30 +8,30 @@ param (
 . ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
-	$DBConnection = new-object System.Data.SqlClient.SqlConnection 
-	$DBConnection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;User Id=$DBUser;Password=$DBPassword"
-	$DBConnection.Open();
-	return $DBConnection
+    $DBConnection = new-object System.Data.SqlClient.SqlConnection 
+    $DBConnection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;User Id=$DBUser;Password=$DBPassword"
+    $DBConnection.Open();
+    return $DBConnection
 }
 
 #Deletes all contacts and their user account in the list
 function DeleteContacts($DBConnection){
-	$userList = import-csv $userDataCSV
-	$error_count = 0
-	foreach($user in $userList)
-	{
-		if(![string]::IsNullOrEmpty($user.email))
-		{
-			#Create command
-			$command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Accounts_With_Email"
-			
-			#Add variables for stored proc
-			AddStringParameter $command "@contact_email" $user.email
-			
-			#Execute command
-			$adapter = new-object System.Data.SqlClient.SqlDataAdapter
-			$adapter.SelectCommand = $command		
-			$dataset = new-object System.Data.Dataset
+    $userList = import-csv $userDataCSV
+    $error_count = 0
+    foreach($user in $userList)
+    {
+        if(![string]::IsNullOrEmpty($user.email))
+        {
+            #Create command
+            $command = CreateStoredProcCommand $DBConnection "cr_QA_Delete_Accounts_With_Email"
+            
+            #Add variables for stored proc
+            AddStringParameter $command "@contact_email" $user.email
+            
+            #Execute command
+            $adapter = new-object System.Data.SqlClient.SqlDataAdapter
+            $adapter.SelectCommand = $command        
+            $dataset = new-object System.Data.Dataset
             
             $retries = 0
             $complete = $false
@@ -59,22 +59,22 @@ function DeleteContacts($DBConnection){
                     $complete = $true
                 }
             }
-		}
-	}
-	return $error_count
+        }
+    }
+    return $error_count
 }
 
 #Execute
 try{
-	$DBConnection = OpenConnection
-	$errors = 0
-	$errors += DeleteContacts $DBConnection
+    $DBConnection = OpenConnection
+    $errors = 0
+    $errors += DeleteContacts $DBConnection
 } catch {
-	write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
-	exit 1
+    write-host "Error encountered in $($MyInvocation.MyCommand.Name): "$_
+    exit 1
 } finally {
-	$DBConnection.Close();
-	if($errors -ne 0){
-		exit 1
-	}
+    $DBConnection.Close();
+    if($errors -ne 0){
+        exit 1
+    }
 }
