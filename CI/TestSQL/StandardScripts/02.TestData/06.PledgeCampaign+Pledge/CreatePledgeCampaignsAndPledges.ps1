@@ -43,6 +43,7 @@ function CreatePledgeCampaigns($DBConnection){
             AddStringParameter $command "@program_name" $pledgeCampaignRow.Program_Name
             AddStringParameter $command "@event_name" $pledgeCampaignRow.Event_Name
             AddStringParameter $command "@nickname" $pledgeCampaignRow.Campaign_Nickname
+            AddIntParameter $command "@maximum_registrants" $pledgeCampaignRow.Maximum_Registrants
             AddOutputParameter $command "@error_message" "String"
             AddOutputParameter $command "@campaign_id" "Int32"
             
