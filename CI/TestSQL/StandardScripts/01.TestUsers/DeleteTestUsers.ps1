@@ -43,7 +43,8 @@ function DeleteContacts($DBConnection){
                 } catch [System.Data.SqlClient.SqlException]{
                     if ($_.Exception.Number -eq 1205 -and $retries -le 2) #deadlock issue
                     {
-                        Start-Sleep -s 3
+                        write-host "Deadlock encountered. Retrying user deletion of "$user.email
+                        Start-Sleep -s 5
                         $retries += 1
                     } else {
                         write-host "There was an error after $retries attempts deleting data related to user "$user.email
