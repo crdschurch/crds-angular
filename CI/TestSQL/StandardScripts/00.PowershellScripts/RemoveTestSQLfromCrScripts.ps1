@@ -9,8 +9,9 @@ param (
  )
 
 #get sql files and format for query
-$path -split ',' | foreach { $sqlfiles += (Get-ChildItem -path ($_) -recurse -filter *.sql)}
-$sqlfiles = "'"+([string]$sqlfiles).replace(" ", "', '")+"'"
+$path -split ',' | foreach { $child = (Get-ChildItem -path ($_).toString() -recurse -filter *.sql);
+ if (![string]::IsNullOrEmpty($child)){ $sqlfiles += "'"+$child+"'"; } }
+$sqlfiles = ([string]$sqlfiles).replace(" ", "', '").replace("''", "', '");
 
 #open connection
 $DBConnection = new-object System.Data.SqlClient.SqlConnection 
