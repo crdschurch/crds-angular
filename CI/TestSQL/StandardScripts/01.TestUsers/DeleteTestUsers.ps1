@@ -34,12 +34,12 @@ function DeleteContacts($DBConnection){
 			$dataset = new-object System.Data.Dataset
             
             $retries = 0
-            $complete = false
+            $complete = $false
             while(-not $complete){
                 try { 
                     write-host "Removing User" $user.first $user.last "with email" $user.email;
                     $results = $adapter.Fill($dataset)
-                    $complete = true
+                    $complete = $true
                 } catch [System.Data.SqlClient.SqlException]{
                     if ($_.Exception.Number -eq 1205 -and $retries -le 2) #deadlock issue
                     {
@@ -49,13 +49,13 @@ function DeleteContacts($DBConnection){
                         write-host "There was an error after $retries attempts deleting data related to user "$user.email
                         write-host "Error: " $Error
                         $error_count += 1
-                        $complete = true
+                        $complete = $true
                     }
                 } catch {
                     write-host "There was an error deleting data related to user "$user.email
                     write-host "Error: " $Error
                     $error_count += 1
-                    $complete = true
+                    $complete = $true
                 }
             }
 		}
