@@ -41,6 +41,7 @@ function CreateOpportunities($DBConnection){
 			AddStringParameter $command "@description" $opportunityRow.Description
 			AddDateParameter $command "@publish_date" $opportunityRow.Publish_Date
 			AddIntParameter $command "@signup_deadline" $opportunityRow.Sign_Up_Deadline_ID
+			AddStringParameter $command "@opportunity_subtitle" $opportunityRow.Opportunity_Subtitle
 			AddOutputParameter $command "@error_message" "String"
 			AddOutputParameter $command "@opportunity_id" "Int32"
 			

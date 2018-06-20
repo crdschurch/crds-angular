@@ -34,6 +34,7 @@ IF NOT EXISTS ( SELECT  *
 	@publish_date datetime,
 	@signup_deadline int,
 	@error_message nvarchar(500) OUTPUT,
+	@opportunity_subtitle nvarchar(32),
 	@opportunity_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Create_Opportunity]
@@ -52,6 +53,7 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Opportunity]
 	@publish_date datetime,
 	@signup_deadline int,
 	@error_message nvarchar(500) OUTPUT,
+	@opportunity_subtitle nvarchar(32),
 	@opportunity_id int OUTPUT
 AS
 BEGIN
@@ -138,8 +140,8 @@ BEGIN
 	IF @opportunity_id is null
 	BEGIN
 		INSERT INTO [dbo].Opportunities
-		(Opportunity_Title,Group_Role_ID,Program_ID ,Visibility_Level_ID,Contact_Person,Publish_Date ,Send_Reminder ,Domain_ID) VALUES
-		(@opportunity_name,@role_id     ,@program_id,@visibility_level  ,@contact_id   ,@publish_date,@send_reminder,1        );
+		(Opportunity_Title,Group_Role_ID,Program_ID ,Visibility_Level_ID,Contact_Person,Publish_Date ,Send_Reminder ,Domain_ID ,Opportunity_Subtitle) VALUES
+		(@opportunity_name,@role_id     ,@program_id,@visibility_level  ,@contact_id   ,@publish_date,@send_reminder,1         ,@opportunity_Subtitle);
 
 		SET @opportunity_id = SCOPE_IDENTITY();
 	END;
@@ -165,7 +167,8 @@ BEGIN
 		Room = @room_name,
 		Reminder_Days_Prior = @reminder_days_prior,
 		Description = @description,  
-		Reminder_Template = @reminder_template_id
+		Reminder_Template = @reminder_template_id,
+		Opportunity_Subtitle = @opportunity_Subtitle,
 		WHERE Opportunity_ID = @opportunity_id;
 	END;
 END
