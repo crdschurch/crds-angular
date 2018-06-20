@@ -33,8 +33,8 @@ IF NOT EXISTS ( SELECT  *
 	@description nvarchar(2000),
 	@publish_date datetime,
 	@signup_deadline int,
-	@error_message nvarchar(500) OUTPUT,
 	@opportunity_subtitle nvarchar(32),
+	@error_message nvarchar(500) OUTPUT,
 	@opportunity_id int OUTPUT AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Create_Opportunity]
@@ -52,8 +52,8 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Opportunity]
 	@description nvarchar(2000),
 	@publish_date datetime,
 	@signup_deadline int,
-	@error_message nvarchar(500) OUTPUT,
 	@opportunity_subtitle nvarchar(32),
+	@error_message nvarchar(500) OUTPUT,
 	@opportunity_id int OUTPUT
 AS
 BEGIN
