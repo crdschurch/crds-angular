@@ -33,6 +33,7 @@ IF NOT EXISTS ( SELECT  *
 	@description nvarchar(2000),
 	@publish_date datetime,
 	@signup_deadline int,
+	@opportunity_subtitle nvarchar(32),
 	@error_message nvarchar(500) OUTPUT,
 	@opportunity_id int OUTPUT AS SET NOCOUNT ON;')
 GO
@@ -51,6 +52,7 @@ ALTER PROCEDURE [dbo].[cr_QA_Create_Opportunity]
 	@description nvarchar(2000),
 	@publish_date datetime,
 	@signup_deadline int,
+	@opportunity_subtitle nvarchar(32),
 	@error_message nvarchar(500) OUTPUT,
 	@opportunity_id int OUTPUT
 AS
@@ -165,7 +167,8 @@ BEGIN
 		Room = @room_name,
 		Reminder_Days_Prior = @reminder_days_prior,
 		Description = @description,  
-		Reminder_Template = @reminder_template_id
+		Reminder_Template = @reminder_template_id,
+		Opportunity_Subtitle = @opportunity_subtitle,
 		WHERE Opportunity_ID = @opportunity_id;
 	END;
 END
