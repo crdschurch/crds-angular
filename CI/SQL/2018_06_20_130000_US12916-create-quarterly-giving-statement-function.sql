@@ -91,7 +91,9 @@ AS
             LEFT OUTER JOIN Households h on c.Household_ID = h.Household_ID
             LEFT OUTER JOIN Congregations co on co.Congregation_ID = h.Congregation_ID
         WHERE
-            NOT EXISTS (SELECT 1 FROM @DonorIDs di WHERE c.Contact_ID = di.Contact_ID)
+			@BeginDate < coalesce(cr.End_Date, '9999-12-31') 
+			and @EndDate > cr.Start_Date
+            and NOT EXISTS (SELECT 1 FROM @DonorIDs di WHERE c.Contact_ID = di.Contact_ID)
         ;	
 
     RETURN;
