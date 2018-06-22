@@ -89,7 +89,7 @@ AS
             co.Congregation_Name as Congregation
         FROM
             @DonorIDs di
-            INNER JOIN Contact_Relationships cr on cr.Contact_ID = di.Contact_ID and cr.Relationship_ID = 42 AND cr.End_Date is null
+            INNER JOIN Contact_Relationships cr on cr.Contact_ID = di.Contact_ID and cr.Relationship_ID = 42
 			INNER JOIN Contacts c on c.Contact_ID = cr.Related_Contact_ID
             LEFT OUTER JOIN Donors do on do.Donor_ID = c.Donor_Record
             LEFT OUTER JOIN Statement_Methods sm on sm.Statement_Method_ID = do.Statement_Method_ID
