@@ -8,7 +8,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER FUNCTION [dbo].[crds_QuarterlyGivingStatementDonors](
+CREATE FUNCTION [dbo].[crds_QuarterlyGivingStatementDonors](
 						@Quarter		int
 					)
 RETURNS @DonorsTable TABLE(		ContactId	int,
