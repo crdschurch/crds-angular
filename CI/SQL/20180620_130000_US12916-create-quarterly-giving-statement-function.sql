@@ -1,8 +1,10 @@
 USE [MinistryPlatform]
 GO
-/****** Object:  UserDefinedFunction [dbo].[crds_QuarterlyGivingStatementDonors]    Script Date: 6/21/2018 10:26:41 AM ******/
+
+/****** Object:  UserDefinedFunction [dbo].[crds_QuarterlyGivingStatementDonors]    Script Date: 6/22/2018 3:39:51 PM ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
 
@@ -10,6 +12,7 @@ CREATE FUNCTION [dbo].[crds_QuarterlyGivingStatementDonors](
 						@Quarter		int
 					)
 RETURNS @DonorsTable TABLE(		ContactId	int,
+								Relationship varchar(10),
 								DonorId		int,
 								DisplayName	nvarchar(75),
 								StatementMethod  nvarchar(50),
@@ -59,6 +62,7 @@ AS
         INSERT INTO @DonorsTable
         SELECT
             c.Contact_ID as ContactID,
+			'Giver',
             do.Donor_ID as DonorId,
             c.Display_Name as DisplayName,
             sm.Statement_Method as StatementMethod,
@@ -77,6 +81,7 @@ AS
         INSERT INTO @DonorsTable
         SELECT
             c.Contact_ID as ContactID, 
+			'Cogiver',
             do.Donor_ID as DonorId,
             c.Display_Name as DisplayName,
             sm.Statement_Method as StatementMethod,
@@ -84,10 +89,10 @@ AS
             co.Congregation_Name as Congregation
         FROM
             @DonorIDs di
-            INNER JOIN Contact_Relationships cr on cr.Contact_ID = di.Contact_ID and cr.Relationship_ID = 42 and cr.End_Date is null
-            INNER JOIN Contacts c on c.Contact_ID = cr.Related_Contact_ID
-            INNER JOIN Donors do on do.Donor_ID = di.Donor_ID
-            INNER JOIN Statement_Methods sm on sm.Statement_Method_ID = do.Statement_Method_ID
+            INNER JOIN Contact_Relationships cr on cr.Contact_ID = di.Contact_ID and cr.Relationship_ID = 42
+			INNER JOIN Contacts c on c.Contact_ID = cr.Related_Contact_ID
+            LEFT OUTER JOIN Donors do on do.Donor_ID = c.Donor_Record
+            LEFT OUTER JOIN Statement_Methods sm on sm.Statement_Method_ID = do.Statement_Method_ID
             LEFT OUTER JOIN Households h on c.Household_ID = h.Household_ID
             LEFT OUTER JOIN Congregations co on co.Congregation_ID = h.Congregation_ID
         WHERE
@@ -98,4 +103,7 @@ AS
 
     RETURN;
     END;
+
+GO
+
 

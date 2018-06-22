@@ -12,26 +12,26 @@ GO
 
 CREATE VIEW [dbo].[vw_crds_Q1_Giving_Statements]
 AS
-select ContactID, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation 
+select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation 
 from crds_QuarterlyGivingStatementDonors(1)
 GO
 
 
 CREATE VIEW [dbo].[vw_crds_Q2_Giving_Statements]
 AS
-select ContactID, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation 
+select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation 
 from crds_QuarterlyGivingStatementDonors(2)
 GO
 
 CREATE VIEW [dbo].[vw_crds_Q3_Giving_Statements]
 AS
-select ContactID, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation 
+select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation 
 from crds_QuarterlyGivingStatementDonors(3)
 GO
 
 
 CREATE VIEW [dbo].[vw_crds_Q4_Giving_Statements]
 AS
-select ContactID, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation 
+select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation 
 from crds_QuarterlyGivingStatementDonors(4)
 GO

@@ -6,7 +6,7 @@ INSERT INTO [dbo].[dp_Page_Sections]
            ([Page_Section]
            ,[View_Order])
      VALUES
-           ('Giving Statements'
+           ('Giving Statements Online/Email'
            , 81)
 GO
 
@@ -36,10 +36,10 @@ INSERT INTO dbo.dp_Pages
            ,[Display_Copy])
      OUTPUT INSERTED.Page_ID INTO @OutputTbl(Page_ID)
      VALUES
-		('Q1 Giving Statements', 'Q1 Giving Statement', 'List of contacts who have given for the first quarter of the year', 35, 'vw_crds_Q1_Giving_Statements', NULL, 0, 'ContactID, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation', 'ContactId', NULL, NULL, NULL, 'ContactId', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-		('Q2 Giving Statements', 'Q2 Giving Statement', 'List of contacts who have given for the second quarter of the year', 36, 'vw_crds_Q2_Giving_Statements', NULL, 0, 'ContactID, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation', 'ContactId', NULL, NULL, NULL, 'ContactId', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-		('Q3 Giving Statements', 'Q3 Giving Statement', 'List of contacts who have given for the third quarter of the year', 37, 'vw_crds_Q3_Giving_Statements', NULL, 0, 'ContactID, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation', 'ContactId', NULL, NULL, NULL, 'ContactId', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-		('Q4 Giving Statements', 'Q4 Giving Statement', 'List of contacts who have given for the fourth quarter of the year', 38, 'vw_crds_Q4_Giving_Statements', NULL, 0, 'ContactID, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation', 'ContactId', NULL, NULL, NULL, 'ContactId', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1)
+		('Q1 Giving Statements', 'Q1 Giving Statement', 'List of contacts who have given for the first quarter of the year', 35, 'vw_crds_Q1_Giving_Statements', NULL, 0, 'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation', 'ContactId', NULL, NULL, NULL, 'ContactId', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+		('Q2 Giving Statements', 'Q2 Giving Statement', 'List of contacts who have given for the second quarter of the year', 36, 'vw_crds_Q2_Giving_Statements', NULL, 0, 'ContactID, Relationship,  DonorId, DisplayName, StatementMethod, EmailAddress, Congregation', 'ContactId', NULL, NULL, NULL, 'ContactId', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+		('Q3 Giving Statements', 'Q3 Giving Statement', 'List of contacts who have given for the third quarter of the year', 37, 'vw_crds_Q3_Giving_Statements', NULL, 0, 'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation', 'ContactId', NULL, NULL, NULL, 'ContactId', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+		('Q4 Giving Statements', 'Q4 Giving Statement', 'List of contacts who have given for the fourth quarter of the year', 38, 'vw_crds_Q4_Giving_Statements', NULL, 0, 'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation', 'ContactId', NULL, NULL, NULL, 'ContactId', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1)
 
       INSERT INTO [dbo].[dp_Role_Pages]
            ([Role_ID]
