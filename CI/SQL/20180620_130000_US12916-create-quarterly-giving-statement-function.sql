@@ -1,15 +1,18 @@
 USE [MinistryPlatform]
 GO
-/****** Object:  UserDefinedFunction [dbo].[crds_QuarterlyGivingStatementDonors]    Script Date: 6/21/2018 10:26:41 AM ******/
+
+/****** Object:  UserDefinedFunction [dbo].[crds_QuarterlyGivingStatementDonors]    Script Date: 6/22/2018 3:39:51 PM ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE FUNCTION [dbo].[crds_QuarterlyGivingStatementDonors](
+ALTER FUNCTION [dbo].[crds_QuarterlyGivingStatementDonors](
 						@Quarter		int
 					)
 RETURNS @DonorsTable TABLE(		ContactId	int,
+								Relationship varchar(10),
 								DonorId		int,
 								DisplayName	nvarchar(75),
 								StatementMethod  nvarchar(50),
@@ -59,6 +62,7 @@ AS
         INSERT INTO @DonorsTable
         SELECT
             c.Contact_ID as ContactID,
+			'Giver',
             do.Donor_ID as DonorId,
             c.Display_Name as DisplayName,
             sm.Statement_Method as StatementMethod,
@@ -77,6 +81,7 @@ AS
         INSERT INTO @DonorsTable
         SELECT
             c.Contact_ID as ContactID, 
+			'Cogiver',
             do.Donor_ID as DonorId,
             c.Display_Name as DisplayName,
             sm.Statement_Method as StatementMethod,
@@ -98,4 +103,7 @@ AS
 
     RETURN;
     END;
+
+GO
+
 
