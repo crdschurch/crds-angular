@@ -49,8 +49,8 @@ AS
 	UNION
 	--script to identify unmatched co-giver records
 	select
-		c2.Contact_ID as ContactId,
-		c2.Display_Name as DisplayName,
+		c1.Contact_ID as ContactId,
+		c1.Display_Name as DisplayName,
 		'No reciprocal cogiver relationship' as Exception
 	from
 		dbo.Contacts c1
