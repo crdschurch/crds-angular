@@ -12,5 +12,5 @@ GO
 
 CREATE VIEW [dbo].[vw_crds_Cogiver_Exceptions]
 AS
-select 1 as ContactId, 'Ken' as DisplayName
+select 1 as ContactId, 'Ken' as DisplayName, 'Overlap' as Exception
 GO
