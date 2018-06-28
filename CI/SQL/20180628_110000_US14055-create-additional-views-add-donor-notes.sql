@@ -9,7 +9,7 @@ GO
 
 UPDATE [dbo].[dp_Pages]
    SET [Default_Field_List] = 'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes'
- WHERE Page_ID in (1018, 1020, 1021, 1022)
+ WHERE Page_ID in (1018, 1019, 1020, 1021)
 GO
 
 ALTER FUNCTION [dbo].[crds_QuarterlyGivingStatementDonors](
