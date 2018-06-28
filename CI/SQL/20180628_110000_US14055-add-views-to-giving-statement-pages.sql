@@ -34,7 +34,7 @@ INSERT INTO [dbo].[dp_Page_Views]
            ,1021
            ,'List of contacts that gave in the fourth quarter of this year. Filter out Guest Giver, Cash Offerings, Stripe Finance, Anonymous, and Non Cash.'
            ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes'
-           ,'StatementMethod not like ''No Statement%'' AND EmailAddress is not null'),
+           ,'StatementMethod not like ''No Statement%'' AND EmailAddress is not null')
 
 GO
 
