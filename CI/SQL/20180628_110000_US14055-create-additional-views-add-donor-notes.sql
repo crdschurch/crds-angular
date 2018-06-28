@@ -73,7 +73,7 @@ AS
             sm.Statement_Method as StatementMethod,
             c.Email_Address as EmailAddress,
             co.Congregation_Name as Congregation,
-			do.Notes
+			do.Notes as DonorNotes
         FROM
             Contacts c
             INNER JOIN @DonorIDs di on di.Contact_ID = c.Contact_ID
@@ -93,7 +93,7 @@ AS
             sm.Statement_Method as StatementMethod,
             c.Email_Address as EmailAddress,
             co.Congregation_Name as Congregation,
-			do.Notes
+			do.Notes as DonorNotes
         FROM
             @DonorIDs di
             INNER JOIN Contact_Relationships cr on cr.Contact_ID = di.Contact_ID and cr.Relationship_ID = 42
@@ -114,24 +114,24 @@ AS
 
 ALTER VIEW [dbo].[vw_crds_Q1_Giving_Statements]
 AS
-select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes, 1 AS Domain_ID 
+select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes, 1 AS Domain_ID 
 from crds_QuarterlyGivingStatementDonors(1)
 GO
 
 ALTER VIEW [dbo].[vw_crds_Q2_Giving_Statements]
 AS
-select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes, 1 AS Domain_ID 
+select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes, 1 AS Domain_ID 
 from crds_QuarterlyGivingStatementDonors(2)
 GO
 
 ALTER VIEW [dbo].[vw_crds_Q3_Giving_Statements]
 AS
-select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes, 1 AS Domain_ID 
+select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes, 1 AS Domain_ID 
 from crds_QuarterlyGivingStatementDonors(3)
 GO
 
 ALTER VIEW [dbo].[vw_crds_Q4_Giving_Statements]
 AS
-select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes, 1 AS Domain_ID 
+select ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes, 1 AS Domain_ID 
 from crds_QuarterlyGivingStatementDonors(4)
 GO
