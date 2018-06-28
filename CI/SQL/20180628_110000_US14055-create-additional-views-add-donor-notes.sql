@@ -8,7 +8,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 UPDATE [dbo].[dp_Pages]
-   SET [Default_Field_List] = 'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes'
+   SET [Default_Field_List] = 'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes'
  WHERE Page_ID in (1018, 1020, 1021, 1022)
 GO
 
@@ -22,7 +22,7 @@ RETURNS @DonorsTable TABLE(		ContactId	int,
 								StatementMethod  nvarchar(50),
 								EmailAddress varchar(255),
 								Congregation nvarchar(50),
-								Notes nvarchar(500)
+								DonorNotes nvarchar(500)
 						 )
 AS
      BEGIN

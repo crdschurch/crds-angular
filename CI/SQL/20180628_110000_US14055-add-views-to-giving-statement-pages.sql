@@ -18,22 +18,22 @@ INSERT INTO [dbo].[dp_Page_Views]
            ('Email Statements'
            ,1018
            ,'List of contacts that gave in the first quarter of this year. Filter out Guest Giver, Cash Offerings, Stripe Finance, Anonymous, and Non Cash.'
-           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes'
+           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes'
            ,'StatementMethod not like ''No Statement%'' AND EmailAddress is not null'),
            ('Email Statements'
            ,1019
            ,'List of contacts that gave in thesSecond quarter of this year. Filter out Guest Giver, Cash Offerings, Stripe Finance, Anonymous, and Non Cash.'
-           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes'
+           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes'
            ,'StatementMethod not like ''No Statement%'' AND EmailAddress is not null'),
            ('Email Statements'
            ,1020
            ,'List of contacts that gave in the third quarter of this year. Filter out Guest Giver, Cash Offerings, Stripe Finance, Anonymous, and Non Cash.'
-           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes'
+           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes'
            ,'StatementMethod not like ''No Statement%'' AND EmailAddress is not null'),
            ('Email Statements'
            ,1021
            ,'List of contacts that gave in the fourth quarter of this year. Filter out Guest Giver, Cash Offerings, Stripe Finance, Anonymous, and Non Cash.'
-           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes'
+           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes'
            ,'StatementMethod not like ''No Statement%'' AND EmailAddress is not null'),
 
 GO
@@ -48,22 +48,22 @@ INSERT INTO [dbo].[dp_Page_Views]
            ('No Statement/Exceptions'
            ,1018
            ,'List of contacts that gave in the first quarter of this year and have a statement method of No Statement Required or that do not have an email address'
-           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes'
+           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes'
            ,'(StatementMethod like ''No Statement%'' OR (EmailAddress is null AND StatementMethod = ''Email/Online'')) AND NOT (DisplayName like ''Cash Offer%''  OR DisplayName like ''Guest Giver%'')'),
            ('No Statement/Exceptions'
            ,1019
            ,'List of contacts that gave in the second quarter of this year and have a statement method of No Statement Required or that do not have an email address'
-           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes'
+           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes'
            ,'(StatementMethod like ''No Statement%'' OR (EmailAddress is null AND StatementMethod = ''Email/Online'')) AND NOT (DisplayName like ''Cash Offer%''  OR DisplayName like ''Guest Giver%'')'),
            ('No Statement/Exceptions'
            ,1020
            ,'List of contacts that gave in the second quarter of this year and have a statement method of No Statement Required or that do not have an email address'
-           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, Notes'
+           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes'
            ,'(StatementMethod like ''No Statement%'' OR (EmailAddress is null AND StatementMethod = ''Email/Online'')) AND NOT (DisplayName like ''Cash Offer%''  OR DisplayName like ''Guest Giver%'')'),
            ('No Statement/Exceptions'
            ,1021
            ,'List of contacts that gave in the second quarter of this year and have a statement method of No Statement Required or that do not have an email address'
-           ,'(StatementMethod like ''No Statement%'' OR (EmailAddress is null AND StatementMethod = ''Email/Online'')) AND NOT (DisplayName like ''Cash Offer%''  OR DisplayName like ''Guest Giver%'')'),
-           ,'StatementMethod like ''No Statement%''  OR EmailAddress is null')
+           ,'ContactID, Relationship, DonorId, DisplayName, StatementMethod, EmailAddress, Congregation, DonorNotes'
+           ,'(StatementMethod like ''No Statement%'' OR (EmailAddress is null AND StatementMethod = ''Email/Online'')) AND NOT (DisplayName like ''Cash Offer%''  OR DisplayName like ''Guest Giver%'')')
 
 GO
