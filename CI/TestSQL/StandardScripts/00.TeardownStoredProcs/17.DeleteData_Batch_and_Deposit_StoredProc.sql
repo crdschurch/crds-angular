@@ -78,8 +78,7 @@ IF NOT EXISTS ( SELECT  *
 	@deposit_id int AS SET NOCOUNT ON;')
 GO
 ALTER PROCEDURE [dbo].[cr_QA_Delete_Deposit] 
-	@deposit_id int,
-	@deposit_name nvarchar(75)
+	@deposit_id int
 AS
 BEGIN
 	SET NOCOUNT ON;
