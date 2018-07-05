@@ -7,8 +7,8 @@ GO
 
 -- =============================================
 -- Author:		Henney, Sarah
--- Create date: 07/05/2018
--- Description:	Stored procedure declarations for deleting equipment data
+-- Create date:	07/05/2018
+-- Description:	Stored procedure declaration for deleting equipment data
 -- =============================================
 
 -- Defines cr_QA_Delete_Equipment

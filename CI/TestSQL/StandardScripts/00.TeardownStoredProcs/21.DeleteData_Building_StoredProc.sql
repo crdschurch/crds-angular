@@ -7,8 +7,8 @@ GO
 
 -- =============================================
 -- Author:		Henney, Sarah
--- Create date: 07/03/2018
--- Description:	Stored procedure declarations for deleting building data
+-- Create date:	07/03/2018
+-- Description:	Stored procedure declaration for deleting building data
 -- =============================================
 
 -- Defines cr_QA_Delete_Building
