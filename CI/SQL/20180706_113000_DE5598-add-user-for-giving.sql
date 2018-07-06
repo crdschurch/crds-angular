@@ -1,6 +1,8 @@
 USE [MinistryPlatform]
 GO
 
+DECLARE @Id int
+
 INSERT INTO [dbo].[dp_Users]
            ([User_Name]
            ,[User_Email]
@@ -55,4 +57,11 @@ INSERT INTO [dbo].[dp_Users]
            ,0
            ,NULL
            ,0)
+
+SET @Id = SCOPE_IDENTITY()
+GO
+
+UPDATE [dbo].[Contacts]
+   SET [User_Account] = @Id
+ WHERE Contact_ID = 5396574
 GO
