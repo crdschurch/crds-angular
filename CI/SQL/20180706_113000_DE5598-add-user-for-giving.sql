@@ -59,7 +59,6 @@ INSERT INTO [dbo].[dp_Users]
            ,0)
 
 SET @Id = SCOPE_IDENTITY()
-GO
 
 UPDATE [dbo].[Contacts]
    SET [User_Account] = @Id
