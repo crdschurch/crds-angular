@@ -28,6 +28,7 @@ AS
         WHERE
             c.Contact_Status_ID = 3		-- deceased
             and c.Date_Of_Death is not null
+            and d.Donation_Date >= DATEADD(month, -13, GETDATE())       -- look back only 13 months
     UNION
         -- soft credit donors
         SELECT
@@ -55,5 +56,6 @@ AS
             c.Contact_Status_ID = 3		-- deceased
             and c.Date_Of_Death is not null
             and d.Donation_Date >= c.Date_Of_Death
+            and d.Donation_Date >= DATEADD(month, -13, GETDATE())       -- look back only 13 months
         ;
 GO
