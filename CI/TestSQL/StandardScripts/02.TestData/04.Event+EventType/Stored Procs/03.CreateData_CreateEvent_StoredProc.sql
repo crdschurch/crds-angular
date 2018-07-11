@@ -57,9 +57,9 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Enforce required parameters
-	IF @event_name is null OR @start_date is null OR @end_date is null
+	IF @event_name is null
 	BEGIN
-		SET @error_message = 'Event name cannot be null, Start Date and End Date'+CHAR(13);
+		SET @error_message = 'Event name cannot be null'+CHAR(13);
 		RETURN;
 	END;
 
