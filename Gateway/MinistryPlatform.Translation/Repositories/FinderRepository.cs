@@ -102,6 +102,23 @@ namespace MinistryPlatform.Translation.Repositories
             _ministryPlatformRest.UsingAuthenticationToken(apiToken).Put("Participants", update);
         }
 
+        public void RecordPinHistory(int participantId, int statusId)
+        {
+            var token = ApiLogin();
+            try
+            {
+                var historyItem = new MpConnectHistory();
+                historyItem.ParticipantId = participantId;
+                historyItem.ConnectStatusId = statusId;
+                historyItem.TransactionDate = DateTime.Now;
+                _ministryPlatformRest.UsingAuthenticationToken(token).Post<MpConnectHistory>(new List<MpConnectHistory> { historyItem });
+            }
+            catch (Exception e)
+            {
+                throw new ApplicationException("Error creating connect history record: " + e.Message);
+            }
+        }
+
         public List<SpPinDto> GetPinsInRadius(GeoCoordinate originCoords)
         {
             var apiToken = _apiUserRepository.GetDefaultApiClientToken();
