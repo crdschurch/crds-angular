@@ -194,6 +194,7 @@
     <Compile Include="Models\DTO\MpBaseDto.cs" />
     <Compile Include="Models\DTO\MpPledgeCampaignSummaryDto.cs" />
     <Compile Include="Models\EventReservations\MpRoomReservationRejectionDto.cs" />
+    <Compile Include="Models\Finder\MpConnectHistory.cs" />
     <Compile Include="Models\Finder\FinderPinDto.cs" />
     <Compile Include="Models\DTO\PredefinedDonationAmountDTO.cs" />
     <Compile Include="Models\Finder\FinderGatheringDto.cs" />
