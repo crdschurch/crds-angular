@@ -260,8 +260,18 @@ namespace crds_angular.Services
             pin.Address.Longitude = coords.Longitude;
             pin.Address.Latitude = coords.Latitude;
 
+            var contact = _contactRepository.GetContactById((int)pin.Contact_ID);
+
+            var household = new MpHousehold();
+            household.Household_ID = contact.Household_ID;
+            household.Address_ID = pin.Address.AddressID;
+            household.Congregation_ID = pin.congregationId;
+            household.Home_Phone = contact.Home_Phone;
+
+            _contactRepository.UpdateHousehold(household);
+
             var householdDictionary = (pin.Address.AddressID == null)
-                ? new Dictionary<string, object> {{"Household_ID", pin.Household_ID}}
+                ? new Dictionary<string, object> {{"Household_ID", pin.Household_ID} }
                 : null;
             var address = Mapper.Map<MpAddress>(pin.Address);
 
