@@ -300,8 +300,7 @@ BEGIN
 		LEFT OUTER JOIN Households H ON H.Household_ID = C.Household_ID
 		LEFT OUTER JOIN Addresses A ON A.Address_ID = H.Address_ID
 	WHERE 
-		 Statement_Method_ID <> 4		-- No Statement Needed
-		 AND (@SelectionID > 0 OR  Statement_Frequency_ID <> 3)		-- Include statement frequency of never only if selection report
+		 (@SelectionID > 0 OR (Statement_Method_ID <> 4 AND Statement_Frequency_ID <> 3))
 		 AND (@SelectionID = 0 
 		      OR EXISTS ( 
 		       SELECT 1
