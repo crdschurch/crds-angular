@@ -14,9 +14,6 @@ namespace MinistryPlatform.Translation.Models.Finder
         [JsonProperty("last_Name")]
         public string Last_Name { get; set; }
 
-        [JsonProperty("email_Address")]
-        public string Email_Address { get; set; }
-
         [JsonProperty("contact_Id")]
         public int? Contact_ID { get; set; }
 
