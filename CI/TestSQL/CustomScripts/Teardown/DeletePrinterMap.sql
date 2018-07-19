@@ -7,6 +7,8 @@ SET @printerMapID = (SELECT Printer_Map_ID FROM cr_Printer_Maps WHERE Printer_ID
 								AND Computer_ID = 0
 								AND Computer_Name = '(t+auto) Computer'
 		    )
-
-DELETE FROM cr_Kiosk_Configs WHERE Printer_Map_ID = @printerMapID
-DELETE FROM cr_Printer_Maps WHERE Printer_Map_ID = @printerMapID
+IF @printerMapID IS NOT NUll
+BEGIN
+	DELETE FROM cr_Kiosk_Configs WHERE Printer_Map_ID = @printerMapID
+	DELETE FROM cr_Printer_Maps WHERE Printer_Map_ID = @printerMapID
+END
