@@ -61,5 +61,8 @@ namespace crds_angular.Models.Finder
 
         [JsonProperty("title")]
         public string Title { get; set; }
+
+        [JsonProperty("congregationId")]
+        public int congregationId { get; set; }
     }
 }
