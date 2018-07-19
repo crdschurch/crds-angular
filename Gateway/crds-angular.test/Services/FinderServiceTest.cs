@@ -829,6 +829,13 @@ namespace crds_angular.test.Services
             _mpFinderRepository.Setup(mocked => mocked.UpdateGathering(It.IsAny<FinderGatheringDto>())).Returns(expectedFinderGathering);
             _awsCloudsearchService.Setup(mocked => mocked.UploadNewPinToAws(It.IsAny<PinDto>()));
 
+            var mycontact = new MpMyContact();
+            mycontact.Household_ID = 1;
+            mycontact.Home_Phone = "123-1234";
+
+            _mpContactRepository.Setup(m => m.GetContactById(It.IsAny<int>())).Returns(mycontact);
+            _mpContactRepository.Setup(m => m.UpdateHousehold(It.IsAny<MpHousehold>()));
+
             var result = _fixture.UpdateGathering(pin);
             _addressService.Verify(ver => ver.GetGeoLocationCascading(It.IsAny<AddressDTO>()), Times.Exactly(1));
             _mpFinderRepository.VerifyAll();
