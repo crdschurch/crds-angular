@@ -625,7 +625,8 @@ namespace crds_angular.test.Services
                 FirstName = "",
                 LastName = "",
                 Gathering = null,
-                Host_Status_ID = 0
+                Host_Status_ID = 0,
+                congregationId = 19
             };
 
             var geoCodes = new GeoCoordinate() {Altitude = 0, Course = 0, HorizontalAccuracy = 0, Latitude = 10, Longitude = 20, Speed = 0, VerticalAccuracy = 0};
