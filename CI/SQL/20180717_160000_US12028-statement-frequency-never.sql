@@ -300,7 +300,7 @@ BEGIN
 		LEFT OUTER JOIN Households H ON H.Household_ID = C.Household_ID
 		LEFT OUTER JOIN Addresses A ON A.Address_ID = H.Address_ID
 	WHERE 
-		 (@SelectionID > 0 OR (Statement_Method_ID <> 4 AND Statement_Frequency_ID <> 3)
+		 (@SelectionID > 0 OR (Statement_Method_ID <> 4 AND Statement_Frequency_ID <> 3))
 		 AND (@SelectionID = 0 
 		      OR EXISTS ( 
 		       SELECT 1
