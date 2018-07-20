@@ -73,7 +73,7 @@ BEGIN
 		) SP
 	WHERE
 		DD.Pledge_ID IS NULL
-		AND D.Donation_Date BETWEEN @FromDate AND GETDATE()
+		AND D.Donation_Date BETWEEN @FromDate AND GETUTCDATE()
 		AND D.Donor_ID NOT IN (@DefaultDonorID, @UnassignedDonorID)
 		AND (D.Donation_Status_ID = 2 OR D.Donation_Status_ID = 4)
 		AND Prog.Pledge_Campaign_ID IS NOT NULL
