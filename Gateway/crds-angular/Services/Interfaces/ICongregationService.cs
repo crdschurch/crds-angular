@@ -10,5 +10,6 @@ namespace crds_angular.Services.Interfaces
         Congregation GetCongregationById(int id);
         List<Room> GetRooms(int congregationId, DateTime startDate, DateTime endDate);
         List<RoomEquipment> GetEquipment(int congregationId);
+        List<Congregation> GetAllCrossroadsCongregations();
     }
 }
