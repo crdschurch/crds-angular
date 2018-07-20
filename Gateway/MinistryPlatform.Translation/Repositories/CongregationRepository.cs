@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Crossroads.Utilities.FunctionalHelpers;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -23,6 +21,13 @@ namespace MinistryPlatform.Translation.Repositories
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRestRepository;
 
+        }
+
+        public List<MpCongregation> GetCongregations(string searchString = null)
+        {
+            var apiToken = ApiLogin();
+            string columns = "Congregation_ID, Congregation_Name, Location_ID";
+            return _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Search<MpCongregation>(searchString, columns);
         }
 
         public MpCongregation GetCongregationById(int id)

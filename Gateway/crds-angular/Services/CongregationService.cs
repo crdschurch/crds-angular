@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Events;
 using crds_angular.Services.Interfaces;
+using AutoMapper;
+using MinistryPlatform.Translation.Models;
+using System.Linq;
 
 namespace crds_angular.Services
 {
@@ -19,6 +22,13 @@ namespace crds_angular.Services
             _congregationService = congregationService;
             _roomService = roomService;
             _equipmentService = equipmentService;
+        }
+
+        public List<Congregation> GetAllCrossroadsCongregations()
+        {
+            var congregations = _congregationService.GetCongregations("Available_Online=1");
+            List<Congregation> congregationDtos = congregations.Select(Mapper.Map<MpCongregation, Congregation>).ToList();
+            return congregationDtos;
         }
 
         public Congregation GetCongregationById(int id)
