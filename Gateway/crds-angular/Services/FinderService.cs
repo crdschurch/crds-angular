@@ -92,6 +92,9 @@ namespace crds_angular.Services
         private const double MinutesInDegree = 60;
         private const double StatuteMilesInNauticalMile = 1.1515;
 
+        private const int ADD_TO_MAP = 1;
+        private const int REMOVE_FROM_MAP = 2;
+
         public FinderService(
             IAddressGeocodingService addressGeocodingService,
             IFinderRepository finderRepository,
@@ -198,11 +201,14 @@ namespace crds_angular.Services
         public void EnablePin(int participantId)
         {
             _finderRepository.EnablePin(participantId);
+            _finderRepository.RecordPinHistory(participantId, ADD_TO_MAP);
+            
         }
 
         public void DisablePin(int participantId)
         {
             _finderRepository.DisablePin(participantId);
+            _finderRepository.RecordPinHistory(participantId, REMOVE_FROM_MAP);
         }
 
         public PinDto UpdateGathering(PinDto pin)
@@ -254,8 +260,18 @@ namespace crds_angular.Services
             pin.Address.Longitude = coords.Longitude;
             pin.Address.Latitude = coords.Latitude;
 
+            var contact = _contactRepository.GetContactById((int)pin.Contact_ID);
+
+            var household = new MpHousehold();
+            household.Household_ID = contact.Household_ID;
+            household.Address_ID = pin.Address.AddressID;
+            household.Congregation_ID = pin.congregationId;
+            household.Home_Phone = contact.Home_Phone;
+
+            _contactRepository.UpdateHousehold(household);
+
             var householdDictionary = (pin.Address.AddressID == null)
-                ? new Dictionary<string, object> {{"Household_ID", pin.Household_ID}}
+                ? new Dictionary<string, object> {{"Household_ID", pin.Household_ID} }
                 : null;
             var address = Mapper.Map<MpAddress>(pin.Address);
 

@@ -16,5 +16,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         MpAddress GetPinAddress(int participantId);
         FinderGatheringDto UpdateGathering(FinderGatheringDto finderGathering);
         void RecordConnection(MpConnectCommunication connection);
+        void RecordPinHistory(int participantId, int statusId);
     }
 }

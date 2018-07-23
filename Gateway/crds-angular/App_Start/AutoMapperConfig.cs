@@ -71,6 +71,16 @@ namespace crds_angular.App_Start
                 .ForMember(dest => dest.EventTypeId, opts => opts.MapFrom(src => src.EventTypeId))
                 .ForMember(dest => dest.Participants, opts => opts.MapFrom(src => src.Participants));
 
+            Mapper.CreateMap<MpCongregation, Congregation>()
+                .ForMember(dest => dest.CongregationId, opts => opts.MapFrom(src => src.CongregationId))
+                .ForMember(dest => dest.Name, opts => opts.MapFrom(src => src.Name))
+                .ForMember(dest => dest.LocationId, opts => opts.MapFrom(src => src.LocationId));
+
+            Mapper.CreateMap<Congregation, MpCongregation>()
+                .ForMember(dest => dest.CongregationId, opts => opts.MapFrom(src => src.CongregationId))
+                .ForMember(dest => dest.Name, opts => opts.MapFrom(src => src.Name))
+                .ForMember(dest => dest.LocationId, opts => opts.MapFrom(src => src.LocationId));
+
             Mapper.CreateMap<Invitation,MpInvitation > ()
                 .ForMember(dest => dest.SourceId, opts => opts.MapFrom(src => src.SourceId))
                 .ForMember(dest => dest.GroupRoleId, opts => opts.MapFrom(src => src.GroupRoleId))

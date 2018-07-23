@@ -48,6 +48,29 @@ namespace crds_angular.Controllers.API
             });
         }
 
+        [ResponseType(typeof(List<Congregation>))]
+        [VersionedRoute(template: "congregation", minimumVersion: "1.0.0")]
+        [Route("congregation")]
+        public IHttpActionResult Get()
+        {
+            return Authorized(t =>
+            {
+                try
+                {
+                    var congregations = _congregationService.GetAllCrossroadsCongregations();
+
+                    return Ok(congregations);
+                }
+                catch (Exception e)
+                {
+                    var msg = "Error getting Congregations ";
+                    logger.Error(msg, e);
+                    var apiError = new ApiErrorDto(msg, e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
+
         [ResponseType(typeof (List<Room>))]
         [VersionedRoute(template: "congregation/{congregationId}/rooms", minimumVersion: "1.0.0")]
         [Route("congregation/{congregationId}/rooms")]
