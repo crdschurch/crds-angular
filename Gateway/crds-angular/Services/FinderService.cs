@@ -681,7 +681,6 @@ namespace crds_angular.Services
                     FirstName = hit.Fields.ContainsKey("firstname") ? hit.Fields["firstname"].FirstOrDefault() : null,
                     LastName = hit.Fields.ContainsKey("lastname") ? hit.Fields["lastname"].FirstOrDefault() : null,
                     SiteName = hit.Fields.ContainsKey("sitename") ? hit.Fields["sitename"].FirstOrDefault() : null,
-                    EmailAddress = hit.Fields.ContainsKey("emailaddress") ? hit.Fields["emailaddress"].FirstOrDefault() : null,
                     Contact_ID = hit.Fields.ContainsKey("contactid") ? Convert.ToInt32(hit.Fields["contactid"].FirstOrDefault()) : (int?) null,
                     Participant_ID = hit.Fields.ContainsKey("participantid") ? Convert.ToInt32(hit.Fields["participantid"].FirstOrDefault()) : (int?) null,
                     Host_Status_ID = hit.Fields.ContainsKey("hoststatus") ? Convert.ToInt32(hit.Fields["hoststatus"].FirstOrDefault()) : (int?) null,
@@ -1010,10 +1009,10 @@ namespace crds_angular.Services
                 if (accept)
                 {
                     // Call Analytics
-                    var props = new EventProperties {{"InvitationTo", cm.Contact_ID}, {"InvitationToEmail", cm.Email_Address}};
+                    var props = new EventProperties {{"InvitationTo", cm.Contact_ID}};
                     _analyticsService.Track(host.Contact_ID.ToString(), "HostInvitationAccepted", props);
 
-                    props = new EventProperties {{"InvitationFrom", host.Contact_ID}, {"InvitationFromEmail", host.EmailAddress}};
+                    props = new EventProperties { { "InvitationFrom", host.Contact_ID }  };
                     _analyticsService.Track(cm.Contact_ID.ToString(), "InviteeAcceptedInvitation", props);
                 }
 
@@ -1054,8 +1053,7 @@ namespace crds_angular.Services
                     new MpContact
                     {
                         // Just need a contact ID here, doesn't have to be for the recipient
-                        ContactId = host.Contact_ID.Value,
-                        EmailAddress = host.EmailAddress
+                        ContactId = host.Contact_ID.Value
                     }
                 };
 
