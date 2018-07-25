@@ -625,7 +625,8 @@ namespace crds_angular.test.Services
                 FirstName = "",
                 LastName = "",
                 Gathering = null,
-                Host_Status_ID = 0
+                Host_Status_ID = 0,
+                congregationId = 19
             };
 
             var geoCodes = new GeoCoordinate() {Altitude = 0, Course = 0, HorizontalAccuracy = 0, Latitude = 10, Longitude = 20, Speed = 0, VerticalAccuracy = 0};
@@ -638,11 +639,20 @@ namespace crds_angular.test.Services
                 {"State/Region", pin.Address.AddressID},
                 {"PostCode", pin.Address.AddressID}
             };
+
+            var mycontact = new MpMyContact();
+            mycontact.Household_ID = 1;
+            mycontact.Home_Phone = "123-1234";
+
             var householdDictionary = new Dictionary<string, object> {{"Household_ID", pin.Household_ID}};
 
             _addressGeocodingService.Setup(mocked => mocked.GetGeoCoordinates(It.IsAny<AddressDTO>())).Returns(geoCodes);
             _addressService.Setup(m => m.SetGeoCoordinates(pin.Address));
             _mpContactRepository.Setup(m => m.UpdateHouseholdAddress((int) pin.Household_ID, householdDictionary, addressDictionary));
+
+            _mpContactRepository.Setup(m => m.GetContactById(It.IsAny<int>())).Returns(mycontact);
+            _mpContactRepository.Setup(m => m.UpdateHousehold(It.IsAny<MpHousehold>()));
+
             _addressService.Setup(m => m.GetGeoLocationCascading(It.IsAny<AddressDTO>())).Returns(new GeoCoordinate(39, -84));
 
             _fixture.UpdateHouseholdAddress(pin);
@@ -818,6 +828,13 @@ namespace crds_angular.test.Services
             _mpContactRepository.Setup(mocked => mocked.UpdateHouseholdAddress(pin.Contact_ID.Value, null, It.IsAny<Dictionary<string, object>>()));
             _mpFinderRepository.Setup(mocked => mocked.UpdateGathering(It.IsAny<FinderGatheringDto>())).Returns(expectedFinderGathering);
             _awsCloudsearchService.Setup(mocked => mocked.UploadNewPinToAws(It.IsAny<PinDto>()));
+
+            var mycontact = new MpMyContact();
+            mycontact.Household_ID = 1;
+            mycontact.Home_Phone = "123-1234";
+
+            _mpContactRepository.Setup(m => m.GetContactById(It.IsAny<int>())).Returns(mycontact);
+            _mpContactRepository.Setup(m => m.UpdateHousehold(It.IsAny<MpHousehold>()));
 
             var result = _fixture.UpdateGathering(pin);
             _addressService.Verify(ver => ver.GetGeoLocationCascading(It.IsAny<AddressDTO>()), Times.Exactly(1));
