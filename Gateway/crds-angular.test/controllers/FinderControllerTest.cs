@@ -226,7 +226,6 @@ namespace crds_angular.test.controllers
             var pin1 = new PinDto
             {
                 Contact_ID = 1,
-                EmailAddress = "pin1@fake.com",
                 FirstName = "pinhead",
                 LastName = "One",
                 Address = addr1
@@ -240,7 +239,6 @@ namespace crds_angular.test.controllers
             var pin2 = new PinDto
             {
                 Contact_ID = 2,
-                EmailAddress = "pin2@fake.com",
                 FirstName = "pinhead",
                 LastName = "Two",
                 Address = addr2

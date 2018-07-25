@@ -224,7 +224,7 @@ namespace crds_angular.test.Services
                                         It.Is<string>(invitedId => invitedId.Equals(invitedContact.Contact_ID.ToString())),
                                         It.Is<string>(eventName => eventName.Equals("InviteeAcceptedInvitation")),
                                         It.Is<EventProperties>(props => props["InvitationFrom"].Equals(hostPin.Contact_ID)
-                                                                        && props["InvitationFromEmail"].Equals(hostPin.EmailAddress))
+                                                                        )
                                     ));
 
             _fixture.AcceptDenyGroupInvitation(token, groupId, invitationGuid, true);
@@ -621,7 +621,6 @@ namespace crds_angular.test.Services
                 Contact_ID = 123,
                 Participant_ID = 456,
                 Household_ID = 789,
-                EmailAddress = "",
                 FirstName = "",
                 LastName = "",
                 Gathering = null,
@@ -1030,7 +1029,6 @@ namespace crds_angular.test.Services
                 Contact_ID = designator,
                 Address = this.getAnAddress(designator),
                 Proximity = null,
-                EmailAddress = $"{designator}1Guy@compuserve.net",
                 FirstName = $"{designator}Guy",
                 LastName = "Lastname",
                 Host_Status_ID = 3,
