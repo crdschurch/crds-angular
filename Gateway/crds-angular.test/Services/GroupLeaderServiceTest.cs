@@ -260,16 +260,20 @@ namespace crds_angular.test.Services
         public void ShouldSaveSpiritualGrowthAnswers()
         {
             const int fakeFormId = 5;
-            const int fakeStoryFieldId = 1;
-            const int fakeTaughtFieldId = 2;
+            const int fakeOpenResponse1FieldId = 1;
+            const int fakeOpenResponse2FieldId = 2;
+            const int fakeOpenResponse3FieldId = 3;
+            const int fakeOpenResponse4FieldId = 4;
             const int fakeResponseId = 10;
             const int fakeTemplateId = 12;
             
             var growthDto = SpiritualGrowthMock();
 
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormId")).Returns(fakeFormId);
-            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormStoryFieldId")).Returns(fakeStoryFieldId);
-            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormTaughtFieldId")).Returns(fakeTaughtFieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse1FieldId")).Returns(fakeOpenResponse1FieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse2FieldId")).Returns(fakeOpenResponse2FieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse3FieldId")).Returns(fakeOpenResponse3FieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse4FieldId")).Returns(fakeOpenResponse4FieldId);
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderConfirmationTemplate")).Returns(fakeTemplateId);
 
             _formService.Setup(m => m.SubmitFormResponse(It.IsAny<MpFormResponse>())).Returns((MpFormResponse form) =>
