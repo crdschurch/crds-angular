@@ -311,8 +311,10 @@ namespace crds_angular.test.controllers
             {
                 ContactId = 654321,
                 EmailAddress = "hornerjn@gmail.com",
-                Story = "my diary",
-                Taught = "i lEarnDed hOw to ReAd"
+                OpenResponse1 = "open response 1",
+                OpenResponse2 = "open response 2",
+                OpenResponse3 = "open response 3",
+                OpenResponse4 = "open response 4"
             };
         }
 

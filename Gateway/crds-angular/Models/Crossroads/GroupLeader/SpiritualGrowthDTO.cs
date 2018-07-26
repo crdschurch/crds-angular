@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace crds_angular.Models.Crossroads.GroupLeader
 {
@@ -14,10 +10,16 @@ namespace crds_angular.Models.Crossroads.GroupLeader
         [JsonProperty(PropertyName = "email")]
         public string EmailAddress { get; set; }
 
-        [JsonProperty(PropertyName = "story")]
-        public string Story { get; set; }
+        [JsonProperty(PropertyName = "openResponse1")]
+        public string OpenResponse1 { get; set; }
 
-        [JsonProperty(PropertyName = "taught")]
-        public string Taught { get; set; }
+        [JsonProperty(PropertyName = "openResponse2")]
+        public string OpenResponse2 { get; set; }
+
+        [JsonProperty(PropertyName = "openResponse3")]
+        public string OpenResponse3 { get; set; }
+
+        [JsonProperty(PropertyName = "openResponse4")]
+        public string OpenResponse4 { get; set; }
     }
 }
