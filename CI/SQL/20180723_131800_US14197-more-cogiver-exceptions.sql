@@ -192,7 +192,7 @@ AS
     UNION
     -- heads of household in the same household, but missing co-giving relationship
     select
-        cr.Contact_Relationship_ID as Contact_Relationship_ID,
+        0 as Contact_Relationship_ID,
         c1.Contact_ID as Contact_ID,
         c1.Display_Name as Display_Name,
         'Missing co-giver relationship' as Exception,
