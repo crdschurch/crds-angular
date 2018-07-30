@@ -178,13 +178,23 @@ namespace crds_angular.Services
                 {
                     new MpFormAnswer
                     {
-                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormStoryFieldId"),
-                        Response = spiritualGrowth.Story
+                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormOpenResponse1FieldId"),
+                        Response = spiritualGrowth.OpenResponse1
                     },
                     new MpFormAnswer
                     {
-                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormTaughtFieldId"),
-                        Response = spiritualGrowth.Taught
+                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormOpenResponse2FieldId"),
+                        Response = spiritualGrowth.OpenResponse2
+                    },
+                    new MpFormAnswer
+                    {
+                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormOpenResponse3FieldId"),
+                        Response = spiritualGrowth.OpenResponse3
+                    },
+                    new MpFormAnswer
+                    {
+                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormOpenResponse4FieldId"),
+                        Response = spiritualGrowth.OpenResponse4
                     }
                 }
             };
