@@ -42,9 +42,9 @@ BEGIN
 	SET NOCOUNT ON;
 	
 	--Required fields
-	SET @statement_type_id = ISNULL(@statement_type_id, 1); --Individual
+	SET @statement_type_id = ISNULL(@statement_type_id, (SELECT Value FROM dp_configuration_Settings WHERE Configuration_Setting_ID = 61)); --Use configured default (Individual)
 	SET @setup_date = ISNULL(@setup_date, GETDATE()); --Today
-	SET @statement_frequency_id = ISNULL(@statement_frequency_id, 1); --Quarterly
+	SET @statement_frequency_id = ISNULL(@statement_frequency_id, (SELECT Value FROM dp_configuration_Settings WHERE Configuration_Setting_ID = 60)); --Use configured default (Quarterly)
 	SET @statement_method_id = ISNULL(@statement_method_id, 2); --Email/Online
 
 	DECLARE @cancel_envelopes bit = 0;
