@@ -677,19 +677,19 @@ namespace crds_angular.Controllers.API
         }
 
         /// <summary>
-        /// Logged in user requests to join gathering
+        /// Logged in user says hi
         /// </summary>
         [RequiresAuthorization]
         [VersionedRoute(template: "finder/sayhi/{fromId}/{toId}", minimumVersion: "1.0.0")]
         [Route("finder/sayhi/{fromId}/{toId}")]
         [HttpPost]
-        public IHttpActionResult SayHi([FromUri]int fromId, [FromUri]int toId)
+        public IHttpActionResult SayHi([FromUri]int fromId, [FromUri]int toId, [FromBody]string message)
         {
             return Authorized(token =>
             {
                 try
                 {
-                    _finderService.SayHi(fromId, toId);
+                    _finderService.SayHi(fromId, toId, message);
                     return Ok();
                 }
                 catch (Exception e)
