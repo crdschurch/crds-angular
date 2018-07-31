@@ -27,6 +27,7 @@ namespace crds_angular.Services
         private readonly IApiUserRepository _apiUserService;
         private readonly IParticipantRepository _participantService;
         private readonly IContactRepository _contactRepository;
+        private readonly IDonorRepository _donorRepository;
 
         public AccountService(IConfigurationWrapper configurationWrapper, 
             ICommunicationRepository communicationService, 
@@ -36,7 +37,8 @@ namespace crds_angular.Services
             ILookupRepository lookupService,
             IApiUserRepository apiUserService,
             IParticipantRepository participantService,
-            IContactRepository contactRepository)
+            IContactRepository contactRepository, 
+            IDonorRepository donorRepository)
         {
             _configurationWrapper = configurationWrapper;
             _communicationService = communicationService;
@@ -47,6 +49,7 @@ namespace crds_angular.Services
             _apiUserService = apiUserService;
             _participantService = participantService;
             _contactRepository = contactRepository;
+            _donorRepository = donorRepository;
         }
         public bool ChangePassword(string token, string newPassword)
         {
@@ -181,6 +184,7 @@ namespace crds_angular.Services
             var userRecordId = CreateUserRecord(newUserData, token, contactRecordId);
             CreateUserRoleSubRecord(token, userRecordId);
             _participantService.CreateParticipantRecord(contactRecordId);
+            _donorRepository.CreateDonorRecord(contactRecordId, null, System.DateTime.Now);
             CreateNewUserSubscriptions(contactRecordId, token);
 
             //TODO Contingent on cascading delete via contact
@@ -193,7 +197,7 @@ namespace crds_angular.Services
             var token = _apiUserService.GetDefaultApiClientToken();
             var householdRecordId = CreateHouseholdRecord(newUserData, token, null);
             var contactRecordId = CreateContactRecord(newUserData, token, householdRecordId);
-           
+            _donorRepository.CreateDonorRecord(contactRecordId, null, System.DateTime.Now);
             _participantService.CreateParticipantRecord(contactRecordId);
 
             return contactRecordId;
