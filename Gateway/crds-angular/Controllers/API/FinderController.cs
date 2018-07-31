@@ -22,6 +22,16 @@ using crds_angular.Services.Analytics;
 using Crossroads.Web.Common.Configuration;
 using log4net;
 using static NewRelic.Api.Agent.NewRelic;
+using Newtonsoft.Json;
+
+namespace crds_angular.Models.Finder
+{
+  public class SayHiDTO
+  {
+    [JsonProperty("message")]
+    public string Message { get; set; }
+  }
+}
 
 namespace crds_angular.Controllers.API
 {
@@ -683,13 +693,13 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "finder/sayhi/{fromId}/{toId}", minimumVersion: "1.0.0")]
         [Route("finder/sayhi/{fromId}/{toId}")]
         [HttpPost]
-        public IHttpActionResult SayHi([FromUri]int fromId, [FromUri]int toId, [FromBody]string message)
+        public IHttpActionResult SayHi([FromUri]int fromId, [FromUri]int toId, [FromBody]SayHiDTO hi)
         {
             return Authorized(token =>
             {
                 try
                 {
-                    _finderService.SayHi(fromId, toId, message);
+                    _finderService.SayHi(fromId, toId, hi.Message);
                     return Ok();
                 }
                 catch (Exception e)
