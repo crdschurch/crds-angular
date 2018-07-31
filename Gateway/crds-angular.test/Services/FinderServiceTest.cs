@@ -838,7 +838,7 @@ namespace crds_angular.test.Services
             _mpConfigurationWrapper.Setup(x => x.GetConfigIntValue(It.IsAny<string>())).Returns(1);
             _mpFinderRepository.Setup(mocked => mocked.RecordConnection(It.IsAny<MpConnectCommunication>()));
 
-            _fixture.SayHi(123, 456);
+            _fixture.SayHi(123, 456, "message");
             _mpFinderRepository.Verify(m => m.RecordConnection(It.IsAny<MpConnectCommunication>()), Times.Once);
         }
 
