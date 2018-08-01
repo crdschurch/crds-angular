@@ -1,7 +1,7 @@
 USE [MinistryPlatform]
 GO
 
-CREATE PROCEDURE [dbo].[report_CRDS_New_Givers] 
+CREATE OR ALTER PROCEDURE [dbo].[report_CRDS_New_Givers] 
      @startdate DATETIME,
      @enddate DATETIME,
      @programid as varchar(MAX),
@@ -17,8 +17,6 @@ SET nocount ON;
 SET @startdate = CONVERT(DATE, @startdate)
 SET @enddate = CONVERT(DATE, @enddate + 1)
 
-IF OBJECT_ID('tempdb..#cogivers') IS NOT NULL   
-    DROP TABLE #cogivers
 IF OBJECT_ID('tempdb..#ftdonormaster') IS NOT NULL   
     DROP TABLE #ftdonormaster
 IF OBJECT_ID('tempdb..#ftdonordetail') IS NOT NULL   
@@ -29,33 +27,6 @@ IF OBJECT_ID('tempdb..#scfirstdon') IS NOT NULL
     DROP TABLE #scfirstdon
 IF OBJECT_ID('tempdb..#scdonorcleanup') IS NOT NULL   
 DROP TABLE #scdonorcleanup
-IF OBJECT_ID('tempdb..#nonstandardhh') IS NOT NULL   
-    DROP TABLE #nonstandardhh
-
---build cogiver/spouse model
-CREATE TABLE #cogivers
-(
-    cid1	int,
-    cbday   date,
-    cstmttype int,
-    cid2	int,
-    cgbday  date,
-    cgstmttype int,
-    hhid	int
-)
-
-
-insert into #cogivers
-    select c1.contact_id,c1.Date_of_Birth,d1.statement_type_id, c2.contact_id, c2.Date_of_Birth,d2.statement_type_id,c1.household_id
-    FROM contacts c1 
-    JOIN contacts c2 on c1.household_id = c2.household_id
-    join donors d1 on d1.contact_id = c1.contact_id
-    join donors d2 on d2.contact_id = c2.contact_id
-    where c1.household_position_id = 1
-    and c2.household_position_id =1 --head of household
-    and (d1.statement_type_id = 2 -- family
-    or d2.Statement_Type_ID = 2)
-    and c1.contact_id <> c2.contact_id
 
 --store donor information	
 CREATE TABLE #ftdonormaster
@@ -187,12 +158,14 @@ ftdm.program_id,
 (select distinct p.program_name 
     from dbo.programs p 
         join #ftdonormaster on p.program_id = ftdm.program_id) as programname,
-c.Contact_ID,c.Date_of_Birth,c.Display_Name,c.First_Name,c.Last_Name,cg.cid2,cg.cgbday,c2.display_name as cogivername,c2.First_Name,c2.Last_Name,
+c.Contact_ID,c.Date_of_Birth,c.Display_Name,c.First_Name,c.Last_Name,c2.Contact_ID,c2.Date_of_Birth,c2.Display_Name as cogivername,c2.First_Name,c2.Last_Name,
 Address_Line_1,Address_Line_2,City,[State/Region],Postal_Code,con.congregation_name, ftdm.statementtype,ftdm.donationstatus,ftdm.soft_credit_donor
     from #ftdonormaster ftdm 
     left join contacts c on c.Contact_ID = ftdm.doncontact_id
-    left join #cogivers cg on cg.cid1 = ftdm.doncontact_id
-    left join contacts c2 on c2.contact_id = cg.cid2
+    left join contact_relationships cr on cr.contact_id = c.contact_id
+        and cr.Relationship_ID = 42
+        and ftdm.donation_date between cr.start_date and coalesce(cr.end_date, '9999-12-31')
+    left join contacts c2 on c2.contact_id = cr.related_contact_id
     left join households h on h.household_id = c.Household_ID
     left join congregations con on con.congregation_id = ftdm.congregation_id
     left join Programs p on p.Program_ID = ftdm.program_id
@@ -241,13 +214,13 @@ update #ftdonordetail set sdzip='' where sdzip is null
 --Grab GoGivers that have previously donated for a particular program
 Create Table #cogivercleanup
 (
-    hhid int,
     contact_id int,
     donation_id int
 )
 
-insert into #cogivercleanup(hhid,contact_id,donation_id)
-select distinct f.hhid,f.cid2,f.donation_id from #ftdonordetail f 
+insert into #cogivercleanup(contact_id,donation_id)
+select distinct f.cid2,f.donation_id
+from #ftdonordetail f 
 join dbo.contacts c on c.Contact_ID = f.cid2
 join dbo.Donors d on d.Contact_ID = c.Contact_ID
 where f.cid2 is not null
@@ -255,7 +228,7 @@ and d._First_Donation_Date < @startdate
 and f.programid in (SELECT Item FROM dbo.dp_Split(@programid, ','))
 
 --remove the records where an associated CoGiver has previously donated
-delete fd from #ftdonordetail fd join #cogivercleanup cgc on cgc.hhid = fd.hhid and cgc.donation_id = fd.donation_id and cgc.contact_id = fd.cid2
+delete fd from #ftdonordetail fd join #cogivercleanup cgc on cgc.donation_id = fd.donation_id and cgc.contact_id = fd.cid2
 
 --Grab Soft Credit donors that have previously donated for a particular program
 Create Table #scdonorcleanup
@@ -266,7 +239,8 @@ Create Table #scdonorcleanup
 )
 
 insert into #scdonorcleanup(hhid,sccontact_id,donation_id)
-select distinct f.hhid,f.sddonid,f.donation_id from #ftdonordetail f 
+select distinct f.hhid,f.sddonid,f.donation_id
+from #ftdonordetail f 
 join dbo.donors d on d.Donor_ID = f.sddonid
 where f.firstdononationdate < @startdate
 and f.sddonid is not null
@@ -274,19 +248,6 @@ and f.programid in (SELECT Item FROM dbo.dp_Split(@programid, ','))
 
 --remove the records where an associated Soft Credit donor has previously donated
 delete fd from #ftdonordetail fd join #scdonorcleanup scd on scd.hhid = fd.hhid and scd.donation_id = fd.donation_id and scd.sccontact_id = fd.sddonid
-
-CREATE TABLE #nonstandardhh
-(
-    hhid int
-)
-
---take out households with greater than 2 Heads of Households that are active
-insert into #nonstandardhh(hhid)
-    select c.household_id from contacts c 
-        where c.household_position_id = 1
-        and c.Contact_Status_ID = 1
-        group by c.household_id
-        having count(c.contact_id) > 2
 
 select
     f.hhid as HHID,
@@ -320,9 +281,6 @@ select
     f.sdzip as 'Soft Credit Zip'
 from
     #ftdonordetail f 
-    left join #nonstandardhh nshh on nshh.hhid = f.hhid
-where
-    nshh.hhid is null
 order by
     f.cdisplayname,f.cid1,f.programname,f.donation_date asc
 
