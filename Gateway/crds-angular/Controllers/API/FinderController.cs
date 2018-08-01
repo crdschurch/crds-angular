@@ -189,7 +189,7 @@ namespace crds_angular.Controllers.API
         }
 
         [ResponseType(typeof(bool))]
-        [VersionedRoute(template: "finder/isuseronmap/{participantid}", minimumVersion: "1.0.0")]
+        [VersionedRoute(template: "finder/isuseronmap/{contactid}", minimumVersion: "1.0.0")]
         [Route("finder/isuseronmap/{contactid}")]
         [HttpGet]
         public IHttpActionResult IsUserOnMap([FromUri]int contactid)
