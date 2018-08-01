@@ -90,7 +90,8 @@ namespace MinistryPlatform.Translation.Repositories
                     "Participants.Attendance_Start_Date",
                     "Participant_Type_ID_Table.Participant_Type",
                     "Group_Leader_Status_ID_Table.Group_Leader_Status_ID",
-                    "Host_Status_ID_Table.[Host_Status_ID]"
+                    "Host_Status_ID_Table.[Host_Status_ID]",
+                    "Show_On_Map"
                 };
                 var token = ApiLogin();
                 var participant = _ministryPlatformRestRepository.UsingAuthenticationToken(token).Search<MpParticipant>(searchString, columnList);
