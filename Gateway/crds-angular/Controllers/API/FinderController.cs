@@ -80,6 +80,7 @@ namespace crds_angular.Controllers.API
             }
         }
 
+
         [ResponseType(typeof(PinDto))]
         [VersionedRoute(template: "finder/pinByGroupID/{groupId}/{lat?}/{lng?}", minimumVersion: "1.0.0")]
         [Route("finder/pinByGroupID/{groupId}/{lat?}/{lng?}")]
@@ -186,6 +187,25 @@ namespace crds_angular.Controllers.API
                 throw new HttpResponseException(apiError.HttpResponseMessage);
             }
         }
+
+        [ResponseType(typeof(bool))]
+        [VersionedRoute(template: "finder/isuseronmap/{participantid}", minimumVersion: "1.0.0")]
+        [Route("finder/isuseronmap/{contactid}")]
+        [HttpGet]
+        public IHttpActionResult IsUserOnMap([FromUri]int contactid)
+        {
+            try
+            {
+                bool isuseronmap = _finderService.IsUserOnMap(contactid);
+                return Ok(isuseronmap);
+            }
+            catch (Exception ex)
+            {
+                var apiError = new ApiErrorDto("isuseronmap call failed", ex);
+                throw new HttpResponseException(apiError.HttpResponseMessage);
+            }
+        }
+
 
         [ResponseType(typeof(AddressDTO))]
         [VersionedRoute(template: "finder/pinbyip/{ipAddress}", minimumVersion: "1.0.0")]

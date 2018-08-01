@@ -447,6 +447,11 @@ namespace crds_angular.Services
       return doesUserLeadSomeGroup;
     }
 
+    public bool IsUserOnMap(int contactid)
+    {
+        return _participantRepository.GetParticipant(contactid).ShowOnMap;
+    }
+
     public List<PinDto> GetPinsInBoundingBox(GeoCoordinate originCoords, string userKeywordSearchString, AwsBoundingBox boundingBox, string finderType, int contactId, string filterSearchString)
     {
       userKeywordSearchString = userKeywordSearchString?.Replace("%27", "\\'");
