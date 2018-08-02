@@ -3,7 +3,7 @@ GO
 
 -- Created 4/6/2017 for Paper Statements
 
-CREATE   PROCEDURE [dbo].[report_CRDS_Donor_Contribution_Statement] (
+CREATE OR ALTER PROCEDURE [dbo].[report_CRDS_Donor_Contribution_Statement] (
     @UserID varchar(40), 
 	@FromDate DateTime,
 	@ToDate DateTime,
@@ -65,7 +65,7 @@ BEGIN
 
 	CREATE TABLE #Selections (Statement_ID VARCHAR(15))
 	INSERT INTO #Selections
-	        SELECT CASE WHEN C.Household_ID IS NULL OR D.Statement_Type_ID = 1 THEN 'C' + CONVERT(VARCHAR(10),C.Contact_ID) ELSE 'F' + CONVERT(VARCHAR(10),C.Household_ID) END
+	        SELECT 'C' + CONVERT(VARCHAR(10),C.Contact_ID)
 			FROM dp_Selected_Records SR 
 			INNER JOIN dp_Selections S ON S.Selection_ID = SR.Selection_ID  
 			INNER JOIN dbo.dp_Users U ON U.[User_ID] = S.[User_ID] AND U.User_GUID = @UserID 
@@ -137,8 +137,8 @@ BEGIN
 	SELECT   -- Finds Donor with atleast 1 Donation made between from date and To date
 		Do.Donor_ID
 		, Do.Contact_ID
-		, Statement_ID = CASE WHEN C.Household_ID IS NULL OR Do.Statement_Type_ID = 1 THEN 'C' + CONVERT(VARCHAR(10),C.Contact_ID) ELSE 'F' + CONVERT(VARCHAR(10),C.Household_ID) END
-		, Contact_Or_Household_ID = CASE WHEN C.Household_ID IS NULL OR Do.Statement_Type_ID = 1 THEN C.Contact_ID ELSE C.Household_ID END
+		, Statement_ID = 'C' + CONVERT(VARCHAR(10),C.Contact_ID)
+		, Contact_Or_Household_ID = C.Contact_ID
 		, Do.Statement_Type_ID 
 		, Do.Statement_Method_ID
 		, Do.Statement_Frequency_ID
@@ -207,61 +207,7 @@ BEGIN
 		, #D.Contact_Or_Household_ID
 		, Mail_Name = CASE
 			WHEN C.Company = 1 THEN C.Display_Name
-			WHEN #D.Statement_Type_ID = 1 THEN C.First_Name + SPACE(1) + C.Last_Name
-			WHEN #D.Statement_Type_ID = 2 AND Count_HoH.Total = 2 AND Count_LastName.Total = 1 THEN
-				-- exactly 2 HoH with same last name (e.g., husband and wife): combine last names
-				CONCAT(
-					STUFF(
-						REPLACE(
-							(SELECT
-								'#!' + LTRIM(RTRIM(S.First_Name)) AS 'data()'
-							FROM
-								Contacts S
-							WHERE
-								#D.Statement_Type_ID = 2
-								AND S.Household_ID = C.Household_ID
-								AND S.Household_Position_ID = 1
-							ORDER BY
-								S.Gender_ID,
-								S.Contact_ID
-							FOR XML PATH(''), TYPE).value('(./text())[1]', 'nvarchar(max)'),
-							' #!',
-							' & '
-						),
-						1, 2, ''
-					),
-					' ',
-					(SELECT TOP 1
-						Last_Name
-					FROM
-						Contacts S
-					WHERE
-						#D.Statement_Type_ID = 2			-- Family statement only
-						AND S.Household_ID = C.Household_ID
-						AND S.Household_Position_ID = 1
-					)
-				)
-			WHEN #D.Statement_Type_ID = 2 AND Count_HoH.Total > 0 THEN
-				-- 1, 2 with different last names, or 3+ heads of household: show full names for all
-				STUFF(
-					REPLACE(
-						(SELECT '#!' + LTRIM(RTRIM(S.First_Name + ' ' + S.Last_Name)) AS 'data()'
-						FROM
-							Contacts S
-						WHERE
-							#D.Statement_Type_ID = 2		-- Family statement only
-							AND S.Household_ID = C.Household_ID
-							AND S.Household_Position_ID = 1
-						ORDER BY
-							S.Gender_ID,
-							S.Contact_ID
-						FOR XML PATH(''), TYPE).value('(./text())[1]', 'nvarchar(max)'),
-						' #!',
-						' & '
-					),
-					1, 2, ''
-				)
-			ELSE C.First_Name + SPACE(1) + C.Last_Name	-- fallback when all else fails
+			ELSE C.First_Name + SPACE(1) + C.Last_Name
 			END
 		, A.Address_Line_1
 		, A.Address_Line_2 Apt_or_Suite
@@ -270,39 +216,16 @@ BEGIN
 		, A.Postal_Code
 	FROM #D 
 		INNER JOIN Contacts C ON C.Contact_ID = #D.Contact_ID
-		OUTER APPLY (
-			-- total head of households (may or may not include current row)
-			SELECT
-				COUNT(*) AS Total
-			FROM
-				Contacts S
-			WHERE
-				#D.Statement_Type_ID = 2		-- Family statement only
-				AND S.Household_ID = C.Household_ID
-				AND S.Household_Position_ID = 1
-		) AS Count_HoH
-		OUTER APPLY (
-			-- total number of unique last names for all head of households (e.g., 1 means they all share the same last name)
-			SELECT
-				COUNT(DISTINCT S.Last_Name) AS Total
-			FROM
-				Contacts S
-			WHERE
-				#D.Statement_Type_ID = 2		-- Family statement only
-				AND S.Household_ID = C.Household_ID
-				AND S.Household_Position_ID = 1
-		 ) AS Count_LastName
 		LEFT OUTER JOIN Households H ON H.Household_ID = C.Household_ID
 		LEFT OUTER JOIN Addresses A ON A.Address_ID = H.Address_ID
 	WHERE 
-		 (@SelectionID > 0 OR (Statement_Method_ID <> 4 AND Statement_Frequency_ID <> 3))
-		 AND (@SelectionID = 0 
-		      OR EXISTS ( 
-		       SELECT 1
-			   FROM #Selections S
-			   WHERE S.Statement_ID = #D.Statement_ID 
-		       )
+		(@SelectionID > 0 OR (Statement_Method_ID <> 4 AND Statement_Frequency_ID <> 3))
+		AND (@SelectionID = 0 OR EXISTS (
+				SELECT 1
+				FROM #Selections S
+				WHERE S.Statement_ID = #D.Statement_ID 
 			)
+		)
 	ORDER BY Donor_ID;
 
 	CREATE INDEX IX_DONORS_DonorID ON #DONORS(Donor_ID);
@@ -321,26 +244,26 @@ BEGIN
 	--If they selected none in the list we aren't going to give them any even if they selected other ones
 	IF NOT EXISTS (Select 1 from #Campaigns where campaign_id = 0)
 	BEGIN
-		WITH Statement_Pledges (Pledge_ID, Total_Pledge, Campaign_Name, Statement_ID, Postal_Code)
+		WITH Statement_Pledges (Pledge_ID, Donor_ID, Total_Pledge, Sum_Donations, Campaign_Name)
 		AS (
 			SELECT
 				p.Pledge_ID,
+				p.Donor_ID,
 				p.Total_Pledge,
-				pc.Campaign_Name,
-				Statement_ID =
-					--get the statement_id for the pledge the same way as we got it for the #Gifts
-					CASE
-						WHEN c.Household_ID IS NULL OR do.Statement_Type_ID = 1 THEN 'C' + CONVERT(VARCHAR(10), c.Contact_ID)
-						ELSE 'F' + CONVERT(VARCHAR(10), c.Household_ID)
-					END,
-				a.Postal_Code
+				Sum_Donations = (
+					SELECT
+						SUM(dd.Amount)
+					FROM
+						Donation_Distributions dd
+						INNER JOIN Donations d ON d.Donation_ID = dd.Donation_ID
+					WHERE
+						dd.Pledge_ID = p.Pledge_ID
+						AND d.Donation_Status_ID = 2	-- deposited only
+				),
+				pc.Campaign_Name
 			FROM
 				Pledges p
 				INNER JOIN Pledge_Campaigns pc on p.Pledge_Campaign_ID = pc.Pledge_Campaign_ID
-				INNER JOIN Donors do ON Do.Donor_ID = p.Donor_ID
-				INNER JOIN Contacts c ON c.Contact_ID = do.Contact_ID
-				LEFT JOIN Households h ON h.Household_ID = c.Household_ID
-				LEFT JOIN Addresses a ON a.Address_ID = h.Address_ID 
 			WHERE
 				p.Pledge_Campaign_ID IN (SELECT Campaign_ID FROM #Campaigns) 
 				AND p.Pledge_Status_ID IN (1, 2) --only report on active or completed pledges
@@ -348,26 +271,42 @@ BEGIN
 
 		INSERT INTO #PledgeData
 			(Statement_ID, Postal_Code, Pledge_ID, Total_Pledge, Sum_Donations_For_Pledge, Campaign_Name)
+		-- Giver
 		SELECT
-			p.Statement_ID,
-			p.Postal_Code,
+			Statement_ID = 'C' + CONVERT(VARCHAR(10), c.Contact_ID),
+			a.Postal_Code,
 			p.Pledge_ID,
 			p.Total_Pledge,
-			Sum_Donations_For_Pledge = SUM (dd.amount),
+			p.Sum_Donations,
 			p.Campaign_Name
 		FROM
 			Statement_Pledges p
-			LEFT JOIN Donation_Distributions dd ON dd.Pledge_ID = p.Pledge_ID
-			LEFT JOIN Donations d ON dd.Donation_ID = d.Donation_ID
+			INNER JOIN Donors do ON do.Donor_ID = p.Donor_ID
+			INNER JOIN Contacts c ON c.Contact_ID = do.Contact_ID
+			LEFT JOIN Households h ON h.Household_ID = c.Household_ID
+			LEFT JOIN Addresses a ON a.Address_ID = h.Address_ID 
 		WHERE
-			(d.Donation_Status_ID = 2 OR d.Donation_Status_ID IS NULL) --deposited only or there are no donations
-			AND EXISTS (SELECT 1 FROM #DONORS WHERE Statement_ID = p.Statement_ID)
-		GROUP BY
-			p.Statement_ID,
-			p.Postal_Code,
+			EXISTS (SELECT 1 FROM #DONORS WHERE Contact_ID = c.Contact_ID)
+		UNION
+		-- Show same pledges for co-giver (but only if the co-giver is already getting a statement)
+		SELECT
+			Statement_ID = 'C' + CONVERT(VARCHAR(10), c.Contact_ID),
+			a.Postal_Code,
 			p.Pledge_ID,
 			p.Total_Pledge,
+			p.Sum_Donations,
 			p.Campaign_Name
+		FROM
+			Statement_Pledges p
+			INNER JOIN Donors do ON do.Donor_ID = p.Donor_ID
+			INNER JOIN Contact_Relationships cr ON cr.Contact_ID = do.Contact_ID
+				AND cr.Relationship_ID = 42		-- co-giver
+				AND @ToDate BETWEEN cr.Start_Date AND COALESCE(cr.End_Date, '9999-12-31')
+			INNER JOIN Contacts c ON c.Contact_ID = cr.Related_Contact_ID
+			LEFT JOIN Households h ON h.Household_ID = c.Household_ID
+			LEFT JOIN Addresses a ON a.Address_ID = h.Address_ID
+		WHERE
+			EXISTS (SELECT 1 FROM #DONORS WHERE Contact_ID = c.Contact_ID)
 		;
 	END 
 
