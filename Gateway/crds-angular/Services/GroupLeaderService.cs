@@ -255,31 +255,6 @@ namespace crds_angular.Services
             });
         }
 
-        public IObservable<int> SendReferenceEmail(Dictionary<string, object> referenceData)
-        {
-            var templateId = _configWrapper.GetConfigIntValue("GroupLeaderReferenceEmailTemplate");           
-            return Observable.Create<int>(observer =>
-            {
-                try
-                {
-                    var referenceId = int.Parse((string)referenceData["referenceContactId"]);
-                    var reference = _contactRepository.GetContactById(referenceId);
-                    var template = _communicationRepository.GetTemplateAsCommunication(
-                        templateId,                        
-                        referenceId,
-                        reference.Email_Address,
-                        SetupReferenceEmailMergeData(reference, (MpMyContact)referenceData["contact"], ((MpParticipant)referenceData["participant"]).ParticipantId));
-                    var messageId = _communicationRepository.SendMessage(template);
-                    observer.OnNext(messageId);
-                }
-                catch (Exception e)
-                {
-                    observer.OnError(new ApplicationException("Unable to send reference email", e));
-                }
-                return Disposable.Empty;
-            });
-        }
-
         public IObservable<int> SendStudentMinistryRequestEmail(Dictionary<string, object> referenceData)
         {
             var templateId = _configWrapper.GetConfigIntValue("GroupLeaderForStudentsEmailTemplate");
@@ -303,46 +278,6 @@ namespace crds_angular.Services
                 }
                 return Disposable.Empty;
             });
-        }
-
-        public IObservable<int> SendNoReferenceEmail(Dictionary<string, object> referenceData)
-        {
-            var templateId = _configWrapper.GetConfigIntValue("GroupLeaderNoReferenceEmailTemplate");
-            return Observable.Create<int>(observer =>
-            {
-                try
-                {
-                    var toContactId = _configWrapper.GetConfigIntValue("DefaultGroupContactEmailId");
-                    var toContactEmail = _contactRepository.GetContactEmail(toContactId);
-                    var template = _communicationRepository.GetTemplateAsCommunication(
-                        templateId,
-                        toContactId,
-                        toContactEmail,
-                        SetupGenericEmailMergeData((MpMyContact) referenceData["contact"])
-                    );
-
-                    var messageId = _communicationRepository.SendMessage(template);
-                    observer.OnNext(messageId);
-                }
-                catch (Exception e)
-                {
-                    observer.OnError(new ApplicationException("Unable to send no reference email"));
-                }
-
-                return Disposable.Empty;
-            });
-        }
-
-        private Dictionary<string, object> SetupReferenceEmailMergeData(MpMyContact reference, MpMyContact applicant, int participant_Id)
-        {
-            return new Dictionary<string, object>
-            {
-                {"Recipient_First_Name", reference.Nickname ?? reference.First_Name },
-                {"First_Name" , applicant.Nickname ?? applicant.First_Name },
-                {"Last_Name", applicant.Last_Name },
-                {"Participant_ID", participant_Id },
-                {"Base_Url", _configWrapper.GetConfigValue("BaseMPUrl") }
-            };
         }
 
         private Dictionary<string, object> SetupGenericEmailMergeData(MpMyContact applicant)

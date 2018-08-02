@@ -41,5 +41,6 @@ namespace crds_angular.Services.Interfaces
         void TryAGroup(string token, int groupId);
         void TryAGroupAcceptDeny(string token, int groupId, int participantId, bool accept);
         void ApproveDenyGroupInquiry(string token, bool approve, Inquiry inquiry);
+        bool IsUserOnMap(int contactid);
     }
 }
