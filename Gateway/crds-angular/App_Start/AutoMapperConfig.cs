@@ -302,13 +302,19 @@ namespace crds_angular.App_Start
                 {
                     dest.Source = new DonationSourceDTO
                     {
-                        SourceType = (int)AccountType.Checking == src.AccountTypeID ? PaymentType.Bank : PaymentType.CreditCard,
+                        SourceType = (int)AccountType.Checking == src.AccountTypeID || (int)AccountType.Savings == src.AccountTypeID ? PaymentType.Bank : PaymentType.CreditCard,
                         AccountNumberLast4 = src.AccountNumberLast4,
                         // Have to remove space to match to enum for things like American Express which needs to be AmericanExpress
                         CardType = src.InstitutionName.Equals("Bank") ? (CreditCardType?) null : (CreditCardType)System.Enum.Parse(typeof(CreditCardType), Regex.Replace(src.InstitutionName, @"\s+", "")),
                         ProcessorAccountId = src.ProcessorAccountId,
                         PaymentProcessorId = src.ProcessorId
                     };
+                    try
+                    {
+                        // Have to remove space to match to enum for things like American Express which needs to be AmericanExpress
+                        dest.Source.CardType = (CreditCardType)System.Enum.Parse(typeof(CreditCardType), Regex.Replace(src.InstitutionName, @"\s+", ""));
+                    }
+                    catch { }
                 });
 
             Mapper.CreateMap<MpPledge, PledgeDto>()
