@@ -9,7 +9,8 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
     {
         MpUser GetByUserId(string userId);
         MpUser GetByAuthenticationToken(string authToken);
-        MpUser GetByUserName(string userName, string apiToken=null);
+        MpUser GetByUserName(string userName, string apiToken = null);
+        MpUser GetByContactId(int contactId, string apiToken = null);
         void UpdateUser(Dictionary<string, object> userUpdateValues);
         void UpdateUserRest(Dictionary<string, object> userUpdateValues);
         void UpdateUser(MpUser user);
