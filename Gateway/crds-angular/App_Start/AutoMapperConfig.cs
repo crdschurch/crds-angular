@@ -47,7 +47,6 @@ namespace crds_angular.App_Start
             Mapper.CreateMap<SpPinDto, PinDto>()
                 .ForMember(dest => dest.FirstName, opts => opts.MapFrom(src => src.First_Name))
                 .ForMember(dest => dest.LastName, opts => opts.MapFrom(src => src.Last_Name))
-                .ForMember(dest => dest.EmailAddress, opts => opts.MapFrom(src => src.Email_Address))
                 .ForMember(dest => dest.Contact_ID, opts => opts.MapFrom(src => src.Contact_ID))
                 .ForMember(dest => dest.Participant_ID, opts => opts.MapFrom(src => src.Participant_ID))
                 .ForMember(dest => dest.Host_Status_ID, opts => opts.MapFrom(src => src.Host_Status_ID))
@@ -303,13 +302,17 @@ namespace crds_angular.App_Start
                 {
                     dest.Source = new DonationSourceDTO
                     {
-                        SourceType = (int)AccountType.Checking == src.AccountTypeID ? PaymentType.Bank : PaymentType.CreditCard,
+                        SourceType = (int)AccountType.Checking == src.AccountTypeID || (int)AccountType.Savings == src.AccountTypeID ? PaymentType.Bank : PaymentType.CreditCard,
                         AccountNumberLast4 = src.AccountNumberLast4,
-                        // Have to remove space to match to enum for things like American Express which needs to be AmericanExpress
-                        CardType = src.InstitutionName.Equals("Bank") ? (CreditCardType?) null : (CreditCardType)System.Enum.Parse(typeof(CreditCardType), Regex.Replace(src.InstitutionName, @"\s+", "")),
                         ProcessorAccountId = src.ProcessorAccountId,
                         PaymentProcessorId = src.ProcessorId
                     };
+                    try
+                    {
+                        // Have to remove space to match to enum for things like American Express which needs to be AmericanExpress
+                        dest.Source.CardType = (CreditCardType)System.Enum.Parse(typeof(CreditCardType), Regex.Replace(src.InstitutionName, @"\s+", ""));
+                    }
+                    catch { }
                 });
 
             Mapper.CreateMap<MpPledge, PledgeDto>()
@@ -439,7 +442,6 @@ namespace crds_angular.App_Start
             Mapper.CreateMap<PinDto, AwsConnectDto>()
                 .ForMember(dest => dest.FirstName, opts => opts.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.LastName, opts => opts.MapFrom(src => src.LastName))
-                .ForMember(dest => dest.EmailAddress, opts => opts.MapFrom(src => src.EmailAddress))
                 .ForMember(dest => dest.AddressId, opts => opts.MapFrom(src => src.Address.AddressID))
                 .ForMember(dest => dest.City, opts => opts.MapFrom(src => src.Address.City))
                 .ForMember(dest => dest.State, opts => opts.MapFrom(src => src.Address.State))

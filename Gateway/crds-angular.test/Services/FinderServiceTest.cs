@@ -187,52 +187,6 @@ namespace crds_angular.test.Services
         }
 
         [Test]
-        public void ShouldCallAnalyticsWhenAcceptingAnInvite()
-        {
-            var hostPin = GetAPin(2);
-            var invitedContact = new MpMyContact()
-            {
-                Contact_ID = 42,
-                Email_Address = "invited@email.com"
-            };
-            const int groupId = 42;
-            const string invitationGuid = "ILIKEICECREAM";
-            const string token = "IAMAUTHENTICATEDMAN";
-
-            _mpGroupToolService.Setup(m => m.AcceptDenyGroupInvitation(
-                                          It.Is<string>(toke => toke.Equals(token)),
-                                          It.Is<int>(GroupID => GroupID == groupId),
-                                          It.Is<string>(invite => invite.Equals(invitationGuid)),
-                                          It.Is<Boolean>(t => t == true)
-                                      ));
-
-            _groupService.Setup(m => m.GetPrimaryContactParticipantId(It.Is<int>(GroupID => GroupID == groupId))).Returns(42);
-            _mpFinderRepository.Setup(m => m.GetPinDetails(It.Is<int>(partId => partId == 42))).Returns(convertPinDtoToFinderPinDto(hostPin));
-            _mpContactRepository.Setup(m => m.GetContactById(It.Is<int>(id => id == invitedContact.Contact_ID))).Returns(invitedContact);
-            _authenticationRepository.Setup(m => m.GetContactId(It.Is<string>(Token => Token.Equals(token)))).Returns(invitedContact.Contact_ID);
-            _mpFinderRepository.Setup(m => m.RecordConnection(It.IsAny<MpConnectCommunication>()));
-            _communicationRepository.Setup(m => m.GetTemplate(It.IsAny<int>())).Returns(new MpMessageTemplate());
-            _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
-            _analyticsService.Setup(m => m.Track(
-                                        It.Is<string>(hostId => hostId.Equals(hostPin.Contact_ID.ToString())),
-                                        It.Is<string>(eventName => eventName.Equals("HostInvitationAccepted")),
-                                        It.Is<EventProperties>(props => props["InvitationTo"].Equals(invitedContact.Contact_ID)
-                                                                        && props["InvitationToEmail"].Equals(invitedContact.Email_Address))
-                                    ));
-
-            _analyticsService.Setup(m => m.Track(
-                                        It.Is<string>(invitedId => invitedId.Equals(invitedContact.Contact_ID.ToString())),
-                                        It.Is<string>(eventName => eventName.Equals("InviteeAcceptedInvitation")),
-                                        It.Is<EventProperties>(props => props["InvitationFrom"].Equals(hostPin.Contact_ID)
-                                                                        && props["InvitationFromEmail"].Equals(hostPin.EmailAddress))
-                                    ));
-
-            _fixture.AcceptDenyGroupInvitation(token, groupId, invitationGuid, true);
-            _analyticsService.VerifyAll();
-            _groupService.VerifyAll();
-        }
-
-        [Test]
         public void ShouldGetPartialPersonAddress()
         {
             const int participantId = 42;
@@ -621,7 +575,6 @@ namespace crds_angular.test.Services
                 Contact_ID = 123,
                 Participant_ID = 456,
                 Household_ID = 789,
-                EmailAddress = "",
                 FirstName = "",
                 LastName = "",
                 Gathering = null,
@@ -885,7 +838,7 @@ namespace crds_angular.test.Services
             _mpConfigurationWrapper.Setup(x => x.GetConfigIntValue(It.IsAny<string>())).Returns(1);
             _mpFinderRepository.Setup(mocked => mocked.RecordConnection(It.IsAny<MpConnectCommunication>()));
 
-            _fixture.SayHi(123, 456);
+            _fixture.SayHi(123, 456, "message");
             _mpFinderRepository.Verify(m => m.RecordConnection(It.IsAny<MpConnectCommunication>()), Times.Once);
         }
 
@@ -1030,7 +983,6 @@ namespace crds_angular.test.Services
                 Contact_ID = designator,
                 Address = this.getAnAddress(designator),
                 Proximity = null,
-                EmailAddress = $"{designator}1Guy@compuserve.net",
                 FirstName = $"{designator}Guy",
                 LastName = "Lastname",
                 Host_Status_ID = 3,

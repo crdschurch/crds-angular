@@ -14,9 +14,6 @@ namespace crds_angular.Models.AwsCloudsearch
         [JsonProperty(PropertyName = "sitename")]
         public string SiteName { get; set; }
 
-        [JsonProperty(PropertyName = "emailaddress")]
-        public string EmailAddress { get; set; }
-
         [JsonProperty(PropertyName = "contactid")]
         public int? ContactId { get; set; }
 

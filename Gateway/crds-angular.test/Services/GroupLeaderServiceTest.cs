@@ -260,16 +260,20 @@ namespace crds_angular.test.Services
         public void ShouldSaveSpiritualGrowthAnswers()
         {
             const int fakeFormId = 5;
-            const int fakeStoryFieldId = 1;
-            const int fakeTaughtFieldId = 2;
+            const int fakeOpenResponse1FieldId = 1;
+            const int fakeOpenResponse2FieldId = 2;
+            const int fakeOpenResponse3FieldId = 3;
+            const int fakeOpenResponse4FieldId = 4;
             const int fakeResponseId = 10;
             const int fakeTemplateId = 12;
             
             var growthDto = SpiritualGrowthMock();
 
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormId")).Returns(fakeFormId);
-            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormStoryFieldId")).Returns(fakeStoryFieldId);
-            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormTaughtFieldId")).Returns(fakeTaughtFieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse1FieldId")).Returns(fakeOpenResponse1FieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse2FieldId")).Returns(fakeOpenResponse2FieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse3FieldId")).Returns(fakeOpenResponse3FieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse4FieldId")).Returns(fakeOpenResponse4FieldId);
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderConfirmationTemplate")).Returns(fakeTemplateId);
 
             _formService.Setup(m => m.SubmitFormResponse(It.IsAny<MpFormResponse>())).Returns((MpFormResponse form) =>
@@ -289,16 +293,20 @@ namespace crds_angular.test.Services
         public void ShouldThrowExceptionWhenSavingSpiritualGrowthFails()
         {
             const int fakeFormId = 5;
-            const int fakeStoryFieldId = 1;
-            const int fakeTaughtFieldId = 2;
+            const int fakeOpenResponse1FieldId = 1;
+            const int fakeOpenResponse2FieldId = 2;
+            const int fakeOpenResponse3FieldId = 3;
+            const int fakeOpenResponse4FieldId = 4;
             const int errorResponseId = 0;
             const int fakeTemplateId = 12;
 
             var growthDto = SpiritualGrowthMock();
 
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormId")).Returns(fakeFormId);
-            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormStoryFieldId")).Returns(fakeStoryFieldId);
-            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormTaughtFieldId")).Returns(fakeTaughtFieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse1FieldId")).Returns(fakeOpenResponse1FieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse2FieldId")).Returns(fakeOpenResponse2FieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse3FieldId")).Returns(fakeOpenResponse3FieldId);
+            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderFormOpenResponse4FieldId")).Returns(fakeOpenResponse4FieldId);
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderConfirmationTemplate")).Returns(fakeTemplateId);
 
             _formService.Setup(m => m.SubmitFormResponse(It.IsAny<MpFormResponse>())).Returns((MpFormResponse form) =>
@@ -568,139 +576,10 @@ namespace crds_angular.test.Services
                              });
         }
 
-        [Test]
-        public void ShouldSendAnEmailToThePersonsReference()
-        {
-            const int contactId = 123456;
-            const int referenceContactId = 9876545;
-            const int messageId = 456;
-            const int templateId = 2018;
-            var participant = ParticipantMock();
-            var contact = ContactMock(contactId);
-            var referenceContact = ContactMock(referenceContactId);
-            var referenceData = new Dictionary<string,object>
-            {
-                { "participant", participant },
-                { "contact", contact },
-                { "referenceContactId", referenceContactId.ToString() }
-            };
+      
 
-            _contactMock.Setup(m => m.GetContactById(referenceContactId)).Returns(referenceContact);
-            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderReferenceEmailTemplate")).Returns(templateId);
-            _configWrapper.Setup(m => m.GetConfigValue("BaseMPUrl")).Returns("adminint");
-
-            var mergeData = new Dictionary<string, object>();
-            var communication = ReferenceCommunication(2018, mergeData, referenceContact);
-
-            _communicationRepository.Setup(m => m.GetTemplateAsCommunication(2018, referenceContact.Contact_ID, It.IsAny<string>(), It.IsAny<Dictionary<string, object>>())).Returns(communication);
-            _communicationRepository.Setup(m => m.SendMessage(communication, false)).Returns(messageId);
-
-            var result = _fixture.SendReferenceEmail(referenceData);
-
-            result.Subscribe((n) =>
-            {
-                Assert.AreEqual(messageId, result);
-            },
-            (err) =>
-            {
-                Assert.Fail(err.ToString());
-            });
-        }
-
-        [Test]
-        public void ShouldSetupMergeDataCorrectly()
-        {
-            const int contactId = 123456;
-            const int referenceContactId = 9876545;
-            const int messageId = 456;
-            const int templateId = 2018;
-            var participant = ParticipantMock();
-            var contact = ContactMock(contactId);
-            var referenceContact = ContactMock(referenceContactId);
-            var referenceData = new Dictionary<string, object>
-            {
-                { "participant", participant },
-                { "contact", contact },
-                { "referenceContactId", referenceContactId.ToString() }
-            };
-     
-            _contactMock.Setup(m => m.GetContactById(referenceContactId)).Returns(referenceContact);
-            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderReferenceEmailTemplate")).Returns(templateId);
-            _configWrapper.Setup(m => m.GetConfigValue("BaseMPUrl")).Returns("/");
-
-            var mergeData = new Dictionary<string, object>
-            {
-                {"Recipient_First_Name", referenceContact.Nickname },
-                {"First_Name" , contact.Nickname },
-                {"Last_Name", contact.Last_Name },
-                {"Participant_ID", participant.ParticipantId },
-                {"Base_Url", "/"}
-            };
-
-            var communication = ReferenceCommunication(2018, mergeData, referenceContact);
-
-            _communicationRepository.Setup(m => m.GetTemplateAsCommunication(2018, referenceContact.Contact_ID, It.IsAny<string>(), mergeData)).Returns(communication);
-            _communicationRepository.Setup(m => m.SendMessage(communication, false)).Returns(messageId);
-
-            var result = _fixture.SendReferenceEmail(referenceData);
-
-            result.Subscribe((n) =>
-            {
-                Assert.AreEqual(messageId, result);
-            },
-            (err) =>
-            {
-                Assert.Fail(err.ToString());
-            });
-        }
-
-        [Test]
-        public void ShouldSendNoReferenceEmail()
-        {
-            const int templateId = 5;
-            const int applicantContactId = 9987654;
-            const int groupsContactId = 1123456;
-            const string groupsEmail = "groups@groups.com";
-            const int messageId = 7;
-            var applicantContact = ContactMock(applicantContactId);
-            var groupsContact = new MpMyContact
-            {
-                Contact_ID = groupsContactId,
-                Email_Address = groupsEmail
-            };
-            var mergeData = new Dictionary<string, object>
-            {
-                { "First_Name", applicantContact.Nickname },
-                { "Last_Name", applicantContact.Last_Name },
-                { "Email_Address", applicantContact.Email_Address }
-            };
-            var communication = NoReferenceCommunication(templateId, mergeData, groupsContact);
-            var referenceData = new Dictionary<string, object>
-            {
-                { "contact", applicantContact },
-                { "participant", ParticipantMock() },
-                { "referenceContactId", "0" }
-            };
-
-            _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderNoReferenceEmailTemplate")).Returns(templateId);
-            _configWrapper.Setup(m => m.GetConfigIntValue("DefaultGroupContactEmailId")).Returns(groupsContactId);
-            _contactMock.Setup(m => m.GetContactEmail(groupsContactId)).Returns(groupsEmail);
-            _communicationRepository.Setup(m => m.GetTemplateAsCommunication(templateId, groupsContactId, groupsEmail, mergeData)).Returns(communication);
-            _communicationRepository.Setup(m => m.SendMessage(communication, false)).Returns(messageId);
-
-            var response = _fixture.SendNoReferenceEmail(referenceData);
-
-            response.Subscribe((n) =>
-                               {
-                                   Assert.AreEqual(messageId, response);
-                               },
-                               (err) =>
-                               {
-                                   Assert.Fail(err.ToString());
-                               });
-        }
-
-        private static MpCommunication ReferenceCommunication(int templateId, Dictionary<string, object> mergeData, MpMyContact toContact)
+       
+       private static MpCommunication ReferenceCommunication(int templateId, Dictionary<string, object> mergeData, MpMyContact toContact)
         {
             var from = new MpContact {ContactId = 122222, EmailAddress = "groups@crossroads.net"};
             return new MpCommunication
@@ -844,8 +723,10 @@ namespace crds_angular.test.Services
             {
                 ContactId = 654321,
                 EmailAddress = "hornerjn@gmail.com",
-                Story = "my diary",
-                Taught = "i lEarnDed hOw to ReAd"
+                OpenResponse1 = "open response 1",
+                OpenResponse2 = "open response 2",
+                OpenResponse3 = "open response 3",
+                OpenResponse4 = "open response 4"
             };
         }
     }

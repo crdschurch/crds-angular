@@ -158,8 +158,7 @@ namespace crds_angular.test.controllers
             _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<string>())).Returns(Observable.Start(() => 1));
             _groupLeaderService.Setup(m => m.GetApplicationData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));
             _groupLeaderService.Setup(m => m.SendStudentMinistryRequestEmail(It.IsAny<Dictionary<string, object>>())).Returns(Observable.Start(() => 1));
-            _groupLeaderService.Setup(m => m.SendNoReferenceEmail(It.IsAny<Dictionary<string, object>>())).Returns(Observable.Start(() => 1));
-
+           
             var response = await _fixture.SaveSpiritualGrowth(mockSpiritualGrowth);
             Assert.IsInstanceOf<OkResult>(response);
         }
@@ -183,8 +182,7 @@ namespace crds_angular.test.controllers
             _groupLeaderService.Setup(m => m.SaveSpiritualGrowth(It.IsAny<SpiritualGrowthDTO>())).Returns(Observable.Start(() => 1));
             _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<string>())).Returns(Observable.Start(() => 1));
             _groupLeaderService.Setup(m => m.GetApplicationData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));
-            _groupLeaderService.Setup(m => m.SendNoReferenceEmail(It.IsAny<Dictionary<string, object>>())).Returns(Observable.Start(() => 1));
-
+            
             var response = await _fixture.SaveSpiritualGrowth(mockSpiritualGrowth);
             Assert.IsInstanceOf<OkResult>(response);
         }
@@ -311,8 +309,10 @@ namespace crds_angular.test.controllers
             {
                 ContactId = 654321,
                 EmailAddress = "hornerjn@gmail.com",
-                Story = "my diary",
-                Taught = "i lEarnDed hOw to ReAd"
+                OpenResponse1 = "open response 1",
+                OpenResponse2 = "open response 2",
+                OpenResponse3 = "open response 3",
+                OpenResponse4 = "open response 4"
             };
         }
 
