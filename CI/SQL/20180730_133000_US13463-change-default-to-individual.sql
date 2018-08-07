@@ -14,8 +14,8 @@ SET Value = 1
 WHERE Key_Name in ('StatementTypeID','DefaultStatementType','DefaultStatementTypeID')
 GO
 
-UPDATE dbo.Donors
-SET Statement_Type_ID = 1
-WHERE Statement_Type_ID = 2
-GO
+--UPDATE dbo.Donors
+--SET Statement_Type_ID = 1
+--WHERE Statement_Type_ID = 2
+--GO
 
