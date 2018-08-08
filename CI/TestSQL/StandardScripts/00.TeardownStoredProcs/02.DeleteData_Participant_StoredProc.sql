@@ -88,6 +88,7 @@ BEGIN
 
 	--Delete foreign key entries that can't be nullified
 	DELETE [dbo].Check_In_Log WHERE Participant_ID = @participant_id;
+	DELETE [dbo].cr_Connect_History WHERE Participant_ID = @participant_id;
 	DELETE [dbo].cr_Registrations WHERE Participant_ID = @participant_id;
 	DELETE [dbo].Participant_Milestones WHERE Participant_ID = @participant_id;
 

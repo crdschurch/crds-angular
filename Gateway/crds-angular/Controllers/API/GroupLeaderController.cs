@@ -108,15 +108,6 @@ namespace crds_angular.Controllers.API
 
                         _groupLeaderService.GetApplicationData(spiritualGrowth.ContactId).Subscribe((res) =>
                         {
-                            if ((string)res["referenceContactId"] != "0")
-                            {
-                                _groupLeaderService.SendReferenceEmail(res).Subscribe(CancellationToken.None);
-                            }
-                            else
-                            {
-                                _groupLeaderService.SendNoReferenceEmail(res).Subscribe(CancellationToken.None);
-                            }
-
                             if (((string)res["studentLeaderRequest"]).ToUpper() == "TRUE")
                             {
                                 _groupLeaderService.SendStudentMinistryRequestEmail(res).Subscribe(CancellationToken.None);

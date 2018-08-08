@@ -22,6 +22,16 @@ using crds_angular.Services.Analytics;
 using Crossroads.Web.Common.Configuration;
 using log4net;
 using static NewRelic.Api.Agent.NewRelic;
+using Newtonsoft.Json;
+
+namespace crds_angular.Models.Finder
+{
+  public class SayHiDTO
+  {
+    [JsonProperty("message")]
+    public string Message { get; set; }
+  }
+}
 
 namespace crds_angular.Controllers.API
 {
@@ -69,6 +79,7 @@ namespace crds_angular.Controllers.API
                 throw new HttpResponseException(apiError.HttpResponseMessage);
             }
         }
+
 
         [ResponseType(typeof(PinDto))]
         [VersionedRoute(template: "finder/pinByGroupID/{groupId}/{lat?}/{lng?}", minimumVersion: "1.0.0")]
@@ -176,6 +187,25 @@ namespace crds_angular.Controllers.API
                 throw new HttpResponseException(apiError.HttpResponseMessage);
             }
         }
+
+        [ResponseType(typeof(bool))]
+        [VersionedRoute(template: "finder/isuseronmap/{contactid}", minimumVersion: "1.0.0")]
+        [Route("finder/isuseronmap/{contactid}")]
+        [HttpGet]
+        public IHttpActionResult IsUserOnMap([FromUri]int contactid)
+        {
+            try
+            {
+                bool isuseronmap = _finderService.IsUserOnMap(contactid);
+                return Ok(isuseronmap);
+            }
+            catch (Exception ex)
+            {
+                var apiError = new ApiErrorDto("isuseronmap call failed", ex);
+                throw new HttpResponseException(apiError.HttpResponseMessage);
+            }
+        }
+
 
         [ResponseType(typeof(AddressDTO))]
         [VersionedRoute(template: "finder/pinbyip/{ipAddress}", minimumVersion: "1.0.0")]
@@ -677,19 +707,19 @@ namespace crds_angular.Controllers.API
         }
 
         /// <summary>
-        /// Logged in user requests to join gathering
+        /// Logged in user says hi
         /// </summary>
         [RequiresAuthorization]
         [VersionedRoute(template: "finder/sayhi/{fromId}/{toId}", minimumVersion: "1.0.0")]
         [Route("finder/sayhi/{fromId}/{toId}")]
         [HttpPost]
-        public IHttpActionResult SayHi([FromUri]int fromId, [FromUri]int toId)
+        public IHttpActionResult SayHi([FromUri]int fromId, [FromUri]int toId, [FromBody]SayHiDTO hi)
         {
             return Authorized(token =>
             {
                 try
                 {
-                    _finderService.SayHi(fromId, toId);
+                    _finderService.SayHi(fromId, toId, hi.Message);
                     return Ok();
                 }
                 catch (Exception e)
