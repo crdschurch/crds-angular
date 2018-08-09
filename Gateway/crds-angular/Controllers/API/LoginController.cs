@@ -224,6 +224,36 @@ namespace crds_angular.Controllers.API
             });
         }
 
+        /// <summary>
+        /// Validates the password provided matches the user identified by the token.  This function
+        /// can be used in place of VerifyCredentials() to validate the password for the current user
+        /// without requiring an email address.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns>Ok (200) if the password is valid, or Unauthorized (401) if the password is not
+        /// valid or an error occurs</returns>
+        [VersionedRoute(template: "verify-password", minimumVersion: "1.0.0")]
+        [Route("verifypassword")]
+        [HttpPost]
+        public IHttpActionResult VerifyPassword([FromBody] string password)
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    if (!_loginService.IsValidPassword(token, password))
+                        return this.Unauthorized();
+
+                    return this.Ok();
+                }
+                catch (Exception e)
+                {
+                    var apiError = new ApiErrorDto("Verify Password Failed", e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
+
     }
 
     public class LoginReturn

@@ -11,7 +11,7 @@
       VerifyResetToken: $resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/verifyresettoken/:token/'),
       EmailExists: $resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/lookup/0/find/'),
       ResetPassword: $resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/resetpassword'),
-      VerifyCredentials: $resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/verifycredentials')
+      VerifyPassword: $resource(__GATEWAY_CLIENT_ENDPOINT__ + 'api/verifypassword')
     };
   }
 
