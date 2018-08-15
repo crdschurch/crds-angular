@@ -73,12 +73,27 @@ namespace MinistryPlatform.Translation.Repositories
         {
             var token = _apiUserRepository.GetDefaultApiClientToken();
 
-            const string mapAuditColumns = "AuditID, Participant_ID, ShowOnMap, Processed, DateProcessed";
+            const string mapAuditColumns = "AuditID, Participant_ID, ShowOnMap, Processed, DateProcessed, PinType";
             string filter = $"Processed = 0";
 
             var auditRecs = _ministryPlatformRest.UsingAuthenticationToken(token).Search<MpMapAudit>(filter, mapAuditColumns);
 
             return auditRecs;
+        }
+
+        public void MarkMapAuditRecordAsProcessed(MpMapAudit auditRec)
+        {
+            try
+            {
+                var token = _apiUserRepository.GetDefaultApiClientToken();
+                var dict = new Dictionary<string, object> { { "AuditID", auditRec.AuditId }, { "Processed", auditRec.processed }, { "DateProcessed", auditRec.dateProcessed } };
+                var update = new List<Dictionary<string, object>> { dict };
+                _ministryPlatformRest.UsingAuthenticationToken(token).Put("cr_MapAudit", update);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         public FinderGatheringDto UpdateGathering(FinderGatheringDto finderGathering)

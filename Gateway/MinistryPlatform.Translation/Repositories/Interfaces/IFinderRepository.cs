@@ -18,5 +18,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         void RecordConnection(MpConnectCommunication connection);
         void RecordPinHistory(int participantId, int statusId);
         List<MpMapAudit> GetMapAuditRecords();
+        void MarkMapAuditRecordAsProcessed(MpMapAudit auditRec);
     }
 }

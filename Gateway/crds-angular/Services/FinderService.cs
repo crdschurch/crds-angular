@@ -93,6 +93,7 @@ namespace crds_angular.Services
         private readonly int _connectGatheringRequestToJoin;
         private readonly int _sayHiWithMessageTemplateId;
         private readonly int _sayHiWithoutMessageTemplateId;
+        private readonly string _firestoreProjectId;
 
         private readonly Random _random = new Random(DateTime.Now.Millisecond);
         private const double MinutesInDegree = 60;
@@ -178,6 +179,8 @@ namespace crds_angular.Services
             _connectGatheringRequestToJoin = configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeRequestToJoinGathering");
             _sayHiWithMessageTemplateId = configurationWrapper.GetConfigIntValue("sayHiWithMessageTemplateId");
             _sayHiWithoutMessageTemplateId = configurationWrapper.GetConfigIntValue("sayHiWithoutMessageTemplateId");
+
+            _firestoreProjectId = "crds-finder-map-poc";
         }
 
         public PinDto GetPinDetailsForGroup(int groupId, GeoCoordinate originCoords)
@@ -192,6 +195,8 @@ namespace crds_angular.Services
 
         }
 
+
+
         public async Task ProcessMapAuditRecords()
         {
             try
@@ -199,7 +204,10 @@ namespace crds_angular.Services
                 var recordList = _finderRepository.GetMapAuditRecords();
                 foreach (MpMapAudit mapAuditRecord in recordList)
                 {
-                    await ConnectPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap);
+                    await PinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                    mapAuditRecord.processed = true;
+                    mapAuditRecord.dateProcessed = DateTime.Now;
+                    _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
                 }
             }
             catch (Exception e)
@@ -208,25 +216,23 @@ namespace crds_angular.Services
             }
         }
 
-        private async Task ConnectPinToFirestoreAsync(int participantid, bool showOnMap)
+        private async Task PinToFirestoreAsync(int participantid, bool showOnMap, string pinType)
         {
             // showonmap = true then add to firestore
             // showonmap = false then delete from firestore
             if (showOnMap)
             {
-                await AddConnectPinToFirestoreAsync(participantid, showOnMap);
+                await AddPinToFirestoreAsync(participantid, pinType);
             }
             else
             {
-                await DeleteConnectPinFromFirestoreAsync(participantid, showOnMap);
+                await DeletePinFromFirestoreAsync(participantid, pinType);
             }
         }
 
-        private async Task DeleteConnectPinFromFirestoreAsync(int participantid, bool showOnMap)
+        private async Task DeletePinFromFirestoreAsync(int participantid, string pinType)
         {
-            var projectId = "crds-finder-map-poc";
-
-            FirestoreDb db = FirestoreDb.Create(projectId);
+            FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
             CollectionReference collection = db.Collection("Pins2");
 
             // find the firestore document
@@ -238,15 +244,17 @@ namespace crds_angular.Services
 
             foreach (DocumentSnapshot queryResult in querySnapshot.Documents)
             {
-                if (queryResult.GetValue<string>("pinType") == "CONNECT")
+                if (queryResult.GetValue<string>("pinType") == pinType)
                 {
                     WriteResult result = await collection.Document(queryResult.Id).DeleteAsync();
+                    // mark as processed
+                    
                     Console.WriteLine(result.ToString());
                 }
             }
         }
 
-        private async Task AddConnectPinToFirestoreAsync(int participantid, bool showOnMap)
+        private async Task AddPinToFirestoreAsync(int participantid, string pinType)
         {       
             var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             int contactid = _contactRepository.GetContactIdByParticipantId(participantid);
@@ -265,13 +273,9 @@ namespace crds_angular.Services
             }
 
             // create the pin object
-            var pin = new MapPin(participantid.ToString(), participantid.ToString(), address.Address_Line_1, address.Address_Line_2, address.City, address.State, address.Postal_Code, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, "CONNECT", participantid.ToString());
+            var pin = new MapPin(participantid.ToString(), participantid.ToString(), address.Address_Line_1, address.Address_Line_2, address.City, address.State, address.Postal_Code, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, pinType, participantid.ToString());
 
-            var projectId = "crds-finder-map-poc";
-
-            FirestoreDb db = FirestoreDb.Create(projectId);
-
-            // Create a document with a random ID in the "Pins2" collection.
+            FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
             CollectionReference collection = db.Collection("Pins2");
 
             try
@@ -284,8 +288,6 @@ namespace crds_angular.Services
                 Console.WriteLine(e.Message);
                 return;
             }
-
-            // collection.Document("abc").DeleteAsync();
         }
 
         public PinDto GetPinDetailsForPerson(int participantId)
