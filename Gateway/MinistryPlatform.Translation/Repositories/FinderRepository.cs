@@ -69,6 +69,18 @@ namespace MinistryPlatform.Translation.Repositories
             return pinDetails;
         }
 
+        public List<MpMapAudit> GetMapAuditRecords()
+        {
+            var token = _apiUserRepository.GetDefaultApiClientToken();
+
+            const string mapAuditColumns = "AuditID, Participant_ID, ShowOnMap, Processed, DateProcessed";
+            string filter = $"Processed = 0";
+
+            var auditRecs = _ministryPlatformRest.UsingAuthenticationToken(token).Search<MpMapAudit>(filter, mapAuditColumns);
+
+            return auditRecs;
+        }
+
         public FinderGatheringDto UpdateGathering(FinderGatheringDto finderGathering)
         {
             var token = _apiUserRepository.GetDefaultApiClientToken();

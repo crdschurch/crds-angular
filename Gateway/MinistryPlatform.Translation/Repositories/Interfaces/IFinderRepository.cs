@@ -17,5 +17,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         FinderGatheringDto UpdateGathering(FinderGatheringDto finderGathering);
         void RecordConnection(MpConnectCommunication connection);
         void RecordPinHistory(int participantId, int statusId);
+        List<MpMapAudit> GetMapAuditRecords();
     }
 }

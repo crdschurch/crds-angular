@@ -121,7 +121,9 @@ namespace MinistryPlatform.Translation.Repositories
                 Address_Line_2 = record.ToString("Address_Line_2"),
                 City = record.ToString("City"),
                 State = record.ToString("State/Region"),
-                Postal_Code = record.ToString("Postal_Code")
+                Postal_Code = record.ToString("Postal_Code"),
+                Latitude = Convert.ToDouble(record["Latitude"]),
+                Longitude = Convert.ToDouble(record["Longitude"])
             };
 
             return address;

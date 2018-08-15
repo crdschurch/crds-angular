@@ -50,18 +50,21 @@ namespace Crossroads.ScheduledDataUpdate
         private readonly IAwsCloudsearchService _awsService;
         private readonly ICorkboardService _corkboardService;
         private readonly IGroupService _groupService;
+        private readonly IFinderService _finderService;
 
         public Program(ITaskService taskService, 
                        IGroupToolService groupToolService, 
                        IAwsCloudsearchService awsService, 
                        ICorkboardService corkboardService,
-                       IGroupService groupService)
+                       IGroupService groupService,
+                       IFinderService finderService)
         {
             _taskService = taskService;
             _groupToolService = groupToolService;
             _awsService = awsService;
             _corkboardService = corkboardService;
             _groupService = groupService;
+            _finderService = finderService;
         }
 
         public int Run(string[] args)
@@ -73,7 +76,7 @@ namespace Crossroads.ScheduledDataUpdate
                 Log.Error(options.GetUsage());
                 return 1;
             }
-
+            
             if (options.HelpMode)
             {
                 Log.Error(options.GetUsage());
@@ -82,6 +85,22 @@ namespace Crossroads.ScheduledDataUpdate
 
             var exitCode = 0;
             var modeSelected = false;
+
+            if (options.ConnectMapUpdateMode)
+            {
+                modeSelected = true;
+                try
+                {
+                    Log.Info("Starting Connect Map Update to Firestore");
+                    _finderService.ProcessMapAuditRecords().Wait();
+                    Log.Info("Finished Connect Map Update to Firestore successfully");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Connect Map Update to Firestore failed.", ex);
+                    exitCode = 9999;
+                }
+            }
 
             if (options.AutoCompleteTasksMode)
             {
