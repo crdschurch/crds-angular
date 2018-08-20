@@ -7,7 +7,6 @@
       '$rootScope',
       '$modalInstance',
       'modalTypeItem',
-      'email',
       'PasswordService'
   ];
 
@@ -15,7 +14,6 @@
       $rootScope,
       $modalInstance,
       modalTypeItem,
-      email,
       PasswordService) {
 
     var vm = this;
@@ -23,17 +21,17 @@
     vm.cancel = cancel;
     vm.passwd = '';
     vm.modalTypeItem = modalTypeItem;
-    vm.email = email;
     vm.saving = false;
 
     function ok() {
 
       vm.saving = true;
-      var credentials = { username: vm.email, password: vm.passwd };
+      var currentPassword = vm.passwd;
+      var encodedPassword = JSON.stringify(currentPassword);
 
-      PasswordService.VerifyCredentials.save(credentials).$promise.then(function(response) {
+      PasswordService.VerifyPassword.save(encodedPassword).$promise.then(function(response) {
         vm.passwd = '';
-        $modalInstance.close(credentials.password);
+        $modalInstance.close(currentPassword);
       }, function(error) {
 
         $rootScope.$emit('notify', $rootScope.MESSAGES.passwordNotVerified);

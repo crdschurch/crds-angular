@@ -200,6 +200,7 @@
     <Compile Include="Models\Finder\FinderGatheringDto.cs" />
     <Compile Include="Models\Finder\MpConnectAws.cs" />
     <Compile Include="Models\Finder\MpConnectCommunication.cs" />
+	<Compile Include="Models\Finder\MpMapAudit.cs" />	
     <Compile Include="Models\Finder\SpPinDto.cs" />
     <Compile Include="Models\GoCincinnati\MpProject.cs" />
     <Compile Include="Models\GoCincinnati\MpProjectRegistration.cs" />

@@ -435,10 +435,6 @@
         resolve: {
           modalTypeItem: function() {
             return modalType;
-          },
-
-          email: function() {
-            return vm.oldEmail;
           }
         }
       });

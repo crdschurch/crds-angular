@@ -79,6 +79,16 @@ namespace MinistryPlatform.Translation.Repositories
             return users.FirstOrDefault();
         }
 
+        public MpUser GetByContactId(int contactId, string apiToken)
+        {
+            if (String.IsNullOrEmpty(apiToken))
+                apiToken = ApiLogin();
+            string searchUser = $"dp_Users.Contact_ID={contactId}";
+            string columns = "User_Name,User_GUID, ISNULL(Can_Impersonate, 0) AS Can_Impersonate, User_Email,User_ID";
+            var users = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpUser>(searchUser, columns, null, true);
+            return users.FirstOrDefault();
+        }
+
         public MpUser GetUserByResetToken(string resetToken)
         {
             var searchString = string.Format(",,,,,\"{0}\"", resetToken);

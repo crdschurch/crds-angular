@@ -494,23 +494,10 @@ BEGIN
 	UPDATE [dbo].Participant_Milestones SET Witness = null WHERE Witness = @contact_id;
 	UPDATE [dbo].Servicing SET Contact_ID = null WHERE Contact_ID = @contact_id;
 
-	--Delete Contact Relationships
-	--Disable triggers first otherwise relationships may be recreated after deletion attempt
-	DISABLE TRIGGER trigger_Reciprocal_Relationship ON [dbo].Contact_Relationships;
-	DISABLE TRIGGER trigger_Update_Relationship ON [dbo].Contact_Relationships;
+	--Note that there are triggers on the Contact_Relationships table that keep reciprocal relationships in sync. If there are
+	--issues related to deleting Contact_Relationships it may be related to these triggers.
+	DELETE [dbo].Contact_Relationships WHERE Related_Contact_ID = @contact_id OR Contact_ID = @contact_id;
 
-	DELETE [dbo].Contact_Relationships WHERE Related_Contact_ID = @contact_id;
-	DELETE [dbo].Contact_Relationships WHERE Contact_ID = @contact_id;
-
-	--Delete contacts before re-enabling triggers, but make sure triggers are enabled after if something goes wrong
-	BEGIN TRY
-		DELETE [dbo].Contacts WHERE Contact_ID = @contact_id;
-	END TRY
-	BEGIN CATCH
-		SELECT ERROR_MESSAGE();
-	END CATCH;
-
-	ENABLE TRIGGER trigger_Reciprocal_Relationship ON [dbo].Contact_Relationships;
-	ENABLE TRIGGER trigger_Update_Relationship ON [dbo].Contact_Relationships;
+	DELETE [dbo].Contacts WHERE Contact_ID = @contact_id;
 END
 GO
