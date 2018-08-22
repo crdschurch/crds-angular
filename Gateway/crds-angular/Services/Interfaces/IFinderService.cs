@@ -5,6 +5,7 @@ using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Finder;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Groups;
+using System.Threading.Tasks;
 
 namespace crds_angular.Services.Interfaces
 {
@@ -22,7 +23,7 @@ namespace crds_angular.Services.Interfaces
         List<PinDto> GetPinsInBoundingBox(GeoCoordinate originCoords, string address, AwsBoundingBox boundingBox, string finderType, int contactId, string filterSearchString);
         AddressDTO RandomizeLatLong(AddressDTO address);
         GeoCoordinate GetGeoCoordsFromAddressOrLatLang(string address, GeoCoordinates centerCoords);
-        Boolean areAllBoundingBoxParamsPresent(MapBoundingBox boundingBox); 
+        Boolean areAllBoundingBoxParamsPresent(MapBoundingBox boundingBox);
         GeoCoordinate GetGeoCoordsFromLatLong(string lat, string lng);
         void GatheringJoinRequest(string token, int gatheringId);
         Invitation InviteToGroup(string token, int gatheringId, User person, string finderFlag);
@@ -42,5 +43,6 @@ namespace crds_angular.Services.Interfaces
         void TryAGroupAcceptDeny(string token, int groupId, int participantId, bool accept);
         void ApproveDenyGroupInquiry(string token, bool approve, Inquiry inquiry);
         bool IsUserOnMap(int contactid);
+        Task ProcessMapAuditRecords();
     }
 }

@@ -1473,6 +1473,7 @@
                                   <Value>=Fields!equip_count.Value</Value>
                                   <Style>
                                     <FontSize>6pt</FontSize>
+                                    <Color>=IIF( Fields!room_id.Value Is Nothing, "Red", "Black")</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1506,6 +1507,7 @@
                                   <Value>=Fields!equip_name.Value</Value>
                                   <Style>
                                     <FontSize>6pt</FontSize>
+                                    <Color>=IIF( Fields!room_id.Value Is Nothing, "Red", "Black")</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1537,6 +1539,7 @@
                                   <Value>=Fields!equip_notes.Value</Value>
                                   <Style>
                                     <FontSize>6pt</FontSize>
+                                    <Color>=IIF( Fields!room_id.Value Is Nothing, "Red", "Black")</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1568,6 +1571,7 @@
                                   <Value>=Fields!equip_placement.Value</Value>
                                   <Style>
                                     <FontSize>6pt</FontSize>
+                                    <Color>=IIF( Fields!room_id.Value Is Nothing, "Red", "Black")</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1599,6 +1603,7 @@
                                   <Value>=Fields!equip_reservation_end.Value</Value>
                                   <Style>
                                     <FontSize>6pt</FontSize>
+                                    <Color>=IIF( Fields!room_id.Value Is Nothing, "Red", "Black")</Color>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
