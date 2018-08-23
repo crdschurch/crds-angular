@@ -725,18 +725,18 @@ namespace crds_angular.Services
 
         private string GetPinTitle(PinDto pin, int contactId = 0)
         {
-            string jsonData = "";
+            string titleString = "";
             var lastname = string.IsNullOrEmpty(pin.LastName) ? " " : pin.LastName[0].ToString();
             switch (pin.PinType)
             {
                 case PinType.SITE:
-                    jsonData = $"{{ 'siteName': '{RemoveSpecialCharacters(pin.SiteName ?? "")}','isHost':  false,'isMe': false,'pinType': {(int)pin.PinType}}}";
+                    titleString = $"Crossroads {RemoveSpecialCharacters(pin.SiteName ?? "")}";
                     break;
                 case PinType.GATHERING:
-                    jsonData = $"{{ 'firstName': '{RemoveSpecialCharacters(pin.FirstName ?? "")}', 'lastInitial': '{RemoveSpecialCharacters(lastname ?? "")}','isHost':  true,'isMe': false,'pinType': {(int)pin.PinType}}}";
+                    titleString = $"{RemoveSpecialCharacters(pin.FirstName ?? "")} {RemoveSpecialCharacters(lastname ?? "")}";
                     break;
                 case PinType.PERSON:
-                    jsonData = $"{{ 'firstName': '{RemoveSpecialCharacters(pin.FirstName ?? "")}', 'lastInitial': '{RemoveSpecialCharacters(lastname ?? "")}','isHost':  false,'isMe': {isMyPinAsString(pin, contactId)},'pinType': {(int)pin.PinType}}}";
+                    titleString = $"{RemoveSpecialCharacters(pin.FirstName ?? "")} {RemoveSpecialCharacters(lastname ?? "")}";
                     break;
                 case PinType.SMALL_GROUP:
                     var groupName = RemoveSpecialCharacters(pin.Gathering.GroupName ?? "").Trim();
@@ -744,11 +744,11 @@ namespace crds_angular.Services
                     {
                         groupName = RemoveSpecialCharacters(pin.Gathering.GroupName ?? "").Trim().Substring(0, 22);
                     }
-                    jsonData = $"{{ 'firstName': '{groupName}', 'lastInitial': '','isHost':  false,'isMe': false,'pinType': {(int)pin.PinType}}}";
+                    titleString = $"{groupName}";
                     break;
             }
 
-            return jsonData.Replace("'", "\"");
+            return titleString;
         }
 
         private static string RemoveSpecialCharacters(string str)
