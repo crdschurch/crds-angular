@@ -28,7 +28,8 @@
         const url = response.config.url;
         const isHttp = url.startsWith("http://") || url.startsWith("https://");
         const expDate = new Date();
-        const sessionLengthMs = 1800000;
+        const secondsTillExpired = 24 * (24 * 60 * 60); // 24 day expiration
+        const sessionLengthMs = secondsTillExpired * 1000;
         expDate.setTime(expDate.getTime() + sessionLengthMs);
         var Session = $injector.get("Session");
         if (response.headers("sessionId") && isHttp) {
