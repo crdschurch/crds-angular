@@ -18,6 +18,8 @@ export default class TravelInformationController {
     this.travelInfoForm = {};
     this.frequentFlyers = [];
     this.validPassport = null;
+    this.preferredAirport = null;
+    this.otherAirport = null;
 
     this.maxPassportExpireDate = null;
     this.minPassportExpireDate = null;
@@ -85,6 +87,7 @@ export default class TravelInformationController {
 
   submit() {
     this.processing = true;
+    let preferredAirport = this.preferredAirport === 'Other' ? this.otherAirport : this.preferredAirport;
     if (this.travelInfoForm.$valid) {
       // set the selected attribute on frequent flyer..
       const flyers = this.buildFrequentFlyers();
