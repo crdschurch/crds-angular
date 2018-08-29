@@ -239,7 +239,7 @@ SELECT 	c.first_name,
    (SELECT TOP 1 notes
 	   FROM vw_crds_contact_attributes
 	   WHERE contact_id = c.contact_id
-		 AND attribute_type_id = @preferredairport
+		 AND attribute_id = @preferredairport
 		ORDER BY Start_Date DESC) AS preferredairport,  
 
 	(SELECT top 1  response
