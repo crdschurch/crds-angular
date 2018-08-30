@@ -13,10 +13,11 @@
     authService.login = (credentials) => {
       return $http
         .post(__GATEWAY_CLIENT_ENDPOINT__ + 'api/login', credentials).then((res) => {
+          const sessionTimeoutSeconds = 24 * (24 * 60 * 60); // 24 day expiration
           Session.create(
             res.data.refreshToken,
             res.data.userToken,
-            res.data.userTokenExp,
+            sessionTimeoutSeconds, //res.data.userTokenExp,
             res.data.userId,
             res.data.username
           );
