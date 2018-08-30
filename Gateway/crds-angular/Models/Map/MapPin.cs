@@ -20,14 +20,18 @@ namespace crds_angular.Models.Map
         [FirestoreProperty]
         public string internalId { get; set; }
 
+        [FirestoreProperty]
+        public string geohash { get; set; }
+
         public MapPin() { }
 
-        public MapPin(string desc, string pinname, string address1, string address2, string city, string state, string zip, double latitude, double longitude, string pintype, string internalid)
+        public MapPin(string desc, string pinname, string address1, string address2, string city, string state, string zip, double latitude, double longitude, string pintype, string internalid, string geohash)
         {
             this.description = desc;
             this.name = pinname;
             this.pinType = pintype;
             this.internalId = internalid;
+            this.geohash = geohash;
 
             var coord = new MapCoordinates
             {

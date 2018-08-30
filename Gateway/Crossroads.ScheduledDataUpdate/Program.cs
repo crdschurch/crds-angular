@@ -10,7 +10,7 @@ using Microsoft.Practices.Unity.Configuration;
 using CommandLine;
 using Crossroads.Utilities.Services;
 using Crossroads.Web.Common.Configuration;
-
+using System.Threading;
 
 namespace Crossroads.ScheduledDataUpdate
 {
@@ -86,13 +86,23 @@ namespace Crossroads.ScheduledDataUpdate
             var exitCode = 0;
             var modeSelected = false;
 
-            if (options.ConnectMapUpdateMode)
+            if (options.ConnectMapListenForUpdates)
             {
                 modeSelected = true;
                 try
                 {
+                    const int almost24hours = 1430 * 60 * 1000;
                     Log.Info("Starting Connect Map Update to Firestore");
-                    _finderService.ProcessMapAuditRecords().Wait();
+                    string conStr = ConfigurationManager.ConnectionStrings["MessageQueueDBAccess"].ToString();
+                    var user = "MPBrokerUser";
+                    var pass = "Aw@!ted2015";
+                    conStr = $"Data Source=MP-Int-DB.centralus.cloudapp.azure.com;Initial Catalog=MinistryPlatform;Persist Security Info=True;User ID={user};Password={pass}";
+                    string queueName = "MPAppQueue";
+                    string query = "select AuditID, Participant_ID, ShowOnMap, processed from dbo.cr_MapAudit where processed=0 ";
+                    var watcher = new DbWatcher(conStr, queueName, query, _finderService);
+                    watcher.Start();
+                    Thread.Sleep(almost24hours);
+                    watcher.Stop();
                     Log.Info("Finished Connect Map Update to Firestore successfully");
                 }
                 catch (Exception ex)
