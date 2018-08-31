@@ -168,15 +168,18 @@
         <label class="control-label block required">What is your preferred airport?</label>
         <label class="radio-inline">
           <input ng-model="$ctrl.preferredAirport" type="radio" value="Cincinnati(CVG)"
-                 name="validPassport" id="preferredAirport-cincinnati" ng-required="true">Cincinnati(CVG)
+                 name="validPassport" id="preferredAirport-cincinnati" ng-required="true"
+                 ng-selected = "preferredAirport == commonAirportNames.CVG">Cincinnati(CVG)
         </label>
         <label class="radio-inline">
           <input ng-model="$ctrl.preferredAirport" type="radio" value="Lexington(LEX)"
-                 name="validPassport" id="preferredAirport-lexington" ng-required="true">Lexington(LEX)
+                 name="validPassport" id="preferredAirport-lexington" ng-required="true"
+                 ng-selected = "preferredAirport == commonAirportNames.LEX">Lexington(LEX)
         </label>
         <label class="radio-inline">
           <input ng-model="$ctrl.preferredAirport" type="radio" value="Other"
-                 name="validPassport" id="preferredAirport-other" ng-required="true">Other
+                 name="validPassport" id="preferredAirport-other" ng-required="true"
+                 ng-selected = "preferredAirport == commonAirportNames.OTHER">Other
         </label>
       </div>
 
