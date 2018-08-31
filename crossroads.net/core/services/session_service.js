@@ -85,7 +85,7 @@
       const userId = $cookies.get(cookieNames.USER_ID);
       const username = $cookies.get(cookieNames.USERNAME);
       const refresh = $cookies.get(cookieNames.REFRESH_TOKEN);
-      const secondsTillExpired = 1800;
+      const secondsTillExpired = 24 * (24 * 60 * 60); // 24 day expiration
       this.create(refresh, sessionId, secondsTillExpired, userId, username);
     };
 
