@@ -8,7 +8,6 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-
 -- Insert into the Pages Table
 INSERT INTO [dbo].[dp_Pages]
            ([Display_Name]
@@ -65,16 +64,58 @@ Spouse_Name = (SELECT TOP 1 Display_Name FROM Contacts c2 WHERE c2.Household_ID 
            ,NULL
            ,1)
 GO
-DECLARE @Page_ID int;
+DECLARE @Page_ID int = SCOPE_IDENTITY()
 
-SET @Page_ID = SCOPE_IDENTITY()
+
+      INSERT INTO [dbo].[dp_Role_Pages]
+           ([Role_ID],[Page_ID],[Access_Level],[Scope_All],[Approver],[File_Attacher],[Data_Importer],[Data_Exporter],[Secure_Records],[Allow_Comments],[Quick_Add])
+			SELECT 2,@Page_ID,3,0,0,1,0,1,1,0,1
+
+
+      INSERT INTO [dbo].[dp_Role_Pages]
+           ([Role_ID],[Page_ID],[Access_Level],[Scope_All],[Approver],[File_Attacher],[Data_Importer],[Data_Exporter],[Secure_Records],[Allow_Comments],[Quick_Add])
+			SELECT 5,@Page_ID,0,0,0,0,0,0,0,0,0
+
+-- Insert roles
+      INSERT INTO [dbo].[dp_Role_Pages]
+           ([Role_ID],[Page_ID],[Access_Level],[Scope_All],[Approver],[File_Attacher],[Data_Importer],[Data_Exporter],[Secure_Records],[Allow_Comments],[Quick_Add])
+			SELECT 6,@Page_ID,3,0,0,1,0,1,1,0,0
+						
+      INSERT INTO [dbo].[dp_Role_Pages]
+           ([Role_ID],[Page_ID],[Access_Level],[Scope_All],[Approver],[File_Attacher],[Data_Importer],[Data_Exporter],[Secure_Records],[Allow_Comments],[Quick_Add])
+			SELECT 7,@Page_ID,0,0,0,0,0,0,0,0,0
+			
+      INSERT INTO [dbo].[dp_Role_Pages]
+           ([Role_ID],[Page_ID],[Access_Level],[Scope_All],[Approver],[File_Attacher],[Data_Importer],[Data_Exporter],[Secure_Records],[Allow_Comments],[Quick_Add])
+			SELECT 104,@Page_ID,1,0,0,1,0,1,0,0,1
+
+	  INSERT INTO [dbo].[dp_Role_Pages]
+           ([Role_ID],[Page_ID],[Access_Level],[Scope_All],[Approver],[File_Attacher],[Data_Importer],[Data_Exporter],[Secure_Records],[Allow_Comments],[Quick_Add])
+			SELECT 105,@Page_ID,1,0,0,0,0,0,0,0,0
+
+	  INSERT INTO [dbo].[dp_Role_Pages]
+           ([Role_ID],[Page_ID],[Access_Level],[Scope_All],[Approver],[File_Attacher],[Data_Importer],[Data_Exporter],[Secure_Records],[Allow_Comments],[Quick_Add])
+			SELECT 106,@Page_ID,0,0,0,0,0,1,0,0,0
+
+	  INSERT INTO [dbo].[dp_Role_Pages]
+           ([Role_ID],[Page_ID],[Access_Level],[Scope_All],[Approver],[File_Attacher],[Data_Importer],[Data_Exporter],[Secure_Records],[Allow_Comments],[Quick_Add])
+			SELECT 107,@Page_ID,3,0,0,1,0,1,1,0,0
+
+      INSERT INTO [dbo].[dp_Role_Pages]
+           ([Role_ID],[Page_ID],[Access_Level],[Scope_All],[Approver],[File_Attacher],[Data_Importer],[Data_Exporter],[Secure_Records],[Allow_Comments],[Quick_Add])
+			SELECT 1009,@Page_ID,2,0,0,0,0,0,0,0,0
+
+    -- Insert into Page Sections
+	DECLARE @PageSectionID int = (SELECT Page_Section_ID FROM dbo.dp_Page_Sections WHERE Page_Section = 'Giving Statements')
+
+           
 INSERT INTO [dbo].[dp_Page_Section_Pages]
            ([Page_ID]
            ,[Page_Section_ID]
            ,[User_ID])
      VALUES
            (@Page_ID
-           ,27
+           ,@PageSectionID
            ,NULL)
 GO
 
