@@ -123,8 +123,8 @@ export default class TravelInformationController {
       this.preferredAirportAttribute =
         this.preferredAirportService.SetAttributeNotesAndStartDate(this.preferredAirportAttribute, preferredAirportName);
 
-      this.person.attributeTypes[preferredAirportAttributeTypeId] = this.preferredAirportAttributeType;
-      delete this.person.singleAttributes[preferredAirportAttributeTypeId];
+      this.person = this.preferredAirportService
+                        .UpdateOrSetPreferredAirportAttributeType(this.person, this.preferredAirportAttributeType);
 
       // save the info
       this.travelInformation.profile.save(this.person, () => {

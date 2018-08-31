@@ -16,6 +16,7 @@ describe('Travel Information Component', () => {
   let travelInformation;
   let httpBackend;
   let travelInformationService;
+  let preferredAirportService;
   let state;
   const contactId = 898989;
 
@@ -23,11 +24,13 @@ describe('Travel Information Component', () => {
     _Validation_,
     _$rootScope_,
     _AttributeTypeService_,
+    _PreferredAirportService_,
     _$httpBackend_,
     _$cookies_,
     _$state_,
     _TravelInformationService_) => {
     componentController = _$componentController_;
+    preferredAirportService = _PreferredAirportService_;
     rootScope = _$rootScope_;
     httpBackend = _$httpBackend_;
     state = _$state_;
@@ -41,6 +44,16 @@ describe('Travel Information Component', () => {
     spyOn(rootScope, '$emit').and.callThrough();
     spyOn(_$cookies_, 'get').and.returnValue(contactId);
     spyOn(state, 'go').and.callThrough();
+    spyOn(preferredAirportService, 'GetCommonAirportNameOrOther')
+      .and.callFake( (airport, commonAirports) => 'Random mock text' );
+    spyOn(preferredAirportService, 'GetPreferredAirportName').and.callFake(p => 'Random mock text');
+    spyOn(preferredAirportService, 'SetAttributeNotesAndStartDate')
+      .and.callFake( (preferredAirportAttribute, preferredAirportName) => {preferredAirportAttribute});
+    spyOn(preferredAirportService, 'DoesPersonHaveValidPreferredAirportNameAttributeSet')
+      .and.callFake(p => false);
+    spyOn(preferredAirportService, 'UpdateOrSetPreferredAirportAttributeType')
+      .and.callFake( (person, preferredAirportAttributeType ) => person);
+
 
     const bindings = {};
     travelInformation = componentController('travelInformation', null, bindings);

@@ -61,6 +61,11 @@
         }
 
         return hasValidPreferredAirportAttribute;
+      },
+
+      UpdateOrSetPreferredAirportAttributeType(person, preferredAirportAttributeType) {
+        person.attributeTypes[preferredAirportAttributeTypeId] = preferredAirportAttributeType;
+        delete this.person.singleAttributes[preferredAirportAttributeTypeId];
       }
 
     };
