@@ -17,6 +17,7 @@ using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Finder;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Newtonsoft.Json;
+using NGeoHash.Portable;
 using System;
 using System.Collections.Generic;
 using System.Device.Location;
@@ -281,11 +282,12 @@ namespace crds_angular.Services
             }
 
             // get geohash
-            var geohash = "";
-            //var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
+            // var geohash = "";
+            var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
+            
 
             // create the pin object
-            var pin = new MapPin(participantid.ToString(), participantid.ToString(), address.Address_Line_1, address.Address_Line_2, address.City, address.State, address.Postal_Code, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, pinType, participantid.ToString(), geohash);
+            MapPin pin = new MapPin(participantid.ToString(), participantid.ToString(), address.Address_Line_1, address.Address_Line_2, address.City, address.State, address.Postal_Code, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, pinType, participantid.ToString(), geohash);
 
             FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
             CollectionReference collection = db.Collection("Pins2");

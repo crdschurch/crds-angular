@@ -9,6 +9,6 @@ namespace crds_angular.Models.Map
         public MapAddress address { get; set; }
 
         [FirestoreProperty]
-        public MapCoordinates coordinates { get; set; }
+        public MapCoordinates point { get; set; }
     }
 }
