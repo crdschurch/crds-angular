@@ -319,6 +319,22 @@ namespace crds_angular.Services
             _finderRepository.RecordPinHistory(participantId, REMOVE_FROM_MAP);
         }
 
+        public void SetShowOnMap(int participantId, Boolean showOnMap)
+        {
+            if(showOnMap)
+            {
+                _finderRepository.RecordPinHistory(participantId, ADD_TO_MAP);
+            }
+            else
+            {
+                _finderRepository.RecordPinHistory(participantId, REMOVE_FROM_MAP);
+            }
+            Dictionary<string, object> dictionary = new Dictionary<string, object>();
+            dictionary.Add("Show_On_Map", showOnMap);
+           
+            _participantRepository.UpdateParticipant(dictionary);
+        }
+
         public PinDto UpdateGathering(PinDto pin)
         {
             // Update coordinates
