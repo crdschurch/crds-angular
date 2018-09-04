@@ -281,11 +281,8 @@ namespace crds_angular.Services
                 return;
             }
 
-            // get geohash
-            // var geohash = "";
             var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
             
-
             // create the pin object
             MapPin pin = new MapPin(participantid.ToString(), participantid.ToString(), address.Address_Line_1, address.Address_Line_2, address.City, address.State, address.Postal_Code, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, pinType, participantid.ToString(), geohash);
 
@@ -324,7 +321,6 @@ namespace crds_angular.Services
         {
             _finderRepository.EnablePin(participantId);
             _finderRepository.RecordPinHistory(participantId, ADD_TO_MAP);
-
         }
 
         public void DisablePin(int participantId)

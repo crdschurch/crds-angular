@@ -93,10 +93,9 @@ namespace Crossroads.ScheduledDataUpdate
                 {
                     const int almost24hours = 1430 * 60 * 1000;
                     Log.Info("Starting Connect Map Update to Firestore");
-                    string conStr = ConfigurationManager.ConnectionStrings["MessageQueueDBAccess"].ToString();
-                    var user = "MPBrokerUser";
-                    var pass = "Aw@!ted2015";
-                    conStr = $"Data Source=MP-Int-DB.centralus.cloudapp.azure.com;Initial Catalog=MinistryPlatform;Persist Security Info=True;User ID={user};Password={pass}";
+                    var conStr = ConfigurationManager.ConnectionStrings["MessageQueueDBAccess"].ToString();
+                    conStr = conStr.Replace("%MP_API_DB_QUEUE_USER%", Environment.GetEnvironmentVariable("MP_API_DB_QUEUE_USER"));
+                    conStr = conStr.Replace("%MP_API_DB_QUEUE_PASSWORD%", Environment.GetEnvironmentVariable("MP_API_DB_QUEUE_PASSWORD"));
                     string queueName = "MPAppQueue";
                     string query = "select AuditID, Participant_ID, ShowOnMap, processed from dbo.cr_MapAudit where processed=0 ";
                     var watcher = new DbWatcher(conStr, queueName, query, _finderService);
