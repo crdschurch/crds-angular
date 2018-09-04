@@ -164,21 +164,22 @@
           <legend>Preferred Airport</legend>
       </div>
 
-      <div class="form-group col-sm-12" ng-class="{'has-error': $ctrl.validation.showErrors($ctrl.travelInfoForm, 'validPassport') }">
+      <div class="form-group col-sm-12"
+           ng-class="{'has-error': $ctrl.validation.showErrors($ctrl.travelInfoForm, 'validAirport') }">
         <label class="control-label block required">What is your preferred airport?</label>
         <label class="radio-inline">
           <input ng-model="$ctrl.preferredAirport" type="radio" value="Cincinnati(CVG)"
-                 name="validPassport" id="preferredAirport-cincinnati" ng-required="true"
+                 name="validAirport" id="preferredAirport-cincinnati" ng-required="true"
                  ng-selected = "preferredAirport == commonAirportNames.CVG">Cincinnati(CVG)
         </label>
         <label class="radio-inline">
           <input ng-model="$ctrl.preferredAirport" type="radio" value="Lexington(LEX)"
-                 name="validPassport" id="preferredAirport-lexington" ng-required="true"
+                 name="validAirport" id="preferredAirport-lexington" ng-required="true"
                  ng-selected = "preferredAirport == commonAirportNames.LEX">Lexington(LEX)
         </label>
         <label class="radio-inline">
           <input ng-model="$ctrl.preferredAirport" type="radio" value="Other"
-                 name="validPassport" id="preferredAirport-other" ng-required="true"
+                 name="validAirport" id="preferredAirport-other" ng-required="true"
                  ng-selected = "preferredAirport == commonAirportNames.OTHER">Other
         </label>
       </div>
@@ -189,7 +190,8 @@
              ng-maxlength="65">
       </div>
 
-        <ng-messages for="$ctrl.travelInfoForm.validPassport.$error" ng-if="$ctrl.validation.showErrors($ctrl.travelInfoForm, 'validPassport')">
+        <ng-messages for="$ctrl.travelInfoForm.validAirport.$error"
+                     ng-if="$ctrl.validation.showErrors($ctrl.travelInfoForm, 'validAirport')">
         <span ng-message="required">
           <span dynamic-content="$root.MESSAGES.fieldCanNotBeBlank.content | html"></span>
         </span>
