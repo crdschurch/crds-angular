@@ -65,7 +65,11 @@
 
       UpdateOrSetPreferredAirportAttributeType(person, preferredAirportAttributeType) {
         person.attributeTypes[preferredAirportAttributeTypeId] = preferredAirportAttributeType;
-        delete this.person.singleAttributes[preferredAirportAttributeTypeId];
+        if(person.singleAttributes && person.singleAttributes.hasOwnProperty(`${preferredAirportAttributeTypeId}`)){
+          delete person.singleAttributes[preferredAirportAttributeTypeId];
+        }
+
+        return person;
       }
 
     };
