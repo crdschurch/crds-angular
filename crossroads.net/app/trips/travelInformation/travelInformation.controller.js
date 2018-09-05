@@ -44,9 +44,11 @@ export default class TravelInformationController {
     this.person = this.travelInformation.getPerson();
 
     this.commonAirportNames = this.preferredAirportService.GetCommonAirportNames();
-    var userPreferredAirportName = this.preferredAirportService.GetPreferredAirportName(this.person);
+    let userPreferredAirportName = this.preferredAirportService.GetPreferredAirportName(this.person);
     this.preferredAirport = this.preferredAirportService.GetCommonAirportNameOrOther(userPreferredAirportName, this.commonAirportNames);
-    this.otherAirport = userPreferredAirportName;
+    this.otherAirport =
+      this.preferredAirportService.SetUserCustomInputAirportNameIfNotOneOfCommonAirports(userPreferredAirportName,
+                                                                                  this.commonAirportNames);
 
     if (this.person.passportNumber) {
       this.validPassport = 'true';

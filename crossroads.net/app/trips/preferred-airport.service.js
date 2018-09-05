@@ -17,10 +17,16 @@
         return COMMON_AIRPORT_NAMES;
       },
 
+      IsOneOfCommonAirportNames(airportName, commonAirportNames) {
+        const isOneOfCommonAirportNames = airportName === commonAirportNames.CVG
+                                       || airportName === commonAirportNames.LEX;
+        return isOneOfCommonAirportNames;
+      },
+
       GetCommonAirportNameOrOther(airportName, commonAirportNames) {
         var commonAirportName = undefined;
 
-        if (airportName === commonAirportNames.CVG || airportName === commonAirportNames.LEX){
+        if (this.IsOneOfCommonAirportNames(airportName, commonAirportNames)){
           commonAirportName = airportName;
         } else if (airportName != null && airportName != ''){
           commonAirportName = 'Other';
@@ -70,6 +76,16 @@
         }
 
         return person;
+      },
+
+      SetUserCustomInputAirportNameIfNotOneOfCommonAirports(airportName, commonAirportNames) {
+        let customInputAirportName = null;
+
+        if (!this.IsOneOfCommonAirportNames(airportName, commonAirportNames)) {
+          customInputAirportName = airportName;
+        }
+
+        return customInputAirportName;
       }
 
     };

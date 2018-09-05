@@ -53,6 +53,8 @@ describe('Travel Information Component', () => {
       .and.callFake(p => false);
     spyOn(preferredAirportService, 'UpdateOrSetPreferredAirportAttributeType')
       .and.callFake( (person, preferredAirportAttributeType ) => person);
+    spyOn(preferredAirportService, 'SetUserCustomInputAirportNameIfNotOneOfCommonAirports')
+      .and.callFake( (airportName, commonAirportNames) => airportName);
 
 
     const bindings = {};
