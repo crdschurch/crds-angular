@@ -403,12 +403,13 @@ namespace crds_angular.Controllers.API
         /// </summary>
         /// <param name="recurringGiftId">The recurring gift ID to delete in MinistryPlatform and Stripe.</param>
         /// <param name="impersonateDonorId">An optional donorId of a donor to impersonate</param>
+        /// <param name="sendEmail">An optional flag to disable or enable sending an email after canceling recurring gift</param>
         /// <returns>The RecurringGiftDto representing the gift that was deleted</returns>
         [RequiresAuthorization]
         [VersionedRoute(template: "donor/recurrence/{recurringGiftId}", minimumVersion: "1.0.0")]
         [Route("donor/recurrence/{recurringGiftId:int}")]
         [HttpDelete]
-        public IHttpActionResult CancelRecurringGift([FromUri]int recurringGiftId, [FromUri(Name = "impersonateDonorId")] int? impersonateDonorId = null)
+        public IHttpActionResult CancelRecurringGift([FromUri]int recurringGiftId, [FromUri(Name = "impersonateDonorId")] int? impersonateDonorId = null, [FromUri(Name = "sendEmail")] bool sendEmail = true)
         {
             return(Authorized(token =>
             {
@@ -422,7 +423,7 @@ namespace crds_angular.Controllers.API
                                                                   impersonateUserId,
                                                                   () =>
                                                                       _donorService.CancelRecurringGift(token, recurringGiftId))
-                        : _donorService.CancelRecurringGift(token, recurringGiftId);
+                        : _donorService.CancelRecurringGift(token, recurringGiftId, sendEmail);
 
                     return (Ok());
                 }
