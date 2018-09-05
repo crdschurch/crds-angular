@@ -6,15 +6,9 @@
     const consts = require('crds-constants');
     const preferredAirportAttributeTypeId = consts.ATTRIBUTE_TYPE_IDS.PREFERRED_AIRPORT;
 
-    const COMMON_AIRPORT_NAMES = {
-      CVG: 'Cincinnati(CVG)',
-      LEX: 'Lexington(LEX)',
-      OTHER: 'Other'
-    };
-
     return {
       GetCommonAirportNames: function() {
-        return COMMON_AIRPORT_NAMES;
+        return consts.COMMON_AIRPORT_NAMES;
       },
 
       IsOneOfCommonAirportNames(airportName, commonAirportNames) {
