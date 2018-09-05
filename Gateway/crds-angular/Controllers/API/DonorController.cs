@@ -422,7 +422,7 @@ namespace crds_angular.Controllers.API
                         ? _impersonationService.WithImpersonation(token,
                                                                   impersonateUserId,
                                                                   () =>
-                                                                      _donorService.CancelRecurringGift(token, recurringGiftId))
+                                                                      _donorService.CancelRecurringGift(token, recurringGiftId, sendEmail))
                         : _donorService.CancelRecurringGift(token, recurringGiftId, sendEmail);
 
                     return (Ok());
