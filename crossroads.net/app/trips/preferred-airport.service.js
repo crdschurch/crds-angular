@@ -24,7 +24,7 @@
       },
 
       GetCommonAirportNameOrOther(airportName, commonAirportNames) {
-        var commonAirportName = undefined;
+        let commonAirportName = undefined;
 
         if (this.IsOneOfCommonAirportNames(airportName, commonAirportNames)){
           commonAirportName = airportName;
@@ -35,7 +35,7 @@
       },
 
       GetPreferredAirportName(person) {
-        var preferredAirportName = undefined;
+        let preferredAirportName = undefined;
 
         const hasPreferredAirportAttribute = person.singleAttributes[preferredAirportAttributeTypeId] != null;
 
@@ -55,12 +55,12 @@
       },
 
       DoesPersonHaveValidPreferredAirportNameAttributeSet(person) {
-        var idxOfPreferredAirportAttribute = person.attributeTypes[preferredAirportAttributeTypeId]
+        let idxOfPreferredAirportAttribute = person.attributeTypes[preferredAirportAttributeTypeId]
           .attributes.findIndex(attr => attr.attributeId === consts.ATTRIBUTE_IDS.PREFERRED_AIRPORT_NAME);
 
-        var hasValidPreferredAirportAttribute = idxOfPreferredAirportAttribute !== -1;
+        let hasValidPreferredAirportAttribute = idxOfPreferredAirportAttribute !== -1;
 
-        var preferredAirportNameNotes = person.attributeTypes[preferredAirportAttributeTypeId].attributes[idxOfPreferredAirportAttribute].notes;
+        let preferredAirportNameNotes = person.attributeTypes[preferredAirportAttributeTypeId].attributes[idxOfPreferredAirportAttribute].notes;
 
         if(preferredAirportNameNotes == null) {
           hasValidPreferredAirportAttribute = false;
