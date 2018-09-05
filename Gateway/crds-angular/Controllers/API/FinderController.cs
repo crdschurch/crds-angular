@@ -884,10 +884,10 @@ namespace crds_angular.Controllers.API
 
 
         [RequiresAuthorization]
-        [VersionedRoute(template: "finder/showOnMap", minimumVersion: "1.0.0")]
-        [Route("finder/showOnMap")]
+        [VersionedRoute(template: "finder/showOnMap/{participantId}/{showOnMap}", minimumVersion: "1.0.0")]
+        [Route("finder/showOnMap/{participantId}/{showOnMap}")]
         [HttpPost]
-        public IHttpActionResult ShowOnMap([FromBody] int participantId, [FromBody] Boolean showOnMap)
+        public IHttpActionResult ShowOnMap([FromUri] int participantId, [FromUri] Boolean showOnMap)
         {
             return Authorized(token =>
             {
