@@ -159,13 +159,12 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" ng-class="{'has-error': $ctrl.validation.showErrors($ctrl.travelInfoForm, 'validAirport') }">
       <div class="col-sm-12">
           <legend>Preferred Airport</legend>
       </div>
 
-      <div class="form-group col-sm-12"
-           ng-class="{'has-error': $ctrl.validation.showErrors($ctrl.travelInfoForm, 'validAirport') }">
+      <div class="form-group col-sm-12">
         <label class="control-label block required">What is your preferred airport?</label>
         <label class="radio-inline">
           <input ng-model="$ctrl.preferredAirport" type="radio" value="Cincinnati(CVG)"
@@ -190,12 +189,15 @@
              ng-maxlength="65">
       </div>
 
+        <div class="form-group col-sm-12"
+             ng-if="$ctrl.validation.showErrors($ctrl.travelInfoForm, 'validAirport')">
         <ng-messages for="$ctrl.travelInfoForm.validAirport.$error"
                      ng-if="$ctrl.validation.showErrors($ctrl.travelInfoForm, 'validAirport')">
         <span ng-message="required">
-          <span dynamic-content="$root.MESSAGES.fieldCanNotBeBlank.content | html"></span>
+            <span dynamic-content="$root.MESSAGES.fieldCanNotBeBlank.content | html"></span>
         </span>
         </ng-messages>
+        </div>
       </div>
 
     <div class="text-right push-half-top">
