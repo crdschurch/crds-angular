@@ -420,7 +420,10 @@ namespace crds_angular.Services
 
             _mpDonorService.CancelRecurringGift(authorizedUserToken, recurringGiftId);
 
-            if(sendEmail) SendRecurringGiftConfirmationEmail(authorizedUserToken, _recurringGiftCancelEmailTemplateId, existingGift);
+            if (sendEmail == true)
+            {
+                SendRecurringGiftConfirmationEmail(authorizedUserToken, _recurringGiftCancelEmailTemplateId, existingGift);
+            }
 
             return true;
         }
