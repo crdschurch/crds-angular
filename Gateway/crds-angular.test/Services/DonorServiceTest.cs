@@ -756,6 +756,7 @@ namespace crds_angular.test.Services
         {
             const string authUserToken = "auth";
             const int recurringGiftId = 123;
+            const bool sendEmail = true;
             var gift = new MpCreateDonationDistDto
             {
                 DonorId = 456,
@@ -790,7 +791,7 @@ namespace crds_angular.test.Services
                 mocked =>
                     mocked.SendEmail(RecurringGiftCancelEmailTemplateId, gift.DonorId, (int)(123.45M / 100), "Credit Card", It.IsAny<DateTime>(), gift.StartDate.Value, "Crossroads", string.Empty, "12th of the month", null));
 
-            _fixture.CancelRecurringGift(authUserToken, recurringGiftId);
+            _fixture.CancelRecurringGift(authUserToken, recurringGiftId, sendEmail);
             _mpDonorService.VerifyAll();
             _paymentService.VerifyAll();
         }
