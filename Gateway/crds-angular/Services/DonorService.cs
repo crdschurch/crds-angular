@@ -411,7 +411,7 @@ namespace crds_angular.Services
             }
         }
 
-        public Boolean CancelRecurringGift(string authorizedUserToken, int recurringGiftId)
+        public Boolean CancelRecurringGift(string authorizedUserToken, int recurringGiftId, bool sendEmail)
         {
             var existingGift = _mpDonorService.GetRecurringGiftById(authorizedUserToken, recurringGiftId);
 
@@ -420,7 +420,10 @@ namespace crds_angular.Services
 
             _mpDonorService.CancelRecurringGift(authorizedUserToken, recurringGiftId);
 
-            SendRecurringGiftConfirmationEmail(authorizedUserToken, _recurringGiftCancelEmailTemplateId, existingGift);
+            if (sendEmail == true)
+            {
+                SendRecurringGiftConfirmationEmail(authorizedUserToken, _recurringGiftCancelEmailTemplateId, existingGift);
+            }
 
             return true;
         }
