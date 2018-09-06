@@ -42,6 +42,7 @@
       MEDICAL_RESTRICTIONS: 100,
       MEDICATION_TAKING: 101,
       PERSONAL: 1,
+      PREFERRED_AIRPORT: 109,
       SCRUB_TOP_SIZES: 22,
       SCRUB_BOTTOM_SIZES: 23,
       SKILLS: 24,
@@ -54,6 +55,7 @@
       UNDIVIDED_RSVP_KICKOFF: 86
     },
     ATTRIBUTE_IDS: {
+      PREFERRED_AIRPORT_NAME: 9050,
       ALL_ALLERGIES: 3971,
       COFACILITATOR: 7086,
       COPARTICIPANT: 7087,
@@ -162,6 +164,11 @@
       OFF: 'Off'
     },
     PRE_STREAM_HOURS: 15,
+    COMMON_AIRPORT_NAMES: {
+      CVG: 'Cincinnati(CVG)',
+      LEX: 'Lexington(LEX)',
+      OTHER: 'Other'
+    },
     COOKIES: {
       SESSION_ID: `${__CRDS_ENV__}sessionId`,
       REFRESH_TOKEN: `${__CRDS_ENV__}refreshToken`,
