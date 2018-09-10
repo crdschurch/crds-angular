@@ -6,9 +6,8 @@ namespace crds_angular.Models.Map
     public class MapCoordinates
     {
         [FirestoreProperty]
-        public double latitude { get; set; }
-
+        public string geohash { get; set; }
         [FirestoreProperty]
-        public double longitude { get; set; }
+        public GeoPoint geopoint { get; set; }
     }
 }

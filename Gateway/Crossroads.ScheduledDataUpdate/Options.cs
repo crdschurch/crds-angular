@@ -37,9 +37,9 @@ namespace Crossroads.ScheduledDataUpdate
             HelpText = "Execute 'Huddle Status Participant Updates'")]
         public bool HuddleStatusParticipantUpdateMode { get; set; }
 
-        [Option("ConnectMapUpdateMode", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
-            HelpText = "Execute 'Sync Connect Pins to Firestore'")]
-        public bool ConnectMapUpdateMode { get; set; }
+        [Option("ConnectMapListenForUpdates", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
+            HelpText = "Execute 'Listen for changes and Sync Connect Pins to Firestore'")]
+        public bool ConnectMapListenForUpdates { get; set; }
 
         [ParserState]
         public IParserState LastParserState { get; set; }

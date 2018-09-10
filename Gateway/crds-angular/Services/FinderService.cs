@@ -17,6 +17,7 @@ using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Finder;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Newtonsoft.Json;
+using NGeoHash.Portable;
 using System;
 using System.Collections.Generic;
 using System.Device.Location;
@@ -257,23 +258,33 @@ namespace crds_angular.Services
         private async Task AddPinToFirestoreAsync(int participantid, string pinType)
         {       
             var apiToken = _apiUserRepository.GetDefaultApiClientToken();
-            int contactid = _contactRepository.GetContactIdByParticipantId(participantid);
-            MpMyContact contact = _contactRepository.GetContactById(contactid);
-
-            // get the address including lat/lon
-            MpAddress address = new MpAddress();
-            if (contact.Address_ID != null)
+            var address = new MpAddress();
+            try
             {
-                address = _addressRepository.GetAddressById(apiToken, (int)contact.Address_ID);
+                int contactid = _contactRepository.GetContactIdByParticipantId(participantid);
+                MpMyContact contact = _contactRepository.GetContactById(contactid);
+                // get the address including lat/lon
+                if (contact.Address_ID != null)
+                {
+                    address = _addressRepository.GetAddressById(apiToken, (int)contact.Address_ID);
+                }
+                else
+                {
+                    // no address for this contact/participant
+                    return;
+                }
             }
-            else
+            catch (Exception e)
             {
-                // no address for this contact/participant
+                Console.WriteLine("Problem getting MP Data for PinSync");
+                Console.WriteLine(e.Message);
                 return;
             }
 
+            var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
+            
             // create the pin object
-            var pin = new MapPin(participantid.ToString(), participantid.ToString(), address.Address_Line_1, address.Address_Line_2, address.City, address.State, address.Postal_Code, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, pinType, participantid.ToString());
+            MapPin pin = new MapPin(participantid.ToString(), participantid.ToString(), address.Address_Line_1, address.Address_Line_2, address.City, address.State, address.Postal_Code, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, pinType, participantid.ToString(), geohash);
 
             FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
             CollectionReference collection = db.Collection("Pins2");
@@ -310,7 +321,6 @@ namespace crds_angular.Services
         {
             _finderRepository.EnablePin(participantId);
             _finderRepository.RecordPinHistory(participantId, ADD_TO_MAP);
-
         }
 
         public void DisablePin(int participantId)
