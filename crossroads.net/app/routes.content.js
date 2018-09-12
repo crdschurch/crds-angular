@@ -108,6 +108,11 @@
                   return;
                 }
 
+                if (link.match(new RegExp('^\/me/giving'))){
+                  redirectToMaestro();
+                  return;
+                }
+
                 var notFoundPromise = Page.get({ url: '/page-not-found/' }).$promise;
                 notFoundPromise.then(function (promise) {
                   if (promise.pages.length > 0) {
