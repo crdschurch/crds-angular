@@ -20,9 +20,12 @@ namespace crds_angular.Models.Map
         [FirestoreProperty]
         public string internalId { get; set; }
 
+        [FirestoreProperty]
+        public MapCoordinates point { get; set; }
+
         public MapPin() { }
 
-        public MapPin(string desc, string pinname, string address1, string address2, string city, string state, string zip, double latitude, double longitude, string pintype, string internalid)
+        public MapPin(string desc, string pinname, string address1, string address2, string city, string state, string zip, double latitude, double longitude, string pintype, string internalid, string geohash)
         {
             this.description = desc;
             this.name = pinname;
@@ -31,8 +34,8 @@ namespace crds_angular.Models.Map
 
             var coord = new MapCoordinates
             {
-                latitude = latitude,
-                longitude = longitude
+                geopoint = new GeoPoint(latitude, longitude),
+                geohash = geohash
             };
 
             var address = new MapAddress
@@ -47,8 +50,9 @@ namespace crds_angular.Models.Map
             location = new MapLocation
             {
                 address = address,
-                coordinates = coord
+                point = coord
             };
+            this.point = coord;
         }
     }
 }

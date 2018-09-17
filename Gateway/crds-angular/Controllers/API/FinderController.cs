@@ -880,5 +880,30 @@ namespace crds_angular.Controllers.API
                 }
             });
         }
+
+
+
+        [RequiresAuthorization]
+        [VersionedRoute(template: "finder/showOnMap/{participantId}/{showOnMap}", minimumVersion: "1.0.0")]
+        [Route("finder/showOnMap/{participantId}/{showOnMap}")]
+        [HttpPost]
+        public IHttpActionResult ShowOnMap([FromUri] int participantId, [FromUri] Boolean showOnMap)
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    _finderService.SetShowOnMap(participantId, showOnMap);
+                    return Ok();
+
+                }
+                catch (Exception e)
+                {
+                    _logger.Error("Error - ShowOnMap", e);
+                    var apiError = new ApiErrorDto("Error - ShowOnMap", e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
     }
 }
