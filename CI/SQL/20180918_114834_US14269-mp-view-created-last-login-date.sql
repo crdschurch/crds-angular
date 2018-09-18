@@ -28,7 +28,7 @@ BEGIN
     (SELECT Max(Date_Time) 
         FROM dp_Authentication_Log AL 
         WHERE AL.User_ID = dp_Users.User_ID
-            AND AL.Referrer = 'Platform.web') AS "Last Login",
+            AND AL.Referrer = ''Platform.web'') AS "Last Login",
     (select top 1
                 r.Role_Name
             from
