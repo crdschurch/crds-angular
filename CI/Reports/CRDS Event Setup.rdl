@@ -360,7 +360,7 @@
     <DataSet Name="ds_Congregations">
       <Query>
         <DataSourceName>MPReportsDS</DataSourceName>
-        <CommandText>SELECT Congregation_Name, Congregation_ID, Location_ID FROM Congregations WHERE Location_ID IN (3,5,6,7,8,19,16,17)</CommandText>
+        <CommandText>SELECT Congregation_ID, Congregation_Name, Location_ID FROM Congregations WHERE Location_ID IN (SELECT b.Location_ID FROM Buildings b INNER JOIN Rooms r ON r.Building_ID = b.Building_ID)</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
