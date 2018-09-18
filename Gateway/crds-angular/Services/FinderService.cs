@@ -184,6 +184,16 @@ namespace crds_angular.Services
             _firestoreProjectId = "crds-finder-map-poc";
         }
 
+        public List<int> GetAddressIdsWithNoGeoCode()
+        {
+            return _addressRepository.FindAddressIdsWithoutGeocode().Take(100).ToList();
+        }
+
+        public List<int> GetAddressIdsForMapParticipantWithNoGeoCode()
+        {
+            return _addressRepository.FindMapParticipantsAddressIdsWithoutGeocode().Take(100).ToList();
+        }
+
         public PinDto GetPinDetailsForGroup(int groupId, GeoCoordinate originCoords)
         {
             List<PinDto> pins = null;
@@ -193,10 +203,7 @@ namespace crds_angular.Services
             this.AddPinMetaData(pins, originCoords);
 
             return pins.First();
-
         }
-
-
 
         public async Task ProcessMapAuditRecords()
         {

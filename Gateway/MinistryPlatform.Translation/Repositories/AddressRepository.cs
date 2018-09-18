@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
-using MinistryPlatform.Translation.Helpers;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -100,6 +97,30 @@ namespace MinistryPlatform.Translation.Repositories
             return addresses;
         }
 
+        public List<int> FindAddressIdsWithoutGeocode()
+        {
+            var filter = "Latitude IS NULL";
+            var columns = "Address_ID";
+            var orderBy = "Address_ID DESC";
+
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
+            var addresses = _ministryPlatformRestRepository
+                .UsingAuthenticationToken(apiToken)
+                .SearchTable<Dictionary<string, object>>("Addresses", filter, columns, orderBy);
+
+            return addresses.Select(r => r.ToInt("Address_ID") ).ToList();
+        }
+
+        public List<int> FindMapParticipantsAddressIdsWithoutGeocode()
+        {
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
+            var addresses = _ministryPlatformRestRepository
+                .UsingAuthenticationToken(apiToken)
+                .GetFromStoredProc<MpAddress>("crds_Get_Addressids_For_Map");
+
+            return addresses.FirstOrDefault().Select(r => r.Address_ID.Value).ToList(); ;
+        }
+
         private string AddQuotesIfNotEmpty(string input)
         {
             if (String.IsNullOrEmpty(input))
@@ -110,6 +131,12 @@ namespace MinistryPlatform.Translation.Repositories
             return string.Format("\"{0}\"", input);
         }
 
+        public MpAddress GetAddressById(int id)
+        {
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
+            return GetAddressById(apiToken, id);
+        }
+        
         public MpAddress GetAddressById(string token, int id)
         {
             var record = _ministryPlatformService.GetRecordDict(_addressPageId, id, token);
@@ -128,5 +155,5 @@ namespace MinistryPlatform.Translation.Repositories
 
             return address;
         }
-}
+    }
 }

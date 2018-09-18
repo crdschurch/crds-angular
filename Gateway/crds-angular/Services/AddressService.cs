@@ -12,13 +12,13 @@ namespace crds_angular.Services
 {
     public class AddressService : IAddressService
     {
-        private readonly MinistryPlatform.Translation.Repositories.Interfaces.IAddressRepository _mpAddressService;
+        private readonly MinistryPlatform.Translation.Repositories.Interfaces.IAddressRepository _mpAddressRepository;
         private readonly IAddressGeocodingService _addressGeocodingService;
         private readonly ILog _logger = LogManager.GetLogger(typeof (AddressService));
 
-        public AddressService(MinistryPlatform.Translation.Repositories.Interfaces.IAddressRepository mpAddressService, IAddressGeocodingService addressGeocodingService)
+        public AddressService(MinistryPlatform.Translation.Repositories.Interfaces.IAddressRepository mpAddressRepository, IAddressGeocodingService addressGeocodingService)
         {
-            _mpAddressService = mpAddressService;
+            _mpAddressRepository = mpAddressRepository;
             _addressGeocodingService = addressGeocodingService;
         }
 
@@ -87,6 +87,13 @@ namespace crds_angular.Services
             return coords;
         }
 
+        public void SetGeoCoordinates(int addressid)
+        {
+            var mpaddress = _mpAddressRepository.GetAddressById(addressid);
+            var addressdto = AutoMapper.Mapper.Map<AddressDTO>(mpaddress);
+            SetGeoCoordinates(addressdto);
+        }
+
         public void SetGeoCoordinates(AddressDTO address)
         {
             try
@@ -140,17 +147,17 @@ namespace crds_angular.Services
 
         private int CreateAddress(MpAddress address)
         {
-            return _mpAddressService.Create(address);
+            return _mpAddressRepository.Create(address);
         }
 
         private int UpdateAddress(MpAddress address)
         {
-            return _mpAddressService.Update(address);
+            return _mpAddressRepository.Update(address);
         }
 
         private bool FindExistingAddress(AddressDTO address, MpAddress mpAddress)
         {
-            var result = _mpAddressService.FindMatches(mpAddress);
+            var result = _mpAddressRepository.FindMatches(mpAddress);
             if (result.Count > 0)
             {
                 var found = result.First(x => x.Address_ID.HasValue);

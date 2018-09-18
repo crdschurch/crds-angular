@@ -45,5 +45,7 @@ namespace crds_angular.Services.Interfaces
         bool IsUserOnMap(int contactid);
         Task ProcessMapAuditRecords();
         void SetShowOnMap(int participantId, Boolean showOnMap);
+        List<int> GetAddressIdsWithNoGeoCode();
+        List<int> GetAddressIdsForMapParticipantWithNoGeoCode();
     }
 }
