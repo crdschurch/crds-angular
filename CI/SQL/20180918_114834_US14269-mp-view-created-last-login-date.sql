@@ -25,7 +25,10 @@ BEGIN
     dp_Users.User_ID as "User ID",
     dp_Users.Display_Name as "Display Name",
     dp_Users.User_Name as "User Name",
-    (SELECT Max(Date_Time) FROM dp_Authentication_Log AL WHERE AL.User_ID = dp_Users.User_ID) AS "Last Login",
+    (SELECT Max(Date_Time) 
+        FROM dp_Authentication_Log AL 
+        WHERE AL.User_ID = dp_Users.User_ID
+            AND AL.Referrer = 'Platform.web') AS "Last Login",
     (select top 1
                 r.Role_Name
             from
@@ -45,12 +48,12 @@ BEGIN
         where
             ur.User_ID = dp_Users.User_ID and ur.Role_ID <> 39
         order by
-            al.Date_Time desc
+            al.Date_Time asc
     ) as "Role Create Date"';
     DECLARE @ViewClause VARCHAR(1000) = 'dp_Users.User_Email NOT LIKE ''%@thinkministry.com'' 
     AND EXISTS (SELECT 1 FROM dp_User_Roles UR WHERE UR.User_ID = dp_Users.User_ID AND UR.Role_ID <> 39)
     ';
-    DECLARE @Description VARCHAR(1000) = 'Returns a list of users with security roles other than Admin and the last time that user logged int.';
+    DECLARE @Description VARCHAR(1000) = 'Returns a list of users with security roles other than All Platform Users and the last time that user logged in.';
 
     INSERT INTO [dbo].[dp_Page_Views]
         ( [Page_View_ID],
