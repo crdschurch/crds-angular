@@ -37,7 +37,7 @@ namespace crds_angular.test.DataAccess
             var dbCommand = new Mock<IDbCommand>();
             dbCommand.Setup(mocked => mocked.Dispose());
             dbCommand.SetupSet(mocked => mocked.CommandType = CommandType.Text).Verifiable();
-            dbCommand.SetupSet(mocked => mocked.CommandText = "SELECT ID, IDBatch, DateProcess, Exported FROM Batches WHERE COALESCE(Exported, 0) <> 1 ORDER BY DateProcess DESC").Verifiable();
+            dbCommand.SetupSet(mocked => mocked.CommandText = "SELECT ID, IDBatch, DateProcess, Exported FROM Batches WHERE (SELECT COUNT(*) FROM Items WHERE IDBatch = b.IDBatch) > 0 ORDER BY DateProcess DESC").Verifiable();
             dbCommand.Setup(mocked => mocked.ExecuteReader()).Returns(dataReader.Object);
 
             _dbConnection.Setup(mocked => mocked.Open());
