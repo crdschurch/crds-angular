@@ -106,7 +106,8 @@ namespace Crossroads.ScheduledDataUpdate
                         List<string> list = new List<string>(File.ReadAllLines(filename));
                         foreach (string item in list)
                         {
-                            if (int.TryParse(item, out int id))
+                            int id;
+                            if (int.TryParse(item, out id))
                             {
                                 addressids.Add(id);
                             }
