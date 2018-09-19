@@ -27,7 +27,9 @@ namespace crds_angular.DataAccess
             IDataReader reader = null;
             try
             {
-                var whereClause = onlyOpenBatches ? "WHERE (SELECT COUNT(*) FROM Items WHERE IDBatch = b.IDBatch) > 0" : string.Empty;
+                var whereClause = "WHERE ((SELECT COUNT(*) FROM Items WHERE IDBatch = b.IDBatch) > 0)";
+                if (onlyOpenBatches)
+                    whereClause += " AND (COALESCE(Exported, 0) <> 1)";
 
                 batches = WithDbCommand(dbCommand =>
                 {
