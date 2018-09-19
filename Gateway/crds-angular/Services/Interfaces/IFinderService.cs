@@ -44,5 +44,6 @@ namespace crds_angular.Services.Interfaces
         void ApproveDenyGroupInquiry(string token, bool approve, Inquiry inquiry);
         bool IsUserOnMap(int contactid);
         Task ProcessMapAuditRecords();
+        void SetShowOnMap(int participantId, Boolean showOnMap);
     }
 }

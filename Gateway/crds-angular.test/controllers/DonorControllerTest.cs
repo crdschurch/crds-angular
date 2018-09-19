@@ -676,8 +676,9 @@ namespace crds_angular.test.controllers
         {
             var authUserToken = _authType + " " + _authToken;
             const int recurringGiftId = 123;
+            const bool sendEmail = true;
             _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _donorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, recurringGiftId));
+            _donorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, recurringGiftId, sendEmail));
             var response = _fixture.CancelRecurringGift(recurringGiftId);
             _donorService.VerifyAll();
             Assert.IsNotNull(response);
@@ -689,6 +690,7 @@ namespace crds_angular.test.controllers
         {
             var authUserToken = _authType + " " + _authToken;
             const int recurringGiftId = 123;
+            const bool sendEmail = true;
 
             var stripeException = new PaymentProcessorException(HttpStatusCode.Forbidden,
                                                                 "aux message",
@@ -700,7 +702,7 @@ namespace crds_angular.test.controllers
                                                                 new ContentBlock());
 
             _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _donorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, recurringGiftId)).Throws(stripeException);
+            _donorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, recurringGiftId, sendEmail)).Throws(stripeException);
 
             var response = _fixture.CancelRecurringGift(recurringGiftId);
             _donorService.VerifyAll();
@@ -715,8 +717,9 @@ namespace crds_angular.test.controllers
         {
             var authUserToken = _authType + " " + _authToken;
             const int recurringGiftId = 123;
+            const bool sendEmail = true;
             _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _donorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, recurringGiftId)).Throws<ApplicationException>();
+            _donorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, recurringGiftId, sendEmail)).Throws<ApplicationException>();
 
             try
             {
