@@ -32,7 +32,7 @@ namespace crds_angular.DataAccess
                 batches = WithDbCommand(dbCommand =>
                 {
                     dbCommand.CommandType = CommandType.Text;
-                    dbCommand.CommandText = string.Format("SELECT ID, IDBatch, DateProcess, Exported FROM Batches {0} ORDER BY DateProcess DESC", whereClause);
+                    dbCommand.CommandText = string.Format("SELECT ID, IDBatch, DateProcess, Exported FROM Batches b {0} ORDER BY DateProcess DESC", whereClause);
 
                     var b = new List<CheckScannerBatch>();
                     reader = dbCommand.ExecuteReader();
