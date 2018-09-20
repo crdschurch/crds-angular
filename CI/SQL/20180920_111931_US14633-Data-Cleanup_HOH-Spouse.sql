@@ -25,7 +25,7 @@ BEGIN
 				INSERTED.Contact_ID,
 				'Updated',
 				'Household_Position_ID',
-				'Household_Position_ID',
+				'Household_Position',
 				'Head of Household Spouse',
 				'Head of Household',
 				DELETED.Household_Position_ID,
