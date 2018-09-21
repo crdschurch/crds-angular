@@ -1,7 +1,7 @@
 USE [MinistryPlatform]
 GO
 
-CREATE  PROCEDURE [dbo].[service_duplicate_finder]
+CREATE OR ALTER PROCEDURE [dbo].[service_duplicate_finder]
 
 	@DomainID INT
 
@@ -22,7 +22,7 @@ UPDATE Contacts SET Mobile_Phone = NULL WHERE Mobile_Phone = ''
 UPDATE Households SET Home_Phone = NULL WHERE Home_Phone = ''
 
 --Create Temp Table
-CREATE TABLE #Dupes (Contact_ID INT, Related_Contact_ID INT, Gender_ID INT, Related_Gender_ID INT, Date_of_Birth DateTime, Related_Date_of_Birth DateTime, First_Name Varchar(50), Related_First_Name Varchar(50), Nickname Varchar(50), Related_Nickname Varchar(50), Last_Name Varchar(50), Related_Last_Name Varchar(50), Domain_ID INT, Notes Varchar(255))
+CREATE TABLE #Dupes (Contact_ID INT, Related_Contact_ID INT, Gender_ID INT, Related_Gender_ID INT, Date_of_Birth DateTime, Related_Date_of_Birth DateTime, First_Name Varchar(50), Related_First_Name Varchar(50), Nickname Varchar(50), Related_Nickname Varchar(50), Last_Name Varchar(50), Related_Last_Name Varchar(50), Domain_ID INT)
 
 --Populate Temp Table
 INSERT INTO #Dupes (Contact_ID, Related_Contact_ID, Gender_ID, Related_Gender_ID, Date_of_Birth, Related_Date_of_Birth, First_Name, Related_First_Name, Nickname, Related_Nickname, Last_Name, Related_Last_Name, Domain_ID)
@@ -33,7 +33,7 @@ FROM Contacts C
  INNER JOIN Contacts RC ON C.Contact_ID > RC.Contact_ID
   AND C.Email_Address = RC.Email_Address 
   AND C.Email_Address <> 'support@thinkministry.com'	
-WHERE (C.Suffix_ID = RC.Suffix_ID or (C.Suffix_ID is null and RC.Suffix_ID is null))
+WHERE C.Household_ID <> RC.Household_ID	
  AND C.Domain_ID = RC.Domain_ID	
  AND C.Company = 0
  AND (LEFT(C.Last_Name,4) = LEFT(RC.Last_Name,4) OR RIGHT(C.Last_Name,4) = RIGHT(RC.Last_Name,4))
@@ -46,7 +46,7 @@ SELECT C.Contact_ID, RC.Contact_ID, C.Gender_ID, RC.Gender_ID AS Related_Gender_
 FROM Contacts C
  INNER JOIN Contacts RC ON C.Contact_ID > RC.Contact_ID
   AND C.Date_of_Birth = RC.Date_of_Birth
-WHERE (C.Suffix_ID = RC.Suffix_ID or (C.Suffix_ID is null and RC.Suffix_ID is null))	
+WHERE C.Household_ID <> RC.Household_ID	
  AND C.Domain_ID = RC.Domain_ID	 	 
  AND C.Company = 0
  AND (LEFT(C.Last_Name,4) = LEFT(RC.Last_Name,4) OR RIGHT(C.Last_Name,4) = RIGHT(RC.Last_Name,4))
@@ -67,7 +67,7 @@ SELECT C.Contact_ID, RC.Contact_ID, C.Gender_ID, RC.Gender_ID AS Related_Gender_
 FROM Contacts C
  INNER JOIN Contacts RC ON C.Contact_ID > RC.Contact_ID
   AND REPLACE(REPLACE(REPLACE(REPLACE(C.Mobile_Phone,' ',''),'-',''),')',''),'(','') = REPLACE(REPLACE(REPLACE(REPLACE(RC.Mobile_Phone,' ',''),'-',''),')',''),'(','')
-WHERE (C.Suffix_ID = RC.Suffix_ID or (C.Suffix_ID is null and RC.Suffix_ID is null))
+WHERE C.Household_ID <> RC.Household_ID	
  AND C.Domain_ID = RC.Domain_ID	 	 
  AND C.Company = 0
  AND (LEFT(C.Last_Name,4) = LEFT(RC.Last_Name,4) OR RIGHT(C.Last_Name,4) = RIGHT(RC.Last_Name,4))
@@ -82,7 +82,7 @@ FROM Contacts C
  INNER JOIN Contacts RC ON C.Contact_ID > RC.Contact_ID
  INNER JOIN Households RH ON RH.Household_ID = RC.Household_ID							
   AND REPLACE(REPLACE(REPLACE(REPLACE(H.Home_Phone,' ',''),'-',''),')',''),'(','') = REPLACE(REPLACE(REPLACE(REPLACE(RH.Home_Phone,' ',''),'-',''),')',''),'(','')
-WHERE (C.Suffix_ID = RC.Suffix_ID or (C.Suffix_ID is null and RC.Suffix_ID is null))	
+WHERE C.Household_ID <> RC.Household_ID	
  AND C.Domain_ID = RC.Domain_ID	 	 
  AND C.Company = 0
  AND (LEFT(C.Last_Name,4) = LEFT(RC.Last_Name,4) OR RIGHT(C.Last_Name,4) = RIGHT(RC.Last_Name,4))
@@ -97,7 +97,7 @@ FROM Contacts C
  INNER JOIN Contacts RC ON C.Contact_ID > RC.Contact_ID
  INNER JOIN Households RH ON RH.Household_ID = RC.Household_ID							
   AND REPLACE(REPLACE(REPLACE(REPLACE(H.Home_Phone,' ',''),'-',''),')',''),'(','') = REPLACE(REPLACE(REPLACE(REPLACE(RC.Mobile_Phone,' ',''),'-',''),')',''),'(','')
-WHERE (C.Suffix_ID = RC.Suffix_ID or (C.Suffix_ID is null and RC.Suffix_ID is null))
+WHERE C.Household_ID <> RC.Household_ID	
  AND C.Domain_ID = RC.Domain_ID	 	 
  AND C.Company = 0
  AND (LEFT(C.Last_Name,4) = LEFT(RC.Last_Name,4) OR RIGHT(C.Last_Name,4) = RIGHT(RC.Last_Name,4))
@@ -112,7 +112,7 @@ FROM Contacts C
  INNER JOIN Contacts RC ON C.Contact_ID > RC.Contact_ID
  INNER JOIN Households RH ON RH.Household_ID = RC.Household_ID							
  AND REPLACE(REPLACE(REPLACE(REPLACE(RH.Home_Phone,' ',''),'-',''),')',''),'(','') = REPLACE(REPLACE(REPLACE(REPLACE(C.Mobile_Phone,' ',''),'-',''),')',''),'(','')
-WHERE (C.Suffix_ID = RC.Suffix_ID or (C.Suffix_ID is null and RC.Suffix_ID is null))	
+WHERE C.Household_ID <> RC.Household_ID	
  AND C.Domain_ID = RC.Domain_ID	 	 
  AND C.Company = 0
  AND (LEFT(C.Last_Name,4) = LEFT(RC.Last_Name,4) OR RIGHT(C.Last_Name,4) = RIGHT(RC.Last_Name,4))
@@ -130,7 +130,7 @@ FROM Contacts C
  INNER JOIN Addresses RA ON RA.Address_ID = RH.Address_ID 
   AND LEFT(A.Address_Line_1,10) = LEFT(RA.Address_Line_1,10) 
   AND A.City = RA.City 						
-WHERE (C.Suffix_ID = RC.Suffix_ID or (C.Suffix_ID is null and RC.Suffix_ID is null))	
+WHERE C.Household_ID <> RC.Household_ID	
  AND C.Domain_ID = RC.Domain_ID	 	 
  AND C.Company = 0
  AND (LEFT(C.Last_Name,4) = LEFT(RC.Last_Name,4) OR RIGHT(C.Last_Name,4) = RIGHT(RC.Last_Name,4))
@@ -146,57 +146,11 @@ FROM Contacts C
  INNER JOIN Donor_Accounts RDA ON RDA.Donor_ID = RC.Donor_Record	
   AND DA.Routing_Number = RDA.Routing_Number
   AND DA.Account_Number = RDA.Account_Number 			
-WHERE (C.Suffix_ID = RC.Suffix_ID or (C.Suffix_ID is null and RC.Suffix_ID is null))	
+WHERE C.Household_ID <> RC.Household_ID	
  AND C.Domain_ID = RC.Domain_ID	 	 
  AND C.Company = 0
  AND (LEFT(C.Last_Name,4) = LEFT(RC.Last_Name,4) OR RIGHT(C.Last_Name,4) = RIGHT(RC.Last_Name,4))
  AND LEFT(C.Nickname,4) = LEFT(RC.Nickname,4)
-
- /*
--- Not using this criteria anymore as of 7/19/2016
--- Find contacts where one contact has a start date after 2/1/2016 and the other has the same display name.
-declare @cutoffdate datetime = datefromparts(2016,2,1)
-INSERT INTO #Dupes (Contact_ID, Related_Contact_ID, Gender_ID, Related_Gender_ID, Date_of_Birth, Related_Date_of_Birth, 
-					First_Name, Related_First_Name, Nickname, Related_Nickname, Last_Name, Related_Last_Name, Notes, Domain_ID)
-select
-	cont.Contact_ID, cont2.Contact_ID,
-	cont.Gender_ID, cont2.Gender_ID,
-	cont.Date_of_Birth, cont2.Date_of_Birth,
-	cont.First_Name, cont2.First_Name,
-	cont.Nickname, cont2.Nickname,
-	cont.Last_Name, cont2.Last_Name,
-	'Participant Start Date after 2/1/2016 with same display name',
-	cont.Domain_ID
-from
-	dbo.Participants part
-	inner join dbo.Contacts cont  (nolock) on part.Contact_ID = cont.Contact_ID
-	inner join dbo.Contacts cont2 (nolock) on cont.Display_Name = cont2.Display_Name
-where
-	cont.Contact_ID <> cont2.Contact_ID
-	and part.Participant_Start_Date > @cutoffdate
-	and cont.Display_Name <> 'Guest Giver'
-	and cont.Display_Name <> ''
-*/
-
- INSERT INTO #Dupes (Contact_ID, Related_Contact_ID, Gender_ID, Related_Gender_ID, Date_of_Birth, Related_Date_of_Birth, First_Name, Related_First_Name, Nickname, Related_Nickname, Last_Name, Related_Last_Name, Notes, Domain_ID)
-select
-	cont.Contact_ID, cont2.Contact_ID,
-	cont.Gender_ID, cont2.Gender_ID,
-	cont.Date_of_Birth, cont2.Date_of_Birth,
-	cont.First_Name, cont2.First_Name,
-	cont.Nickname, cont2.Nickname,
-	cont.Last_Name,cont2.Last_Name,
-	'Active contact and inactive contact with same display name',
-	cont.Domain_ID
-from
-	dbo.Contacts cont (nolock)
-	inner join dbo.Contacts cont2 (nolock) on cont.Display_Name = cont2.Display_Name
-where
-	cont.Contact_ID <> cont2.Contact_ID
-	and cont.Contact_Status_ID = 1
-	and cont2.Contact_Status_ID = 2
-	and cont.Display_Name = cont2.Display_Name
-	and not exists (select 1 from #Dupes d where cont.Contact_ID in (d.Contact_ID,d.Related_Contact_ID))
 	 
 --Index on temp table
 CREATE INDEX IX_Dupes_ContactID ON #Dupes(Contact_ID)
@@ -206,12 +160,7 @@ CREATE INDEX IX_Dupes_RelatedContactID ON #Dupes(Related_Contact_ID)
 DELETE 
 FROM #Dupes
 WHERE Domain_ID <> @DomainID
-
---Delete reciprocal records for any new records being added.
-DELETE FROM #Dupes
-WHERE Exists (select 1 from #Dupes d2
-				where d2.Related_Contact_ID = #Dupes.Contact_ID)
-
+ 
 --Remove if already related
 DELETE FROM #Dupes 
 WHERE EXISTS (SELECT 1 
@@ -229,25 +178,10 @@ DELETE FROM #Dupes
 WHERE Contact_ID IN (@DefaultContactID)
  OR Related_Contact_ID IN (@DefaultContactID,@UnassignedContactID)
 
- select
-	*
-from
-	#Dupes
-
-
 --INSERT New Relationships
 INSERT INTO Contact_Relationships (Contact_ID, Relationship_ID, Related_Contact_ID, Start_Date, Notes, Domain_ID)
-SELECT DISTINCT 
-	Contact_ID, 
-	@DupeRelationshipID AS Relationship_ID, 
-	Related_Contact_ID, 
-	GETDATE() AS Start_Date,
-	-- If the routine generated a note, go ahead and use it, otherwise just say dupefinder created it.
-	Notes = isnull(#Dupes.Notes,'Created by Dupe Finder Service'), 
-	@DomainID AS Domain_ID--, First_Name, Related_First_Name, Nickname, Related_Nickname, Last_Name, Related_Last_Name
+SELECT DISTINCT Contact_ID, @DupeRelationshipID AS Relationship_ID, Related_Contact_ID, GETDATE() AS Start_Date, Notes = 'Created by Dupe Finder Service', @DomainID AS Domain_ID--, First_Name, Related_First_Name, Nickname, Related_Nickname, Last_Name, Related_Last_Name
 FROM #Dupes
 
-
-DROP TABLE #Dupes
 END
 GO
