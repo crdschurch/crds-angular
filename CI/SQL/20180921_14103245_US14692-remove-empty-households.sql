@@ -19,27 +19,18 @@ BEGIN
 			 * Delete empty households from the database. An empty household has no primary residents
 			 * and no residents with the household listed as their secondary residence either.
 			 */
-			select
-				house.Household_ID
-			into #NoPrimaryResidents
-			from
-				dbo.Households house with (nolock)
-				left join dbo.Contacts cont with (nolock) on cont.Household_ID = house.Household_ID
-			where
-				cont.Household_ID is null
 
 			select
-				house.Household_ID
-			into #NoSecondaryResidents
+				h.Household_ID
+			into #EmptyHouseholds
 			from
-				dbo.Households house with (nolock)
-				left join dbo.Contact_Households cont with (nolock) on cont.Household_ID = house.Household_ID
+				dbo.Households h with (nolock)
+				left join dbo.Contacts c with (nolock) on c.Household_ID = h.Household_ID
+				left join dbo.Contact_Households ch with (nolock) on ch.Household_ID = h.Household_ID
 			where
-				cont.Household_ID is null
-
-			select *
-			from #NoPrimaryResidents npr
-				inner join #NoSecondaryResidents nsr on npr.Household_ID = nsr.Household_ID
+				c.Household_ID is null
+				and ch.Household_ID is null
+			;
 
 			DECLARE @Audit_Records_Activity_Log dbo.crds_Audit_Item
 
@@ -58,8 +49,7 @@ BEGIN
 			where
 				Household_ID in 
 					(	select Household_ID 
-						from #NoPrimaryResidents npr
-							inner join #NoSecondaryResidents nsr on npr.Household_ID = nsr.Household_ID
+						from #EmptyHouseholds
 					)
 
 			DECLARE @date DATETIME = GETDATE();
@@ -82,8 +72,7 @@ BEGIN
 			where
 				Household_ID in 
 					(	select Household_ID 
-						from #NoPrimaryResidents npr
-							inner join #NoSecondaryResidents nsr on npr.Household_ID = nsr.Household_ID
+						from #EmptyHouseholds
 					)
 
 			EXEC crds_Add_Audit_Items @Audit_Records_Households, @date, 'Svc Mngr', 0;
@@ -96,24 +85,7 @@ BEGIN
 		PRINT 'crds_service_remove_empty_households failed: ' + COALESCE(ERROR_MESSAGE(), '');
 	END CATCH
 
-	drop table #NoPrimaryResidents
-	drop table #NoSecondaryResidents
+	drop table #EmptyHouseholds
 
 END
 
-GO
-
-CREATE OR ALTER     PROCEDURE [dbo].[service_church_specific]
-    @DomainID INT
-AS
-BEGIN
-    EXEC crds_service_assign_pledges_nightly @DomainID
-    EXEC crds_service_clean_room_reservations_nightly
-    EXEC crds_service_clean_donation_emails_nightly
-    EXEC crds_service_update_donor_statement_parameters
-	EXEC crds_service_update_household_position_id
-	EXEC crds_service_update_remove_empty_households
-    EXEC crds_service_update_email_nightly
-END
-
-GO
