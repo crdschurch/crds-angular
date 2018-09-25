@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using crds_angular.Models.Crossroads.Campaign;
 using Crossroads.Web.Common.MinistryPlatform;
 using crds_angular.Services;
@@ -49,8 +50,9 @@ namespace crds_angular.test.Services
                 CompletedCount = 390,
                 TotalCount = 1800 + 3200 + 1400 + 500 + 390
             };
-
-            _campaignRepository.Setup(m => m.GetPledgeCampaignSummary(apiToken, dto.PledgeCampaignId)).Returns(dto);
+            List<MpPledgeCampaignSummaryDto> list = new List<MpPledgeCampaignSummaryDto>();
+            list.add(dto);
+            _campaignRepository.Setup(m => m.GetPledgeCampaignSummary(apiToken, _pledgeCampaignId)).Returns(list);
         }
 
         [Test]
@@ -59,7 +61,7 @@ namespace crds_angular.test.Services
             DateTime mockDateTime = new DateTime(2017, 4, 18, 14, 30, 25);
             _dateTimeWrapper.Setup(m => m.Now).Returns(mockDateTime);
 
-            PledgeCampaignSummaryDto result = _fixture.GetSummary(_pledgeCampaignId);
+            PledgeCampaignSummaryDto result = _fixture.GetSummary(_pledgeCampaignId)[0];
 
             Assert.AreEqual(_pledgeCampaignId, result.PledgeCampaignId);
             Assert.AreEqual(38000000.00M + 1200000.00M, result.TotalGiven);
@@ -74,7 +76,7 @@ namespace crds_angular.test.Services
             DateTime mockDateTime = new DateTime(2010, 4, 18, 14, 30, 25);
             _dateTimeWrapper.Setup(m => m.Now).Returns(mockDateTime);
 
-            PledgeCampaignSummaryDto result = _fixture.GetSummary(_pledgeCampaignId);
+            PledgeCampaignSummaryDto result = _fixture.GetSummary(_pledgeCampaignId)[0];
 
             Assert.AreEqual(0, result.CurrentDays);
             Assert.AreEqual(1143, result.TotalDays);
@@ -86,7 +88,7 @@ namespace crds_angular.test.Services
             DateTime mockDateTime = new DateTime(2025, 4, 18, 14, 30, 25);
             _dateTimeWrapper.Setup(m => m.Now).Returns(mockDateTime);
 
-            PledgeCampaignSummaryDto result = _fixture.GetSummary(_pledgeCampaignId);
+            PledgeCampaignSummaryDto result = _fixture.GetSummary(_pledgeCampaignId)[0];
 
             Assert.AreEqual(1143, result.CurrentDays);
             Assert.AreEqual(1143, result.TotalDays);
