@@ -34,7 +34,7 @@ namespace crds_angular.Controllers.API
         /// </summary>
         /// <param name="pledgeCampaignId">A pledge campaign Id</param>
         /// <returns>A <see cref="PledgeCampaignSummaryDto">PledgeCampaignSummaryDto</see> with summary information for the campaign. This will return a 404/Not Found if the pledge campaign Id could not be located.</returns>
-        [ResponseType(typeof(PledgeCampaignSummaryDto))]
+        [ResponseType(typeof(List<PledgeCampaignSummaryDto>))]
         [VersionedRoute(template: "campaign/summary/{pledgeCampaignId}", minimumVersion: "1.0.0")]
         [Route("campaign/summary/{pledgeCampaignId}")]
         [HttpGet]
