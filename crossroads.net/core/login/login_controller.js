@@ -102,10 +102,8 @@
     function redirectToSpecifiedPageOrToHomepage(Session, $timeout) {
       $timeout(function () {
         if (Session.hasRedirectionInfo()) {
-          console.log('HAS redirect info');
           Session.redirectIfNeeded();
         } else {
-          console.log('Has NO redirect info');
           navigateToHome();
         }
       }, 500);
