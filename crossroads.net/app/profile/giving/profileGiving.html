@@ -43,6 +43,10 @@
             <div class="row recurring-gifts push-bottom">
                 <div class="col-sm-12">
                     <h2>Recurring Gifts</h2>
+                    <div class="alert alert-info" role="alert">
+                        Editing and removing recurring gifts will be unavailable until October 1st.<br>
+                        If you have an urgent request to edit or remove a recurring gift, please contact us at <a href="mailto:giving@crossroads.net">giving@crossroads.net</a> or 513-731-7400.
+                    </div>
                     <preloader full-screen='false'
                                ng-show="!giving_profile_controller.recurring_giving_view_ready"></preloader>
 
@@ -57,12 +61,6 @@
                         </div>
                     </div>
                     <!-- END OF IS GIVING HISTORY -->
-                    <div class="row" ng-show="giving_profile_controller.recurring_giving && giving_profile_controller.recurring_giving_view_ready">
-                        <div class="col-sm-12 text-center">
-                            <a href="/give" class="btn btn-primary">Add
-                                New</a>
-                        </div>
-                    </div>
                     <!--  NO ACTIVE RECURRING GIFTS - ng-show if no records  -->
                     <div class="row no-data" ng-show="!giving_profile_controller.recurring_giving && giving_profile_controller.recurring_giving_view_ready">
                       <div class="col-sm-6 col-sm-offset-3">
