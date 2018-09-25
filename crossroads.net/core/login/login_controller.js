@@ -92,11 +92,13 @@
     }
 
     function redirectUserToDestinationOrHomepageIfAlreadyLoggedIn() {
-      crds_utilities.checkLoggedin($q, $timeout, $http, $location, $rootScope, $cookies, Session, Impersonate)
-        .then(
-          () => { redirectToSpecifiedPageOrToHomepage(Session, $timeout); },
-          () => { $scope.isUserAlreadyLoggedInCheckRunning = false; }
-        );
+      let isUserLoggedInPromise =
+        crds_utilities.checkLoggedin($q, $timeout, $http, $location, $rootScope, $cookies, Session, Impersonate);
+
+      isUserLoggedInPromise.then(
+        () => { redirectToSpecifiedPageOrToHomepage(Session, $timeout); },
+        () => { $scope.isUserAlreadyLoggedInCheckRunning = false; }
+      );
     }
 
     function redirectToSpecifiedPageOrToHomepage(Session, $timeout) {
