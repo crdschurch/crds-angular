@@ -51,7 +51,7 @@ namespace crds_angular.test.Services
                 TotalCount = 1800 + 3200 + 1400 + 500 + 390
             };
             List<MpPledgeCampaignSummaryDto> list = new List<MpPledgeCampaignSummaryDto>();
-            list.add(dto);
+            list.Add(dto);
             _campaignRepository.Setup(m => m.GetPledgeCampaignSummary(apiToken, _pledgeCampaignId)).Returns(list);
         }
 

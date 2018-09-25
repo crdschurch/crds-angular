@@ -34,7 +34,7 @@ namespace crds_angular.Services
 
                 // clip to end date
                 currentDay = Math.Min(currentDay, totalDays);
-                pledgeCampaignSummaries.add(
+                pledgeCampaignSummaries.Add(
                     new PledgeCampaignSummaryDto
                     {
                         PledgeCampaignId = pledgeCampaignId,
