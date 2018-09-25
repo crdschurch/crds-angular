@@ -123,7 +123,7 @@ namespace MinistryPlatform.Translation.Repositories
             var storedProcReturn = _ministryPlatformRest.UsingAuthenticationToken(token).GetFromStoredProc<MpPledgeCampaignSummaryDto>(CampaignSummaryProcName, parameters);
 
             List<MpPledgeCampaignSummaryDto> summary = storedProcReturn.FirstOrDefault() ?? new List<MpPledgeCampaignSummaryDto>();
-            if (summary == null)
+            if (summary == null || summary.Count == 0)
                 throw new PledgeCampaignNotFoundException(pledgeCampaignId);
 
             return summary;
