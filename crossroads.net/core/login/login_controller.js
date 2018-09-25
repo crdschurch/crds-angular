@@ -94,12 +94,8 @@
     function redirectUserToDestinationOrHomepageIfAlreadyLoggedIn() {
       crds_utilities.checkLoggedin($q, $timeout, $http, $location, $rootScope, $cookies, Session, Impersonate)
         .then(
-          () => {
-            redirectToSpecifiedPageOrToHomepage(Session, $timeout);
-          },
-          () => {
-            $scope.alreadyLoggedInCheckProcessing = false;
-          }
+          () => { redirectToSpecifiedPageOrToHomepage(Session, $timeout); },
+          () => { $scope.alreadyLoggedInCheckProcessing = false; }
         );
     }
 
