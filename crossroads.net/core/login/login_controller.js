@@ -4,6 +4,10 @@
   module.exports = LoginController;
 
   LoginController.$inject = [
+    '$q',
+    '$http',
+    '$location',
+    '$cookies',
     '$scope',
     '$rootScope',
     'AUTH_EVENTS',
@@ -15,10 +19,15 @@
     '$timeout',
     'User',
     'ImageService',
+    'Impersonate',
     'AnalyticsService'
   ];
 
   function LoginController(
+    $q,
+    $http,
+    $location,
+    $cookies,
     $scope,
     $rootScope,
     AUTH_EVENTS,
@@ -30,7 +39,16 @@
     $timeout,
     User,
     ImageService,
+    Impersonate,
     AnalyticsService) {
+
+    // Check if the user is logged in, if they are, redirect them to home or whatever page
+    console.log('signin controller hit');
+    crds_utilities.checkLoggedin($q, $timeout, $http, $location, $rootScope, $cookies, Session, Impersonate)
+      .then(
+        () => { console.log('User is authenticated'); },
+        () => { console.log('User is NOT authenticated'); }
+      );
 
     var vm = this;
     vm.path = ImageService.ProfileImageBaseURL + vm.contactId;
