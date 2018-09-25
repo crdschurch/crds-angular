@@ -47,7 +47,7 @@
     vm.defaultImage = ImageService.DefaultProfileImage;
     vm.navigateToHome = navigateToHome;
 
-    $scope.alreadyLoggedInCheckProcessing = true;
+    $scope.isUserAlreadyLoggedInCheckRunning = true;
     redirectUserToDestinationOrHomepageIfAlreadyLoggedIn();
 
     $scope.loginShow = false;
@@ -95,7 +95,7 @@
       crds_utilities.checkLoggedin($q, $timeout, $http, $location, $rootScope, $cookies, Session, Impersonate)
         .then(
           () => { redirectToSpecifiedPageOrToHomepage(Session, $timeout); },
-          () => { $scope.alreadyLoggedInCheckProcessing = false; }
+          () => { $scope.isUserAlreadyLoggedInCheckRunning = false; }
         );
     }
 
