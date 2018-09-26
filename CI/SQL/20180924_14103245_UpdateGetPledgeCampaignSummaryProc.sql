@@ -35,7 +35,7 @@ BEGIN
 	DECLARE @Campaign_Part_1_Identifier varchar = 'I`m In'
 	DECLARE @Campaign_Part_2_Identifier varchar = 'Obsessed'
 	DECLARE @Campaign_Part_2_Start_Date DATE = '2018-03-18'
-	DECLARE @Campaign_Part_2_End_Date DATE = '2019-12-31'
+	DECLARE @Campaign_Part_2_End_Date DATE = '2019-12-31'		
 
 	SELECT
 		@Start_Date = pc.Start_Date,
@@ -60,12 +60,21 @@ BEGIN
 						100.0 * DATEDIFF(DAY, @Start_Date, DATEADD(DAY, 1, @Current_Date)) / 
 						DATEDIFF(DAY, @Start_Date, DATEADD(DAY, 1, @End_Date))
 				END;
-
+		DECLARE @On_Pace_Percent_Part_2 FLOAT =
+				CASE
+					WHEN @Current_Date > @Campaign_Part_2_End_Date THEN 100			-- past the campaign end date
+					WHEN @Current_Date < @Start_Date THEN 0			-- before the campaign start date
+					ELSE -- DaysUsed / DaysAvailable
+						100.0 * DATEDIFF(DAY, @Start_Date, DATEADD(DAY, 1, @Current_Date)) / 
+						DATEDIFF(DAY, @Start_Date, DATEADD(DAY, 1, @Campaign_Part_2_End_Date))
+				END;
 		-- On_Pace_Min_Percent and On_Pace_Max_Percent is a bounding range that
 		-- surrounds On_Pace_Percent and represents an additional grace period that
 		-- we will allow and still consider as On Pace.
 		DECLARE @On_Pace_Min_Percent FLOAT = @On_Pace_Percent - @On_Pace_Min_Percent_Grace;
 		DECLARE @On_Pace_Max_Percent FLOAT = @On_Pace_Percent + @On_Pace_Max_Percent_Grace;
+		DECLARE @On_Pace_Min_Percent_Part_2 FLOAT = @On_Pace_Percent_Part_2 - @On_Pace_Min_Percent_Grace;
+		DECLARE @On_Pace_Max_Percent_Part_2 FLOAT = @On_Pace_Percent_Part_2 + @On_Pace_Max_Percent_Grace;
 
 		-- Count and total dollar amount of donations made to the campaign outside of a pledge
 		DECLARE @No_Commitment_Count INT;
@@ -93,8 +102,8 @@ BEGIN
 				agg.Total_Given,
 				Divide =
 					CASE
-						WHEN p.First_Installment_Date >= @Campaign_Part_2_Start_Date THEN @Campaign_Part_2_Identifier
-						ELSE @Campaign_Part_1_Identifier
+						WHEN p.First_Installment_Date < @Campaign_Part_2_Start_Date THEN @Campaign_Part_1_Identifier
+						ELSE @Campaign_Part_2_Identifier
 					END,
 				PercentMoney =		-- percent of commitment met so far
 					CASE
@@ -167,15 +176,17 @@ BEGIN
 							CASE
 								WHEN COALESCE(Total_Given, 0) >= Total_Committed THEN 5	-- completed
 								WHEN COALESCE(Total_Given, 0) <= 0 THEN 1	-- not started
-								WHEN Percent_Money < @On_Pace_Min_Percent THEN 2	-- behind pace
-								WHEN Percent_Money > @On_Pace_Max_Percent THEN 4	-- ahead of pace
+								WHEN (Percent_Money < @On_Pace_Min_Percent) AND part = @Campaign_Part_1_Identifier THEN 2	-- behind pace
+								WHEN (Percent_Money > @On_Pace_Max_Percent) AND part = @Campaign_Part_1_Identifier THEN 4	-- ahead of pace
+								WHEN (Percent_Money < @On_Pace_Min_Percent_Part_2) AND part = @Campaign_Part_2_Identifier THEN 2	-- behind pace
+								WHEN (Percent_Money > @On_Pace_Max_Percent_Part_2) AND part = @Campaign_Part_2_Identifier THEN 4	-- ahead of pace
 								ELSE 3	-- on pace
 							END
 				FROM
 					PledgeData
 			) AS PledgeDataWithBucket
 		GROUP BY part
-		--ORDER BY part desc
+		ORDER BY part
 		;
 	END -- IF
 END
