@@ -9,6 +9,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         MpPledgeCampaign GetPledgeCampaign(int campaignId);
         MpPledgeCampaign GetPledgeCampaign(int campaignId, string token);    
         List<MpTripRecord> GetGoTripDetailsByCampaign(int pledgeCampaignId);
-        MpPledgeCampaignSummaryDto GetPledgeCampaignSummary(string token, int pledgeCampaignId);
+        List<MpPledgeCampaignSummaryDto> GetPledgeCampaignSummary(string token, int pledgeCampaignId);
     }
 }
