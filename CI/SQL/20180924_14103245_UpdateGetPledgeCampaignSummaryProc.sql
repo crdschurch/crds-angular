@@ -63,10 +63,10 @@ BEGIN
 		DECLARE @On_Pace_Percent_Part_2 FLOAT =
 				CASE
 					WHEN @Current_Date > @Campaign_Part_2_End_Date THEN 100			-- past the campaign end date
-					WHEN @Current_Date < @Start_Date THEN 0			-- before the campaign start date
+					WHEN @Current_Date < @Campaign_Part_2_Start_Date THEN 0			-- before the campaign start date
 					ELSE -- DaysUsed / DaysAvailable
-						100.0 * DATEDIFF(DAY, @Start_Date, DATEADD(DAY, 1, @Current_Date)) / 
-						DATEDIFF(DAY, @Start_Date, DATEADD(DAY, 1, @Campaign_Part_2_End_Date))
+						100.0 * DATEDIFF(DAY, @Campaign_Part_2_Start_Date, DATEADD(DAY, 1, @Current_Date)) / 
+						DATEDIFF(DAY, @Campaign_Part_2_Start_Date, DATEADD(DAY, 1, @Campaign_Part_2_End_Date))
 				END;
 		-- On_Pace_Min_Percent and On_Pace_Max_Percent is a bounding range that
 		-- surrounds On_Pace_Percent and represents an additional grace period that
