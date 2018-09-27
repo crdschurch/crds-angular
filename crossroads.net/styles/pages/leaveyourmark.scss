@@ -170,8 +170,8 @@ $imin-blue: #008CBA;
     margin-top: 30px;
     border: 1px solid #dddddd;
     background: url('//crds-cms-uploads.imgix.net/content/images/imin-map-lg.png');
-    font-weight: bold;
-    min-height: 170px;
+    font-weight: normal;
+    min-height: 120px;
 
     img {
       max-width: 110px;
@@ -179,6 +179,10 @@ $imin-blue: #008CBA;
 
     h1 {
       font-size: 4em;
+    }
+
+    p {
+      color: #000;
     }
   }
 
@@ -198,6 +202,10 @@ $imin-blue: #008CBA;
   .questions-container {
     background: url("//crds-cms-uploads.imgix.net/content/images/imin-map-lg.png");
     margin-bottom: -40px;
+  }
+
+  .stat-container {
+    background: url("//crds-cms-uploads.imgix.net/content/images/imin-map-lg.png");
   }
 
   .imin-video {
