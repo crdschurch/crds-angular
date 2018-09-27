@@ -24,28 +24,8 @@
 
         for (let i=0; i<=1; i++) {
           vm.campaigns[i] = new Array;
-          vm.campaigns[i]['currentDay'] = undefined;
-          vm.campaigns[i]['totalDays'] = undefined;
-          vm.campaigns[i]['given'] = undefined;
-          vm.campaigns[i]['committed'] = undefined;
-          vm.campaigns[i]['givenGercentage'] = undefined
-          vm.campaigns[i]['notStartedPercent'] = undefined
-          vm.campaigns[i]['behindPercent'] = undefined
-          vm.campaigns[i]['onPacePercent'] = undefined
-          vm.campaigns[i]['aheadPercent'] = undefined
-          vm.campaigns[i]['completedPercent'] = undefined
         }
 
-        vm.currentDay = undefined;
-        vm.totalDays = undefined;
-        vm.given = undefined;
-        vm.committed = undefined;
-        vm.givenGercentage = undefined
-        vm.notStartedPercent = undefined
-        vm.behindPercent = undefined
-        vm.onPacePercent = undefined
-        vm.aheadPercent = undefined
-        vm.completedPercent = undefined
         vm.viewReady = false;
 
         activate();
@@ -57,8 +37,6 @@
                          .then((data) => {
                              if(data && data.length && data.length>0) {
                                data.forEach(function(element, i) {
-                                 // console.log(element);
-                                 // console.log(i);
                                  vm.viewReady = true;
                                  vm.campaigns[i]['currentDay'] = element.currentDay;
                                  vm.campaigns[i]['totalDays'] = element.totalDays;
@@ -70,7 +48,6 @@
                                  vm.campaigns[i]['onPacePercent'] = element.onPacePercent;
                                  vm.campaigns[i]['aheadPercent'] = element.aheadPercent;
                                  vm.campaigns[i]['completedPercent'] = element.completedPercent;
-                                 console.log(vm.campaigns[i]);
                                 });
 
                              }
