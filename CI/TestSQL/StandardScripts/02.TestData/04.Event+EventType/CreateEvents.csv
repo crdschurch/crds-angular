@@ -31,4 +31,4 @@ R_Event_Name,R_Start_Date,R_End_Date,R_Event_Type,R_Program_Name,R_Contact_Email
 (t+auto) SA Trip,1/1/2019,12/31/2019,GO Trips,(t+auto) SA Trip,mpcrds+aliciakeys@gmail.com,5,,(t+auto) SA Trip,,,,,
 (t+auto) Camp Crystal Lake,1/1/2019,12/31/2019,Camp,(t+auto) Camp Crystal Lake Program,mpcrds+aliciakeys@gmail.com,5,,High School Grade 10,1/1/2018,12/31/2018,(t+auto) Camp Crystal Lake Product,,
 (t+auto) Camp Anawanna,1/1/2019,12/31/2019,Camp,(t+auto) Camp Anawanna Program,mpcrds+aliciakeys@gmail.com,5,,High School Grade 10,1/1/2018,12/31/2018,(t+auto) Camp Anawanna Product,,
-(t+auto) automation test form event,1/1/2019,12/31/2019,Outside Event,Reachout,mpcrds+aliciakeys@gmail.com,15,,,1/1/2018,12/31/2018,,,
+(t+auto) automation test form event,1/1/2019,12/31/2019,Outside Events,Reachout,mpcrds+aliciakeys@gmail.com,15,,,1/1/2018,12/31/2018,,,
