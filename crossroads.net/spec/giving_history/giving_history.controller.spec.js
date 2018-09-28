@@ -137,38 +137,4 @@ describe('GivingHistoryController', function() {
     httpBackend.verifyNoOutstandingRequest();
   });
 
-  // describe('On initialization with impersonation', function() {
-  //   beforeEach(function() {
-  //     GivingHistoryService.impersonateDonorId = 123;
-  //     sut = controllerConstructor('GivingHistoryController', {$scope: scope});
-  //   });
-
-  //   it('should set impersonation error when user not allowed to impersonate', function() {
-  //     var error = {
-  //       message: 'whoa there big fella!'
-  //     };
-  //     httpBackend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/profile?impersonateDonorId=123').respond(403, error);
-  //     httpBackend.flush();
-
-  //     expect(sut.impersonation_error).toBeTruthy();
-  //     expect(sut.impersonation_not_allowed).toBeTruthy();
-  //     expect(sut.impersonation_user_not_found).toBeFalsy();
-  //     expect(sut.impersonation_error_message).toEqual('whoa there big fella!');
-  //   });
-
-  //   it('should set impersonation error when user to impersonate is not found', function() {
-  //     var error = {
-  //       message: 'whoa there big fella!'
-  //     };
-  //     httpBackend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/profile?impersonateDonorId=123').respond(409, error);
-  //     httpBackend.flush();
-
-  //     expect(sut.impersonation_error).toBeTruthy();
-  //     expect(sut.impersonation_not_allowed).toBeFalsy();
-  //     expect(sut.impersonation_user_not_found).toBeTruthy();
-  //     expect(sut.impersonation_error_message).toEqual('whoa there big fella!');
-  //   });
-
-  // });
-
 });
