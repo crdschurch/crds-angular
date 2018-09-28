@@ -205,6 +205,17 @@ namespace crds_angular.Services
             return pins.First();
         }
 
+        public PersonDTO GetPerson(int participantId)
+        {
+            var contact = _contactRepository.GetContactByParticipantId(participantId);
+            var person = new PersonDTO
+            {
+                Name = $"{contact.Nickname.ToUpper()} {contact.Last_Name[0].ToString().ToUpper()}",
+                Location = $"{contact.City}, {contact.State}"
+            };
+            return person;
+        }
+
         public async Task ProcessMapAuditRecords()
         {
             try

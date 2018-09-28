@@ -61,6 +61,23 @@ namespace crds_angular.Controllers.API
             _analyticsService = analyticsService;
         }
 
+        [ResponseType(typeof(PersonDTO))]
+        [VersionedRoute(template: "map20/person/{participantId}", minimumVersion: "1.0.0")]
+        [Route("map20/person/{participantId}")]
+        [HttpGet]
+        public IHttpActionResult GetPerson([FromUri]int participantId)
+        {
+            try
+            {
+                return Ok(_finderService.GetPerson(participantId));
+            }
+            catch (Exception ex)
+            {
+                var apiError = new ApiErrorDto("Get Pin Details Failed", ex);
+                throw new HttpResponseException(apiError.HttpResponseMessage);
+            }
+        }
+
         [ResponseType(typeof(PinDto))]
         [VersionedRoute(template: "finder/pin/{participantId}", minimumVersion: "1.0.0")]
         [Route("finder/pin/{participantId}")]
