@@ -19,6 +19,7 @@ using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.PlatformService;
+using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.Controllers.API
 {
@@ -28,18 +29,20 @@ namespace crds_angular.Controllers.API
         private readonly MPInterfaces.IMinistryPlatformService _mpService;
         private readonly IApiUserRepository _apiUserService;
         private readonly int _defaultContactId;
+        private readonly IContactRepository _contactRepository;
 
         public ImageController(IAuthTokenExpiryService authTokenExpiryService, 
                                MPInterfaces.IMinistryPlatformService mpService, 
                                IAuthenticationRepository authenticationService,
                                IApiUserRepository apiUserService, 
                                IUserImpersonationService userImpersonationService, 
-                               IConfigurationWrapper configurationWrapper)
+                               IConfigurationWrapper configurationWrapper,
+                               IContactRepository contactRepository)
             : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _apiUserService = apiUserService;
             _mpService = mpService;
-
+            _contactRepository = contactRepository;
             _defaultContactId = configurationWrapper.GetConfigIntValue("DefaultProfileImageContactId");
         }
 
@@ -95,6 +98,23 @@ namespace crds_angular.Controllers.API
         public IHttpActionResult GetProfileImage(int contactId, bool defaultIfMissing = true)
         {
             var apiToken = _apiUserService.GetDefaultApiClientToken();
+
+            IHttpActionResult result = GetContactImage(contactId, apiToken);
+            if (result is NotFoundResult && defaultIfMissing)
+                result = GetContactImage(_defaultContactId, apiToken);
+
+            return result;
+        }
+
+       
+        [VersionedRoute(template: "image/participant/{participantId}", minimumVersion: "1.0.0")]
+        [Route("image/participant/{participantId:int}")]
+        [HttpGet]
+        [IgnoreClientApiKey]
+        public IHttpActionResult GetParticipantImage(int participantId, bool defaultIfMissing = true)
+        {
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
+            var contactId = _contactRepository.GetContactIdByParticipantId(participantId);
 
             IHttpActionResult result = GetContactImage(contactId, apiToken);
             if (result is NotFoundResult && defaultIfMissing)

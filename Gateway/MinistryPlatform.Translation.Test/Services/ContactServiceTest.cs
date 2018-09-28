@@ -51,42 +51,6 @@ namespace MinistryPlatform.Translation.Test.Services
             _fixture = new ContactRepository(_ministryPlatformService.Object, _authService.Object, _configuration.Object, _ministryPlatformRest.Object, _apiUserService.Object);
         }
 
-
-        [Test]
-        public void GetContactByParticipantId()
-        {
-            const int participantId = 99999;
-            var expectedContact = new MpMyContact
-            {
-                Contact_ID = 11111,
-                Email_Address = "andy@dalton.nfl",
-                Last_Name = "Dalton",
-                First_Name = "Andy"
-            };
-
-            var mockContactDictionary = new List<Dictionary<string, object>>
-            {
-                new Dictionary<string, object>
-                {
-                    {"Contact_ID", expectedContact.Contact_ID},
-                    {"Email_Address", expectedContact.Email_Address},
-                    {"First_Name", expectedContact.First_Name},
-                    {"Last_Name", expectedContact.Last_Name}
-                }
-            };
-            var searchString = participantId + ",";
-            _ministryPlatformService.Setup(m => m.GetPageViewRecords("ContactByParticipantId", It.IsAny<string>(), searchString, "", 0)).Returns(mockContactDictionary);
-
-            var returnedContact = _fixture.GetContactByParticipantId(participantId);
-
-            _ministryPlatformService.VerifyAll();
-
-            Assert.AreEqual(expectedContact.Contact_ID, returnedContact.Contact_ID);
-            Assert.AreEqual(expectedContact.Email_Address, returnedContact.Email_Address);
-            Assert.AreEqual(expectedContact.First_Name, returnedContact.First_Name);
-            Assert.AreEqual(expectedContact.Last_Name, returnedContact.Last_Name);
-        }
-
         [Test]
         public void GetMyProfile()
         {

@@ -47,5 +47,6 @@ namespace crds_angular.Services.Interfaces
         void SetShowOnMap(int participantId, Boolean showOnMap);
         List<int> GetAddressIdsWithNoGeoCode();
         List<int> GetAddressIdsForMapParticipantWithNoGeoCode();
+        PersonDTO GetPerson(int participantId);
     }
 }
