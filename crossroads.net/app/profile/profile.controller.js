@@ -56,6 +56,7 @@
         tab.active = $state.current.name === tab.route;
       });
 
+      //$rootScope.$emit('notify', $rootScope.MESSAGES.givingHistoryMoved, undefined, -1);
     }
 
     function showLocationButton() {
