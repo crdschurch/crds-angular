@@ -55,7 +55,6 @@
       _.forEach(vm.tabs, function(tab) {
         tab.active = $state.current.name === tab.route;
       });
-
     }
 
     function showLocationButton() {
