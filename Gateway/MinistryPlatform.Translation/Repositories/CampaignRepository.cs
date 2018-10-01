@@ -113,7 +113,7 @@ namespace MinistryPlatform.Translation.Repositories
         }
 
         // Retrieve overall summary info for the whole campaign, or throw if the campaign does not exist
-        public MpPledgeCampaignSummaryDto GetPledgeCampaignSummary(string token, int pledgeCampaignId)
+        public List<MpPledgeCampaignSummaryDto> GetPledgeCampaignSummary(string token, int pledgeCampaignId)
         {
             var parameters = new Dictionary<string, object>
             {
@@ -122,11 +122,9 @@ namespace MinistryPlatform.Translation.Repositories
 
             var storedProcReturn = _ministryPlatformRest.UsingAuthenticationToken(token).GetFromStoredProc<MpPledgeCampaignSummaryDto>(CampaignSummaryProcName, parameters);
 
-            MpPledgeCampaignSummaryDto summary = storedProcReturn.FirstOrDefault()?.FirstOrDefault();
-            if (summary == null)
+            List<MpPledgeCampaignSummaryDto> summary = storedProcReturn.FirstOrDefault() ?? new List<MpPledgeCampaignSummaryDto>();
+            if (summary == null || summary.Count == 0)
                 throw new PledgeCampaignNotFoundException(pledgeCampaignId);
-
-            summary.PledgeCampaignId = pledgeCampaignId;
 
             return summary;
         }

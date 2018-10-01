@@ -51,9 +51,6 @@
                                 });
 
                              }
-
-
-
                          })
                          .catch((err) => {
                             vm.viewReady = true;

@@ -205,6 +205,17 @@ namespace crds_angular.Services
             return pins.First();
         }
 
+        public PersonDTO GetPerson(int participantId)
+        {
+            var contact = _contactRepository.GetContactByParticipantId(participantId);
+            var person = new PersonDTO
+            {
+                Name = $"{contact.Nickname.ToUpper()} {contact.Last_Name[0].ToString().ToUpper()}",
+                Location = $"{contact.City}, {contact.State}"
+            };
+            return person;
+        }
+
         public async Task ProcessMapAuditRecords()
         {
             try
@@ -865,8 +876,8 @@ namespace crds_angular.Services
                         PrimaryContactFirstName = hit.Fields.ContainsKey("groupprimarycontactfirstname") ? hit.Fields["groupprimarycontactfirstname"].FirstOrDefault() : null,
                         PrimaryContactLastName = hit.Fields.ContainsKey("groupprimarycontactlastname") ? hit.Fields["groupprimarycontactlastname"].FirstOrDefault() : null,
                         PrimaryContactCongregation = hit.Fields.ContainsKey("groupprimarycontactcongregation") ? hit.Fields["groupprimarycontactcongregation"].FirstOrDefault() : null,
-                        GroupAgesRangeList = hit.Fields.ContainsKey("groupagerange") ? hit.Fields["groupagerange"].ToList() : null,
-                        GroupCategoriesList = hit.Fields.ContainsKey("groupcategory") ? hit.Fields["groupcategory"].ToList() : null,
+                        GroupAgesRangeList = hit.Fields.ContainsKey("groupagerange") ? hit.Fields["groupagerange"].Where(s => !String.IsNullOrEmpty(s)).Select(x => x.Trim()).ToList() : null,
+                        GroupCategoriesList = hit.Fields.ContainsKey("groupcategory") ? hit.Fields["groupcategory"].Where(s => !String.IsNullOrEmpty(s)).Select(x => x.Trim()).ToList() : null,
                         AvailableOnline = hit.Fields.ContainsKey("groupavailableonline") && hit.Fields["groupavailableonline"].FirstOrDefault() == "1",
                     };
 

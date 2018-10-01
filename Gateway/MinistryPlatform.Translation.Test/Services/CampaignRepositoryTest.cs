@@ -199,10 +199,9 @@ namespace MinistryPlatform.Translation.Test.Services
                                         )).Returns(listOfList);
 
             var result = _fixture.GetPledgeCampaignSummary(token, pledgeCampaignId);
-            Assert.AreEqual(dto.PledgeCampaignId, result.PledgeCampaignId);
-            Assert.AreEqual(dto.TotalGiven, result.TotalGiven);
-            Assert.AreEqual(dto.TotalCommitted, result.TotalCommitted);
-            Assert.AreEqual(dto.TotalCount, result.TotalCount);
+            Assert.AreEqual(dto.TotalGiven, result[0].TotalGiven);
+            Assert.AreEqual(dto.TotalCommitted, result[0].TotalCommitted);
+            Assert.AreEqual(dto.TotalCount, result[0].TotalCount);
         }
 
         [Test]

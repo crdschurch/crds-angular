@@ -1,6 +1,7 @@
 <div dynamic-content="$root.MESSAGES.loginFormTop.content | html"></div>
 
-<form id="navlogin" name="navlogin" ng-submit="login()" role="form" ng-hide="processing" novalidate>
+<form id="navlogin" name="navlogin" ng-submit="login()"
+      role="form" ng-hide="processing || isUserAlreadyLoggedInCheckRunning" novalidate>
   <div class="form-group">
     <div ng-show="!modal" class="" ng-class="{'has-error': checkEmail() }">
       <label class="sr-only" for="{{passwordPrefix}}-email">Email address</label>

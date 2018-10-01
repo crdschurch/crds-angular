@@ -95,22 +95,6 @@
           abstract: true,
           templateUrl: 'templates/goCincinnati.html'
         })
-        .state('giving_history', {
-          parent: 'noSideBar',
-          url: '/givinghistory',
-          templateUrl: 'giving_history/history.html',
-          controller: 'GivingHistoryController as giving_history_controller',
-          data: {
-            isProtected: true,
-            meta: {
-              title: 'Personal Giving History',
-              description: ''
-            }
-          },
-          resolve: {
-            loggedin: crds_utilities.checkLoggedin
-          }
-        })
         .state('login', {
           parent: 'headerOnly',
           url: '/signin',
