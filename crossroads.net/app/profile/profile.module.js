@@ -12,7 +12,6 @@
   require('./communications');
   require('./services');
   require('./skills');
-  require('./giving');
 
   require('./profile.html');
   require('./editProfile.html');
