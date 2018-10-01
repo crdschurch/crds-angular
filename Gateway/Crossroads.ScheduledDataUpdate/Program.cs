@@ -11,6 +11,8 @@ using CommandLine;
 using Crossroads.Utilities.Services;
 using Crossroads.Web.Common.Configuration;
 using System.Threading;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Crossroads.ScheduledDataUpdate
 {
@@ -51,13 +53,15 @@ namespace Crossroads.ScheduledDataUpdate
         private readonly ICorkboardService _corkboardService;
         private readonly IGroupService _groupService;
         private readonly IFinderService _finderService;
+        private readonly IAddressService _addressService;
 
         public Program(ITaskService taskService, 
                        IGroupToolService groupToolService, 
                        IAwsCloudsearchService awsService, 
                        ICorkboardService corkboardService,
                        IGroupService groupService,
-                       IFinderService finderService)
+                       IFinderService finderService,
+                       IAddressService addressService)
         {
             _taskService = taskService;
             _groupToolService = groupToolService;
@@ -65,6 +69,7 @@ namespace Crossroads.ScheduledDataUpdate
             _corkboardService = corkboardService;
             _groupService = groupService;
             _finderService = finderService;
+            _addressService = addressService;
         }
 
         public int Run(string[] args)
@@ -85,6 +90,53 @@ namespace Crossroads.ScheduledDataUpdate
 
             var exitCode = 0;
             var modeSelected = false;
+
+            if (options.UpdateAddressLatLong)
+            {
+                modeSelected = true;
+                try
+                {
+                    AutoMapperConfig.RegisterMappings();
+                    // get address ids from the file. If no file then geocode 100 addresses with no lat/long
+                    var filename = "addressids.txt";
+                    var addressids = new List<int>();
+                    if (File.Exists(filename))
+                    {
+                        // load addressids from file
+                        List<string> list = new List<string>(File.ReadAllLines(filename));
+                        foreach (string item in list)
+                        {
+                            int id;
+                            if (int.TryParse(item, out id))
+                            {
+                                addressids.Add(id);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // geocode any participants on the map that have no lat/long
+                        addressids = _finderService.GetAddressIdsForMapParticipantWithNoGeoCode();
+
+                        // if we dont have any map participants that need geocoding then lets geocode other addresses
+                        if (addressids.Count == 0)
+                        {
+                            addressids = _finderService.GetAddressIdsWithNoGeoCode();
+                        }
+                    }
+
+                    foreach(int addressid in addressids)
+                    {
+                        _addressService.SetGeoCoordinates(addressid);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("UpdateAddressLatLong failed.", ex);
+                    exitCode = 9999;
+                }
+            }
+
 
             if (options.ConnectMapListenForUpdates)
             {

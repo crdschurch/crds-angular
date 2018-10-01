@@ -184,6 +184,16 @@ namespace crds_angular.Services
             _firestoreProjectId = "crds-finder-map-poc";
         }
 
+        public List<int> GetAddressIdsWithNoGeoCode()
+        {
+            return _addressRepository.FindAddressIdsWithoutGeocode().Take(100).ToList();
+        }
+
+        public List<int> GetAddressIdsForMapParticipantWithNoGeoCode()
+        {
+            return _addressRepository.FindMapParticipantsAddressIdsWithoutGeocode().Take(100).ToList();
+        }
+
         public PinDto GetPinDetailsForGroup(int groupId, GeoCoordinate originCoords)
         {
             List<PinDto> pins = null;
@@ -193,10 +203,18 @@ namespace crds_angular.Services
             this.AddPinMetaData(pins, originCoords);
 
             return pins.First();
-
         }
 
-
+        public PersonDTO GetPerson(int participantId)
+        {
+            var contact = _contactRepository.GetContactByParticipantId(participantId);
+            var person = new PersonDTO
+            {
+                Name = $"{contact.Nickname.ToUpper()} {contact.Last_Name[0].ToString().ToUpper()}",
+                Location = $"{contact.City}, {contact.State}"
+            };
+            return person;
+        }
 
         public async Task ProcessMapAuditRecords()
         {
@@ -234,7 +252,7 @@ namespace crds_angular.Services
         private async Task DeletePinFromFirestoreAsync(int participantid, string pinType)
         {
             FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
-            CollectionReference collection = db.Collection("Pins2");
+            CollectionReference collection = db.Collection("Pins");
 
             // find the firestore document
             Query query = collection.WhereEqualTo("internalId", participantid.ToString());
@@ -273,29 +291,20 @@ namespace crds_angular.Services
                     // no address for this contact/participant
                     return;
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Problem getting MP Data for PinSync");
-                Console.WriteLine(e.Message);
-                return;
-            }
 
-            var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
-            
-            // create the pin object
-            MapPin pin = new MapPin(participantid.ToString(), participantid.ToString(), address.Address_Line_1, address.Address_Line_2, address.City, address.State, address.Postal_Code, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, pinType, participantid.ToString(), geohash);
+                var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
 
-            FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
-            CollectionReference collection = db.Collection("Pins2");
+                // create the pin object
+                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash);
 
-            try
-            {
+                FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
+                CollectionReference collection = db.Collection("Pins");
                 DocumentReference document = await collection.AddAsync(pin);
                 Console.WriteLine(document.Id);
             }
             catch (Exception e)
             {
+                Console.WriteLine("Problem getting MP Data for PinSync");
                 Console.WriteLine(e.Message);
                 return;
             }

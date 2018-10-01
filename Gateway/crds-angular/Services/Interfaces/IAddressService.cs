@@ -11,5 +11,6 @@ namespace crds_angular.Services.Interfaces
         void SetGeoCoordinates(AddressDTO address);
         void SetGroupPinGeoCoordinates(PinDto pin);
         GeoCoordinate GetGeoLocationCascading(AddressDTO address);
+        void SetGeoCoordinates(int addressid);
     }
 }

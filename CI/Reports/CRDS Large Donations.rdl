@@ -2213,6 +2213,10 @@ FROM Accounting_Companies </CommandText>
       <ValidValues>
         <ParameterValues>
           <ParameterValue>
+              <Value>1000</Value>
+            <Label>&gt;= $1,000</Label>
+          </ParameterValue>
+          <ParameterValue>
             <Value>2000</Value>
             <Label>&gt;= $2,000</Label>
           </ParameterValue>

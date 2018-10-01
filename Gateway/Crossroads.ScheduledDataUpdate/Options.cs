@@ -41,6 +41,10 @@ namespace Crossroads.ScheduledDataUpdate
             HelpText = "Execute 'Listen for changes and Sync Connect Pins to Firestore'")]
         public bool ConnectMapListenForUpdates { get; set; }
 
+        [Option("UpdateAddressLatLong", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
+            HelpText = "Update latitude and longitude for given addess ids'")]
+        public bool UpdateAddressLatLong { get; set; }
+
         [ParserState]
         public IParserState LastParserState { get; set; }
 

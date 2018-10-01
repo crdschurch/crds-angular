@@ -39,6 +39,9 @@
                          .get({pledgeCampaignId: 1103})
                          .$promise
                          .then((data) => {
+                             if(data && data.length && data.length>0) {
+                                 data = data[0]; //TODO: Temporary fix until UI is updated to handle the array
+                             }
                             vm.viewReady = true;
                             vm.currentDay = data.currentDay;
                             vm.totalDays = data.totalDays;
