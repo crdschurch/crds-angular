@@ -874,8 +874,8 @@ namespace crds_angular.Services
                         PrimaryContactFirstName = hit.Fields.ContainsKey("groupprimarycontactfirstname") ? hit.Fields["groupprimarycontactfirstname"].FirstOrDefault() : null,
                         PrimaryContactLastName = hit.Fields.ContainsKey("groupprimarycontactlastname") ? hit.Fields["groupprimarycontactlastname"].FirstOrDefault() : null,
                         PrimaryContactCongregation = hit.Fields.ContainsKey("groupprimarycontactcongregation") ? hit.Fields["groupprimarycontactcongregation"].FirstOrDefault() : null,
-                        GroupAgesRangeList = hit.Fields.ContainsKey("groupagerange") ? hit.Fields["groupagerange"].ToList() : null,
-                        GroupCategoriesList = hit.Fields.ContainsKey("groupcategory") ? hit.Fields["groupcategory"].ToList() : null,
+                        GroupAgesRangeList = hit.Fields.ContainsKey("groupagerange") ? hit.Fields["groupagerange"].Where(s => !String.IsNullOrEmpty(s)).Select(x => x.Trim()).ToList() : null,
+                        GroupCategoriesList = hit.Fields.ContainsKey("groupcategory") ? hit.Fields["groupcategory"].Where(s => !String.IsNullOrEmpty(s)).Select(x => x.Trim()).ToList() : null,
                         AvailableOnline = hit.Fields.ContainsKey("groupavailableonline") && hit.Fields["groupavailableonline"].FirstOrDefault() == "1",
                     };
 
