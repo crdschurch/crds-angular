@@ -21,7 +21,7 @@ BEGIN
 	SET IDENTITY_INSERT dp_Page_Views ON
     DECLARE @PageId INT = 401;
     DECLARE @PageViewTitle VARCHAR(50) = 'Users'' Last Login To MP Admin With Security Roles';
-    DECLARE @FieldList VARCHAR(1000) = 'dp_Users.Contact_ID as "Contact ID",
+    DECLARE @FieldList VARCHAR(2000) = 'dp_Users.Contact_ID as "Contact ID",
     dp_Users.User_ID as "User ID",
     dp_Users.Display_Name as "Display Name",
     dp_Users.User_Name as "User Name",
