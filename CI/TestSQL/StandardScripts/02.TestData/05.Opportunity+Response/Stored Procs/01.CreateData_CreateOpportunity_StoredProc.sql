@@ -168,7 +168,7 @@ BEGIN
 		Reminder_Days_Prior = @reminder_days_prior,
 		Description = @description,  
 		Reminder_Template = @reminder_template_id,
-		Opportunity_Subtitle = @opportunity_subtitle,
+		Opportunity_Subtitle = @opportunity_subtitle
 		WHERE Opportunity_ID = @opportunity_id;
 	END;
 END

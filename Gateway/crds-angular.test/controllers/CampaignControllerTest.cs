@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -37,11 +38,11 @@ namespace crds_angular.test.controllers
         [Test]
         public void ShouldReturnCampaignSummary()
         {
-            _campaignServiceMock.Setup(m => m.GetSummary(_pledgeCampaignId)).Returns(new PledgeCampaignSummaryDto());
+            _campaignServiceMock.Setup(m => m.GetSummary(_pledgeCampaignId)).Returns(new List<PledgeCampaignSummaryDto>());
 
             var result = _fixture.GetSummary(_pledgeCampaignId);
-            Assert.IsInstanceOf<OkNegotiatedContentResult<PledgeCampaignSummaryDto>>(result);
-            var contentResult = (OkNegotiatedContentResult<PledgeCampaignSummaryDto>)result;
+            Assert.IsInstanceOf<OkNegotiatedContentResult<List<PledgeCampaignSummaryDto>>>(result);
+            var contentResult = (OkNegotiatedContentResult<List<PledgeCampaignSummaryDto>>)result;
             Assert.IsNotNull(contentResult.Content);
 
             _campaignServiceMock.VerifyAll();
