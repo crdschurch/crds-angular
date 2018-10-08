@@ -65,7 +65,7 @@
       if (toState && !/^tripgiving.*/.test(toState.name)) {
         return;
       }
-      
+
       vm.dto.processing = false;
       if ((!vm.dto.initialized || toState.name === 'tripgiving') && toState.name !== GiveFlow.thankYou) {
         event.preventDefault();
@@ -89,6 +89,8 @@
     function activate() {
       vm.tripParticipant.showGiveButton = false;
       vm.tripParticipant.showShareButtons = true;
+
+      console.log(vm.dto);
     }
 
     function activeSession() {

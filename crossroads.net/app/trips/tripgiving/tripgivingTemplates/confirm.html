@@ -1,15 +1,55 @@
 <div class="form-group">
-  <div class="push-top push-bottom">
-    <h4>Confirm Gift</h4>
-      <p>You are giving <strong>{{tripGiving.dto.amount | currency}} </strong> to <strong> {{tripGiving.dto.program.Name}}</strong> with
-      <svg viewBox="0 0 160 100" class="icon icon-cc_visa confirm-cc-icon">
-        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{{tripGiving.dto.brand}}"></use>
-      </svg> ending in <strong>{{tripGiving.dto.last4}}</strong> towards <strong>{{tripGiving.tripParticipant.participantName}}'s</strong> commitment.&nbsp;
-      <a href="" ng-click="tripGiving.giveFlow.goToChange()" tabindex="-1" class="text-secondary">Change</a>
+  <div class="push-top push-bottom table-contrast-bg">
+    <h4 class="flush-top">Confirm Gift</h4>
+
+    <table class="table">
+        <tbody>
+          <tr>
+            <td class="text-uppercase font-size-smaller" data-automation-id="amount-label">Amount</td>
+            <td class="text-right font-size-large" data-automation-id="amount">{{tripGiving.dto.amount | currency}}</td>
+          </tr>
+          <tr>
+            <td class="text-uppercase font-size-smaller" data-automation-id="to-label">To</td>
+            <td class="text-right font-size-small" data-automation-id="title">{{tripGiving.dto.program.Name}}</td>
+          </tr>
+          <tr>
+            <td class="text-uppercase font-size-smaller" data-automation-id="to-label">Towards</td>
+            <td class="text-right font-size-small" data-automation-id="title">{{tripGiving.tripParticipant.participantName}}'s</strong> commitment</td>
+          </tr>
+          <tr>
+            <td class="text-uppercase font-size-smaller" data-automation-id="from-label">From</td>
+            <td class="text-right font-size-small truncate" data-automation-id="donor-email">
+              <!-- // TODO - Need dev to make this dynamic for logged in, not logged in, and anonymous -->
+              {{tripGiving.dto.donor.email}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="push-top push-bottom table-contrast-bg">
+      <table class="table schedule-table">
+          <tbody>
+            <tr>
+              <td>
+                <p class="text-uppercase font-size-smaller flush-ends">Payment Type</p>
+                <svg viewBox="0 0 160 100" class="icon icon-cc_visa confirm-cc-icon">
+                  <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{{tripGiving.dto.brand}}"></use>
+                </svg> ending in <strong>{{tripGiving.dto.last4}}</strong>
+              </td>
+              <td>
+                <a href="" ng-click="tripGiving.giveFlow.goToChange()" tabindex="-1" class="btn pull-right btn-outline btn-primary btn-sm">Change payment type</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+
+
   </div>
+
       <button ng-click="tripGiving.donationService.confirmDonation()"
         ng-disabled="tripGiving.dto.processing"
-        class="btn btn-primary btn-lg btn-block-mobile give-button"
+        class="pull-right btn btn-primary btn-lg btn-block-mobile give-button"
         autofocus>
         <span ng-if="tripGiving.dto.processing">Giving...</span>
         <span ng-if="!tripGiving.dto.processing">Give {{tripGiving.dto.amount | currency}}</span>
