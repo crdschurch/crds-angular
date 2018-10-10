@@ -17,21 +17,42 @@
     </div>
   </div>
   
-  <hr>
+  <div class="push-top push-bottom table-contrast-bg">
+      <h4 class="flush-top">Confirm Gift</h4>
+      <table class="table">
+          <tbody>
+            <tr>
+              <td class="text-uppercase font-size-smaller" data-automation-id="amount-label">Amount</td>
+              <td class="text-right font-size-large" data-automation-id="amount">{{tripGiving.dto.amount | currency}}</td>
+            </tr>
+            <tr>
+              <td class="text-uppercase font-size-smaller" data-automation-id="to-label">To</td>
+              <td class="text-right font-size-small" data-automation-id="title">{{tripGiving.dto.program.Name}}</td>
+            </tr>
+            <tr>
+              <td class="text-uppercase font-size-smaller" data-automation-id="to-label">Towards</td>
+              <td class="text-right font-size-small" data-automation-id="title">{{tripGiving.tripParticipant.participantName}}'s</strong> commitment</td>
+            </tr>
+            <tr>
+              <td class="text-uppercase font-size-smaller" data-automation-id="from-label">From</td>
+              <td class="text-right font-size-small truncate" data-automation-id="donor-email">
+                <!-- // TODO - Need dev to make this dynamic for logged in, not logged in, and anonymous -->
+                TODO - NEED NAME
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>   <a href="" 
+                ng-click="tripGiving.donationService.processChange()" 
+                tabindex="-1" 
+                class="btn pull-right btn-outline btn-primary btn-sm">
+                Change
+              </a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
  
-  <p> You are giving 
-    <strong>{{tripGiving.dto.amount | currency}}</strong>  to 
-    <strong>{{tripGiving.dto.program.Name}}</strong>. 
-    <a href="" 
-      ng-click="tripGiving.donationService.processChange()" 
-      tabindex="-1" 
-      class="text-secondary">
-      Change
-    </a>
-  </p>
-  
-  <hr>
-
     <ng-form name="accountForm">
 
       <div class='row' ng-show='tripGiving.showNameInput()'>
@@ -89,6 +110,8 @@
         reference="{{tripGiving.emailAlreadyRegisteredGrowlDivRef}}" 
         limit-messages="1">
       </div>
+  <div class="table-contrast-bg push-bottom">
+      <h4 class="flush-top">Payment Details</h4>  
 	    <bank-credit-card-details
         dto='tripGiving.dto'
         set-valid-card='setValidCard'
@@ -96,11 +119,12 @@
         set-valid-cvc='setValidCvc'
         account-state-name='tripGiving.account' >
       </bank-credit-card-details>
+    </div>
 	</ng-form>
     <button 
       ng-click="tripGiving.donationService.submitBankInfo(tripGiving.tripForm)" 
       ng-disabled="tripGiving.dto.processing"
-      class="btn btn-primary btn-lg btn-block-mobile tripGiving-button">
+      class="btn btn-primary btn-lg btn-block-mobile tripGiving-button pull-right">
       <span ng-if="tripGiving.dto.processing">Giving...</span>
       <span ng-if="!tripGiving.dto.processing">Give {{tripGiving.dto.amount | currency}}</span>
       <span>
