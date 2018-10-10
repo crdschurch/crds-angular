@@ -184,6 +184,69 @@ namespace crds_angular.Services
             _firestoreProjectId = "crds-finder-map-poc";
         }
 
+        public MeDTO GetMe(string token)
+        {
+            var addr = GetPersonAddress(token);
+            MpMyContact contact = _contactRepository.GetMyProfile(token);
+            MpParticipant participant = _participantRepository.GetParticipant(contact.Contact_ID); // showon map comes from here
+            
+            var medto = new MeDTO
+            {
+                Address = addr,
+                CongregationId = contact.Congregation_ID,
+                ShowOnMap = participant.ShowOnMap,
+                ParticipantId = participant.ParticipantId
+            };
+            return medto;
+        }
+
+        public void SaveMe(string token, MeDTO medto)
+        {
+            try
+            {
+                // address
+                var addressDTO = GetPersonAddress(token);
+                addressDTO.AddressLine1 = medto.Address.AddressLine1;
+                addressDTO.AddressLine2 = medto.Address.AddressLine2;
+                addressDTO.City = medto.Address.City;
+                addressDTO.State = medto.Address.State;
+                addressDTO.PostalCode = medto.Address.PostalCode;
+                //update the lat/lon
+                GeoCoordinate originCoordsFromGoogle = _addressGeocodingService.GetGeoCoordinates(addressDTO);
+                addressDTO.Latitude = originCoordsFromGoogle.Latitude;
+                addressDTO.Longitude = originCoordsFromGoogle.Longitude;
+ 
+                _addressRepository.Update(Mapper.Map<MpAddress>(addressDTO));
+
+                //show on map
+                MpMyContact contact = _contactRepository.GetMyProfile(token);
+                MpParticipant participant = _participantRepository.GetParticipant(contact.Contact_ID);
+
+                if (medto.ShowOnMap == true)
+                {
+                    EnablePin(participant.ParticipantId);
+                }
+                else
+                {
+                    DisablePin(participant.ParticipantId);
+                }
+
+                // congregation
+                var household = new MpHousehold
+                {
+                    Address_ID = contact.Address_ID,
+                    Household_ID = contact.Household_ID,
+                    Congregation_ID = medto.CongregationId,
+                    Home_Phone = contact.Home_Phone
+                };
+                _contactRepository.UpdateHousehold(household);
+            }
+            catch(Exception e)
+            {
+                throw(e);
+            }
+        }
+
         public List<int> GetAddressIdsWithNoGeoCode()
         {
             return _addressRepository.FindAddressIdsWithoutGeocode().Take(100).ToList();
@@ -1088,9 +1151,14 @@ namespace crds_angular.Services
             return _groupService.GetGroupDetails(groupId).Address;
         }
 
-        public AddressDTO GetPersonAddress(string token, int participantId, bool shouldGetFullAddress = true)
+        public AddressDTO GetPersonAddress(string token, int participantId = -1, bool shouldGetFullAddress = true)
         {
             var user = _participantRepository.GetParticipantRecord(token);
+
+            if(participantId == -1)
+            {
+                participantId = user.ParticipantId;
+            }
 
             if ((user.ParticipantId == participantId) || !shouldGetFullAddress)
             {
