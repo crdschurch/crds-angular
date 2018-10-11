@@ -215,8 +215,16 @@ namespace crds_angular.Services
                 GeoCoordinate originCoordsFromGoogle = _addressGeocodingService.GetGeoCoordinates(addressDTO);
                 addressDTO.Latitude = originCoordsFromGoogle.Latitude;
                 addressDTO.Longitude = originCoordsFromGoogle.Longitude;
- 
-                _addressRepository.Update(Mapper.Map<MpAddress>(addressDTO));
+
+                if (addressDTO.AddressID == null)
+                {
+                    var addressid = _addressRepository.Create(Mapper.Map<MpAddress>(addressDTO));
+                    addressDTO.AddressID = addressid;
+                }
+                else
+                {
+                    _addressRepository.Update(Mapper.Map<MpAddress>(addressDTO));
+                }
 
                 //show on map
                 MpMyContact contact = _contactRepository.GetMyProfile(token);
@@ -234,7 +242,7 @@ namespace crds_angular.Services
                 // congregation
                 var household = new MpHousehold
                 {
-                    Address_ID = contact.Address_ID,
+                    Address_ID = contact.Address_ID ?? addressDTO.AddressID,
                     Household_ID = contact.Household_ID,
                     Congregation_ID = medto.CongregationId,
                     Home_Phone = contact.Home_Phone
