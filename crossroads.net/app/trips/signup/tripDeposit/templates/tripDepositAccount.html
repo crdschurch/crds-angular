@@ -3,25 +3,38 @@
 
   <span dynamic-content="$root.MESSAGES.tripDepositDisclaimer.content | html"> </span>
 
-  <hr>
 
-  <p> A required deposit of <strong>{{tripDeposit.dto.amount | currency}}</strong> will be contributed to <strong>{{tripDeposit.dto.program.Name}}</strong>. 
-  </p>
+  <div class="push-top push-bottom table-contrast-bg"> 
+    <h4 class="flush-top">Confirm</h4>     
+    <table class="table"> 
+      <tbody> 
+        <tr>
+          <td class="text-uppercase font-size-smaller" data-automation-id="amount-label">Required Deposit Amount</td> 
+          <td class="text-right font-size-large ng-binding" data-automation-id="amount">{{tripDeposit.dto.amount | currency}}</td> 
+        </tr> 
+        <tr> 
+          <td class="text-uppercase font-size-smaller" data-automation-id="to-label">To</td> 
+          <td class="text-right font-size-small ng-binding" data-automation-id="title">{{tripDeposit.dto.program.Name}}</td> 
+        </tr> 
+      </tbody>
+    </table> 
+  </div>
 
-  <hr>
-
-  <ng-form name="accountForm">
-      <bank-credit-card-details
-        dto='tripDeposit.dto'
-        bank-info-submitted='tripDeposit.dto.bankinfoSubmitted'
-        donor='tripDeposit.dto.donor'
-        email='tripDeposit.dto.email'
-        set-valid-card='setValidCard'
-        set-valid-cvc='setValidCvc'
-        account-state-name='tripDeposit.account' >
-      </bank-credit-card-details>
-  </ng-form>
-  <button 
+  <div class="table-contrast-bg push-bottom">
+    <h4 class="flush-top">Payment Details</h4>   
+    <ng-form name="accountForm">
+        <bank-credit-card-details
+          dto='tripDeposit.dto'
+          bank-info-submitted='tripDeposit.dto.bankinfoSubmitted'
+          donor='tripDeposit.dto.donor'
+          email='tripDeposit.dto.email'
+          set-valid-card='setValidCard'
+          set-valid-cvc='setValidCvc'
+          account-state-name='tripDeposit.account' >
+        </bank-credit-card-details>
+    </ng-form>
+  </div>        
+  <button
     ng-click="tripDeposit.saveApplication('submit')"
     ng-class="{disabled: tripDeposit.dto.processing}"
     ng-disabled="tripDeposit.dto.processing"

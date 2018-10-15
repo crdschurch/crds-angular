@@ -1,70 +1,84 @@
 <div class="push-top">
   <div class="form-group">
-    <div class="btn-group btn-group-justified" 
-         role="group" 
+    <div class="btn-group btn-group-justified"
+         role="group"
          ng-show="!tripGiving.activeSession()">
-      <a type="button" 
-        class="btn btn-default" 
-        role="button" 
+      <a type="button"
+        class="btn btn-default"
+        role="button"
         ng-click="tripGiving.giveFlow.goToLogin()">
         Sign In
       </a>
-      <a type="button" 
-        class="btn btn-default active" 
+      <a type="button"
+        class="btn btn-default active"
         role="button">
         Give as Guest
       </a>
     </div>
   </div>
-  
-  <hr>
- 
-  <p> You are giving 
-    <strong>{{tripGiving.dto.amount | currency}}</strong>  to 
-    <strong>{{tripGiving.dto.program.Name}}</strong>. 
-    <a href="" 
-      ng-click="tripGiving.donationService.processChange()" 
-      tabindex="-1" 
-      class="text-secondary">
-      Change
-    </a>
-  </p>
-  
-  <hr>
+
+  <div class="push-top push-bottom table-contrast-bg">
+      <h4 class="flush-top">Confirm Gift</h4>
+      <table class="table">
+          <tbody>
+            <tr>
+              <td class="text-uppercase font-size-smaller" data-automation-id="amount-label">Amount</td>
+              <td class="text-right font-size-large" data-automation-id="amount">{{tripGiving.dto.amount | currency}}</td>
+            </tr>
+            <tr>
+              <td class="text-uppercase font-size-smaller" data-automation-id="to-label">To</td>
+              <td class="text-right font-size-small" data-automation-id="title">{{tripGiving.dto.program.Name}}</td>
+            </tr>
+            <tr>
+              <td class="text-uppercase font-size-smaller" data-automation-id="to-label">Towards</td>
+              <td class="text-right font-size-small" data-automation-id="title">{{tripGiving.tripParticipant.participantName}}'s</strong> commitment</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>   <a href=""
+                ng-click="tripGiving.donationService.processChange()"
+                tabindex="-1"
+                class="btn pull-right btn-outline btn-primary btn-sm">
+                Change
+              </a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
     <ng-form name="accountForm">
 
       <div class='row' ng-show='tripGiving.showNameInput()'>
         <div class="form-group col-sm-6" ng-class="{'has-error': accountForm.donorFirstName.$invalid && tripGiving.dto.bankinfoSubmitted }">
           <label for='firstName'> First Name </label>
-          <input ng-model="tripGiving.dto.donorFirstName" 
-              type="text" class="form-control" 
-              name="donorFirstName" 
-              id="donorFirstName"  
-              placeholder='First Name' 
+          <input ng-model="tripGiving.dto.donorFirstName"
+              type="text" class="form-control"
+              name="donorFirstName"
+              id="donorFirstName"
+              placeholder='First Name'
               ng-required='tripGiving.showNameInput()' />
           <ng-messages for="accountForm.donorFirstName.$error" ng-if="accountForm.donorFirstName.$invalid && tripGiving.dto.bankinfoSubmitted">
             <span ng-message="required">
               <span dynamic-content="$root.MESSAGES.fieldCanNotBeBlank.content | html"></span>
             </span>
-          </ng-messages>              
+          </ng-messages>
         </div>
-        
+
         <div class="form-group col-sm-6" ng-class="{'has-error': accountForm.donorLastName.$invalid && tripGiving.dto.bankinfoSubmitted }">
           <label for='lastName'> Last Name </label>
-          <input ng-model="tripGiving.dto.donorLastName" 
-              type='text' 
-              class='form-control' 
-              name="donorLastName" 
-              id='donorLastName' 
-              placeholder='Last Name' 
+          <input ng-model="tripGiving.dto.donorLastName"
+              type='text'
+              class='form-control'
+              name="donorLastName"
+              id='donorLastName'
+              placeholder='Last Name'
               ng-required='tripGiving.showNameInput()' />
           <ng-messages for="accountForm.donorLastName.$error" ng-if="accountForm.donorLastName.$invalid && tripGiving.dto.bankinfoSubmitted">
             <span ng-message="required">
               <span dynamic-content="$root.MESSAGES.fieldCanNotBeBlank.content | html"></span>
             </span>
-          </ng-messages> 
-        </div>       
+          </ng-messages>
+        </div>
       </div>
 
 	    <div
@@ -84,11 +98,13 @@
 	        </email-field>
 	    </div>
 
-	    <div id="existingEmail" 
-        growl inline="true" 
-        reference="{{tripGiving.emailAlreadyRegisteredGrowlDivRef}}" 
+	    <div id="existingEmail"
+        growl inline="true"
+        reference="{{tripGiving.emailAlreadyRegisteredGrowlDivRef}}"
         limit-messages="1">
       </div>
+  <div class="table-contrast-bg push-bottom">
+      <h4 class="flush-top">Payment Details</h4>
 	    <bank-credit-card-details
         dto='tripGiving.dto'
         set-valid-card='setValidCard'
@@ -96,11 +112,12 @@
         set-valid-cvc='setValidCvc'
         account-state-name='tripGiving.account' >
       </bank-credit-card-details>
+    </div>
 	</ng-form>
-    <button 
-      ng-click="tripGiving.donationService.submitBankInfo(tripGiving.tripForm)" 
+    <button
+      ng-click="tripGiving.donationService.submitBankInfo(tripGiving.tripForm)"
       ng-disabled="tripGiving.dto.processing"
-      class="btn btn-primary btn-lg btn-block-mobile tripGiving-button">
+      class="btn btn-primary btn-lg btn-block-mobile tripGiving-button pull-right">
       <span ng-if="tripGiving.dto.processing">Giving...</span>
       <span ng-if="!tripGiving.dto.processing">Give {{tripGiving.dto.amount | currency}}</span>
       <span>
