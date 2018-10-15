@@ -89,8 +89,6 @@
     function activate() {
       vm.tripParticipant.showGiveButton = false;
       vm.tripParticipant.showShareButtons = true;
-
-      console.log(vm.dto);
     }
 
     function activeSession() {
