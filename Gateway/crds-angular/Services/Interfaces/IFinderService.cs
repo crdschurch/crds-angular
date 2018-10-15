@@ -29,7 +29,7 @@ namespace crds_angular.Services.Interfaces
         Invitation InviteToGroup(string token, int gatheringId, User person, string finderFlag);
         List<GroupParticipantDTO> GetParticipantsForGroup(int groupId);
         AddressDTO GetGroupAddress(int groupId);
-        AddressDTO GetPersonAddress(string token, int participantId, bool shouldGetFullAddress);
+        AddressDTO GetPersonAddress(string token, int participantId = -1, bool shouldGetFullAddress = true);
         PinDto UpdateGathering(PinDto pin);
         void RequestToBeHost(string token, HostRequestDto hostRequest);
         void AcceptDenyGroupInvitation(string token, int groupId, string invitationGuid, bool accept);
@@ -48,5 +48,7 @@ namespace crds_angular.Services.Interfaces
         List<int> GetAddressIdsWithNoGeoCode();
         List<int> GetAddressIdsForMapParticipantWithNoGeoCode();
         PersonDTO GetPerson(int participantId);
+        MeDTO GetMe(string token);
+        void SaveMe(string token, MeDTO medto);
     }
 }
