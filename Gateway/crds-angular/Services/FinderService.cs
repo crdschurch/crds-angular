@@ -255,6 +255,13 @@ namespace crds_angular.Services
             }
         }
 
+        public void SayHiToParticipant(string token, int toParticipantId, string message)
+        {
+            var to = _contactRepository.GetContactIdByParticipantId(toParticipantId);
+            var from = _contactRepository.GetContactId(token);
+            this.SayHi(from, to, message);
+        }
+
         public List<int> GetAddressIdsWithNoGeoCode()
         {
             return _addressRepository.FindAddressIdsWithoutGeocode().Take(100).ToList();
