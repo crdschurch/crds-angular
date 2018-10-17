@@ -300,7 +300,7 @@ namespace crds_angular.Controllers.API
         [RequiresAuthorization]
         [ResponseType(typeof(AddressDTO))]
         [VersionedRoute(template: "finder/person/address/{participantId}/{shouldGetFullAddress}", minimumVersion: "1.0.0")]
-        [Route("finder/person/address/{participantId}/{getFullAddress}")]
+        [Route("finder/person/address/{participantId}/{shouldGetFullAddress}")]
         [HttpGet]
         public IHttpActionResult GetPersonAddress([FromUri] int participantId, [FromUri] bool shouldGetFullAddress)
         {
@@ -315,6 +315,56 @@ namespace crds_angular.Controllers.API
                 {
                     _logger.Error("Could not get address", e);
                     var apiError = new ApiErrorDto("Get Address Failed", e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
+
+        [RequiresAuthorization]
+        [ResponseType(typeof(MeDTO))]
+        [VersionedRoute(template: "finder/person/me", minimumVersion: "1.0.0")]
+        [Route("finder/person/me")]
+        [HttpGet]
+        public IHttpActionResult GetMe()
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    return (Ok(_finderService.GetMe(token)));
+                }
+                catch (Exception e)
+                {
+                    _logger.Error("Could not get me", e);
+                    var apiError = new ApiErrorDto("GetMe Failed", e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
+
+        [RequiresAuthorization]
+        [VersionedRoute(template: "finder/person/me", minimumVersion: "1.0.0")]
+        [Route("finder/person/me")]
+        [HttpPost]
+        public IHttpActionResult PostMe([FromBody] MeDTO medto)
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    //only make changes in association with the logged in user.
+                    //address changes
+                    //congregation
+                    //show on map
+
+
+                    _finderService.SaveMe(token, medto);
+                    return(Ok());
+                }
+                catch (Exception e)
+                {
+                    _logger.Error("Could not post me", e);
+                    var apiError = new ApiErrorDto("PostMe Failed", e);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
             });

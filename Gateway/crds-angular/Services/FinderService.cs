@@ -184,6 +184,77 @@ namespace crds_angular.Services
             _firestoreProjectId = "crds-finder-map-poc";
         }
 
+        public MeDTO GetMe(string token)
+        {
+            var addr = GetPersonAddress(token);
+            MpMyContact contact = _contactRepository.GetMyProfile(token);
+            MpParticipant participant = _participantRepository.GetParticipant(contact.Contact_ID); // showon map comes from here
+            
+            var medto = new MeDTO
+            {
+                Address = addr,
+                CongregationId = contact.Congregation_ID,
+                ShowOnMap = participant.ShowOnMap,
+                ParticipantId = participant.ParticipantId
+            };
+            return medto;
+        }
+
+        public void SaveMe(string token, MeDTO medto)
+        {
+            try
+            {
+                // address
+                var addressDTO = GetPersonAddress(token);
+                addressDTO.AddressLine1 = medto.Address.AddressLine1;
+                addressDTO.AddressLine2 = medto.Address.AddressLine2;
+                addressDTO.City = medto.Address.City;
+                addressDTO.State = medto.Address.State;
+                addressDTO.PostalCode = medto.Address.PostalCode;
+                //update the lat/lon
+                GeoCoordinate originCoordsFromGoogle = _addressGeocodingService.GetGeoCoordinates(addressDTO);
+                addressDTO.Latitude = originCoordsFromGoogle.Latitude;
+                addressDTO.Longitude = originCoordsFromGoogle.Longitude;
+
+                if (addressDTO.AddressID == null)
+                {
+                    var addressid = _addressRepository.Create(Mapper.Map<MpAddress>(addressDTO));
+                    addressDTO.AddressID = addressid;
+                }
+                else
+                {
+                    _addressRepository.Update(Mapper.Map<MpAddress>(addressDTO));
+                }
+
+                //show on map
+                MpMyContact contact = _contactRepository.GetMyProfile(token);
+                MpParticipant participant = _participantRepository.GetParticipant(contact.Contact_ID);
+
+                if (medto.ShowOnMap == true)
+                {
+                    EnablePin(participant.ParticipantId);
+                }
+                else
+                {
+                    DisablePin(participant.ParticipantId);
+                }
+
+                // congregation
+                var household = new MpHousehold
+                {
+                    Address_ID = contact.Address_ID ?? addressDTO.AddressID,
+                    Household_ID = contact.Household_ID,
+                    Congregation_ID = medto.CongregationId,
+                    Home_Phone = contact.Home_Phone
+                };
+                _contactRepository.UpdateHousehold(household);
+            }
+            catch(Exception e)
+            {
+                throw(e);
+            }
+        }
+
         public List<int> GetAddressIdsWithNoGeoCode()
         {
             return _addressRepository.FindAddressIdsWithoutGeocode().Take(100).ToList();
@@ -876,8 +947,8 @@ namespace crds_angular.Services
                         PrimaryContactFirstName = hit.Fields.ContainsKey("groupprimarycontactfirstname") ? hit.Fields["groupprimarycontactfirstname"].FirstOrDefault() : null,
                         PrimaryContactLastName = hit.Fields.ContainsKey("groupprimarycontactlastname") ? hit.Fields["groupprimarycontactlastname"].FirstOrDefault() : null,
                         PrimaryContactCongregation = hit.Fields.ContainsKey("groupprimarycontactcongregation") ? hit.Fields["groupprimarycontactcongregation"].FirstOrDefault() : null,
-                        GroupAgesRangeList = hit.Fields.ContainsKey("groupagerange") ? hit.Fields["groupagerange"].ToList() : null,
-                        GroupCategoriesList = hit.Fields.ContainsKey("groupcategory") ? hit.Fields["groupcategory"].ToList() : null,
+                        GroupAgesRangeList = hit.Fields.ContainsKey("groupagerange") ? hit.Fields["groupagerange"].Where(s => !String.IsNullOrEmpty(s)).Select(x => x.Trim()).ToList() : null,
+                        GroupCategoriesList = hit.Fields.ContainsKey("groupcategory") ? hit.Fields["groupcategory"].Where(s => !String.IsNullOrEmpty(s)).Select(x => x.Trim()).ToList() : null,
                         AvailableOnline = hit.Fields.ContainsKey("groupavailableonline") && hit.Fields["groupavailableonline"].FirstOrDefault() == "1",
                     };
 
@@ -1088,9 +1159,14 @@ namespace crds_angular.Services
             return _groupService.GetGroupDetails(groupId).Address;
         }
 
-        public AddressDTO GetPersonAddress(string token, int participantId, bool shouldGetFullAddress = true)
+        public AddressDTO GetPersonAddress(string token, int participantId = -1, bool shouldGetFullAddress = true)
         {
             var user = _participantRepository.GetParticipantRecord(token);
+
+            if(participantId == -1)
+            {
+                participantId = user.ParticipantId;
+            }
 
             if ((user.ParticipantId == participantId) || !shouldGetFullAddress)
             {
