@@ -301,10 +301,13 @@ namespace crds_angular.Services
                 var recordList = _finderRepository.GetMapAuditRecords();
                 foreach (MpMapAudit mapAuditRecord in recordList)
                 {
-                    await PinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
-                    mapAuditRecord.processed = true;
-                    mapAuditRecord.dateProcessed = DateTime.Now;
-                    _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
+                    var pinupdatedsuccessfully = await PinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                    if (pinupdatedsuccessfully)
+                    {
+                        mapAuditRecord.processed = true;
+                        mapAuditRecord.dateProcessed = DateTime.Now;
+                        _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
+                    }
                 }
             }
             catch (Exception e)
@@ -313,22 +316,22 @@ namespace crds_angular.Services
             }
         }
 
-        private async Task PinToFirestoreAsync(int participantid, bool showOnMap, string pinType)
+        private async Task<bool> PinToFirestoreAsync(int participantid, bool showOnMap, string pinType)
         {
             // showonmap = true then add to firestore
             // showonmap = false then delete from firestore
             Console.WriteLine($"participantid = {participantid}, showonmap = {showOnMap}, pintype = {pinType}");
             if (showOnMap)
             {
-                await AddPinToFirestoreAsync(participantid, pinType);
+                return await AddPinToFirestoreAsync(participantid, pinType);
             }
             else
             {
-                await DeletePinFromFirestoreAsync(participantid, pinType);
+                return await DeletePinFromFirestoreAsync(participantid, pinType);
             }
         }
 
-        private async Task DeletePinFromFirestoreAsync(int participantid, string pinType)
+        private async Task<bool> DeletePinFromFirestoreAsync(int participantid, string pinType)
         {
             FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
             CollectionReference collection = db.Collection("Pins");
@@ -354,9 +357,10 @@ namespace crds_angular.Services
                     Console.WriteLine(result.ToString());
                 }
             }
+            return true;
         }
 
-        private async Task AddPinToFirestoreAsync(int participantid, string pinType)
+        private async Task<bool> AddPinToFirestoreAsync(int participantid, string pinType)
         {       
             var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var address = new AddressDTO();
@@ -366,13 +370,13 @@ namespace crds_angular.Services
                 MpMyContact contact = _contactRepository.GetContactById(contactid);
                 // get the address including lat/lon
                 if (contact.Address_ID != null)
-                {
+                {  
                     address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)contact.Address_ID)));
                 }
                 else
                 {
                     // no address for this contact/participant
-                    return;
+                    return true;
                 }
 
                 var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
@@ -389,8 +393,9 @@ namespace crds_angular.Services
             {
                 Console.WriteLine("Problem getting MP Data for PinSync");
                 Console.WriteLine(e.Message);
-                return;
+                return false;
             }
+            return true;
         }
 
         public PinDto GetPinDetailsForPerson(int participantId)

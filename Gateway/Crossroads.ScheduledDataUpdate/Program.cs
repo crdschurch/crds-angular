@@ -90,13 +90,13 @@ namespace Crossroads.ScheduledDataUpdate
 
             var exitCode = 0;
             var modeSelected = false;
+            AutoMapperConfig.RegisterMappings();
 
             if (options.UpdateAddressLatLong)
             {
                 modeSelected = true;
                 try
                 {
-                    AutoMapperConfig.RegisterMappings();
                     // get address ids from the file. If no file then geocode 100 addresses with no lat/long
                     var filename = "addressids.txt";
                     var addressids = new List<int>();
