@@ -367,7 +367,7 @@ namespace crds_angular.Services
                 // get the address including lat/lon
                 if (contact.Address_ID != null)
                 {
-                    address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)contact.Address_ID)))
+                    address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)contact.Address_ID)));
                 }
                 else
                 {
