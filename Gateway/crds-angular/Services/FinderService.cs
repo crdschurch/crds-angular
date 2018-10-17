@@ -181,7 +181,7 @@ namespace crds_angular.Services
             _sayHiWithMessageTemplateId = configurationWrapper.GetConfigIntValue("sayHiWithMessageTemplateId");
             _sayHiWithoutMessageTemplateId = configurationWrapper.GetConfigIntValue("sayHiWithoutMessageTemplateId");
 
-            _firestoreProjectId = "crds-finder-map-poc";
+            _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
         }
 
         public MeDTO GetMe(string token)
@@ -317,6 +317,7 @@ namespace crds_angular.Services
         {
             // showonmap = true then add to firestore
             // showonmap = false then delete from firestore
+            Console.WriteLine($"participantid = {participantid}, showonmap = {showOnMap}, pintype = {pinType}");
             if (showOnMap)
             {
                 await AddPinToFirestoreAsync(participantid, pinType);
@@ -341,7 +342,11 @@ namespace crds_angular.Services
 
             foreach (DocumentSnapshot queryResult in querySnapshot.Documents)
             {
-                if (queryResult.GetValue<string>("pinType") == pinType)
+                int outvalue;
+                var rc1 = queryResult.ContainsField("pinType");
+                var rc = queryResult.TryGetValue<int>("pinType", out outvalue);
+                var pintypequeryresult = queryResult.GetValue<int>("pinType");
+                if (pintypequeryresult == Convert.ToInt32(pinType))
                 {
                     WriteResult result = await collection.Document(queryResult.Id).DeleteAsync();
                     // mark as processed
@@ -354,7 +359,7 @@ namespace crds_angular.Services
         private async Task AddPinToFirestoreAsync(int participantid, string pinType)
         {       
             var apiToken = _apiUserRepository.GetDefaultApiClientToken();
-            var address = new MpAddress();
+            var address = new AddressDTO();
             try
             {
                 int contactid = _contactRepository.GetContactIdByParticipantId(participantid);
@@ -362,7 +367,7 @@ namespace crds_angular.Services
                 // get the address including lat/lon
                 if (contact.Address_ID != null)
                 {
-                    address = _addressRepository.GetAddressById(apiToken, (int)contact.Address_ID);
+                    address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)contact.Address_ID)))
                 }
                 else
                 {
