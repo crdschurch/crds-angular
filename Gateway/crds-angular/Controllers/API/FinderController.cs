@@ -78,6 +78,27 @@ namespace crds_angular.Controllers.API
             }
         }
 
+        [RequiresAuthorization]
+        [VersionedRoute(template: "map20/sayhitoparticipant/{toParticipantId}", minimumVersion: "1.0.0")]
+        [Route("map20/sayhitoparticipant/{toParticipantId}")]
+        [HttpPost]
+        public IHttpActionResult SayHiToParticipant( [FromUri]int toParticipantId, [FromBody]SayHiDTO hi)
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    _finderService.SayHiToParticipant(token, toParticipantId, hi.Message);
+                    return Ok();
+                }
+                catch (Exception e)
+                {
+                    var apiError = new ApiErrorDto("Say Hi To Participant Failed", e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
+
         [ResponseType(typeof(PinDto))]
         [VersionedRoute(template: "finder/pin/{participantId}", minimumVersion: "1.0.0")]
         [Route("finder/pin/{participantId}")]
