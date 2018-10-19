@@ -143,7 +143,7 @@ namespace Crossroads.ScheduledDataUpdate
                 modeSelected = true;
                 try
                 {
-                    const int almost24hours = 1430 * 60 * 1000;
+                    const int fiveminutes = (60 * 5) * 1000;
                     Log.Info("Starting Connect Map Update to Firestore");
                     var conStr = ConfigurationManager.ConnectionStrings["MessageQueueDBAccess"].ToString();
                     conStr = conStr.Replace("%MP_API_DB_QUEUE_USER%", Environment.GetEnvironmentVariable("MP_API_DB_QUEUE_USER"));
@@ -152,7 +152,7 @@ namespace Crossroads.ScheduledDataUpdate
                     string query = "select AuditID, Participant_ID, ShowOnMap, processed from dbo.cr_MapAudit where processed=0 ";
                     var watcher = new DbWatcher(conStr, queueName, query, _finderService);
                     watcher.Start();
-                    Thread.Sleep(almost24hours);
+                    Thread.Sleep(fiveminutes);
                     watcher.Stop();
                     Log.Info("Finished Connect Map Update to Firestore successfully");
                 }
