@@ -48,8 +48,8 @@
     <div ng-repeat="result in search.results.hits.hit" class="card-item search-card clearfix push-bottom" data-category="view">
       <div class="border-sides border-ends soft">
         <div>
-          <h4 class="flush-top push-quarter-bottom text-ellipsis text-gray-dark"><a href="{{search.getLink(result.fields)}}">{{result.fields.title}}</a></h4>
-          <a href="{{search.getLink(result.fields)}}" class="search-link text-ellipsis font-size-small text-muted">{{search.getLink(result.fields)}}</a>
+          <h4 class="flush-top push-quarter-bottom text-ellipsis text-gray-dark"><a target="_self" href="{{search.getLink(result.fields)}}">{{result.fields.title}}</a></h4>
+          <a target="_self" href="{{search.getLink(result.fields)}}" class="search-link text-ellipsis font-size-small text-muted">{{search.getLink(result.fields)}}</a>
         </div>
         <div class="push-half-top font-size-small">
           <div class="row">
