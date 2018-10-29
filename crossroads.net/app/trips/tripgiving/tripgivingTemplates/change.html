@@ -29,7 +29,10 @@
       </textarea>
     </div>
   </div>
-	<bank-credit-card-details
+
+<div class="table-contrast-bg push-bottom">
+  <h4 class="flush-top">Payment Details</h4>
+  <bank-credit-card-details
      dto='tripGiving.dto'
      bank-info-submitted='tripGiving.dto.bankinfoSubmitted'
      show-check-class='tripGiving.showCheckClass'
@@ -39,9 +42,11 @@
      set-valid-cvc='setValidCvc'
      account-state-name='tripGiving.account' >
   </bank-credit-card-details>
+</div>
+
 	<button ng-click="tripGiving.donationService.submitChangedBankInfo(tripGiving.tripForm)"
     ng-disabled="tripGiving.dto.processing"
-    class="btn btn-primary btn-lg btn-block-mobile tripGiving-button">
+    class="btn btn-primary btn-lg btn-block-mobile tripGiving-button pull-right">
 		<span ng-if="tripGiving.dto.processing">Giving...</span>
 		<span ng-if="!tripGiving.dto.processing">Give {{tripGiving.dto.amount | currency}}</span>
         <svg viewBox="0 0 32 32" class="icon-medium icon-arrow-right9">
