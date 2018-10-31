@@ -307,13 +307,15 @@ namespace crds_angular.Services
             {
                 // get the photo from someplace
                 var memStream = _imageService.GetParticipantImage(participantId);
-                
-                var client = StorageClient.Create();
+                if (memStream != null)
+                {
+                    var client = StorageClient.Create();
 
-                var bucketName = _googleStorageBucketId;
-                var bucket = client.GetBucket(bucketName);
-                var photoUpload = client.UploadObject(bucketName, $"{participantId}.jpg", "image/jpeg", memStream);
-                urlForPhoto = photoUpload.MediaLink;
+                    var bucketName = _googleStorageBucketId;
+                    var bucket = client.GetBucket(bucketName);
+                    var photoUpload = client.UploadObject(bucketName, $"{participantId}.jpg", "image/jpeg", memStream);
+                    urlForPhoto = photoUpload.MediaLink;
+                }
             }
             catch (Exception ex)
             {
@@ -409,8 +411,10 @@ namespace crds_angular.Services
 
                 var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
 
+                var url = SendProfilePhotoToFirestore(participantid);
+
                 // create the pin object
-                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash);
+                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash, url);
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
