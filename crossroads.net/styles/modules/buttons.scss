@@ -22,6 +22,9 @@ $button-border-darken-amount: 15%;
   .cr-reskin & {
     @include button-variant($btn-primary-color, $cr-streaming-blue, darken($cr-streaming-blue, 10));
   }
+  &.btn-outline {
+    @include button-variant($btn-primary-border, transparent, $btn-primary-border);
+  }
 }
 // Success appears as green
 .btn-success {
