@@ -12,6 +12,7 @@ using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using Google.Cloud.Firestore;
+using Google.Cloud.Storage.V1;
 using log4net;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Finder;
@@ -63,6 +64,7 @@ namespace crds_angular.Services
         private readonly ILookupService _lookupService;
         private readonly ILocationService _locationService;
         private readonly IAddressRepository _addressRepository;
+        private readonly IImageService _imageService;
         private readonly int _approvedHost;
         private readonly int _pendingHost;
         private readonly int _anywhereGroupType;
@@ -95,6 +97,7 @@ namespace crds_angular.Services
         private readonly int _sayHiWithMessageTemplateId;
         private readonly int _sayHiWithoutMessageTemplateId;
         private readonly string _firestoreProjectId;
+        private readonly string _googleStorageBucketId;
 
         private readonly Random _random = new Random(DateTime.Now.Millisecond);
         private const double MinutesInDegree = 60;
@@ -122,7 +125,8 @@ namespace crds_angular.Services
             ILookupService lookupService,
             IAnalyticsService analyticsService,
             ILocationService locationService,
-            IAddressRepository addressRepository
+            IAddressRepository addressRepository,
+            IImageService imageService
         )
         {
             // services
@@ -145,6 +149,7 @@ namespace crds_angular.Services
             _analyticsService = analyticsService;
             _locationService = locationService;
             _addressRepository = addressRepository;
+            _imageService = imageService;
             // constants
             _anywhereCongregationId = _configurationWrapper.GetConfigIntValue("AnywhereCongregationId");
             _approvedHost = configurationWrapper.GetConfigIntValue("ApprovedHostStatus");
@@ -182,6 +187,7 @@ namespace crds_angular.Services
             _sayHiWithoutMessageTemplateId = configurationWrapper.GetConfigIntValue("sayHiWithoutMessageTemplateId");
 
             _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
+            _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
         }
 
         public MeDTO GetMe(string token)
@@ -294,6 +300,28 @@ namespace crds_angular.Services
             return person;
         }
 
+        public string SendProfilePhotoToFirestore(int participantId)
+        {
+            string urlForPhoto = "";
+            try
+            {
+                // get the photo from someplace
+                var memStream = _imageService.GetParticipantImage(participantId);
+                
+                var client = StorageClient.Create();
+
+                var bucketName = _googleStorageBucketId;
+                var bucket = client.GetBucket(bucketName);
+                var photoUpload = client.UploadObject(bucketName, $"{participantId}.jpg", "image/jpeg", memStream);
+                urlForPhoto = photoUpload.MediaLink;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return urlForPhoto;
+        }
+        
         public async Task ProcessMapAuditRecords()
         {
             try
