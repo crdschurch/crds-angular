@@ -92,7 +92,17 @@ namespace Crossroads.ScheduledDataUpdate
             var modeSelected = false;
             AutoMapperConfig.RegisterMappings();
 
-            if (options.UpdateAddressLatLong)
+            if (options.philiscool)
+            {
+                //var a = new GoogleUpload();
+                //a.Upload();
+
+
+                //return 0;
+                _finderService.SendProfilePhotoToFirestore(5989947);
+            }
+
+                if (options.UpdateAddressLatLong)
             {
                 modeSelected = true;
                 try

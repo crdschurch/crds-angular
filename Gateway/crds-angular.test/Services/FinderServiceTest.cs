@@ -51,6 +51,7 @@ namespace crds_angular.test.Services
         private Mock<IAnalyticsService> _analyticsService;
         private Mock<ILocationService> _locationService;
         private Mock<IAddressRepository> _addressRepository;
+        private Mock<IImageService> _imageService;
 
         private int _memberRoleId = 16;
         private int _trialMemberRoldId = 39;
@@ -85,7 +86,7 @@ namespace crds_angular.test.Services
             _analyticsService = new Mock<IAnalyticsService>();
             _locationService = new Mock<ILocationService>();
             _addressRepository = new Mock<IAddressRepository>();
-
+            _imageService = new Mock<IImageService>();
 
 
             _mpFinderServiceMock = new Mock<IFinderService>(MockBehavior.Strict);
@@ -132,7 +133,8 @@ namespace crds_angular.test.Services
                                          _lookupService.Object,
                                          _analyticsService.Object,
                                          _locationService.Object,
-                                         _addressRepository.Object);
+                                         _addressRepository.Object,
+                                         _imageService.Object);
 
             //force AutoMapper to register
             AutoMapperConfig.RegisterMappings();
