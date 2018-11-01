@@ -45,10 +45,6 @@ namespace Crossroads.ScheduledDataUpdate
             HelpText = "Update latitude and longitude for given addess ids'")]
         public bool UpdateAddressLatLong { get; set; }
 
-        [Option("philiscool", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
-            HelpText = "philiscool")]
-        public bool philiscool { get; set; }
-
         [ParserState]
         public IParserState LastParserState { get; set; }
 
