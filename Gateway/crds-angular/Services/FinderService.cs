@@ -313,7 +313,7 @@ namespace crds_angular.Services
 
                     var bucketName = _googleStorageBucketId;
                     var bucket = client.GetBucket(bucketName);
-                    var photoUpload = client.UploadObject(bucketName, $"{participantId}.jpg", "image/jpeg", memStream);
+                    var photoUpload = client.UploadObject(bucketName, $"{participantId}.png", "image/png", memStream);
                     urlForPhoto = photoUpload.MediaLink;
                 }
             }
