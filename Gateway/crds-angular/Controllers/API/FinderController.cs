@@ -78,6 +78,24 @@ namespace crds_angular.Controllers.API
             }
         }
 
+        [ResponseType(typeof(int))]
+        [VersionedRoute(template: "map20/getparticipantid/{contactId}", minimumVersion: "1.0.0")]
+        [Route("map20/getparticipantid/{contactId}")]
+        [HttpGet]
+        public IHttpActionResult GetParticipantId([FromUri]int contactId)
+        {
+            try
+            {
+                var participantId = _finderService.GetParticipantIdFromContact(contactId);
+                return Ok(participantId);
+            }
+            catch (Exception ex)
+            {
+                var apiError = new ApiErrorDto("GetParticipantId Failed", ex);
+                throw new HttpResponseException(apiError.HttpResponseMessage);
+            }
+        }
+
         [RequiresAuthorization]
         [VersionedRoute(template: "map20/sayhitoparticipant/{toParticipantId}", minimumVersion: "1.0.0")]
         [Route("map20/sayhitoparticipant/{toParticipantId}")]
