@@ -26,6 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 
@@ -232,20 +233,8 @@ namespace crds_angular.Services
                     _addressRepository.Update(Mapper.Map<MpAddress>(addressDTO));
                 }
 
-                //show on map
-                MpMyContact contact = _contactRepository.GetMyProfile(token);
-                MpParticipant participant = _participantRepository.GetParticipant(contact.Contact_ID);
-
-                if (medto.ShowOnMap == true)
-                {
-                    EnablePin(participant.ParticipantId);
-                }
-                else
-                {
-                    DisablePin(participant.ParticipantId);
-                }
-
                 // congregation
+                MpMyContact contact = _contactRepository.GetMyProfile(token);
                 var household = new MpHousehold
                 {
                     Address_ID = contact.Address_ID ?? addressDTO.AddressID,
@@ -254,6 +243,20 @@ namespace crds_angular.Services
                     Home_Phone = contact.Home_Phone
                 };
                 _contactRepository.UpdateHousehold(household);
+
+                //show on map
+                MpParticipant participant = _participantRepository.GetParticipant(contact.Contact_ID);
+
+                if (medto.ShowOnMap == true)
+                {
+                    DisablePin(participant.ParticipantId);
+                    Thread.Sleep(1000);
+                    EnablePin(participant.ParticipantId);
+                }
+                else
+                {
+                    DisablePin(participant.ParticipantId);
+                }
             }
             catch(Exception e)
             {
