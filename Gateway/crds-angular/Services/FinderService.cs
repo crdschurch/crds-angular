@@ -573,69 +573,6 @@ namespace crds_angular.Services
             }
         }
 
-        public void RequestToBeHost(string token, HostRequestDto hostRequest)
-        {
-            //check if they are already a host at this address. If they are then throw
-            GatheringValidityCheck(hostRequest.ContactId, hostRequest.Address);
-
-            // get contact data
-            var contact = _contactRepository.GetContactById(hostRequest.ContactId);
-            var participant = _participantRepository.GetParticipant(hostRequest.ContactId);
-
-            if (participant.HostStatus != _approvedHost)
-            {
-                participant.HostStatus = _pendingHost;
-                _participantRepository.UpdateParticipantHostStatus(participant);
-            }
-
-            //update mobile phone number on contact record
-            contact.Mobile_Phone = hostRequest.ContactNumber;
-            var updateToDictionary = new Dictionary<string, object>
-            {
-                {"Contact_ID", hostRequest.ContactId},
-                {"Mobile_Phone", hostRequest.ContactNumber},
-                {"First_Name", contact.First_Name}
-            };
-            _contactRepository.UpdateContact(hostRequest.ContactId, updateToDictionary);
-
-            // create the address for the group
-            var hostAddressId = _addressService.CreateAddress(hostRequest.Address);
-            hostRequest.Address.AddressID = hostAddressId;
-
-            // create the group
-            var group = new GroupDTO();
-            group.GroupName = contact.Nickname + " " + contact.Last_Name[0];
-            group.GroupDescription = hostRequest.GroupDescription;
-            group.ContactId = hostRequest.ContactId;
-            group.PrimaryContactEmail = contact.Email_Address;
-            group.PrimaryContactName = contact.Nickname + " " + contact.Last_Name;
-            group.Address = hostRequest.Address;
-            group.StartDate = DateTime.Now;
-            group.AvailableOnline = false;
-            group.GroupFullInd = false;
-            group.ChildCareAvailable = false;
-            group.CongregationId = _anywhereCongregationId;
-            group.GroupTypeId = _anywhereGroupType;
-            group.MinistryId = _spritualGrowthMinistryId;
-            group.MeetingTime = null;
-
-            _groupService.CreateGroup(group);
-
-            //add our contact to the group as a leader
-            var participantSignup = new ParticipantSignup
-            {
-                particpantId = participant.ParticipantId,
-                groupRoleId = _configurationWrapper.GetConfigIntValue("GroupRoleLeader")
-            };
-            _groupService.addParticipantToGroupNoEvents(group.GroupId, participantSignup);
-
-            //check if we also need to update the home address
-            if (!hostRequest.IsHomeAddress) return;
-            var addressId = _addressService.CreateAddress(hostRequest.Address);
-            // assign new id to users household
-            _contactRepository.SetHouseholdAddress(hostRequest.ContactId, contact.Household_ID, addressId);
-        }
-
         public void GatheringJoinRequest(string token, int gatheringId)
         {
             var group = _groupService.GetGroupDetails(gatheringId);
