@@ -262,26 +262,6 @@ namespace crds_angular.Controllers.API
             }
         }
 
-
-        [ResponseType(typeof(AddressDTO))]
-        [VersionedRoute(template: "finder/pinbyip/{ipAddress}", minimumVersion: "1.0.0")]
-        [Route("finder/pinbyip/{ipAddress}")]
-        [HttpGet]
-        public IHttpActionResult GetPinByIpAddress([FromUri]string ipAddress)
-        {
-            try
-            {
-                var address = _finderService.GetAddressForIp(ipAddress.Replace('$','.'));
-                return Ok(address);
-            }
-            catch (Exception ex)
-            {
-                var apiError = new ApiErrorDto("Get Pin By Ip Failed", ex);
-                throw new HttpResponseException(apiError.HttpResponseMessage);
-            }
-        }
-
-
         [RequiresAuthorization]
         [ResponseType(typeof(AddressDTO))]
         [VersionedRoute(template: "finder/group/address/{groupId}", minimumVersion: "1.0.0")]
@@ -832,40 +812,6 @@ namespace crds_angular.Controllers.API
                 {
                     var apiError = new ApiErrorDto("Say Hi Failed", e);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-            });
-        }
-
-        /// <summary>
-        /// Logged in user requests to be a host
-        /// </summary>
-        [RequiresAuthorization]
-        [VersionedRoute(template: "finder/pin/requesttobehost", minimumVersion: "1.0.0")]
-        [Route("finder/pin/requesttobehost")]
-        [HttpPost]
-        public IHttpActionResult RequestToBeHost([FromBody]HostRequestDto hostRequest)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    _finderService.RequestToBeHost(token, hostRequest);
-
-                    // Call Analytics
-                    var props = new EventProperties {{"City", hostRequest.Address.City}, {"State", hostRequest.Address.State}, {"Zip", hostRequest.Address.PostalCode}};
-                    _analyticsService.Track(hostRequest.ContactId.ToString(), "RegisteredAsHost", props);
-
-                    return Ok();
-                }
-                catch (GatheringException e)
-                {
-                    _logger.Error("Host already has a gathering at this location.", e);
-                    throw new HttpResponseException(HttpStatusCode.NotAcceptable);
-                }
-                catch (Exception e)
-                {
-                    _logger.Error("Could not generate request", e);
-                    throw new HttpResponseException(new ApiErrorDto("Gathering request failed", e).HttpResponseMessage);
                 }
             });
         }

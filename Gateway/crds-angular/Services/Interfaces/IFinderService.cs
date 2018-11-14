@@ -16,7 +16,6 @@ namespace crds_angular.Services.Interfaces
         void EnablePin(int participantId);
         void DisablePin(int participantId);
         void UpdateHouseholdAddress(PinDto pin);
-        AddressDTO GetAddressForIp(string ip);
         List<PinDto> GetMyPins(string token, GeoCoordinate originCoords, int contactId, string finderType);
         List<PinDto> GetMyGroupPins(string token, int[] groupTypeIds, int participantId, string finderType);
         int GetParticipantIdFromContact(int contactId);
@@ -31,7 +30,6 @@ namespace crds_angular.Services.Interfaces
         AddressDTO GetGroupAddress(int groupId);
         AddressDTO GetPersonAddress(string token, int participantId = -1, bool shouldGetFullAddress = true);
         PinDto UpdateGathering(PinDto pin);
-        void RequestToBeHost(string token, HostRequestDto hostRequest);
         void AcceptDenyGroupInvitation(string token, int groupId, string invitationGuid, bool accept);
         void SayHi(int fromContactId, int toContactId, string message);
         List<PinDto> RandomizeLatLongForNonSitePins(List<PinDto> pins);
