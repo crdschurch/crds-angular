@@ -12,6 +12,7 @@ using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using Google.Cloud.Firestore;
+using Google.Cloud.Storage.V1;
 using log4net;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Finder;
@@ -25,6 +26,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 
@@ -63,6 +65,7 @@ namespace crds_angular.Services
         private readonly ILookupService _lookupService;
         private readonly ILocationService _locationService;
         private readonly IAddressRepository _addressRepository;
+        private readonly IImageService _imageService;
         private readonly int _approvedHost;
         private readonly int _pendingHost;
         private readonly int _anywhereGroupType;
@@ -95,6 +98,7 @@ namespace crds_angular.Services
         private readonly int _sayHiWithMessageTemplateId;
         private readonly int _sayHiWithoutMessageTemplateId;
         private readonly string _firestoreProjectId;
+        private readonly string _googleStorageBucketId;
 
         private readonly Random _random = new Random(DateTime.Now.Millisecond);
         private const double MinutesInDegree = 60;
@@ -122,7 +126,8 @@ namespace crds_angular.Services
             ILookupService lookupService,
             IAnalyticsService analyticsService,
             ILocationService locationService,
-            IAddressRepository addressRepository
+            IAddressRepository addressRepository,
+            IImageService imageService
         )
         {
             // services
@@ -145,6 +150,7 @@ namespace crds_angular.Services
             _analyticsService = analyticsService;
             _locationService = locationService;
             _addressRepository = addressRepository;
+            _imageService = imageService;
             // constants
             _anywhereCongregationId = _configurationWrapper.GetConfigIntValue("AnywhereCongregationId");
             _approvedHost = configurationWrapper.GetConfigIntValue("ApprovedHostStatus");
@@ -182,6 +188,7 @@ namespace crds_angular.Services
             _sayHiWithoutMessageTemplateId = configurationWrapper.GetConfigIntValue("sayHiWithoutMessageTemplateId");
 
             _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
+            _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
         }
 
         public MeDTO GetMe(string token)
@@ -226,20 +233,8 @@ namespace crds_angular.Services
                     _addressRepository.Update(Mapper.Map<MpAddress>(addressDTO));
                 }
 
-                //show on map
-                MpMyContact contact = _contactRepository.GetMyProfile(token);
-                MpParticipant participant = _participantRepository.GetParticipant(contact.Contact_ID);
-
-                if (medto.ShowOnMap == true)
-                {
-                    EnablePin(participant.ParticipantId);
-                }
-                else
-                {
-                    DisablePin(participant.ParticipantId);
-                }
-
                 // congregation
+                MpMyContact contact = _contactRepository.GetMyProfile(token);
                 var household = new MpHousehold
                 {
                     Address_ID = contact.Address_ID ?? addressDTO.AddressID,
@@ -248,6 +243,20 @@ namespace crds_angular.Services
                     Home_Phone = contact.Home_Phone
                 };
                 _contactRepository.UpdateHousehold(household);
+
+                //show on map
+                MpParticipant participant = _participantRepository.GetParticipant(contact.Contact_ID);
+
+                if (medto.ShowOnMap == true)
+                {
+                    DisablePin(participant.ParticipantId);
+                    Thread.Sleep(1000);
+                    EnablePin(participant.ParticipantId);
+                }
+                else
+                {
+                    DisablePin(participant.ParticipantId);
+                }
             }
             catch(Exception e)
             {
@@ -294,6 +303,30 @@ namespace crds_angular.Services
             return person;
         }
 
+        public string SendProfilePhotoToFirestore(int participantId)
+        {
+            string urlForPhoto = "";
+            try
+            {
+                // get the photo from someplace
+                var memStream = _imageService.GetParticipantImage(participantId);
+                if (memStream != null)
+                {
+                    var client = StorageClient.Create();
+
+                    var bucketName = _googleStorageBucketId;
+                    var bucket = client.GetBucket(bucketName);
+                    var photoUpload = client.UploadObject(bucketName, $"{participantId}.png", "image/png", memStream);
+                    urlForPhoto = photoUpload.MediaLink;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return urlForPhoto;
+        }
+        
         public async Task ProcessMapAuditRecords()
         {
             try
@@ -381,8 +414,10 @@ namespace crds_angular.Services
 
                 var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
 
+                var url = SendProfilePhotoToFirestore(participantid);
+
                 // create the pin object
-                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash);
+                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash, url);
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");

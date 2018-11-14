@@ -52,5 +52,6 @@ namespace crds_angular.Services.Interfaces
         MeDTO GetMe(string token);
         void SaveMe(string token, MeDTO medto);
         void SayHiToParticipant(string token, int toParticipantId, string message);
+        string SendProfilePhotoToFirestore(int participantId);
     }
 }
