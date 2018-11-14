@@ -389,53 +389,7 @@ namespace crds_angular.Controllers.API
             });
         }
 
-        /// <summary>
-        /// Create Pin with provided address details
-        /// </summary>
-        [RequiresAuthorization]
-        [ResponseType(typeof(PinDto))]
-        [VersionedRoute(template: "finder/pin", minimumVersion: "1.0.0")]
-        [Route("finder/pin")]
-        [HttpPost]
-        public IHttpActionResult PostPin([FromBody] PinDto pin)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-
-                    if (pin.Address != null && string.IsNullOrEmpty(pin.Address.AddressLine1) == false)
-                    {
-                        _finderService.UpdateHouseholdAddress(pin);
-                    }
-
-                    if (pin.Participant_ID == 0 || string.IsNullOrEmpty(pin.Participant_ID.ToString()))
-                    {
-                        pin.Participant_ID =_finderService.GetParticipantIdFromContact((int)pin.Contact_ID);
-                    }
-
-                    _finderService.EnablePin((int)pin.Participant_ID);
-                    _logger.DebugFormat("Successfully created pin for contact {0} ", pin.Contact_ID);
-
-                    //Ensure that address id is available
-                    var personPin = _finderService.GetPinDetailsForPerson((int)pin.Participant_ID);
-
-                    //Call  analytics
-                    var props = new EventProperties {{"City", pin?.Address?.City}, {"State", pin?.Address?.State}, {"Zip", pin?.Address?.PostalCode}};
-                    _analyticsService.Track(pin.Contact_ID.ToString(), "AddedtoMap", props);
-
-                    _awsCloudsearchService.UploadNewPinToAws(personPin); 
-
-                    return (Ok(pin));
-                }
-                catch (Exception e)
-                {
-                    _logger.Error("Could not create pin", e);
-                    var apiError = new ApiErrorDto("Save Pin Failed", e);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-            });
-        }
+ 
 
         /// <summary>
         /// Create Pin with provided address details
