@@ -191,6 +191,14 @@ namespace crds_angular.Services
             _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
         }
 
+        public async Task UpdateInFirebaseIfOnMap(int contactid)
+        {
+            if( IsUserOnMap(contactid))
+            {
+                await PinToFirestoreAsync(GetParticipantIdFromContact(contactid), true, "1");
+            }
+        }
+
         public MeDTO GetMe(string token)
         {
             var addr = GetPersonAddress(token);

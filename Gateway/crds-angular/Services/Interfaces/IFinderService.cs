@@ -51,5 +51,6 @@ namespace crds_angular.Services.Interfaces
         void SaveMe(string token, MeDTO medto);
         void SayHiToParticipant(string token, int toParticipantId, string message);
         string SendProfilePhotoToFirestore(int participantId);
+        Task UpdateInFirebaseIfOnMap(int contactid);
     }
 }

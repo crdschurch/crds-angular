@@ -25,7 +25,7 @@ AS BEGIN
 END
 GO
 
-ALTER TABLE [dbo].[Households] ENABLE TRIGGER [tr_Address_Update]
+ALTER TABLE [dbo].[Households] ENABLE TRIGGER [tr_Households_Update]
 GO
 
 
