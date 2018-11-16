@@ -166,6 +166,20 @@ namespace crds_angular.Controllers.API
                 (RestHttpActionResult<ApiErrorDto>.WithStatus(HttpStatusCode.NotFound, new ApiErrorDto("No campaign image found")));
         }
 
+
+
+
+        [VersionedRoute(template: "image/phil", minimumVersion: "1.0.0")]
+        [Route("image/phil")]
+        [HttpGet]
+        [IgnoreClientApiKey]
+        public IHttpActionResult Phil(int recordId)
+        {
+            _finderService.UpdateInFirebaseIfOnMap(6089102);
+            return Ok();
+        }
+
+
         [VersionedRoute(template: "image/profile", minimumVersion: "1.0.0")]
         [Route("image/profile")]
         [HttpPost]
