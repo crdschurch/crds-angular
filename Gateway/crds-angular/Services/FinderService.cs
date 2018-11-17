@@ -337,7 +337,16 @@ namespace crds_angular.Services
         {
             var client = StorageClient.Create();
             var bucketName = _googleStorageBucketId;
-            client.DeleteObject(bucketName, $"{participantId}.png");
+
+            try
+            {
+                client.DeleteObject(bucketName, $"{participantId}.png");
+            }
+            catch(Exception ex)
+            {
+                //likely here because file does not exist in bucket
+                Console.WriteLine(ex.Message);
+            }
         }
         
         public async Task ProcessMapAuditRecords()
