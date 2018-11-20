@@ -560,6 +560,7 @@
     <Compile Include="Models\Map\MapLocation.cs" />
     <Compile Include="Models\Map\MapPin.cs" />
     <Compile Include="Processors\SendTextMessageJob.cs" />
+    <Compile Include="Security\ImpersonateAuthBaseController.cs" />
     <Compile Include="Services\AddressService.cs" />
     <Compile Include="Services\Analytics\AnalyticsAstronomer.cs" />
     <Compile Include="Services\Analytics\AnalyticsService.cs" />
