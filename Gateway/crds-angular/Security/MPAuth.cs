@@ -13,6 +13,7 @@ using System.Net.Http.Headers;
 
 namespace crds_angular.Security
 {
+    [Obsolete("This base class has been replaced with ImpersonateAuthBaseController")]
     public class MPAuth : ApiController
     {
         protected readonly log4net.ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -37,6 +38,7 @@ namespace crds_angular.Security
         /// </summary>
         /// <param name="doIt">A lambda expression to execute if the user is authenticated</param>
         /// <returns>An IHttpActionResult from the "doIt" expression, or UnauthorizedResult if the user is not authenticated.</returns>
+        [Obsolete("This method has been replaced with corresponding method in ImpersonateAuthBaseController")]
         protected IHttpActionResult Authorized(Func<string,IHttpActionResult> doIt )
         {
             return (Authorized(doIt, () => { return (Unauthorized()); }));
@@ -50,6 +52,7 @@ namespace crds_angular.Security
         /// <param name="actionWhenAuthorized">A lambda expression to execute if the user is authenticated</param>
         /// <param name="actionWhenNotAuthorized">A lambda expression to execute if the user is NOT authenticated</param>
         /// <returns>An IHttpActionResult from the lambda expression that was executed.</returns>
+        [Obsolete("This method has been replaced with corresponding method in ImpersonateAuthBaseController")]
         protected IHttpActionResult Authorized(Func<string, IHttpActionResult> actionWhenAuthorized, Func<IHttpActionResult> actionWhenNotAuthorized)
         {
             try
