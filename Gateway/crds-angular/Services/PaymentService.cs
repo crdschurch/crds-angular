@@ -386,10 +386,6 @@ namespace crds_angular.Services
             };
 
             var comm = _communicationRepository.GetTemplateAsCommunication(templateId,
-              primaryContactId,
-              primaryContact.Email_Address,
-              primaryContactId,
-              primaryContact.Email_Address,
               me.Contact_ID,
               me.Email_Address,
               mergeData);
