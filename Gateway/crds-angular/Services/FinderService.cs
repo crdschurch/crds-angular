@@ -191,14 +191,6 @@ namespace crds_angular.Services
             _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
         }
 
-        public async Task UpdateInFirebaseIfOnMap(int contactid)
-        {
-            if( IsUserOnMap(contactid))
-            {
-                await PinToFirestoreAsync(GetParticipantIdFromContact(contactid), true, "1");
-            }
-        }
-
         public MeDTO GetMe(string token)
         {
             var addr = GetPersonAddress(token);
@@ -257,6 +249,8 @@ namespace crds_angular.Services
 
                 if (medto.ShowOnMap == true)
                 {
+                    DisablePin(participant.ParticipantId);
+                    Thread.Sleep(1000);
                     EnablePin(participant.ParticipantId);
                 }
                 else
@@ -378,7 +372,6 @@ namespace crds_angular.Services
             Console.WriteLine($"participantid = {participantid}, showonmap = {showOnMap}, pintype = {pinType}");
             if (showOnMap)
             {
-                await DeletePinFromFirestoreAsync(participantid, pinType);
                 return await AddPinToFirestoreAsync(participantid, pinType);
             }
             else
@@ -410,6 +403,8 @@ namespace crds_angular.Services
                 if (pintypequeryresult == Convert.ToInt32(pinType))
                 {
                     WriteResult result = await collection.Document(queryResult.Id).DeleteAsync();
+                    // mark as processed
+                    
                     Console.WriteLine(result.ToString());
                 }
             }

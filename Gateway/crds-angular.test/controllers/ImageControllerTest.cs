@@ -26,7 +26,6 @@ namespace crds_angular.test.controllers
         private Mock<IUserImpersonationService> _userImpersonationService;
         private Mock<IConfigurationWrapper> _configurationWrapper;
         private Mock<IContactRepository> _contactRepository;
-        private Mock<IFinderService> _finderService;
 
         private List<Type> _attributesThatRequireApiKey;
 
@@ -47,7 +46,6 @@ namespace crds_angular.test.controllers
             _userImpersonationService = new Mock<IUserImpersonationService>();
             _configurationWrapper = new Mock<IConfigurationWrapper>();
             _contactRepository = new Mock<IContactRepository>();
-            _finderService = new Mock<IFinderService>();
 
             _fixture = new ImageController(_authTokenExpiryService.Object, 
                                            _mpService.Object, 
@@ -55,8 +53,7 @@ namespace crds_angular.test.controllers
                                            _apiUserRepository.Object, 
                                            _userImpersonationService.Object, 
                                            _configurationWrapper.Object,
-                                           _contactRepository.Object,
-                                           _finderService.Object);
+                                           _contactRepository.Object);
         }
 
         [Test]
