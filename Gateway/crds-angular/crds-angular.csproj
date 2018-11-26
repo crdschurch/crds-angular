@@ -91,8 +91,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Crossroads.Web.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Crossroads.Web.Common.2.0.6\lib\net461\Crossroads.Web.Common.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Crossroads.Web.Common.2.0.10\lib\net461\Crossroads.Web.Common.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -560,6 +559,7 @@
     <Compile Include="Models\Map\MapLocation.cs" />
     <Compile Include="Models\Map\MapPin.cs" />
     <Compile Include="Processors\SendTextMessageJob.cs" />
+    <Compile Include="Security\ImpersonateAuthBaseController.cs" />
     <Compile Include="Services\AddressService.cs" />
     <Compile Include="Services\Analytics\AnalyticsAstronomer.cs" />
     <Compile Include="Services\Analytics\AnalyticsService.cs" />

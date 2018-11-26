@@ -262,26 +262,6 @@ namespace crds_angular.Controllers.API
             }
         }
 
-
-        [ResponseType(typeof(AddressDTO))]
-        [VersionedRoute(template: "finder/pinbyip/{ipAddress}", minimumVersion: "1.0.0")]
-        [Route("finder/pinbyip/{ipAddress}")]
-        [HttpGet]
-        public IHttpActionResult GetPinByIpAddress([FromUri]string ipAddress)
-        {
-            try
-            {
-                var address = _finderService.GetAddressForIp(ipAddress.Replace('$','.'));
-                return Ok(address);
-            }
-            catch (Exception ex)
-            {
-                var apiError = new ApiErrorDto("Get Pin By Ip Failed", ex);
-                throw new HttpResponseException(apiError.HttpResponseMessage);
-            }
-        }
-
-
         [RequiresAuthorization]
         [ResponseType(typeof(AddressDTO))]
         [VersionedRoute(template: "finder/group/address/{groupId}", minimumVersion: "1.0.0")]
@@ -409,84 +389,7 @@ namespace crds_angular.Controllers.API
             });
         }
 
-        /// <summary>
-        /// Create Pin with provided address details
-        /// </summary>
-        [RequiresAuthorization]
-        [ResponseType(typeof(PinDto))]
-        [VersionedRoute(template: "finder/pin", minimumVersion: "1.0.0")]
-        [Route("finder/pin")]
-        [HttpPost]
-        public IHttpActionResult PostPin([FromBody] PinDto pin)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-
-                    if (pin.Address != null && string.IsNullOrEmpty(pin.Address.AddressLine1) == false)
-                    {
-                        _finderService.UpdateHouseholdAddress(pin);
-                    }
-
-                    if (pin.Participant_ID == 0 || string.IsNullOrEmpty(pin.Participant_ID.ToString()))
-                    {
-                        pin.Participant_ID =_finderService.GetParticipantIdFromContact((int)pin.Contact_ID);
-                    }
-
-                    _finderService.EnablePin((int)pin.Participant_ID);
-                    _logger.DebugFormat("Successfully created pin for contact {0} ", pin.Contact_ID);
-
-                    //Ensure that address id is available
-                    var personPin = _finderService.GetPinDetailsForPerson((int)pin.Participant_ID);
-
-                    //Call  analytics
-                    var props = new EventProperties {{"City", pin?.Address?.City}, {"State", pin?.Address?.State}, {"Zip", pin?.Address?.PostalCode}};
-                    _analyticsService.Track(pin.Contact_ID.ToString(), "AddedtoMap", props);
-
-                    _awsCloudsearchService.UploadNewPinToAws(personPin); 
-
-                    return (Ok(pin));
-                }
-                catch (Exception e)
-                {
-                    _logger.Error("Could not create pin", e);
-                    var apiError = new ApiErrorDto("Save Pin Failed", e);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-            });
-        }
-
-        /// <summary>
-        /// Remove pin from map
-        /// </summary>
-        [RequiresAuthorization]
-        [VersionedRoute(template: "finder/pin/removeFromMap", minimumVersion: "1.0.0")]
-        [Route("finder/pin/removeFromMap")]
-        [HttpPost]
-        public IHttpActionResult RemovePinFromMap([FromBody] int participantId)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    _finderService.DisablePin(participantId);
-                    _awsCloudsearchService.DeleteSingleConnectRecordInAwsCloudsearch(participantId, 1);
-
-                    // Call  analytics
-                    _analyticsService.Track(AuthenticationRepository.GetContactId(token).ToString(), "RemovedFromMap");
-
-                    return Ok();
-
-                }
-                catch (Exception e)
-                {
-                    _logger.Error("Could not create pin", e);
-                    var apiError = new ApiErrorDto("Remove pin from map failed", e);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-            });
-        }
+ 
 
         /// <summary>
         /// Create Pin with provided address details
@@ -832,40 +735,6 @@ namespace crds_angular.Controllers.API
                 {
                     var apiError = new ApiErrorDto("Say Hi Failed", e);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-            });
-        }
-
-        /// <summary>
-        /// Logged in user requests to be a host
-        /// </summary>
-        [RequiresAuthorization]
-        [VersionedRoute(template: "finder/pin/requesttobehost", minimumVersion: "1.0.0")]
-        [Route("finder/pin/requesttobehost")]
-        [HttpPost]
-        public IHttpActionResult RequestToBeHost([FromBody]HostRequestDto hostRequest)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    _finderService.RequestToBeHost(token, hostRequest);
-
-                    // Call Analytics
-                    var props = new EventProperties {{"City", hostRequest.Address.City}, {"State", hostRequest.Address.State}, {"Zip", hostRequest.Address.PostalCode}};
-                    _analyticsService.Track(hostRequest.ContactId.ToString(), "RegisteredAsHost", props);
-
-                    return Ok();
-                }
-                catch (GatheringException e)
-                {
-                    _logger.Error("Host already has a gathering at this location.", e);
-                    throw new HttpResponseException(HttpStatusCode.NotAcceptable);
-                }
-                catch (Exception e)
-                {
-                    _logger.Error("Could not generate request", e);
-                    throw new HttpResponseException(new ApiErrorDto("Gathering request failed", e).HttpResponseMessage);
                 }
             });
         }
