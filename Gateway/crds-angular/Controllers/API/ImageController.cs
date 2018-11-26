@@ -18,6 +18,7 @@ using Crossroads.ClientApiKeys;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
+using MinistryPlatform.Translation.PlatformService;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.Controllers.API
@@ -29,7 +30,6 @@ namespace crds_angular.Controllers.API
         private readonly IApiUserRepository _apiUserService;
         private readonly int _defaultContactId;
         private readonly IContactRepository _contactRepository;
-        private readonly IFinderService _finderService;
 
         public ImageController(IAuthTokenExpiryService authTokenExpiryService, 
                                MPInterfaces.IMinistryPlatformService mpService, 
@@ -37,15 +37,13 @@ namespace crds_angular.Controllers.API
                                IApiUserRepository apiUserService, 
                                IUserImpersonationService userImpersonationService, 
                                IConfigurationWrapper configurationWrapper,
-                               IContactRepository contactRepository,
-                               IFinderService finderService)
+                               IContactRepository contactRepository)
             : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _apiUserService = apiUserService;
             _mpService = mpService;
             _contactRepository = contactRepository;
             _defaultContactId = configurationWrapper.GetConfigIntValue("DefaultProfileImageContactId");
-            _finderService = finderService;
         }
 
         private IHttpActionResult GetImage(int fileId, string fileName, string token)
@@ -191,10 +189,6 @@ namespace crds_angular.Controllers.API
 
                 if (file!=null)
                 {
-                    // we are updating the profile picture
-                    // check to see if user is on the connect map
-                    _finderService.UpdateInFirebaseIfOnMap(contactId);
-
                     _mpService.UpdateFile(
                         file.FileId,
                         fileName,
