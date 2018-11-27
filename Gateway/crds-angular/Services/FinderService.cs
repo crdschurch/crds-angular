@@ -26,7 +26,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 
@@ -191,11 +190,13 @@ namespace crds_angular.Services
             _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
         }
 
-        public async Task UpdateInFirebaseIfOnMap(int contactid)
+        public void UpdateInFirebaseIfOnMap(int contactid)
         {
             if (IsUserOnMap(contactid))
             {
-                await PinToFirestoreAsync(GetParticipantIdFromContact(contactid), true, "1");
+                int participantid = GetParticipantIdFromContact(contactid);
+                DeleteProfilePhotoFromFirestore(participantid);
+                SendProfilePhotoToFirestore(participantid);
             }
         }
 
