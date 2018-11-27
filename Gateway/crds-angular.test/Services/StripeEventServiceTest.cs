@@ -18,6 +18,7 @@ using NUnit.Framework;
 using RestSharp.Extensions;
 using IDonationService = crds_angular.Services.Interfaces.IDonationService;
 using Constants = Crossroads.Utilities.Constants;
+using System.Text.RegularExpressions;
 
 namespace crds_angular.test.Services
 {
@@ -465,7 +466,7 @@ namespace crds_angular.test.Services
             Assert.IsNotNull(tp.Exception);
 
             _donationService.Verify(mocked => mocked.CreateDonationBatch(It.Is<DonationBatchDTO>(o =>
-                o.BatchName.Matches(@"MP\d{12}D") &&
+                Regex.Match(o.BatchName, @"MP\d{12}D").Success &&
                 o.SetupDateTime == o.FinalizedDateTime &&
                 o.BatchEntryType == 555 &&
                 o.ItemCount == 4 &&
@@ -477,7 +478,7 @@ namespace crds_angular.test.Services
             )));
 
             _donationService.Verify(mocked => mocked.CreateDeposit(It.Is<DepositDTO>(o =>
-                o.DepositName.Matches(@"MP\d{12}") &&
+                Regex.Match(o.DepositName, @"MP\d{12}").Success &&
                 !o.Exported &&
                 o.AccountNumber.Equals(" ") &&
                 o.BatchCount == 2 &&
