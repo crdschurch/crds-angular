@@ -183,7 +183,7 @@ namespace crds_angular.Controllers.API
             {
                 const string fileName = "profile.png";
 
-                var contactId = _mpService.GetContactInfo(token).ContactId;
+                var contactId = token.UserInfo.Mp.ContactId;
                 var files = _mpService.GetFileDescriptions("MyContact", contactId, token);
                 var file = files.FirstOrDefault(f => f.IsDefaultImage);
 
@@ -193,7 +193,8 @@ namespace crds_angular.Controllers.API
                 {
                     // we are updating the profile picture
                     // check to see if user is on the connect map
-                     _finderService.UpdateInFirebaseIfOnMap(contactId).GetAwaiter().GetResult();
+
+                    _finderService.SendProfilePhotoToFirestore((int)token.UserInfo.Mp.ParticipantId);
 
                     _mpService.UpdateFile(
                         file.FileId,
@@ -218,7 +219,7 @@ namespace crds_angular.Controllers.API
                         token
                         );
                 }
-                return (Ok());
+                return Ok();
             }));
         }
     }
