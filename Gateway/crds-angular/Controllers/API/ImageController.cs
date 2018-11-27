@@ -193,7 +193,7 @@ namespace crds_angular.Controllers.API
                 {
                     // we are updating the profile picture
                     // check to see if user is on the connect map
-                    _finderService.UpdateInFirebaseIfOnMap(contactId);
+                     _finderService.UpdateInFirebaseIfOnMap(contactId).GetAwaiter().GetResult();
 
                     _mpService.UpdateFile(
                         file.FileId,
