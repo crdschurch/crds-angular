@@ -333,7 +333,7 @@ namespace crds_angular.Services
             return urlForPhoto;
         }
 
-        private void DeleteProfilePhotoFromFirestore(int participantId)
+        private async Task DeleteProfilePhotoFromFirestore(int participantId)
         {
             var client = StorageClient.Create();
             var bucketName = _googleStorageBucketId;
@@ -389,7 +389,7 @@ namespace crds_angular.Services
 
         private async Task<bool> DeletePinFromFirestoreAsync(int participantid, string pinType)
         {
-            DeleteProfilePhotoFromFirestore(participantid);
+            await DeleteProfilePhotoFromFirestore(participantid);
 
             FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
             CollectionReference collection = db.Collection("Pins");
