@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Device.Location;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Results;
 using crds_angular.Controllers.API;
-using crds_angular.Exceptions;
-using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Finder;
 using crds_angular.Services.Analytics;
@@ -126,44 +122,6 @@ namespace crds_angular.test.controllers
             
             _analyticsService.VerifyAll();
             _finderService.VerifyAll();
-        }
-
-        [Test]
-        public void RequestToBeAHostShouldCallAnalytics()
-        {
-            var token = "good ABC";
-            _fixture.SetupAuthorization("good", "ABC");
-            var fakeRequest = new HostRequestDto()
-            {
-                Address = new AddressDTO()
-                {
-                    City = "City!",
-                    State = "OH",
-                    PostalCode = "12345"
-                },
-                ContactId = 42
-            };
-
-            _finderService.Setup(m => m.RequestToBeHost(
-                It.Is<string>(toke => toke.Equals(token)),
-                It.Is<HostRequestDto>(dto => 
-                        dto.Address.City.Equals(fakeRequest.Address.City)
-                        && dto.Address.State.Equals(fakeRequest.Address.State)
-                        && dto.Address.PostalCode.Equals(fakeRequest.Address.PostalCode)
-                        && dto.ContactId.Equals(fakeRequest.ContactId))
-                ));
-            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _analyticsService.Setup(m => m.Track(
-                                        It.Is<string>(contactId => contactId.Equals(fakeRequest.ContactId.ToString())),
-                                        It.Is<string>(eventName => eventName.Equals("RegisteredAsHost")),
-                                        It.Is<EventProperties>(props =>
-                                                              props["City"].Equals(fakeRequest.Address.City)
-                                                              && props["State"].Equals(fakeRequest.Address.State)
-                                                              && props["Zip"].Equals(fakeRequest.Address.PostalCode))                                                                
-                                        ));
-            _fixture.RequestToBeHost(fakeRequest);
-            _finderService.VerifyAll();
-            _analyticsService.VerifyAll();
         }
 
         [Test]

@@ -121,22 +121,6 @@ namespace crds_angular.Services
             }
         }
 
-        public UploadDocumentsResponse DeleteSingleConnectRecordInAwsCloudsearch(int participantId, int pinType)
-        {
-            var results = SearchConnectAwsCloudsearch($"(and participantid:{participantId} pintype:{pinType})", "_no_fields");
-            var deletelist = new List<AwsCloudsearchDto>();
-            foreach (var hit in results.Hits.Hit)
-            {
-                var deleterec = new AwsCloudsearchDto
-                {
-                    id = hit.Id,
-                    type = "delete"
-                };
-                deletelist.Add(deleterec);
-            }
-            return SendAwsDocs(deletelist);
-        }
-
         private AwsCloudsearchDto CreateCloudSearchUploadDto(AwsConnectDto groupDto)
         {
             AwsCloudsearchDto awsDto = new AwsCloudsearchDto()

@@ -15,7 +15,6 @@ namespace crds_angular.Services.Interfaces
         SearchResponse SearchConnectAwsCloudsearch(string querystring, string returnFields, int returnSize = 10000, GeoCoordinate originCoords = null, AwsBoundingBox boundingBox = null);
         SearchResponse SearchByGroupId(string groupId);
         AwsBoundingBox BuildBoundingBox(MapBoundingBox mapBoundingBox);
-        UploadDocumentsResponse DeleteSingleConnectRecordInAwsCloudsearch(int participantId, int pinType);
         void UpdateGroupInAws(int groupId);
     }
 }

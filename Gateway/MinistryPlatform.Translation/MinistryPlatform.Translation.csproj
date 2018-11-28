@@ -68,8 +68,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Crossroads.Web.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Crossroads.Web.Common.2.0.6\lib\net461\Crossroads.Web.Common.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Crossroads.Web.Common.2.0.10\lib\net461\Crossroads.Web.Common.dll</HintPath>
     </Reference>
     <Reference Include="Flurl, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Flurl.2.4.0\lib\net40\Flurl.dll</HintPath>
@@ -200,7 +199,7 @@
     <Compile Include="Models\Finder\FinderGatheringDto.cs" />
     <Compile Include="Models\Finder\MpConnectAws.cs" />
     <Compile Include="Models\Finder\MpConnectCommunication.cs" />
-	<Compile Include="Models\Finder\MpMapAudit.cs" />	
+    <Compile Include="Models\Finder\MpMapAudit.cs" />
     <Compile Include="Models\Finder\SpPinDto.cs" />
     <Compile Include="Models\GoCincinnati\MpProject.cs" />
     <Compile Include="Models\GoCincinnati\MpProjectRegistration.cs" />
