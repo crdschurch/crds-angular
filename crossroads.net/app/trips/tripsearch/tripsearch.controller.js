@@ -4,13 +4,12 @@
 
   module.exports = TripSearchController;
 
-  TripSearchController.$inject = ['$rootScope', '$scope', '$log', 'CmsInfo', 'Trip'];
+  TripSearchController.$inject = ['$rootScope', '$scope', '$log', 'Trip'];
 
-  function TripSearchController($rootScope, $scope, $log, CmsInfo, Trip) {
+  function TripSearchController($rootScope, $scope, $log, Trip) {
     var vm = this;
     vm.empty = false;
     vm.loading = false;
-    vm.pageHeader = CmsInfo.pages[0].content;
     vm.search = search;
     vm.searchString = '';
     vm.showError = showError;

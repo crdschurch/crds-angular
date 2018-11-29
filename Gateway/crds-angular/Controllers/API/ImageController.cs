@@ -22,7 +22,7 @@ using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.Controllers.API
 {
-    public class ImageController : MPAuth
+    public class ImageController : ImpersonateAuthBaseController
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof (ImageController));
         private readonly MPInterfaces.IMinistryPlatformService _mpService;
@@ -75,8 +75,9 @@ namespace crds_angular.Controllers.API
             {
                 return (Authorized(token =>
                 {
-                    var imageDescription = _mpService.GetFileDescription(fileId, token);
-                    return GetImage(fileId, imageDescription.FileName, token);
+                    var apiToken = _apiUserService.GetDefaultApiClientToken();
+                    var imageDescription = _mpService.GetFileDescription(fileId, apiToken);
+                    return GetImage(fileId, imageDescription.FileName, apiToken);
                 }));
             }
             catch (Exception e)
@@ -183,17 +184,18 @@ namespace crds_angular.Controllers.API
             {
                 const string fileName = "profile.png";
 
-                var contactId = _mpService.GetContactInfo(token).ContactId;
-                var files = _mpService.GetFileDescriptions("MyContact", contactId, token);
+                var contactId = token.UserInfo.Mp.ContactId;
+                var apiToken = _apiUserService.GetDefaultApiClientToken();
+                var files = _mpService.GetFileDescriptions("MyContact", contactId, apiToken);
                 var file = files.FirstOrDefault(f => f.IsDefaultImage);
 
                 var imageBytes = Convert.FromBase64String(base64String.Split(',')[1]);
-
+               
                 if (file!=null)
                 {
                     // we are updating the profile picture
-                    // check to see if user is on the connect map
-                     _finderService.UpdateInFirebaseIfOnMap(contactId).GetAwaiter().GetResult();
+                    // update the profile pic in firestore if user is on the map.
+                    _finderService.UpdateInFirebaseIfOnMap(token.UserInfo.Mp.ContactId);
 
                     _mpService.UpdateFile(
                         file.FileId,
@@ -202,7 +204,7 @@ namespace crds_angular.Controllers.API
                         true,
                         -1,
                         imageBytes,
-                        token
+                        apiToken
                         );
                 }
                 else
@@ -215,10 +217,10 @@ namespace crds_angular.Controllers.API
                         true,
                         -1,
                         imageBytes,
-                        token
+                        apiToken
                         );
                 }
-                return (Ok());
+                return Ok();
             }));
         }
     }
