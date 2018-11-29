@@ -356,13 +356,19 @@ namespace crds_angular.Services
                 var recordList = _finderRepository.GetMapAuditRecords();
                 foreach (MpMapAudit mapAuditRecord in recordList)
                 {
-                    var pinupdatedsuccessfully = await PinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
-                    if (pinupdatedsuccessfully)
+                    switch(Convert.ToInt32(mapAuditRecord.pinType))
                     {
-                        mapAuditRecord.processed = true;
-                        mapAuditRecord.dateProcessed = DateTime.Now;
-                        _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
+                        case 1:
+                            var pinupdatedsuccessfully = await PersonPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                            if (pinupdatedsuccessfully)
+                            {
+                                mapAuditRecord.processed = true;
+                                mapAuditRecord.dateProcessed = DateTime.Now;
+                                _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
+                            }
+                            break;
                     }
+                    
                 }
             }
             catch (Exception e)
@@ -371,23 +377,24 @@ namespace crds_angular.Services
             }
         }
 
-        private async Task<bool> PinToFirestoreAsync(int participantid, bool showOnMap, string pinType)
+        
+        private async Task<bool> PersonPinToFirestoreAsync(int participantid, bool showOnMap, string pinType)
         {
             // showonmap = true then add to firestore
             // showonmap = false then delete from firestore
             Console.WriteLine($"participantid = {participantid}, showonmap = {showOnMap}, pintype = {pinType}");
             if (showOnMap)
             {
-                await DeletePinFromFirestoreAsync(participantid, pinType);
-                return await AddPinToFirestoreAsync(participantid, pinType);
+                await DeletePersonPinFromFirestoreAsync(participantid, pinType);
+                return await AddPersonPinToFirestoreAsync(participantid, pinType);
             }
             else
             {
-                return await DeletePinFromFirestoreAsync(participantid, pinType);
+                return await DeletePersonPinFromFirestoreAsync(participantid, pinType);
             }
         }
 
-        private async Task<bool> DeletePinFromFirestoreAsync(int participantid, string pinType)
+        private async Task<bool> DeletePersonPinFromFirestoreAsync(int participantid, string pinType)
         {
             await DeleteProfilePhotoFromFirestore(participantid);
 
@@ -418,7 +425,7 @@ namespace crds_angular.Services
             return true;
         }
 
-        private async Task<bool> AddPinToFirestoreAsync(int participantid, string pinType)
+        private async Task<bool> AddPersonPinToFirestoreAsync(int participantid, string pinType)
         {       
             var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var address = new AddressDTO();
