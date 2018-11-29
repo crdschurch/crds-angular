@@ -9,14 +9,14 @@ namespace Crossroads.ScheduledDataUpdate
         private readonly string sqlQueue;
         private readonly string listenerQuery;
         private SqlDependency dependency;
-        private readonly IFinderService _finderService;
-        public DbWatcher(string connectionString, string sqlQueue, string listenerQuery, IFinderService finderService)
+        private readonly IFirestoreUpdateService _firestoreUpdateService;
+        public DbWatcher(string connectionString, string sqlQueue, string listenerQuery, IFirestoreUpdateService firestoreUpdateService)
         {
             this.connectionString = connectionString;
             this.sqlQueue = sqlQueue;
             this.listenerQuery = listenerQuery;
             this.dependency = null;
-            _finderService = finderService;
+            _firestoreUpdateService = firestoreUpdateService;
         }
         public void Start()
         {
@@ -71,7 +71,7 @@ namespace Crossroads.ScheduledDataUpdate
         private void SyncPinsToFirestore()
         {
             Console.WriteLine("Starting Sync at " + DateTime.Now.ToLongTimeString());
-            _finderService.ProcessMapAuditRecords().Wait();
+            _firestoreUpdateService.ProcessMapAuditRecords().Wait();
             Console.WriteLine("Completed Sync at " + DateTime.Now.ToLongTimeString());
         }
     }
