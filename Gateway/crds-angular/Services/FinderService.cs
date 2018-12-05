@@ -5,20 +5,16 @@ using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Groups;
 using crds_angular.Models.Finder;
-using crds_angular.Models.Map;
 using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
-using Google.Cloud.Firestore;
-using Google.Cloud.Storage.V1;
 using log4net;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Finder;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Newtonsoft.Json;
-using NGeoHash.Portable;
 using System;
 using System.Collections.Generic;
 using System.Device.Location;
@@ -26,7 +22,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 
 namespace crds_angular.Services
@@ -64,7 +59,8 @@ namespace crds_angular.Services
         private readonly ILookupService _lookupService;
         private readonly ILocationService _locationService;
         private readonly IAddressRepository _addressRepository;
-        private readonly IImageService _imageService;
+        private readonly IFirestoreUpdateService _firestoreUpdateService;
+        
         private readonly int _approvedHost;
         private readonly int _pendingHost;
         private readonly int _anywhereGroupType;
@@ -96,9 +92,7 @@ namespace crds_angular.Services
         private readonly int _connectGatheringRequestToJoin;
         private readonly int _sayHiWithMessageTemplateId;
         private readonly int _sayHiWithoutMessageTemplateId;
-        private readonly string _firestoreProjectId;
-        private readonly string _googleStorageBucketId;
-
+        
         private readonly Random _random = new Random(DateTime.Now.Millisecond);
         private const double MinutesInDegree = 60;
         private const double StatuteMilesInNauticalMile = 1.1515;
@@ -126,7 +120,7 @@ namespace crds_angular.Services
             IAnalyticsService analyticsService,
             ILocationService locationService,
             IAddressRepository addressRepository,
-            IImageService imageService
+            IFirestoreUpdateService firestoreUpdateService
         )
         {
             // services
@@ -149,7 +143,7 @@ namespace crds_angular.Services
             _analyticsService = analyticsService;
             _locationService = locationService;
             _addressRepository = addressRepository;
-            _imageService = imageService;
+            _firestoreUpdateService = firestoreUpdateService;
             // constants
             _anywhereCongregationId = _configurationWrapper.GetConfigIntValue("AnywhereCongregationId");
             _approvedHost = configurationWrapper.GetConfigIntValue("ApprovedHostStatus");
@@ -185,18 +179,15 @@ namespace crds_angular.Services
             _connectGatheringRequestToJoin = configurationWrapper.GetConfigIntValue("ConnectCommunicationTypeRequestToJoinGathering");
             _sayHiWithMessageTemplateId = configurationWrapper.GetConfigIntValue("sayHiWithMessageTemplateId");
             _sayHiWithoutMessageTemplateId = configurationWrapper.GetConfigIntValue("sayHiWithoutMessageTemplateId");
-
-            _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
-            _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
         }
 
-        public void UpdateInFirebaseIfOnMap(int contactid)
+        public void UpdatePersonPhotoInFirebaseIfOnMap(int contactid)
         {
             if (IsUserOnMap(contactid))
             {
                 int participantid = GetParticipantIdFromContact(contactid);
-                DeleteProfilePhotoFromFirestore(participantid);
-                SendProfilePhotoToFirestore(participantid);
+                // _firestoreUpdateService.DeleteProfilePhotoFromFirestore(participantid);
+                _firestoreUpdateService.SendProfilePhotoToFirestore(participantid);
             }
         }
 
@@ -308,155 +299,6 @@ namespace crds_angular.Services
                 Location = $"{contact.City}, {contact.State}"
             };
             return person;
-        }
-
-        public string SendProfilePhotoToFirestore(int participantId)
-        {
-            string urlForPhoto = "";
-            try
-            {
-                // get the photo from someplace
-                var memStream = _imageService.GetParticipantImage(participantId);
-                if (memStream != null)
-                {
-                    var client = StorageClient.Create();
-
-                    var bucketName = _googleStorageBucketId;
-                    var bucket = client.GetBucket(bucketName);
-                    var photoUpload = client.UploadObject(bucketName, $"{participantId}.png", "image/png", memStream);
-                    urlForPhoto = photoUpload.MediaLink;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            return urlForPhoto;
-        }
-
-        public void DeleteProfilePhotoFromFirestore(int participantId)
-        {
-            var client = StorageClient.Create();
-            var bucketName = _googleStorageBucketId;
-
-            try
-            {
-                client.DeleteObject(bucketName, $"{participantId}.png");
-            }
-            catch(Exception ex)
-            {
-                //likely here because file does not exist in bucket
-                Console.WriteLine(ex.Message);
-            }
-        }
-        
-        public async Task ProcessMapAuditRecords()
-        {
-            try
-            {
-                var recordList = _finderRepository.GetMapAuditRecords();
-                foreach (MpMapAudit mapAuditRecord in recordList)
-                {
-                    var pinupdatedsuccessfully = await PinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
-                    if (pinupdatedsuccessfully)
-                    {
-                        mapAuditRecord.processed = true;
-                        mapAuditRecord.dateProcessed = DateTime.Now;
-                        _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }
-
-        private async Task<bool> PinToFirestoreAsync(int participantid, bool showOnMap, string pinType)
-        {
-            // showonmap = true then add to firestore
-            // showonmap = false then delete from firestore
-            Console.WriteLine($"participantid = {participantid}, showonmap = {showOnMap}, pintype = {pinType}");
-            if (showOnMap)
-            {
-                await DeletePinFromFirestoreAsync(participantid, pinType);
-                return await AddPinToFirestoreAsync(participantid, pinType);
-            }
-            else
-            {
-                return await DeletePinFromFirestoreAsync(participantid, pinType);
-            }
-        }
-
-        private async Task<bool> DeletePinFromFirestoreAsync(int participantid, string pinType)
-        {
-            DeleteProfilePhotoFromFirestore(participantid);
-
-            FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
-            CollectionReference collection = db.Collection("Pins");
-
-            // find the firestore document
-            Query query = collection.WhereEqualTo("internalId", participantid.ToString());
-
-            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
-
-            Console.WriteLine(querySnapshot.Count.ToString());
-
-            foreach (DocumentSnapshot queryResult in querySnapshot.Documents)
-            {
-                int outvalue;
-                var rc1 = queryResult.ContainsField("pinType");
-                var rc = queryResult.TryGetValue<int>("pinType", out outvalue);
-                var pintypequeryresult = queryResult.GetValue<int>("pinType");
-                if (pintypequeryresult == Convert.ToInt32(pinType))
-                {
-                    WriteResult result = await collection.Document(queryResult.Id).DeleteAsync();
-                    // mark as processed
-                    
-                    Console.WriteLine(result.ToString());
-                }
-            }
-            return true;
-        }
-
-        private async Task<bool> AddPinToFirestoreAsync(int participantid, string pinType)
-        {       
-            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
-            var address = new AddressDTO();
-            try
-            {
-                int contactid = _contactRepository.GetContactIdByParticipantId(participantid);
-                MpMyContact contact = _contactRepository.GetContactById(contactid);
-                // get the address including lat/lon
-                if (contact.Address_ID != null)
-                {  
-                    address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)contact.Address_ID)));
-                }
-                else
-                {
-                    // no address for this contact/participant
-                    return true;
-                }
-
-                var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
-
-                var url = SendProfilePhotoToFirestore(participantid);
-
-                // create the pin object
-                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash, url);
-
-                FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
-                CollectionReference collection = db.Collection("Pins");
-                DocumentReference document = await collection.AddAsync(pin);
-                Console.WriteLine(document.Id);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Problem getting MP Data for PinSync");
-                Console.WriteLine(e.Message);
-                return false;
-            }
-            return true;
         }
 
         public PinDto GetPinDetailsForPerson(int participantId)

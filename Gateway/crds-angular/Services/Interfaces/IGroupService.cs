@@ -66,5 +66,7 @@ namespace crds_angular.Services.Interfaces
         void SendAllGroupLeadersMemberRemovedEmail(string token, int groupId);
 
         void UpdateHuddleGroupParticipantStatus();
+
+        GroupDTO GetGroupDetailsWithAttributes(int groupId);
     }
 }

@@ -1,0 +1,358 @@
+﻿using AutoMapper;
+using System;
+using System.Threading.Tasks;
+using crds_angular.Services.Interfaces;
+using Crossroads.Web.Common.Configuration;
+using Google.Cloud.Firestore;
+using Google.Cloud.Storage.V1;
+using log4net;
+using crds_angular.Models.Crossroads;
+using MinistryPlatform.Translation.Models.Finder;
+using MinistryPlatform.Translation.Repositories.Interfaces;
+using MinistryPlatform.Translation.Models;
+using crds_angular.Models.Map;
+using Crossroads.Web.Common.MinistryPlatform;
+using NGeoHash.Portable;
+using System.Collections.Generic;
+using System.Linq;
+using crds_angular.Models.Crossroads.Attribute;
+
+namespace crds_angular.Services
+{
+    public class FirestoreUpdateService : IFirestoreUpdateService
+    {
+        private readonly ILog _logger = LogManager.GetLogger(typeof(FinderService));
+        private readonly IImageService _imageService;
+        private readonly IConfigurationWrapper _configurationWrapper;
+        private readonly IFinderRepository _finderRepository;
+        private readonly IApiUserRepository _apiUserRepository;
+        private readonly IContactRepository _contactRepository;
+        private readonly IAddressRepository _addressRepository;
+        private readonly IGroupService _groupService;
+
+        private readonly string _googleStorageBucketId;
+        private readonly string _firestoreProjectId;
+
+        private readonly Random _random = new Random(DateTime.Now.Millisecond);
+
+        private const int PIN_PERSON = 1;
+        private const int PIN_GROUP = 2;
+        private const int PIN_SITE = 3;
+
+        public FirestoreUpdateService(IImageService imageService, 
+                                      IConfigurationWrapper configurationWrapper, 
+                                      IFinderRepository finderRepository,
+                                      IApiUserRepository apiUserRepository,
+                                      IContactRepository contactRepository,
+                                      IAddressRepository addressRepository,
+                                      IGroupService groupService)
+        {
+            // dependencies
+            _imageService = imageService;
+            _configurationWrapper = configurationWrapper;
+            _finderRepository = finderRepository;
+            _apiUserRepository = apiUserRepository;
+            _contactRepository = contactRepository;
+            _addressRepository = addressRepository;
+            _groupService = groupService;
+            //constants
+            _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
+            _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
+        }
+
+        public string SendProfilePhotoToFirestore(int participantId)
+        {
+            string urlForPhoto = "";
+            try
+            {
+                // get the photo from someplace
+                var memStream = _imageService.GetParticipantImage(participantId);
+                if (memStream != null)
+                {
+                    var client = StorageClient.Create();
+
+                    var bucketName = _googleStorageBucketId;
+                    var bucket = client.GetBucket(bucketName);
+                    var photoUpload = client.UploadObject(bucketName, $"{participantId}.png", "image/png", memStream);
+                    urlForPhoto = photoUpload.MediaLink;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return urlForPhoto;
+        }
+
+        public void DeleteProfilePhotoFromFirestore(int participantId)
+        {
+            var client = StorageClient.Create();
+            var bucketName = _googleStorageBucketId;
+
+            try
+            {
+                client.DeleteObject(bucketName, $"{participantId}.png");
+            }
+            catch (Exception ex)
+            {
+                //likely here because file does not exist in bucket
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// This is the main point of entry for the addition of map pins to firestore
+        /// </summary>
+        /// <returns></returns>
+        public async Task ProcessMapAuditRecords()
+        {
+            try
+            {
+                var recordList = _finderRepository.GetMapAuditRecords();
+                foreach (MpMapAudit mapAuditRecord in recordList)
+                {
+                    switch (Convert.ToInt32(mapAuditRecord.pinType))
+                    {
+                        case PIN_PERSON:
+                            var personpinupdatedsuccessfully = await PersonPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                            SetRecordProcessedFlag(mapAuditRecord, personpinupdatedsuccessfully);
+                            break;
+                        case PIN_GROUP:
+                            var grouppinupdatedsuccessfully = await GroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                            SetRecordProcessedFlag(mapAuditRecord, grouppinupdatedsuccessfully);
+                            break;
+                        case PIN_SITE:
+                            break;
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private void SetRecordProcessedFlag(MpMapAudit mapAuditRecord, bool success)
+        {
+            if (success)
+            {
+                mapAuditRecord.processed = true;
+                mapAuditRecord.dateProcessed = DateTime.Now;
+                _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// GROUP PIN
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private async Task<bool> GroupPinToFirestoreAsync(int groupid, bool showOnMap, string pinType)
+        {
+            // showonmap = true then add to firestore
+            // showonmap = false then delete from firestore
+            Console.WriteLine($"groupid = {groupid}, showonmap = {showOnMap}, pintype = {pinType}");
+            if (showOnMap)
+            {
+                await DeleteGroupPinFromFirestoreAsync(groupid, pinType);
+                return await AddGroupPinToFirestoreAsync(groupid, pinType);
+            }
+            else
+            {
+                return await DeleteGroupPinFromFirestoreAsync(groupid, pinType);
+            }
+        }
+
+        private async Task<bool> DeleteGroupPinFromFirestoreAsync(int groupid, string pinType)
+        {
+            return await DeletePinFromFirestoreAsync(groupid, pinType);
+        }
+
+        private async Task<bool> AddGroupPinToFirestoreAsync(int groupid, string pinType)
+        {
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
+            var address = new AddressDTO();
+            try
+            {
+                //var group = _groupRepository.getGroupDetails(groupid);
+                var group = _groupService.GetGroupDetailsWithAttributes(groupid);              
+                var s = group.SingleAttributes;
+                var t = group.AttributeTypes;
+                
+                // get the address including lat/lon
+                if (group.Address.AddressID != null)
+                {
+                    address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)group.Address.AddressID)));
+                }
+                else
+                {
+                    // no address 
+                    return true;
+                }
+
+                var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
+
+                var dict = new Dictionary<string, string[]>();
+                
+                // get grouptype
+                ObjectSingleAttributeDTO grouptype;
+                if (s.TryGetValue(73, out grouptype))
+                {
+                    // grouptype is now equal to the value
+                    var x = grouptype.Value;
+                    dict.Add("GroupType", new string[] { x.Name });
+                }
+
+                // get age groups
+                ObjectAttributeTypeDTO agegroup;
+                if(t.TryGetValue(91, out agegroup))
+                {
+                    // roll through the age group. add selected to the dictionary
+                    var ageGroups = new List<string>();
+                    foreach( var a in agegroup.Attributes)
+                    {
+                        ageGroups.Add(a.Name);
+                        //create the array
+                    }
+
+                    // add to the dict
+                    if(ageGroups.Count > 0)
+                    {
+                        dict.Add("AgeGroups",  ageGroups.ToArray() );
+                    }
+                }
+
+                // create the pin object
+                MapPin pin = new MapPin(group.GroupDescription, group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), groupid.ToString(), geohash, "", dict);
+
+                FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
+                CollectionReference collection = db.Collection("Pins");
+                DocumentReference document = await collection.AddAsync(pin);
+                Console.WriteLine(document.Id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Problem getting MP Data for PinSync");
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// PERSON PIN
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private async Task<bool> PersonPinToFirestoreAsync(int participantid, bool showOnMap, string pinType)
+        {
+            // showonmap = true then add to firestore
+            // showonmap = false then delete from firestore
+            Console.WriteLine($"participantid = {participantid}, showonmap = {showOnMap}, pintype = {pinType}");
+            if (showOnMap)
+            {
+                await DeletePersonPinFromFirestoreAsync(participantid, pinType);
+                return await AddPersonPinToFirestoreAsync(participantid, pinType);
+            }
+            else
+            {
+                return await DeletePersonPinFromFirestoreAsync(participantid, pinType);
+            }
+        }
+
+        private async Task<bool> DeletePersonPinFromFirestoreAsync(int participantid, string pinType)
+        {
+            DeleteProfilePhotoFromFirestore(participantid);
+            return await DeletePinFromFirestoreAsync(participantid, pinType);
+        }
+
+        
+
+        private async Task<bool> AddPersonPinToFirestoreAsync(int participantid, string pinType)
+        {
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
+            var address = new AddressDTO();
+            try
+            {
+                int contactid = _contactRepository.GetContactIdByParticipantId(participantid);
+                MpMyContact contact = _contactRepository.GetContactById(contactid);
+                // get the address including lat/lon
+                if (contact.Address_ID != null)
+                {
+                    address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)contact.Address_ID)));
+                }
+                else
+                {
+                    // no address for this contact/participant
+                    return true;
+                }
+
+                var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
+
+                var url = SendProfilePhotoToFirestore(participantid);
+
+                // create the pin object
+                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash, url, null);
+
+                FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
+                CollectionReference collection = db.Collection("Pins");
+                DocumentReference document = await collection.AddAsync(pin);
+                Console.WriteLine(document.Id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Problem getting MP Data for PinSync");
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        //////////////////////////////////////////////
+        /// Common
+        //////////////////////////////////////////////
+        private async Task<bool> DeletePinFromFirestoreAsync(int internalid, string pinType)
+        {
+            FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
+            CollectionReference collection = db.Collection("Pins");
+
+            // find the firestore document
+            Query query = collection.WhereEqualTo("internalId", internalid.ToString());
+
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+
+            Console.WriteLine(querySnapshot.Count.ToString());
+
+            foreach (DocumentSnapshot queryResult in querySnapshot.Documents)
+            {
+                int outvalue;
+                var rc1 = queryResult.ContainsField("pinType");
+                var rc = queryResult.TryGetValue<int>("pinType", out outvalue);
+                var pintypequeryresult = queryResult.GetValue<int>("pinType");
+                if (pintypequeryresult == Convert.ToInt32(pinType))
+                {
+                    WriteResult result = await collection.Document(queryResult.Id).DeleteAsync();
+                    // mark as processed
+
+                    Console.WriteLine(result.ToString());
+                }
+            }
+            return true;
+        }
+
+        private AddressDTO RandomizeLatLong(AddressDTO address)
+        {
+            if (!address.HasGeoCoordinates()) return address;
+            var distance = _random.Next(75, 300); // up to a quarter mile
+            var angle = _random.Next(0, 359);
+            const int earthRadius = 6371000; // in meters
+
+            var distanceNorth = Math.Sin(angle) * distance;
+            var distanceEast = Math.Cos(angle) * distance;
+
+            var newLat = (double)(address.Latitude + (distanceNorth / earthRadius) * 180 / Math.PI);
+            var newLong = (double)(address.Longitude + (distanceEast / (earthRadius * Math.Cos(newLat * 180 / Math.PI))) * 180 / Math.PI);
+            address.Latitude = newLat;
+            address.Longitude = newLong;
+
+            return address;
+        }
+    }
+}

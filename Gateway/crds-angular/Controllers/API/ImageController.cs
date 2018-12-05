@@ -195,7 +195,7 @@ namespace crds_angular.Controllers.API
                 {
                     // we are updating the profile picture
                     // update the profile pic in firestore if user is on the map.
-                    _finderService.UpdateInFirebaseIfOnMap(token.UserInfo.Mp.ContactId);
+                    _finderService.UpdatePersonPhotoInFirebaseIfOnMap(token.UserInfo.Mp.ContactId);
 
                     _mpService.UpdateFile(
                         file.FileId,

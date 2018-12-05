@@ -52,24 +52,27 @@ namespace Crossroads.ScheduledDataUpdate
         private readonly IAwsCloudsearchService _awsService;
         private readonly ICorkboardService _corkboardService;
         private readonly IGroupService _groupService;
-        private readonly IFinderService _finderService;
+        private readonly IFirestoreUpdateService _firestoreUpdateService;
         private readonly IAddressService _addressService;
+        private readonly IFinderService _finderService;
 
         public Program(ITaskService taskService, 
                        IGroupToolService groupToolService, 
                        IAwsCloudsearchService awsService, 
                        ICorkboardService corkboardService,
                        IGroupService groupService,
-                       IFinderService finderService,
-                       IAddressService addressService)
+                       IFirestoreUpdateService firestoreUpdateService,
+                       IAddressService addressService,
+                       IFinderService finderService)
         {
             _taskService = taskService;
             _groupToolService = groupToolService;
             _awsService = awsService;
             _corkboardService = corkboardService;
             _groupService = groupService;
-            _finderService = finderService;
+            _firestoreUpdateService = firestoreUpdateService;
             _addressService = addressService;
+            _finderService = finderService;
         }
 
         public int Run(string[] args)
@@ -150,7 +153,7 @@ namespace Crossroads.ScheduledDataUpdate
                     conStr = conStr.Replace("%MP_API_DB_QUEUE_PASSWORD%", Environment.GetEnvironmentVariable("MP_API_DB_QUEUE_PASSWORD"));
                     string queueName = "MPAppQueue";
                     string query = "select AuditID, Participant_ID, ShowOnMap, processed from dbo.cr_MapAudit where processed=0 ";
-                    var watcher = new DbWatcher(conStr, queueName, query, _finderService);
+                    var watcher = new DbWatcher(conStr, queueName, query, _firestoreUpdateService);
                     watcher.Start();
                     Thread.Sleep(fiveminutes);
                     watcher.Stop();
