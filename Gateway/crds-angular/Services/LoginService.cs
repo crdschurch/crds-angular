@@ -12,6 +12,7 @@ using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Newtonsoft.Json;
+using RestSharp;
 
 //using WebMatrix.WebData;
 
@@ -161,6 +162,48 @@ namespace crds_angular.Services
             }
 
             return authData != null ? true : false;
+        }
+
+        public void CreateOrUpdateOktaAccount(OktaMigrationUser oktaMigrationUser)
+        {
+            string migrationBaseUrl = Environment.GetEnvironmentVariable("OKTA_MIGRATION_BASE_URL");
+            if (String.IsNullOrEmpty(migrationBaseUrl))
+            {
+                _logger.Error("OKTA_MIGRATION_BASE_URL environment variable is null or an empty string");
+                return;
+            }
+
+            string azureFunctionApiCode = Environment.GetEnvironmentVariable("OKTA_MIGRATION_AZURE_API_KEY");
+            if (String.IsNullOrEmpty(azureFunctionApiCode))
+            {
+                _logger.Error("OKTA_MIGRATION_AZURE_API_KEY environment variable is null or an empty string");
+                return;
+            }
+
+            var client = new RestClient(migrationBaseUrl);
+            var request = new RestRequest("api/migrate", Method.POST);
+
+            request.AddQueryParameter("code", azureFunctionApiCode);
+
+            request.AddHeader("FirstName", oktaMigrationUser.firstName);
+            request.AddHeader("LastName", oktaMigrationUser.lastName);
+            request.AddHeader("Email", oktaMigrationUser.email);
+            request.AddHeader("Login", oktaMigrationUser.login);
+            request.AddHeader("Password", oktaMigrationUser.password);
+            request.AddHeader("MpContactID", oktaMigrationUser.mpContactId);
+
+            client.ExecuteAsync(request, (response) =>
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    _logger.Info("Okta Migration Request Sent for MP Contact: " + oktaMigrationUser.mpContactId);
+                }
+                else
+                {
+                    _logger.Error("Okta Migration Request Failed for MP Contact: " + oktaMigrationUser.mpContactId);
+                    _logger.Error("Response Code: " + response.StatusCode.ToString());
+                }
+            });
         }
     }
 }
