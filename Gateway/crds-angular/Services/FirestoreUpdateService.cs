@@ -13,6 +13,9 @@ using MinistryPlatform.Translation.Models;
 using crds_angular.Models.Map;
 using Crossroads.Web.Common.MinistryPlatform;
 using NGeoHash.Portable;
+using System.Collections.Generic;
+using System.Linq;
+using crds_angular.Models.Crossroads.Attribute;
 
 namespace crds_angular.Services
 {
@@ -25,7 +28,7 @@ namespace crds_angular.Services
         private readonly IApiUserRepository _apiUserRepository;
         private readonly IContactRepository _contactRepository;
         private readonly IAddressRepository _addressRepository;
-        private readonly IGroupRepository _groupRepository;
+        private readonly IGroupService _groupService;
 
         private readonly string _googleStorageBucketId;
         private readonly string _firestoreProjectId;
@@ -42,7 +45,7 @@ namespace crds_angular.Services
                                       IApiUserRepository apiUserRepository,
                                       IContactRepository contactRepository,
                                       IAddressRepository addressRepository,
-                                      IGroupRepository groupRepository)
+                                      IGroupService groupService)
         {
             // dependencies
             _imageService = imageService;
@@ -51,7 +54,7 @@ namespace crds_angular.Services
             _apiUserRepository = apiUserRepository;
             _contactRepository = contactRepository;
             _addressRepository = addressRepository;
-            _groupRepository = groupRepository;
+            _groupService = groupService;
             //constants
             _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
             _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
@@ -170,12 +173,15 @@ namespace crds_angular.Services
             var address = new AddressDTO();
             try
             {
-                var group = _groupRepository.getGroupDetails(groupid);
+                //var group = _groupRepository.getGroupDetails(groupid);
+                var group = _groupService.GetGroupDetailsWithAttributes(groupid);              
+                var s = group.SingleAttributes;
+                var t = group.AttributeTypes;
                 
                 // get the address including lat/lon
-                if (group.Address.Address_ID != null)
+                if (group.Address.AddressID != null)
                 {
-                    address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)group.Address.Address_ID)));
+                    address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)group.Address.AddressID)));
                 }
                 else
                 {
@@ -185,8 +191,38 @@ namespace crds_angular.Services
 
                 var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
 
+                var dict = new Dictionary<string, string[]>();
+                
+                // get grouptype
+                ObjectSingleAttributeDTO grouptype;
+                if (s.TryGetValue(73, out grouptype))
+                {
+                    // grouptype is now equal to the value
+                    var x = grouptype.Value;
+                    dict.Add("GroupType", new string[] { x.Name });
+                }
+
+                // get age groups
+                ObjectAttributeTypeDTO agegroup;
+                if(t.TryGetValue(91, out agegroup))
+                {
+                    // roll through the age group. add selected to the dictionary
+                    var ageGroups = new List<string>();
+                    foreach( var a in agegroup.Attributes)
+                    {
+                        ageGroups.Add(a.Name);
+                        //create the array
+                    }
+
+                    // add to the dict
+                    if(ageGroups.Count > 0)
+                    {
+                        dict.Add("AgeGroups",  ageGroups.ToArray() );
+                    }
+                }
+
                 // create the pin object
-                MapPin pin = new MapPin(group.GroupDescription, group.Name, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), groupid.ToString(), geohash, "");
+                MapPin pin = new MapPin(group.GroupDescription, group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), groupid.ToString(), geohash, "", dict);
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
@@ -253,7 +289,7 @@ namespace crds_angular.Services
                 var url = SendProfilePhotoToFirestore(participantid);
 
                 // create the pin object
-                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash, url);
+                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash, url, null);
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
