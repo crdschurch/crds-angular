@@ -183,8 +183,19 @@ namespace crds_angular.Controllers.API
 
                 _loginService.ClearResetToken(user.UserRecordId); //no need to lookup the userid if we already have it
                 _contactRepository.UpdateContactToActive(c.Contact_ID); //205
-                _analyticsService.Track(c.Contact_ID.ToString(), "SignedIn"); 
+                _analyticsService.Track(c.Contact_ID.ToString(), "SignedIn");
 
+                //Kick off a call to the migration service to create or update an account in Okta on the user's behalf
+                OktaMigrationUser oktaMigrationUser = new OktaMigrationUser
+                {
+                    firstName = c.First_Name,
+                    lastName = c.Last_Name,
+                    email = c.Email_Address,
+                    login = cred.username,
+                    password = cred.password,
+                    mpContactId = c.Contact_ID.ToString()
+                };
+                _loginService.CreateOrUpdateOktaAccount(oktaMigrationUser);
 
                 return this.Ok(r);
             }
