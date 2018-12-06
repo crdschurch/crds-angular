@@ -80,6 +80,7 @@ namespace crds_angular.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                _logger.Info($"FIRESTORE: SendProfilePhotoToFirestore - {ex.Message}");
             }
             return urlForPhoto;
         }
@@ -95,8 +96,8 @@ namespace crds_angular.Services
             }
             catch (Exception ex)
             {
-                //likely here because file does not exist in bucket
                 Console.WriteLine(ex.Message);
+                _logger.Info($"FIRESTORE: DeleteProfilePhotoFromFirestore - {ex.Message}");
             }
         }
 

@@ -27,7 +27,7 @@ BEGIN
             I.Group_Id,
             ISNULL(I.Group_Is_Full, 0),
             I.End_Date
-        FROM INSERTED I
+        FROM INSERTED I WHERE I.Group_Type_ID = 1
 
     DECLARE @Group_Id INT;
     DECLARE @I_Full BIT;

@@ -185,9 +185,17 @@ namespace crds_angular.Services
         {
             if (IsUserOnMap(contactid))
             {
-                int participantid = GetParticipantIdFromContact(contactid);
-                // _firestoreUpdateService.DeleteProfilePhotoFromFirestore(participantid);
-                _firestoreUpdateService.SendProfilePhotoToFirestore(participantid);
+                try
+                {
+                    int participantid = GetParticipantIdFromContact(contactid);
+                    _firestoreUpdateService.DeleteProfilePhotoFromFirestore(participantid);
+                    _firestoreUpdateService.SendProfilePhotoToFirestore(participantid);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - {ex.Message}");
+                }
             }
         }
 
