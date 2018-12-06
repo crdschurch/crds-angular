@@ -70,11 +70,16 @@ namespace crds_angular.Services
                 if (memStream != null)
                 {
                     var client = StorageClient.Create();
-
+                    
                     var bucketName = _googleStorageBucketId;
                     var bucket = client.GetBucket(bucketName);
+                    _logger.Info($"FIRESTORE: SendProfilePhotoToFirestore - bucketName = {bucketName}");
+                    _logger.Info($"FIRESTORE: SendProfilePhotoToFirestore - participantId = {participantId}");
                     var photoUpload = client.UploadObject(bucketName, $"{participantId}.png", "image/png", memStream);
                     urlForPhoto = photoUpload.MediaLink;
+                    _logger.Info($"FIRESTORE: SendProfilePhotoToFirestore - timecreated = {photoUpload.TimeCreated}");
+                    _logger.Info($"FIRESTORE: SendProfilePhotoToFirestore - name = {photoUpload.Name}");
+                    _logger.Info($"FIRESTORE: SendProfilePhotoToFirestore - urlForPhoto = {urlForPhoto}");
                 }
             }
             catch (Exception ex)
@@ -87,11 +92,14 @@ namespace crds_angular.Services
 
         public void DeleteProfilePhotoFromFirestore(int participantId)
         {
-            var client = StorageClient.Create();
-            var bucketName = _googleStorageBucketId;
+            
 
             try
             {
+                var client = StorageClient.Create();
+                var bucketName = _googleStorageBucketId;
+                _logger.Info($"FIRESTORE: DeleteProfilePhotoFromFirestore - bucketName = {bucketName}");
+                _logger.Info($"FIRESTORE: DeleteProfilePhotoFromFirestore - participantId = {participantId}");
                 client.DeleteObject(bucketName, $"{participantId}.png");
             }
             catch (Exception ex)
