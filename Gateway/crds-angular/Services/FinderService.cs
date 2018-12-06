@@ -188,8 +188,11 @@ namespace crds_angular.Services
                 try
                 {
                     int participantid = GetParticipantIdFromContact(contactid);
+                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling Delete");
                     _firestoreUpdateService.DeleteProfilePhotoFromFirestore(participantid);
+                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling Send");
                     _firestoreUpdateService.SendProfilePhotoToFirestore(participantid);
+                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Completing successfully");
                 }
                 catch (Exception ex)
                 {
