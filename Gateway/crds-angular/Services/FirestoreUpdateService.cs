@@ -250,7 +250,7 @@ namespace crds_angular.Services
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// PERSON PIN
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        private async Task<bool> PersonPinToFirestoreAsync(int participantid, bool showOnMap, string pinType)
+        public async Task<bool> PersonPinToFirestoreAsync(int participantid, bool showOnMap, string pinType)
         {
             // showonmap = true then add to firestore
             // showonmap = false then delete from firestore
