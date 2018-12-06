@@ -182,22 +182,19 @@ namespace crds_angular.Services
             _sayHiWithoutMessageTemplateId = configurationWrapper.GetConfigIntValue("sayHiWithoutMessageTemplateId");
         }
 
-        public async Task UpdatePersonPhotoInFirebaseIfOnMapAsync(int contactid)
+        public void UpdatePersonPhotoInFirebaseIfOnMap(int contactid)
         {
             if (IsUserOnMap(contactid))
             {
                 try
                 {
                     int participantid = GetParticipantIdFromContact(contactid);
-                    //_logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling Delete");
-                    //_firestoreUpdateService.DeleteProfilePhotoFromFirestore(participantid);
-                    //_logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling Send");
-                    //_firestoreUpdateService.SendProfilePhotoToFirestore(participantid);
-                    //_logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Completing successfully");
+                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling Delete");
+                    _firestoreUpdateService.DeleteProfilePhotoFromFirestore(participantid);
+                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling Send");
+                    _firestoreUpdateService.SendProfilePhotoToFirestore(participantid);
+                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Completing successfully");
 
-                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling PersonPinToFirestoreAsync");
-                    var personpinupdatedsuccessfully = await _firestoreUpdateService.PersonPinToFirestoreAsync(participantid, true, "1");
-                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Completed PersonPinToFirestoreAsync");
                 }
                 catch (Exception ex)
                 {
