@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 
 namespace crds_angular.Services
@@ -181,18 +182,22 @@ namespace crds_angular.Services
             _sayHiWithoutMessageTemplateId = configurationWrapper.GetConfigIntValue("sayHiWithoutMessageTemplateId");
         }
 
-        public void UpdatePersonPhotoInFirebaseIfOnMap(int contactid)
+        public async Task UpdatePersonPhotoInFirebaseIfOnMapAsync(int contactid)
         {
             if (IsUserOnMap(contactid))
             {
                 try
                 {
                     int participantid = GetParticipantIdFromContact(contactid);
-                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling Delete");
-                    _firestoreUpdateService.DeleteProfilePhotoFromFirestore(participantid);
-                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling Send");
-                    _firestoreUpdateService.SendProfilePhotoToFirestore(participantid);
-                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Completing successfully");
+                    //_logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling Delete");
+                    //_firestoreUpdateService.DeleteProfilePhotoFromFirestore(participantid);
+                    //_logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling Send");
+                    //_firestoreUpdateService.SendProfilePhotoToFirestore(participantid);
+                    //_logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Completing successfully");
+
+                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Calling PersonPinToFirestoreAsync");
+                    var personpinupdatedsuccessfully = await _firestoreUpdateService.PersonPinToFirestoreAsync(participantid, true, "1");
+                    _logger.Info($"FIRESTORE: UpdatePersonPhotoInFirebaseIfOnMap - Completed PersonPinToFirestoreAsync");
                 }
                 catch (Exception ex)
                 {

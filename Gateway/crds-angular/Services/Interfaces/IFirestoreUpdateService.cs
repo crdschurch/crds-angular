@@ -11,5 +11,7 @@ namespace crds_angular.Services.Interfaces
         string SendProfilePhotoToFirestore(int participantId);
         void DeleteProfilePhotoFromFirestore(int participantId);
         Task ProcessMapAuditRecords();
+
+        Task<bool> PersonPinToFirestoreAsync(int participantid, bool showOnMap, string pinType);
     }
 }
