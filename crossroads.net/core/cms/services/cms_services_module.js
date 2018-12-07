@@ -5,7 +5,7 @@ cms_services_module.factory('SiteConfig', function ($resource) {
 });
 
 cms_services_module.factory('ContentBlock', function ($resource) {
-    return $resource(__CMS_CLIENT_ENDPOINT__ + 'api/ContentBlock/:id', { id: '@_id' }, {cache: true});
+    return $resource(__CMS_CLIENT_ENDPOINT__ + 'api/contentblock/:id', { id: '@_id' }, {cache: true});
 });
 
 cms_services_module.factory('SystemPage', function ($resource) {
