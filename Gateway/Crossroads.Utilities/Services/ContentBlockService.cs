@@ -19,7 +19,7 @@ namespace Crossroads.Utilities.Services
                 // SecurityProtocolType.Tls12.  This is handled already in TlsHelper.cs
                 // called from Application_Start(), but if this code is reused elsewhere
                 // beware of this dependency.
-                RestRequest request = new RestRequest("/api/ContentBlock", Method.GET);
+                RestRequest request = new RestRequest("/api/contentblock", Method.GET);
                 IRestResponse response = cmsRestClient.Execute(request);
 
                 ContentBlocks blocks = JsonConvert.DeserializeObject<ContentBlocks>(response.Content);
