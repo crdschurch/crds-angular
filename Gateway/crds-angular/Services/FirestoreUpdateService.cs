@@ -116,22 +116,26 @@ namespace crds_angular.Services
             try
             {
                 var recordList = _finderRepository.GetMapAuditRecords();
-                foreach (MpMapAudit mapAuditRecord in recordList)
+                while (recordList.Count > 0)
                 {
-                    switch (Convert.ToInt32(mapAuditRecord.pinType))
+                    foreach (MpMapAudit mapAuditRecord in recordList)
                     {
-                        case PIN_PERSON:
-                            var personpinupdatedsuccessfully = await PersonPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
-                            SetRecordProcessedFlag(mapAuditRecord, personpinupdatedsuccessfully);
-                            break;
-                        case PIN_GROUP:
-                            var grouppinupdatedsuccessfully = await GroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
-                            SetRecordProcessedFlag(mapAuditRecord, grouppinupdatedsuccessfully);
-                            break;
-                        case PIN_SITE:
-                            break;
-                    }
+                        switch (Convert.ToInt32(mapAuditRecord.pinType))
+                        {
+                            case PIN_PERSON:
+                                var personpinupdatedsuccessfully = await PersonPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                                SetRecordProcessedFlag(mapAuditRecord, personpinupdatedsuccessfully);
+                                break;
+                            case PIN_GROUP:
+                                var grouppinupdatedsuccessfully = await GroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                                SetRecordProcessedFlag(mapAuditRecord, grouppinupdatedsuccessfully);
+                                break;
+                            case PIN_SITE:
+                                break;
+                        }
 
+                    }
+                    recordList = _finderRepository.GetMapAuditRecords();
                 }
             }
             catch (Exception e)
