@@ -92,8 +92,6 @@ namespace crds_angular.Services
 
         public void DeleteProfilePhotoFromFirestore(int participantId)
         {
-            
-
             try
             {
                 var client = StorageClient.Create();
@@ -188,17 +186,38 @@ namespace crds_angular.Services
                 var t = group.AttributeTypes;
                 
                 // get the address including lat/lon
-                if (group.Address.AddressID != null)
+                if(group.Address.AddressID == null)
                 {
-                    address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)group.Address.AddressID)));
-                }
-                else
-                {
-                    // no address 
-                    return true;
+                    // Something with no address should not go on a map
+                    return false;
                 }
 
+                var addrFromDB = _addressRepository.GetAddressById(apiToken, (int)group.Address.AddressID);
+                               
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Address_ID = {addrFromDB.Address_ID}");
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Address_Line_1 = {addrFromDB.Address_Line_1}");
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.City = {addrFromDB.City}");
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.State = {addrFromDB.State}");
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Latitude = {addrFromDB.Latitude}");
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Longitude = {addrFromDB.Longitude}");
+
+                address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(addrFromDB));
                 var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
+                _logger.Info("FIRESTORE: After Map");
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.Address_ID = {address.AddressID}");
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.Address_Line_1 = {address.AddressLine1}");
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.City = {address.City}");
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.State = {address.State}");
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.Latitude = {address.Latitude}");
+                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.Longitude = {address.Longitude}");
+
+                // if we are at 0,0 we should fail.
+                if (address.Latitude == null || 
+                   address.Longitude == null || 
+                   (address.Latitude == 0 && address.Longitude == 0))
+                {
+                    return false;
+                }
 
                 var dict = new Dictionary<string, string[]>();
                 
