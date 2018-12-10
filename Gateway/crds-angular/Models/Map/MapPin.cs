@@ -1,4 +1,5 @@
 ﻿using Google.Cloud.Firestore;
+using System.Collections.Generic;
 
 namespace crds_angular.Models.Map
 {
@@ -23,15 +24,19 @@ namespace crds_angular.Models.Map
         [FirestoreProperty]
         public string imageUrl { get; set; }
 
+        [FirestoreProperty]
+        public Dictionary<string, string[]> meta { get; set; }
+
         public MapPin() { }
 
-        public MapPin(string desc, string pinname, double latitude, double longitude, int pintype, string internalid, string geohash, string imageurl)
+        public MapPin(string desc, string pinname, double latitude, double longitude, int pintype, string internalid, string geohash, string imageurl, Dictionary<string, string[]> filtermetadata)
         {
             this.description = desc;
             this.name = pinname;
             this.pinType = pintype;
             this.internalId = internalid;
             this.imageUrl = imageurl;
+            this.meta = filtermetadata;
 
             var coord = new MapCoordinates
             {

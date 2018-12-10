@@ -33,7 +33,7 @@ namespace Crossroads.Utilities.Models
 
     public class ContentBlocks
     {
-        [JsonProperty("contentBlocks")]
+        [JsonProperty("contentblocks")]
         // RestSharp currently has an issue deserializing List not named the same as property,
         // so have to name this "contentBlocks" in order to deserialize properly
         //

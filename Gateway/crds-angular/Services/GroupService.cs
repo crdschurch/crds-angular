@@ -378,6 +378,14 @@ namespace crds_angular.Services
             return Mapper.Map<MpGroup, GroupDTO>(_mpGroupRepository.getGroupDetails(groupId));
         }
 
+        public GroupDTO GetGroupDetailsWithAttributes(int groupId)
+        {
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
+            var group = GetGroupDetails(groupId);
+            GetGroupAttributes(apiToken, new List<GroupDTO> { group });
+            return group;
+        }
+
         public GroupDTO GetGroupDetailsByInvitationGuid(string token, string invitationGuid)
         {
             var invitation = _invitationRepository.GetOpenInvitation(invitationGuid);

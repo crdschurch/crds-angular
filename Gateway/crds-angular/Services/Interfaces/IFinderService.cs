@@ -41,7 +41,6 @@ namespace crds_angular.Services.Interfaces
         void TryAGroupAcceptDeny(string token, int groupId, int participantId, bool accept);
         void ApproveDenyGroupInquiry(string token, bool approve, Inquiry inquiry);
         bool IsUserOnMap(int contactid);
-        Task ProcessMapAuditRecords();
         void SetShowOnMap(int participantId, Boolean showOnMap);
         List<int> GetAddressIdsWithNoGeoCode();
         List<int> GetAddressIdsForMapParticipantWithNoGeoCode();
@@ -50,6 +49,6 @@ namespace crds_angular.Services.Interfaces
         MeDTO GetMe(string token);
         void SaveMe(string token, MeDTO medto);
         void SayHiToParticipant(string token, int toParticipantId, string message);
-        string SendProfilePhotoToFirestore(int participantId);
+        void UpdatePersonPhotoInFirebaseIfOnMap(int contactid);
     }
 }
