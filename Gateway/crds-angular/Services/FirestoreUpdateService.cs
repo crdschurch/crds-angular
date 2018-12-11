@@ -30,6 +30,8 @@ namespace crds_angular.Services
         private readonly IAddressRepository _addressRepository;
         private readonly IGroupService _groupService;
         private readonly IAddressGeocodingService _addressGeocodingService;
+        private readonly ICongregationRepository _congregationRepository;
+        private readonly ILocationService _locationRepository;
 
         private readonly string _googleStorageBucketId;
         private readonly string _firestoreProjectId;
@@ -47,7 +49,9 @@ namespace crds_angular.Services
                                       IContactRepository contactRepository,
                                       IAddressRepository addressRepository,
                                       IGroupService groupService,
-                                      IAddressGeocodingService addressGeocodingService)
+                                      IAddressGeocodingService addressGeocodingService,
+                                      ICongregationRepository congregationRepository,
+                                      ILocationService locationRepository)
         {
             // dependencies
             _imageService = imageService;
@@ -58,6 +62,8 @@ namespace crds_angular.Services
             _addressRepository = addressRepository;
             _groupService = groupService;
             _addressGeocodingService = addressGeocodingService;
+            _congregationRepository = congregationRepository;
+            _locationRepository = locationRepository;
             //constants
             _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
             _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
@@ -134,9 +140,10 @@ namespace crds_angular.Services
                                 SetRecordProcessedFlag(mapAuditRecord, grouppinupdatedsuccessfully);
                                 break;
                             case PIN_SITE:
+                                var sitepinupdatedsuccessfully = await SitePinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                                SetRecordProcessedFlag(mapAuditRecord, sitepinupdatedsuccessfully);
                                 break;
                         }
-
                     }
                     recordList = _finderRepository.GetMapAuditRecords();
                 }
@@ -155,6 +162,68 @@ namespace crds_angular.Services
                 mapAuditRecord.dateProcessed = DateTime.Now;
                 _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
             }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// SITE PIN
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private async Task<bool> SitePinToFirestoreAsync(int congregationid, bool showOnMap, string pinType)
+        {
+            // showonmap = true then add to firestore
+            // showonmap = false then delete from firestore
+            Console.WriteLine($"congregationid = {congregationid}, showonmap = {showOnMap}, pintype = {pinType}");
+            if (showOnMap)
+            {
+                await DeleteSitePinFromFirestoreAsync(congregationid, pinType);
+                return await AddSitePinToFirestoreAsync(congregationid, pinType);
+            }
+            else
+            {
+                return await DeleteSitePinFromFirestoreAsync(congregationid, pinType);
+            }
+        }
+
+        private async Task<bool> DeleteSitePinFromFirestoreAsync(int congregationid, string pinType)
+        {
+            return await DeletePinFromFirestoreAsync(congregationid, pinType);
+        }
+
+        private async Task<bool> AddSitePinToFirestoreAsync(int congregationid, string pinType)
+        {
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
+            var address = new AddressDTO();
+            try
+            {
+                var congregation = _congregationRepository.GetCongregationById(congregationid);
+                var location = _locationRepository.GetAllCrossroadsLocations().Where(s => s.LocationId == congregation.LocationId).First();
+                // get the address including lat/lon
+                if (location.Address != null && location.Address.AddressID != null)
+                {
+                    address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)location.Address.AddressID)));
+                }
+                else
+                {
+                    // no address for this contact/participant
+                    return true;
+                }
+
+                var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
+
+                // create the pin object
+                MapPin pin = new MapPin(congregation.Name, congregation.Name, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), congregationid.ToString(), geohash, "", null);
+
+                FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
+                CollectionReference collection = db.Collection("Pins");
+                DocumentReference document = await collection.AddAsync(pin);
+                Console.WriteLine(document.Id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Problem getting MP Data for PinSync");
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return true;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
