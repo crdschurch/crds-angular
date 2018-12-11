@@ -29,6 +29,7 @@ namespace crds_angular.Services
         private readonly IContactRepository _contactRepository;
         private readonly IAddressRepository _addressRepository;
         private readonly IGroupService _groupService;
+        private readonly IAddressGeocodingService _addressGeocodingService;
 
         private readonly string _googleStorageBucketId;
         private readonly string _firestoreProjectId;
@@ -45,7 +46,8 @@ namespace crds_angular.Services
                                       IApiUserRepository apiUserRepository,
                                       IContactRepository contactRepository,
                                       IAddressRepository addressRepository,
-                                      IGroupService groupService)
+                                      IGroupService groupService,
+                                      IAddressGeocodingService addressGeocodingService)
         {
             // dependencies
             _imageService = imageService;
@@ -55,6 +57,7 @@ namespace crds_angular.Services
             _contactRepository = contactRepository;
             _addressRepository = addressRepository;
             _groupService = groupService;
+            _addressGeocodingService = addressGeocodingService;
             //constants
             _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
             _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
@@ -193,11 +196,22 @@ namespace crds_angular.Services
                 if(group.Address.AddressID == null)
                 {
                     // Something with no address should not go on a map
-                    return false;
+                    return true;
                 }
 
                 var addrFromDB = _addressRepository.GetAddressById(apiToken, (int)group.Address.AddressID);
-                               
+                // if there is no lat/lon lets give one last attempt at geocoding
+                if (address.Latitude == null || address.Longitude == null || address.Latitude == 0 || address.Longitude == 0)
+                {
+                    var geo = _addressGeocodingService.GetGeoCoordinates(Mapper.Map<AddressDTO>(addrFromDB));
+                    if(geo.Latitude != 0 && geo.Longitude != 0)
+                    {
+                        addrFromDB.Latitude = geo.Latitude;
+                        addrFromDB.Longitude = geo.Longitude;
+                        _addressRepository.Update(addrFromDB);
+                    }
+                }
+
                 _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Address_ID = {addrFromDB.Address_ID}");
                 _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Address_Line_1 = {addrFromDB.Address_Line_1}");
                 _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.City = {addrFromDB.City}");
@@ -220,7 +234,7 @@ namespace crds_angular.Services
                    address.Longitude == null || 
                    (address.Latitude == 0 && address.Longitude == 0))
                 {
-                    return false;
+                    return true;
                 }
 
                 var dict = new Dictionary<string, string[]>();
