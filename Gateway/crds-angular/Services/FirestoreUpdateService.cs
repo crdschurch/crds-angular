@@ -197,9 +197,9 @@ namespace crds_angular.Services
                 var congregation = _congregationRepository.GetCongregationById(congregationid);
                 var location = _locationRepository.GetAllCrossroadsLocations().Where(s => s.LocationId == congregation.LocationId).First();
                 // get the address including lat/lon
-                if (location.Address != null && location.Address.AddressID != null)
+                if (location.Address != null )
                 {
-                    address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(_addressRepository.GetAddressById(apiToken, (int)location.Address.AddressID)));
+                    address = location.Address;
                 }
                 else
                 {
