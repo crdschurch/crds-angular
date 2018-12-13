@@ -49,14 +49,14 @@
       };
       // header options
       var headerOptions = {
-        el: '[data-header]',
-        ...sharedOptions
+        el: '[data-header]'
       };
+      Object.assign(headerOptions, sharedOptions);
       // footer options
       var footerOptions = {
-        el: '[data-footer]',
-        ...sharedOptions
+        el: '[data-footer]'
       };
+      Object.assign(footerOptions, sharedOptions);
       setTimeout(() => {
         if ($('[data-header] [data-mobile-menu]').length == 0 &&
             $('[data-header]').length > 0) {
