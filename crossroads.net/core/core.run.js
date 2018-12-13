@@ -38,9 +38,8 @@
       $('html, body').removeClass('noscroll');
       $('.collapse.in').removeClass('in');
       $('body:not(.modal-open) .modal-backdrop.fade').remove();
-      // header options
-      var options = {
-        el: '[data-header]',
+      
+      var sharedOptions = {
         cmsEndpoint: __CMS_CLIENT_ENDPOINT__,
         appEndpoint: __APP_CLIENT_ENDPOINT__,
         imgEndpoint: __IMG_ENDPOINT__,
@@ -48,13 +47,23 @@
         contentBlockTitle: __HEADER_CONTENTBLOCK_TITLE__,
         contentBlockCategories: ['common']
       };
+      // header options
+      var headerOptions = {
+        el: '[data-header]',
+        ...sharedOptions
+      };
+      // footer options
+      var footerOptions = {
+        el: '[data-footer]',
+        ...sharedOptions
+      };
       setTimeout(() => {
         if ($('[data-header] [data-mobile-menu]').length == 0 &&
             $('[data-header]').length > 0) {
-          new CRDS.SharedHeader(options).render();
+          new CRDS.SharedHeader(headerOptions).render();
         }
         if ($('[data-footer]')){
-          new CRDS.SharedFooter(options);
+          new CRDS.SharedFooter(footerOptions);
         }
       }, 100);
     }
