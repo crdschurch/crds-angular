@@ -54,7 +54,7 @@
           new CRDS.SharedHeader(options).render();
         }
         if ($('[data-footer]')){
-          new CRDS.SharedFooter(options).render();
+          new CRDS.SharedFooter(options);
         }
       }, 100);
     }
