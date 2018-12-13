@@ -325,8 +325,10 @@ namespace crds_angular.Services
                     var ageGroups = new List<string>();
                     foreach( var a in agegroup.Attributes)
                     {
-                        ageGroups.Add(a.Name);
-                        //create the array
+                        if (a.Selected)
+                        {
+                            ageGroups.Add(a.Name);
+                        }
                     }
 
                     // add to the dict
