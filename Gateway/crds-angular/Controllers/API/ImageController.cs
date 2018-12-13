@@ -18,18 +18,18 @@ using Crossroads.ClientApiKeys;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
-using MinistryPlatform.Translation.PlatformService;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.Controllers.API
 {
-    public class ImageController : MPAuth
+    public class ImageController : ImpersonateAuthBaseController
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof (ImageController));
         private readonly MPInterfaces.IMinistryPlatformService _mpService;
         private readonly IApiUserRepository _apiUserService;
         private readonly int _defaultContactId;
         private readonly IContactRepository _contactRepository;
+        private readonly IFinderService _finderService;
 
         public ImageController(IAuthTokenExpiryService authTokenExpiryService, 
                                MPInterfaces.IMinistryPlatformService mpService, 
@@ -37,13 +37,15 @@ namespace crds_angular.Controllers.API
                                IApiUserRepository apiUserService, 
                                IUserImpersonationService userImpersonationService, 
                                IConfigurationWrapper configurationWrapper,
-                               IContactRepository contactRepository)
+                               IContactRepository contactRepository,
+                               IFinderService finderService)
             : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _apiUserService = apiUserService;
             _mpService = mpService;
             _contactRepository = contactRepository;
             _defaultContactId = configurationWrapper.GetConfigIntValue("DefaultProfileImageContactId");
+            _finderService = finderService;
         }
 
         private IHttpActionResult GetImage(int fileId, string fileName, string token)
@@ -73,8 +75,9 @@ namespace crds_angular.Controllers.API
             {
                 return (Authorized(token =>
                 {
-                    var imageDescription = _mpService.GetFileDescription(fileId, token);
-                    return GetImage(fileId, imageDescription.FileName, token);
+                    var apiToken = _apiUserService.GetDefaultApiClientToken();
+                    var imageDescription = _mpService.GetFileDescription(fileId, apiToken);
+                    return GetImage(fileId, imageDescription.FileName, apiToken);
                 }));
             }
             catch (Exception e)
@@ -181,14 +184,17 @@ namespace crds_angular.Controllers.API
             {
                 const string fileName = "profile.png";
 
-                var contactId = _mpService.GetContactInfo(token).ContactId;
-                var files = _mpService.GetFileDescriptions("MyContact", contactId, token);
+                var contactId = token.UserInfo.Mp.ContactId;
+                var apiToken = _apiUserService.GetDefaultApiClientToken();
+                var files = _mpService.GetFileDescriptions("MyContact", contactId, apiToken);
                 var file = files.FirstOrDefault(f => f.IsDefaultImage);
 
                 var imageBytes = Convert.FromBase64String(base64String.Split(',')[1]);
-
+               
                 if (file!=null)
                 {
+                   
+
                     _mpService.UpdateFile(
                         file.FileId,
                         fileName,
@@ -196,8 +202,14 @@ namespace crds_angular.Controllers.API
                         true,
                         -1,
                         imageBytes,
-                        token
+                        apiToken
                         );
+
+                    // we are updating the profile picture
+                    // update the profile pic in firestore if user is on the map.
+                    _logger.Info($"FIRESTORE: ImageController.Post - Begin Firestore Update");
+                    _finderService.UpdatePersonPhotoInFirebaseIfOnMap(token.UserInfo.Mp.ContactId);
+                    _logger.Info($"FIRESTORE: ImageController.Post - Complete Firestore Update");
                 }
                 else
                 {
@@ -209,10 +221,10 @@ namespace crds_angular.Controllers.API
                         true,
                         -1,
                         imageBytes,
-                        token
+                        apiToken
                         );
                 }
-                return (Ok());
+                return Ok();
             }));
         }
     }

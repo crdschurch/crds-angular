@@ -58,7 +58,7 @@ namespace crds_angular.Security
             AuthDTO auth;
             try
             {
-                auth = AuthService.AuthorizeAsync(accessToken).Result;
+                auth = AuthService.Authorize(accessToken);
             }
             catch (AccessTokenNullOrEmptyException ex)
             {

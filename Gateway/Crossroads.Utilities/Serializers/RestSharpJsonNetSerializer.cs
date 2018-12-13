@@ -14,10 +14,7 @@ namespace Crossroads.Utilities.Serializers
         {
             return JsonConvert.SerializeObject(obj, Formatting.None);
         }
-
-        string ISerializer.RootElement { get; set; }
-        string ISerializer.Namespace { get; set; }
-        string ISerializer.DateFormat { get; set; }
+        
         public string ContentType { get; set; }
     }
 }
