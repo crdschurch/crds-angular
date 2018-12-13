@@ -33,7 +33,7 @@
       }
     }
 
-    function setupHeader() {
+    function setupHeaderAndFooter() {
       svg4everybody();
       $('html, body').removeClass('noscroll');
       $('.collapse.in').removeClass('in');
@@ -52,6 +52,9 @@
         if ($('[data-header] [data-mobile-menu]').length == 0 &&
             $('[data-header]').length > 0) {
           new CRDS.SharedHeader(options).render();
+        }
+        if ($('[data-footer]')){
+          new CRDS.SharedFooter(options).render();
         }
       }, 100);
     }
@@ -122,7 +125,7 @@
         $rootScope.meta = toState.data.meta;
       }
       setupMetaData();
-      setupHeader();
+      setupHeaderAndFooter();
     });
   }
 
