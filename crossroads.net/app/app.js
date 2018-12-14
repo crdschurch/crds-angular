@@ -36,10 +36,6 @@ require('./invoices/invoices.module');
 
   require('./corkboard');
   require('./signup');
-  /// #if INCLUDE_STYLEGUIDE
-  require('./styleguide');
-  /// #endif
-  require('./thedaily');
   require('./volunteer_signup');
   require('./volunteer_application');
   require('./leaveyourmark');
