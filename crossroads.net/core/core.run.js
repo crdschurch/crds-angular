@@ -44,7 +44,6 @@
         appEndpoint: __APP_CLIENT_ENDPOINT__,
         imgEndpoint: __IMG_ENDPOINT__,
         crdsCookiePrefix: __CRDS_ENV__,
-        contentBlockTitle: __HEADER_CONTENTBLOCK_TITLE__,
         contentBlockCategories: ['common']
       };
       // header options
