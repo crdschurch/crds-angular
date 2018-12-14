@@ -14,7 +14,6 @@ require('./invoices/invoices.module');
     constants.MODULES.CORKBOARD,
     constants.MODULES.FORM_BUILDER,
     constants.MODULES.GO_VOLUNTEER,
-    constants.MODULES.MEDIA,
     constants.MODULES.MPTOOLS,
     constants.MODULES.PROFILE,
     constants.MODULES.SEARCH,

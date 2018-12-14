@@ -16,7 +16,6 @@
       FORM_BUILDER: 'crossroads.form_builder',
       FORMLY_BUILDER: 'crossroads.formly_builder',
       GO_VOLUNTEER: 'crossroads.go_volunteer',
-      MEDIA: 'crossroads.media',
       MPTOOLS: 'crossroads.mptools',
       ONETIME_SIGNUP: 'crossroads.onetime',
       PROFILE: 'crossroads.profile',
