@@ -1,15 +1,15 @@
 var cms_services_module = angular.module('crossroads.core');
 
 cms_services_module.factory('SiteConfig', function ($resource) {
-    return $resource(__CMS_CLIENT_ENDPOINT__ + '/api/SiteConfig/:id', { id: '@_id' }, {cache: true});
+    return $resource(__CMS_CLIENT_ENDPOINT__ + 'api/SiteConfig/:id', { id: '@_id' }, {cache: true});
 });
 
 cms_services_module.factory('ContentBlock', function ($resource) {
-    return $resource(__CMS_CLIENT_ENDPOINT__ + '/api/ContentBlock/:id', { id: '@_id' }, {cache: true});
+    return $resource(__CMS_CLIENT_ENDPOINT__ + 'api/contentblock/:id', { id: '@_id' }, {cache: true});
 });
 
 cms_services_module.factory('SystemPage', function ($resource) {
-    return $resource(__CMS_CLIENT_ENDPOINT__ + '/api/SystemPage/?StateName=:state', { state: '@_state' }, {cache: true});
+    return $resource(__CMS_CLIENT_ENDPOINT__ + 'api/SystemPage/?StateName=:state', { state: '@_state' }, {cache: true});
 });
 
 cms_services_module.factory('Page', function ($resource, $location) {

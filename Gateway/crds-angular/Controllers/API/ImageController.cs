@@ -193,9 +193,7 @@ namespace crds_angular.Controllers.API
                
                 if (file!=null)
                 {
-                    // we are updating the profile picture
-                    // update the profile pic in firestore if user is on the map.
-                    _finderService.UpdateInFirebaseIfOnMap(token.UserInfo.Mp.ContactId);
+                   
 
                     _mpService.UpdateFile(
                         file.FileId,
@@ -206,6 +204,12 @@ namespace crds_angular.Controllers.API
                         imageBytes,
                         apiToken
                         );
+
+                    // we are updating the profile picture
+                    // update the profile pic in firestore if user is on the map.
+                    _logger.Info($"FIRESTORE: ImageController.Post - Begin Firestore Update");
+                    _finderService.UpdatePersonPhotoInFirebaseIfOnMap(token.UserInfo.Mp.ContactId);
+                    _logger.Info($"FIRESTORE: ImageController.Post - Complete Firestore Update");
                 }
                 else
                 {

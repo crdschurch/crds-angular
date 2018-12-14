@@ -576,6 +576,7 @@
     <Compile Include="Services\FinderService.cs" />
     <Compile Include="Services\EquipmentService.cs" />
     <Compile Include="Services\EventParticipantService.cs" />
+    <Compile Include="Services\FirestoreUpdateService.cs" />
     <Compile Include="Services\GeocodeCalculationAddressProximityService.cs" />
     <Compile Include="Services\GoogleMapsAddressGeocodingService.cs" />
     <Compile Include="Services\GoogleMapsDistanceMatrixAddressProximityService.cs" />
@@ -590,6 +591,7 @@
     <Compile Include="Services\Interfaces\GroupAttributeDTO.cs" />
     <Compile Include="Services\Interfaces\IAuthTokenExpiryService.cs" />
     <Compile Include="Services\Interfaces\ICorkboardService.cs" />
+    <Compile Include="Services\Interfaces\IFirestoreUpdateService.cs" />
     <Compile Include="Services\Interfaces\IGroupLeaderService.cs" />
     <Compile Include="Services\Interfaces\IAddressGeocodingService.cs" />
     <Compile Include="Services\Interfaces\IAddressProximityService.cs" />
