@@ -1,6 +1,5 @@
 require('./childcare');
 require('./mp_tools');
-require('./live_stream');
 require('ui-select/dist/select.css');
 require('./invoices/invoices.module');
 
@@ -16,7 +15,6 @@ require('./invoices/invoices.module');
     constants.MODULES.FORM_BUILDER,
     constants.MODULES.GO_VOLUNTEER,
     constants.MODULES.MEDIA,
-    constants.MODULES.LIVE_STREAM,
     constants.MODULES.MPTOOLS,
     constants.MODULES.PROFILE,
     constants.MODULES.SEARCH,

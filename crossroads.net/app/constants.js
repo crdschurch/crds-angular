@@ -17,7 +17,6 @@
       FORMLY_BUILDER: 'crossroads.formly_builder',
       GO_VOLUNTEER: 'crossroads.go_volunteer',
       MEDIA: 'crossroads.media',
-      LIVE_STREAM: 'crossroads.live_stream',
       MPTOOLS: 'crossroads.mptools',
       ONETIME_SIGNUP: 'crossroads.onetime',
       PROFILE: 'crossroads.profile',
@@ -157,17 +156,6 @@
     },
     MINISTRY: {
       SPIRITUAL_GROWTH: '8'
-    },
-    STREAM_STATUS: {
-      LIVE: 'Live',
-      UPCOMING: 'Upcoming',
-      OFF: 'Off'
-    },
-    PRE_STREAM_HOURS: 15,
-    COMMON_AIRPORT_NAMES: {
-      CVG: 'Cincinnati(CVG)',
-      LEX: 'Lexington(LEX)',
-      OTHER: 'Other'
     },
     COOKIES: {
       SESSION_ID: `${__CRDS_ENV__}sessionId`,
