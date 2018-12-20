@@ -113,72 +113,6 @@ namespace crds_angular.Controllers.API
             });
         }
 
-        /// <summary>
-        /// Send an email message to certain group participants
-        /// </summary>
-        [RequiresAuthorization]
-        [VersionedRoute(template: "group/message-select-participants", minimumVersion: "1.0.0")]
-        [Route("group/messageselectparticipants")]
-        [HttpPost]
-        public IHttpActionResult SendParticipantsMessage(GroupMessageDTO message)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    _groupService.SendParticipantsEmail(token, message.Participants, message.Subject, message.Body);
-                    return Ok();
-                }
-                catch (InvalidOperationException)
-                {
-                    return (IHttpActionResult)NotFound();
-                }
-                catch (Exception ex)
-                {
-                    var apiError = new ApiErrorDto("Error sending emails", ex);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-            });
-        }
-
-        /// <summary>
-        /// Enroll the currently logged-in user into a Community Group, and register this user for all events for the CG.
-        /// Also send email confirmation to user if joining a CG
-        /// Or Add Journey/Small Group Participant to a Group
-        /// </summary>
-        [RequiresAuthorization]
-        [ResponseType(typeof (GroupDTO))]
-        [VersionedRoute(template: "group/{groupId}/participants", minimumVersion: "1.0.0")]
-        [Route("group/{groupId}/participants")]
-        public IHttpActionResult Post(int groupId, [FromBody] List<ParticipantSignup> partId)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    _groupService.LookupParticipantIfEmpty(token, partId);
-
-                    _groupService.addParticipantsToGroup(groupId, partId);
-                    _logger.Debug(String.Format("Successfully added participants {0} to group {1}", partId, groupId));
-                    return (Ok());
-                }
-                catch (GroupFullException e)
-                {
-                    var responseMessage = new ApiErrorDto("Group Is Full", e).HttpResponseMessage;
-
-                    // Using HTTP Status code 422/Unprocessable Entity to indicate Group Is Full
-                    // http://tools.ietf.org/html/rfc4918#section-11.2
-                    responseMessage.StatusCode = (HttpStatusCode) 422;
-                    throw new HttpResponseException(responseMessage);
-                }
-                catch (Exception e)
-                {
-                    _logger.Error("Could not add user to group", e);
-                    return BadRequest();
-                }
-            });
-        }
-
         [RequiresAuthorization]
         [ResponseType(typeof (GroupDTO))]
         [VersionedRoute(template: "group/{groupId}", minimumVersion: "1.0.0")]
@@ -351,34 +285,6 @@ namespace crds_angular.Controllers.API
         }
 
         /// <summary>
-        /// This takes in a GroupId and retrieves the group
-        /// of that type associated with that ID
-        /// If no group is found, then an empty list will be returned.
-        /// </summary>
-        /// <returns>A list containing 0 or 1 group</returns>
-        [RequiresAuthorization]
-        [ResponseType(typeof(List<GroupDTO>))]
-        [VersionedRoute(template: "group/mine/{groupId}", minimumVersion: "1.0.0")]
-        [Route("group/mine/{groupId:int}")]
-        public IHttpActionResult GetMyGroupById([FromUri]int groupId)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    var groups = _groupService.GetGroupByIdForAuthenticatedUser(token, groupId);
-                    return Ok(groups);
-                }
-                catch (Exception ex)
-                {
-                    var apiError = new ApiErrorDto("Error getting group id=" + groupId + " for logged in user.", ex);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-
-            });
-        }
-
-        /// <summary>
         /// This finds groups that match a participants answers for a specific group type.
         /// If one or more groups are found, then a list of the group are returned.
         /// If no groups are found, then an empty list will be returned.
@@ -488,38 +394,5 @@ namespace crds_angular.Controllers.API
                 }
             });
         }
-
-        /// <summary>
-        /// Send an email invitation to an email address for a Journey Group
-        /// Requires the user to be a member or leader of the Journey Group
-        /// Will return a 404 if the user is not a Member or Leader of the group
-        /// </summary>
-        [RequiresAuthorization]
-        [VersionedRoute(template: "journey/email-invite", minimumVersion: "1.0.0")]
-        [Route("journey/emailinvite")]
-        public IHttpActionResult PostInvitation([FromBody] EmailCommunicationDTO communication)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    _groupService.SendJourneyEmailInvite(communication, token);
-                    return Ok();
-                }
-                catch (InvalidOperationException)
-                {
-                    return NotFound();
-                }
-                catch (Exception ex)
-                {
-                    var apiError = new ApiErrorDto("Error sending a Journey Group invitation for groupID " + communication.groupId, ex);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-            });
-        }
-
-
-
-
     }
 }

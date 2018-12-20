@@ -67,123 +67,6 @@ namespace crds_angular.test.controllers
         }
 
         [Test]
-        public void TestPostParticipantToCommunityGroupIsSuccessful()
-        {
-            const int groupId = 456;
-
-            List<ParticipantSignup> particpantIdToAdd = new List<ParticipantSignup>
-            {
-                new ParticipantSignup()
-                {
-                    particpantId = 90210,
-                    childCareNeeded = false,
-                    SendConfirmationEmail = true
-                },
-                new ParticipantSignup()
-                {
-                    particpantId = 41001,
-                    childCareNeeded = false,
-                    SendConfirmationEmail = true
-                }
-            };
-
-            List<MpEvent> events = new List<MpEvent>();
-            MpEvent e1 = new MpEvent();
-            e1.EventId = 101;
-            MpEvent e2 = new MpEvent();
-            e2.EventId = 202;
-            events.Add(e1);
-            events.Add(e2);
-
-            var participantsAdded = new List<Dictionary<string, object>>
-            {
-                new Dictionary<string, object>
-                {
-                    {"123", "456"}
-                },
-                new Dictionary<string, object>
-                {
-                    {"abc", "def"}
-                },
-            };
-            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _groupServiceMock.Setup(mocked => mocked.addParticipantsToGroup(groupId, particpantIdToAdd));
-
-            IHttpActionResult result = _fixture.Post(groupId, particpantIdToAdd);
-
-            _authenticationServiceMock.VerifyAll();
-            _groupServiceMock.VerifyAll();
-
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof (OkResult), result);
-        }
-
-        [Test]
-        public void TestPostParticipantToJourneyGroupIsSuccessful()
-        {
-            const int groupId = 456;
-
-            List<ParticipantSignup> particpantIdToAdd = new List<ParticipantSignup>
-            {
-                new ParticipantSignup(){
-                    particpantId = 90210,
-                    childCareNeeded = false,
-                    groupRoleId = 22,
-                    SendConfirmationEmail = false,
-                    capacityNeeded = 0
-                },
-                new ParticipantSignup()
-                {
-                    particpantId = 41001,
-                    childCareNeeded = false,
-                    groupRoleId = 16,
-                    SendConfirmationEmail = false,
-                    capacityNeeded = 1
-                }
-            };
-
-            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _groupServiceMock.Setup(mocked => mocked.addParticipantsToGroup(groupId, particpantIdToAdd));
-
-            IHttpActionResult result = _fixture.Post(groupId, particpantIdToAdd);
-
-            _authenticationServiceMock.VerifyAll();
-            _groupServiceMock.VerifyAll();
-
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(OkResult), result);
-        }
-
-        [Test]
-        public void TestPostParticipantToCommunityGroupFails()
-        {
-            Exception ex = new Exception();
-            int groupId = 456;
-            List<ParticipantSignup> particpantIdToAdd = new List<ParticipantSignup>
-            {
-                new ParticipantSignup()
-                {
-                    particpantId = 90210,
-                    childCareNeeded = false,
-                    SendConfirmationEmail = true
-                },
-                new ParticipantSignup()
-                {
-                    particpantId = 41001,
-                    childCareNeeded = false,
-                    SendConfirmationEmail = true
-                }
-            };
-            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _groupServiceMock.Setup(mocked => mocked.addParticipantsToGroup(groupId, particpantIdToAdd)).Throws(ex);
-
-            IHttpActionResult result = _fixture.Post(groupId, particpantIdToAdd);
-            _authenticationServiceMock.VerifyAll();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof (BadRequestResult), result);
-        }
-
-        [Test]
         public void TestGetGroupDetails()
         {
             int groupId = 333;
@@ -234,17 +117,6 @@ namespace crds_angular.test.controllers
         }
 
         [Test]
-        public void TestCallGroupServiceFailsUnauthorized()
-        {
-            _fixture.Request.Headers.Authorization = null;
-            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            IHttpActionResult result = _fixture.Post(3, new List<ParticipantSignup>());
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof (UnauthorizedResult), result);
-            _groupServiceMock.VerifyAll();
-        }
-
-        [Test]
         public void TestGetMyGroupsByType()
         {
             var groups = new List<GroupDTO>();
@@ -258,52 +130,6 @@ namespace crds_angular.test.controllers
 
             Assert.NotNull(result);
             Assert.AreSame(groups, groupDtoResponse);
-        }
-
-        [Test]
-        public void TestAddParticipantToCommunityGroupWhenGroupFull()
-        {
-            int groupId = 333;
-            MpGroup g = new MpGroup();
-            g.GroupId = 333;
-            g.GroupType = 8;
-            g.GroupRole = "Member";
-            g.Name = "Test Me";
-            g.TargetSize = 5;
-            g.WaitList = false;
-            g.Full = true;
-
-            var particpantIdToAdd = new List<ParticipantSignup>
-            {
-                new ParticipantSignup()
-                {
-                    particpantId = 90210,
-                    childCareNeeded = false,
-                    SendConfirmationEmail = true
-                },
-                new ParticipantSignup()
-                {
-                    particpantId = 41001,
-                    childCareNeeded = false,
-                    SendConfirmationEmail = true
-                }
-            };
-            var groupFull = new GroupFullException(g);
-            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _groupServiceMock.Setup(mocked => mocked.addParticipantsToGroup(groupId, particpantIdToAdd)).Throws(groupFull);
-
-            try
-            {
-                _fixture.Post(333, particpantIdToAdd);
-                Assert.Fail("Expected exception was not thrown");
-            }
-            catch (Exception e)
-            {
-                Assert.AreEqual(typeof (HttpResponseException), e.GetType());
-                var ex = (HttpResponseException) e;
-                Assert.IsNotNull(ex.Response);
-                Assert.AreEqual((HttpStatusCode) 422, ex.Response.StatusCode);
-            }
         }
 
         [Test]
@@ -507,38 +333,6 @@ namespace crds_angular.test.controllers
             IHttpActionResult result = _fixture.PostGroup(group);
             _addressServiceMock.Verify(x => x.FindOrCreateAddress(group.Address, true), Times.Never);            
             _groupServiceMock.VerifyAll();
-        }
-
-        [Test]
-        public void PostInvitationWhenRequesterIsMemberOfGoup()
-        {
-           var communication = new EmailCommunicationDTO()
-            {
-                emailAddress  = "wonderwoman@marvel.com"
-            };
-            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-           _groupServiceMock.Setup(mocked => mocked.SendJourneyEmailInvite(communication, _fixture.Request.Headers.Authorization.ToString()));
-
-            IHttpActionResult result = _fixture.PostInvitation(communication);
-            _groupServiceMock.Verify(x => x.SendJourneyEmailInvite(communication, _fixture.Request.Headers.Authorization.ToString()), Times.Once);
-            _groupServiceMock.VerifyAll();
-        }
-
-        [Test]
-        public void DoNotPostInvitationWhenRequesterIsNotMemberOfGoup()
-        {
-            var communication = new EmailCommunicationDTO()
-            {
-                emailAddress = "wonderwoman@marvel.com"
-            };
-            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _groupServiceMock.Setup(mocked => mocked.SendJourneyEmailInvite(communication, _fixture.Request.Headers.Authorization.ToString())).Throws<InvalidOperationException>();
-
-            IHttpActionResult result = _fixture.PostInvitation(communication);
-            _groupServiceMock.VerifyAll();
-            Assert.IsNotNull(result);
-
-            Assert.IsInstanceOf(typeof (NotFoundResult), result);
         }
 
         [Test]
