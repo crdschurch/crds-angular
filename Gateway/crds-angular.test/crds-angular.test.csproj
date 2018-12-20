@@ -324,7 +324,6 @@
     <Compile Include="controllers\GroupLeaderControllerTest.cs" />
     <Compile Include="controllers\GroupToolControllerTest.cs" />
     <Compile Include="controllers\ImageControllerTest.cs" />
-    <Compile Include="controllers\InvitationControllerTest.cs" />
     <Compile Include="controllers\LocationControllerTest.cs" />
     <Compile Include="controllers\LoginControllerTest.cs" />
     <Compile Include="controllers\LookupControllerTest.cs" />
