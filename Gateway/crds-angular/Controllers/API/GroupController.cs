@@ -55,6 +55,7 @@ namespace crds_angular.Controllers.API
         [ResponseType(typeof (GroupDTO))]
         [VersionedRoute(template: "group", minimumVersion: "1.0.0")]
         [Route("group")]
+        [HttpPost]
         public IHttpActionResult PostGroup([FromBody] GroupDTO group)
         {
             return Authorized(token =>
@@ -391,6 +392,45 @@ namespace crds_angular.Controllers.API
                 {
                     var apiError = new ApiErrorDto("Error updating participant for participant ID " + participantId, ex);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
+
+        /// <summary>	
+        /// Enroll the currently logged-in user into a Community Group, and register this user for all events for the CG.	
+        /// Also send email confirmation to user if joining a CG	
+        /// Or Add Journey/Small Group Participant to a Group	
+        /// </summary>	
+        [RequiresAuthorization]
+        [ResponseType(typeof(GroupDTO))]
+        [VersionedRoute(template: "group/{groupId}/participants", minimumVersion: "1.0.0")]
+        [Route("group/{groupId}/participants")]
+        [HttpPost]
+        public IHttpActionResult Post(int groupId, [FromBody] List<ParticipantSignup> partId)
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    _groupService.LookupParticipantIfEmpty(token, partId);
+
+                    _groupService.addParticipantsToGroup(groupId, partId);
+                    _logger.Debug(String.Format("Successfully added participants {0} to group {1}", partId, groupId));
+                    return (Ok());
+                }
+                catch (GroupFullException e)
+                {
+                    var responseMessage = new ApiErrorDto("Group Is Full", e).HttpResponseMessage;
+
+                    // Using HTTP Status code 422/Unprocessable Entity to indicate Group Is Full	
+                    // http://tools.ietf.org/html/rfc4918#section-11.2	
+                    responseMessage.StatusCode = (HttpStatusCode)422;
+                    throw new HttpResponseException(responseMessage);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error("Could not add user to group", e);
+                    return BadRequest();
                 }
             });
         }
