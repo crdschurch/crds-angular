@@ -55,6 +55,7 @@ namespace crds_angular.Controllers.API
         [ResponseType(typeof (GroupDTO))]
         [VersionedRoute(template: "group", minimumVersion: "1.0.0")]
         [Route("group")]
+        [HttpPost]
         public IHttpActionResult PostGroup([FromBody] GroupDTO group)
         {
             return Authorized(token =>
@@ -404,6 +405,7 @@ namespace crds_angular.Controllers.API
         [ResponseType(typeof(GroupDTO))]
         [VersionedRoute(template: "group/{groupId}/participants", minimumVersion: "1.0.0")]
         [Route("group/{groupId}/participants")]
+        [HttpPost]
         public IHttpActionResult Post(int groupId, [FromBody] List<ParticipantSignup> partId)
         {
             return Authorized(token =>
