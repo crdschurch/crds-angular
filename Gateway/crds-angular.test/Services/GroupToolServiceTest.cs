@@ -149,7 +149,7 @@ namespace crds_angular.test.Services
         public void TestGetMyGroupInfoGroupNotFound()
         {
             _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(new List<GroupDTO>());
-            _fixture.GetMyGroupInfo("abc", 2);
+            _fixture.GetMyGroupInfo(123, 2);
         }
 
         [Test]
@@ -178,7 +178,7 @@ namespace crds_angular.test.Services
                 }
             };
             _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(groups);
-            _fixture.GetMyGroupInfo("abc", 2);
+            _fixture.GetMyGroupInfo(123, 2);
         }
 
         [Test]
@@ -228,7 +228,7 @@ namespace crds_angular.test.Services
                 }
             };
             _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(groups);
-            var result = _fixture.GetMyGroupInfo("abc", 2);
+            var result = _fixture.GetMyGroupInfo(123, 2);
             _participantRepository.VerifyAll();
             _groupService.VerifyAll();
 
@@ -258,7 +258,7 @@ namespace crds_angular.test.Services
             _groupRepository.Setup(mocked => mocked.GetGroupParticipants(It.IsAny<int>(), It.IsAny<bool>())).Returns(groupParticipants);
             _invitationRepositor.Setup(mocked => mocked.MarkInvitationAsUsed(It.IsAny<string>())).Verifiable();
 
-            _fixture.AcceptDenyGroupInvitation(token, groupId, invitationGuid, true);
+            _fixture.AcceptDenyGroupInvitation(123, groupId, invitationGuid, true);
             _participantRepository.VerifyAll();
             _groupRepository.VerifyAll();
             _invitationRepositor.VerifyAll();
@@ -294,7 +294,7 @@ namespace crds_angular.test.Services
 
             try
             {
-                _fixture.AcceptDenyGroupInvitation(token, groupId, invitationGuid, true);
+                _fixture.AcceptDenyGroupInvitation(123, groupId, invitationGuid, true);
                 Assert.Fail("expected exception was not thrown");
             }
             catch (DuplicateGroupParticipantException e)
@@ -317,7 +317,7 @@ namespace crds_angular.test.Services
 
             _invitationRepositor.Setup(mocked => mocked.MarkInvitationAsUsed(It.IsAny<string>())).Verifiable();
 
-            _fixture.AcceptDenyGroupInvitation(token, groupId, invitationGuid, false);
+            _fixture.AcceptDenyGroupInvitation(123, groupId, invitationGuid, false);
             _invitationRepositor.VerifyAll();
         }
 
@@ -468,7 +468,7 @@ namespace crds_angular.test.Services
         public void TestRemoveParticipantFromMyGroupGroupNotFound()
         {
             _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(new List<GroupDTO>());
-            _fixture.RemoveParticipantFromMyGroup("abc", 2, 3, "message");
+            _fixture.RemoveParticipantFromMyGroup(123, 2, 3, "message");
         }
 
         [Test]
@@ -497,7 +497,7 @@ namespace crds_angular.test.Services
                 }
             };
             _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(groups);
-            _fixture.RemoveParticipantFromMyGroup("abc", 2, 3, "message");
+            _fixture.RemoveParticipantFromMyGroup(123, 2, 3, "message");
         }
 
         [Test]
@@ -538,7 +538,7 @@ namespace crds_angular.test.Services
 
             try
             {
-                _fixture.RemoveParticipantFromMyGroup("abc", groupId, removeParticipantId, "message");
+                _fixture.RemoveParticipantFromMyGroup(123, groupId, removeParticipantId, "message");
                 Assert.Fail("expected exception was not thrown");
             }
             catch (GroupParticipantRemovalException e)
@@ -591,7 +591,7 @@ namespace crds_angular.test.Services
 
             var ex = new Exception("can't get template");
             _communicationRepository.Setup(mocked => mocked.GetTemplate(RemoveParticipantFromGroupEmailTemplateId)).Throws(ex);
-            _fixture.RemoveParticipantFromMyGroup("abc", groupId, removeParticipantId, "message");
+            _fixture.RemoveParticipantFromMyGroup(123, groupId, removeParticipantId, "message");
             _communicationRepository.VerifyAll();
             _groupToolRepository.VerifyAll();
             _groupService.VerifyAll();
@@ -1275,7 +1275,7 @@ namespace crds_angular.test.Services
             _communicationRepository.Setup(mocked => mocked.SendMessage(It.IsAny<MpCommunication>(), false)).Returns(1);
 
 
-            _fixture.SubmitInquiry(token, groupId,true);
+            _fixture.SubmitInquiry(123, groupId,true);
             _mockAnalyticService.Verify(x => x.Track(It.IsAny<string>(), "RequestedToJoinGroup", It.IsAny<EventProperties>()), Times.Once);
 
             _groupRepository.VerifyAll();
@@ -1353,7 +1353,7 @@ namespace crds_angular.test.Services
 
             _communicationRepository.Setup(mocked => mocked.SendMessage(It.IsAny<MpCommunication>(), false)).Returns(1);
 
-            _fixture.SubmitInquiry(token, group.GroupId, true);
+            _fixture.SubmitInquiry(123, group.GroupId, true);
             _mockAnalyticService.Verify(x => x.Track(It.IsAny<string>(), "RequestedToJoinGroup", It.Is<EventProperties>(props => 
                                     props["GroupName"].Equals(group.GroupName) 
                                     && props["GroupState"].Equals(group.Address.State)
@@ -1432,7 +1432,7 @@ namespace crds_angular.test.Services
 
             try
             {
-                _fixture.SubmitInquiry(token, groupId, true);
+                _fixture.SubmitInquiry(123, groupId, true);
                 Assert.Fail("expected exception was not thrown");
             }
             catch (ExistingRequestException e)

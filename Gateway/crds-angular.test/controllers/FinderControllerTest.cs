@@ -84,7 +84,7 @@ namespace crds_angular.test.controllers
 
             _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _finderService.Setup(m => m.GetGeoCoordsFromAddressOrLatLang(It.IsAny<string>(), It.IsAny<GeoCoordinates>())).Returns(geoCoordinate);
-            _finderService.Setup(m => m.GetMyPins(It.IsAny<string>(), It.IsAny<GeoCoordinate>(), It.IsAny<int>(), It.IsAny<string>())).Returns(listPinDto);
+            _finderService.Setup(m => m.GetMyPins( It.IsAny<GeoCoordinate>(), It.IsAny<int>(), It.IsAny<string>())).Returns(listPinDto);
             _finderService.Setup(m => m.RandomizeLatLong(It.IsAny<AddressDTO>())).Returns(address);
 
             var response = _fixture.GetMyPinsByContactId(fakeQueryParams);
@@ -101,10 +101,9 @@ namespace crds_angular.test.controllers
             {
                 email = "email@email.com"
             };
-            _fixture.SetupAuthorization("good", "ABC");
- 
+             
             _finderService.Setup(m => m.InviteToGroup(
-                It.Is<string>(toke => toke.Equals(token)), 
+                It.IsAny<int>(), 
                 It.Is<int>(id => id.Equals(groupId)),
                 It.Is<User>(user => user.email == fakeInvite.email),
                 It.Is<string>(connectType => connectType.Equals("connect"))
@@ -136,7 +135,7 @@ namespace crds_angular.test.controllers
 
             _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             _finderService.Setup(m => m.GetGeoCoordsFromAddressOrLatLang(It.IsAny<string>(), It.IsAny<GeoCoordinates>())).Returns(geoCoordinate);
-            _finderService.Setup(m => m.GetMyPins(It.IsAny<string>(), It.IsAny<GeoCoordinate>(), It.IsAny<int>(), It.IsAny<string>())).Returns(new List<PinDto>());
+            _finderService.Setup(m => m.GetMyPins( It.IsAny<GeoCoordinate>(), It.IsAny<int>(), It.IsAny<string>())).Returns(new List<PinDto>());
 
             var response = _fixture.GetMyPinsByContactId(fakeQueryParams) as OkNegotiatedContentResult<PinSearchResultsDto>;
             Assert.That(response != null && response.Content.PinSearchResults.Count == 0);
@@ -146,7 +145,7 @@ namespace crds_angular.test.controllers
         public void AddToGroupShouldUseRoleId()
         {
             var token = "good ABC";
-            _fixture.SetupAuthorization("good", "ABC");
+           
             var fakePerson = new User()
             {
                email = "fake@person.com",
@@ -157,7 +156,7 @@ namespace crds_angular.test.controllers
             var groupId = 1;
             var roleId = 2;
             _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _finderService.Setup(m => m.AddUserDirectlyToGroup(It.Is<string>(toke => toke.Equals(token)),It.Is<User>(u => u.Equals(fakePerson)), 1, 2));
+            _finderService.Setup(m => m.AddUserDirectlyToGroup(It.Is<User>(u => u.Equals(fakePerson)), 1, 2));
 
             _fixture.AddToGroup(groupId, fakePerson, roleId);
             _finderService.VerifyAll();

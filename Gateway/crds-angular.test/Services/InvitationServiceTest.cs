@@ -160,7 +160,7 @@ namespace crds_angular.test.Services
                                c.MergeData["Group_Name"].ToString().Equals(testGroup.Name)),
                        false)).Returns(77);
 
-            var created = _fixture.CreateInvitation(invitation, token);
+            var created = _fixture.CreateInvitation(invitation, 123);
             _invitationRepository.VerifyAll();
             _communicationService.VerifyAll();
             Assert.AreSame(invitation, created);
@@ -272,7 +272,7 @@ namespace crds_angular.test.Services
                 false));
 
 
-            var created = _fixture.CreateInvitation(invitation, token);
+            var created = _fixture.CreateInvitation(invitation, 123);
             _invitationRepository.VerifyAll();
             _communicationService.VerifyAll();
             Assert.AreSame(invitation, created);
@@ -315,7 +315,7 @@ namespace crds_angular.test.Services
             };
             _groupRepository.Setup(mocked => mocked.GetGroupParticipants(invitation.SourceId, true)).Returns(participants);
 
-            _fixture.ValidateInvitation(invitation, token);
+            _fixture.ValidateInvitation(invitation, 123);
             _participantRepository.VerifyAll();
             _groupRepository.VerifyAll();
         }
@@ -337,7 +337,7 @@ namespace crds_angular.test.Services
 
             _participantRepository.Setup(mocked => mocked.GetParticipantRecord(token)).Returns((MpParticipant)null);
 
-            _fixture.ValidateInvitation(invitation, token);
+            _fixture.ValidateInvitation(invitation, 123);
         }
 
         [Test]
@@ -362,7 +362,7 @@ namespace crds_angular.test.Services
             _participantRepository.Setup(mocked => mocked.GetParticipantRecord(token)).Returns(participant);
             _groupRepository.Setup(mocked => mocked.GetGroupParticipants(invitation.SourceId, true)).Returns((List<MpGroupParticipant>)null);
 
-            _fixture.ValidateInvitation(invitation, token);
+            _fixture.ValidateInvitation(invitation, 123);
         }
 
         [Test]
@@ -402,7 +402,7 @@ namespace crds_angular.test.Services
 
             _groupRepository.Setup(mocked => mocked.GetGroupParticipants(invitation.SourceId, true)).Returns(participants);
 
-            _fixture.ValidateInvitation(invitation, token);
+            _fixture.ValidateInvitation(invitation, 123);
         }
     }
 }

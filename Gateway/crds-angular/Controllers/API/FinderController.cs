@@ -35,7 +35,7 @@ namespace crds_angular.Models.Finder
 
 namespace crds_angular.Controllers.API
 {
-    public class FinderController : MPAuth
+    public class FinderController : ImpersonateAuthBaseController
     {
         private readonly IAwsCloudsearchService _awsCloudsearchService;
         private readonly IFinderService _finderService;
@@ -106,7 +106,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _finderService.SayHiToParticipant(token, toParticipantId, hi.Message);
+                    _finderService.SayHiToParticipant(token.UserInfo.Mp.ContactId, toParticipantId, hi.Message);
                     return Ok();
                 }
                 catch (Exception e)
@@ -300,7 +300,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _groupToolService.RemoveParticipantFromMyGroup(token, groupInformation.GroupId, groupInformation.GroupParticipantId, groupInformation.Message);
+                    _groupToolService.RemoveParticipantFromMyGroup(token.UserInfo.Mp.ContactId, groupInformation.GroupId, groupInformation.GroupParticipantId, groupInformation.Message);
                     return Ok();
                 }
                 catch (GroupParticipantRemovalException e)
@@ -327,7 +327,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var address = _finderService.GetPersonAddress(token, participantId, shouldGetFullAddress);
+                    var address = _finderService.GetPersonAddress(token.UserInfo.Mp.ContactId, participantId, shouldGetFullAddress);
                     return (Ok(address));
                 }
                 catch (Exception e)
@@ -350,7 +350,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    return (Ok(_finderService.GetMe(token)));
+                    return (Ok(_finderService.GetMe(token.UserInfo.Mp.ContactId)));
                 }
                 catch (Exception e)
                 {
@@ -377,7 +377,7 @@ namespace crds_angular.Controllers.API
                     //show on map
 
 
-                    _finderService.SaveMe(token, medto);
+                    _finderService.SaveMe(token.UserInfo.Mp.ContactId, medto);
                     return(Ok());
                 }
                 catch (Exception e)
@@ -452,7 +452,7 @@ namespace crds_angular.Controllers.API
                     var centerLatitude = originCoords.Latitude;
                     var centerLongitude = originCoords.Longitude;
 
-                    var pinsForContact = _finderService.GetMyPins(token, originCoords, queryParams.ContactId, queryParams.FinderType);
+                    var pinsForContact = _finderService.GetMyPins(originCoords, queryParams.ContactId, queryParams.FinderType);
 
                     if (pinsForContact.Count > 0)
                     {
@@ -493,11 +493,11 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _finderService.InviteToGroup(token, groupId, person, finderFlag);
+                    _finderService.InviteToGroup(token.UserInfo.Mp.ContactId, groupId, person, finderFlag);
 
                     // Call Analytics
                     var props = new EventProperties {{"InvitationToEmail", person.email}};
-                    _analyticsService.Track(AuthenticationRepository.GetContactId(token).ToString(), "HostInvitationSent", props);
+                    _analyticsService.Track(token.UserInfo.Mp.ContactId.ToString(), "HostInvitationSent", props);
 
                     return (Ok());
                 }
@@ -535,7 +535,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _finderService.AddUserDirectlyToGroup(token, person, groupId, roleId);
+                    _finderService.AddUserDirectlyToGroup(person, groupId, roleId);
                     return Ok();
                 }
                 catch (DuplicateGroupParticipantException)
@@ -565,7 +565,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _finderService.TryAGroup(token, groupId);
+                    _finderService.TryAGroup(token.UserInfo.Mp.ContactId, groupId);
                     return (Ok());
                 }
                 catch (Exception e)
@@ -597,7 +597,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _finderService.TryAGroupAcceptDeny(token, groupId, participantId, true);
+                    _finderService.TryAGroupAcceptDeny(groupId, participantId, true);
                     return Ok();
                 }
                 catch (Exception e)
@@ -627,7 +627,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _finderService.TryAGroupAcceptDeny(token, groupId, participantId, false);
+                    _finderService.TryAGroupAcceptDeny(groupId, participantId, false);
                     return Ok();
                 }
                 catch (Exception e)
@@ -704,7 +704,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _finderService.AcceptDenyGroupInvitation(token, groupId, invitationKey, accept);
+                    _finderService.AcceptDenyGroupInvitation(token.UserInfo.Mp.ContactId, groupId, invitationKey, accept);
                     return Ok();
                 }
                 catch (GroupParticipantRemovalException)
@@ -740,7 +740,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _finderService.ApproveDenyGroupInquiry(token, approve, inquiry);
+                    _finderService.ApproveDenyGroupInquiry(approve, inquiry);
                     return Ok();
                 }
                 catch (DuplicateGroupParticipantException)
