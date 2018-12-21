@@ -149,5 +149,63 @@ namespace crds_angular.Controllers.API
                 }
             });
         }
+
+        /// <summary>	
+        /// Remove self (group participant) from group - end date group participant record and email leaders to inform.	
+        /// </summary>	
+        /// <param name="groupInformation"></param> Contains Group ID, Participant ID, and message	
+        /// <returns>An empty response with 200 status code if everything worked, 403 if the caller does not have permission to remove a participant, or another non-success status code on any other failure</returns>	
+        [RequiresAuthorization]
+        [VersionedRoute(template: "group-tool/group/participant/remove-self", minimumVersion: "1.0.0")]
+        [Route("group-tool/group/participant/removeself")]
+        [HttpPost]
+        public IHttpActionResult RemoveSelfFromGroup([FromBody] GroupParticipantRemovalDto groupInformation)
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    _groupService.RemoveParticipantFromGroup(token, groupInformation.GroupId, groupInformation.GroupParticipantId);
+                    return Ok();
+                }
+                catch (GroupParticipantRemovalException e)
+                {
+                    var apiError = new ApiErrorDto(e.Message, null, e.StatusCode);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+                catch (Exception ex)
+                {
+                    var apiError = new ApiErrorDto(string.Format("Error removing group participant {0} from group {1}", groupInformation.GroupParticipantId, groupInformation.GroupId), ex);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
+
+        /// <summary>	
+        /// Return all pending inquiries	
+        /// </summary>	
+        /// <param name="groupId">An integer identifying the group that we want the inquires for.</param>	
+        /// <returns>A list of Invitation DTOs</returns>	
+        [RequiresAuthorization]
+        [ResponseType(typeof(List<Inquiry>))]
+        [VersionedRoute(template: "group-tool/inquiries/{groupId}", minimumVersion: "1.0.0")]
+        [Route("grouptool/inquiries/{groupId}")]
+        [HttpGet]
+        public IHttpActionResult GetInquiries(int groupId)
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    var requestors = _groupToolService.GetInquiries(groupId, token);
+                    return Ok(requestors);
+                }
+                catch (Exception exception)
+                {
+                    var apiError = new ApiErrorDto("GetInquires Failed", exception);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
     }
 }
