@@ -141,27 +141,6 @@ namespace crds_angular.test.controllers
             Assert.That(response != null && response.Content.PinSearchResults.Count == 0);
         }
 
-        [Test]
-        public void AddToGroupShouldUseRoleId()
-        {
-            var token = "good ABC";
-           
-            var fakePerson = new User()
-            {
-               email = "fake@person.com",
-               firstName = "fake",
-               lastName = "person",
-               password = "pass"
-            };
-            var groupId = 1;
-            var roleId = 2;
-            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _finderService.Setup(m => m.AddUserDirectlyToGroup(It.Is<User>(u => u.Equals(fakePerson)), 1, 2));
-
-            _fixture.AddToGroup(groupId, fakePerson, roleId);
-            _finderService.VerifyAll();
-        }
-
         private static List<PinDto> GetListOfPinDto()
         {
             var list = new List<PinDto>();

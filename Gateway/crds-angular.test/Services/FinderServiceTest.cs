@@ -21,7 +21,7 @@ using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Services.Analytics;
 using Crossroads.Web.Common.Security;
 using MvcContrib.TestHelper;
-
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.test.Services
 {
@@ -145,10 +145,9 @@ namespace crds_angular.test.Services
         public void ShouldThrowExceptionIfParticipantIdsDontMatch()
         {
             const int participantId = 42;
-            const string token = "ABC";
             const int addressParticipantId = 99;
 
-            _mpParticipantRepository.Setup(mock => mock.GetParticipantRecord(token)).Returns(new MpParticipant()
+            _mpParticipantRepository.Setup(mock => mock.GetParticipant(It.IsAny<int>())).Returns(new MpParticipant()
             {
                 ParticipantId = participantId
             });
@@ -161,10 +160,9 @@ namespace crds_angular.test.Services
         public void GetPersonShouldThrowWhenAddressNotFound()
         {
             const int participantId = 42;
-            const string token = "ABC";
+                       
 
-
-            _mpParticipantRepository.Setup(mock => mock.GetParticipantRecord(token)).Returns(new MpParticipant()
+            _mpParticipantRepository.Setup(mock => mock.GetParticipant(It.IsAny<int>())).Returns(new MpParticipant()
             {
                 ParticipantId = participantId
             });
@@ -178,8 +176,8 @@ namespace crds_angular.test.Services
         public void ShouldGetFullPersonAddress()
         {
             const int participantId = 42;
-            const string token = "ABC";
-            _mpParticipantRepository.Setup(mock => mock.GetParticipantRecord(token)).Returns(new MpParticipant()
+            
+            _mpParticipantRepository.Setup(mock => mock.GetParticipant(It.IsAny<int>())).Returns(new MpParticipant()
             {
                 ParticipantId = participantId
             });
@@ -196,8 +194,8 @@ namespace crds_angular.test.Services
         public void ShouldGetPartialPersonAddress()
         {
             const int participantId = 42;
-            const string token = "ABC";
-            _mpParticipantRepository.Setup(mock => mock.GetParticipantRecord(token)).Returns(new MpParticipant()
+            
+            _mpParticipantRepository.Setup(mock => mock.GetParticipant(It.IsAny<int>())).Returns(new MpParticipant()
             {
                 ParticipantId = participantId
             });
@@ -217,8 +215,8 @@ namespace crds_angular.test.Services
         {
             const int participantId = 42;
             const int addressParticipantId = 33;
-            const string token = "ABC";
-            _mpParticipantRepository.Setup(mock => mock.GetParticipantRecord(token)).Returns(new MpParticipant()
+            
+            _mpParticipantRepository.Setup(mock => mock.GetParticipant(It.IsAny<int>())).Returns(new MpParticipant()
             {
                 ParticipantId = participantId
             });
@@ -1003,11 +1001,11 @@ namespace crds_angular.test.Services
             _mpConfigurationWrapper.Setup(x => x.GetConfigIntValue("GroupsAddParticipantEmailNotificationTemplateId")).Returns(1);
             _communicationRepository.Setup(x => x.GetTemplate(It.IsAny<int>())).Returns(emailTemplate);
             _mpContactRepository.Setup(x => x.GetContactId(It.IsAny<string>())).Returns(3);
-            _mpContactRepository.Setup(x => x.GetContactById(3)).Returns(leaderContact);
+            _mpContactRepository.Setup(x => x.GetContactById(It.IsAny<int>())).Returns(leaderContact);
             _mpContactRepository.Setup(x => x.GetContactIdByEmail(It.IsAny<string>())).Returns(2);
             _groupService.Setup(x => x.GetGroupDetails(It.IsAny<int>())).Returns(group);
             _lookupService.Setup(x => x.GetMeetingDayFromId(It.IsAny<int>())).Returns("Friday");
-            _mpParticipantRepository.Setup(x => x.GetParticipantRecord(It.IsAny<string>())).Returns(mpParticpant);
+            _mpParticipantRepository.Setup(x => x.GetParticipant(It.IsAny<int>())).Returns(mpParticpant);
             _groupService.Setup(x => x.GetGroupsByTypeOrId(It.IsAny<string>(), It.IsAny<int>(), null, It.IsAny<int>(),true, false)).Returns(groupList);
 
             _mpContactRepository.Setup(x => x.GetActiveContactIdByEmail("ae@g.com")).Returns(123987);
@@ -1017,7 +1015,7 @@ namespace crds_angular.test.Services
 
             _fixture.AddUserDirectlyToGroup(  person, gatheringId, _memberRoleId);
             _communicationRepository.Verify(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false),Times.Exactly(4));
-            
+
         }
 
         [Test]
@@ -1117,7 +1115,6 @@ namespace crds_angular.test.Services
             _fixture.ApproveDenyGroupInquiry( true, inquiry);
 
             _mpContactRepository.VerifyAll();
-            _mpGroupToolService.VerifyAll();
             _groupService.VerifyAll();
             _lookupService.VerifyAll();
             _mpParticipantRepository.VerifyAll();
@@ -1221,7 +1218,6 @@ namespace crds_angular.test.Services
             _fixture.ApproveDenyGroupInquiry( false, inquiry);
 
             _mpContactRepository.VerifyAll();
-            _mpGroupToolService.VerifyAll();
             _groupService.VerifyAll();
             _lookupService.VerifyAll();
             _mpParticipantRepository.VerifyAll();
@@ -1328,7 +1324,6 @@ namespace crds_angular.test.Services
             _fixture.TryAGroupAcceptDeny(groupId, participantId, true);
             
             _mpContactRepository.VerifyAll();
-            _mpGroupToolService.VerifyAll();
             _mpGroupRepository.VerifyAll();
             _groupService.VerifyAll();
             _lookupService.VerifyAll();
@@ -1437,7 +1432,6 @@ namespace crds_angular.test.Services
             _fixture.TryAGroupAcceptDeny( groupId, participantId, false);
 
             _mpContactRepository.VerifyAll();
-            _mpGroupToolService.VerifyAll();
             _mpGroupRepository.VerifyAll();
             _groupService.VerifyAll();
             _lookupService.VerifyAll();
