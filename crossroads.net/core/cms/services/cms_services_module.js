@@ -10,7 +10,7 @@ cms_services_module.factory('ContentBlock', function ($resource) {
 
 cms_services_module.factory('SystemPage', function ($resource, $q) {
     var get = function (state) {
-        var SystemPagesResource = $resource(__APP_SERVER_ENDPOINT__ + '/system-pages.json', { cache: true });
+        var SystemPagesResource = $resource(__APP_SERVER_ENDPOINT__ + 'system-pages.json', { cache: true });
         var SystemPagesQuery = SystemPagesResource.get().$promise;
         return $q(function (resolve, reject) {
             SystemPagesQuery.then(function (response) {
