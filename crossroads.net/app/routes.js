@@ -28,7 +28,6 @@
                 state: $state.next.name
               }).then(
                   function(systemPage) {
-                    console.log("returned to routejs:", systemPage);
                     if (systemPage) {
                       if (!$state.next.data) {
                         $state.next.data = {};
