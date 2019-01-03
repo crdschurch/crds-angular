@@ -63,6 +63,7 @@ namespace crds_angular.test.controllers
             };
 
             _fixture.Request.Headers.Authorization = new AuthenticationHeaderValue(_authType, _authToken);
+
         }
 
         [Test]
@@ -95,7 +96,7 @@ namespace crds_angular.test.controllers
 
         [Test]
         public void InviteToGroupShouldCallAnalytics()
-        {   var token = "good ABC";
+        {   
             var groupId = 1;
             var fakeInvite = new User()
             {
@@ -117,6 +118,7 @@ namespace crds_angular.test.controllers
                                         It.Is<EventProperties>(props => props["InvitationToEmail"].Equals(fakeInvite.email))
                                     ));
 
+           
             _fixture.InviteToGroup(groupId, "connect", fakeInvite);
             
             _analyticsService.VerifyAll();
