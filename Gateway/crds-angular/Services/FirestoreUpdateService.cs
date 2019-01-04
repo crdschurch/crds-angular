@@ -210,7 +210,7 @@ namespace crds_angular.Services
                 var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
 
                 // create the pin object
-                MapPin pin = new MapPin(congregation.Name, congregation.Name, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), congregationid.ToString(), geohash, "", null);
+                MapPin pin = new MapPin(congregation.Name, congregation.Name, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), congregationid.ToString(), geohash, "", null, false);
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
@@ -338,11 +338,34 @@ namespace crds_angular.Services
                     }
                 }
 
+                // get group categories
+                ObjectAttributeTypeDTO groupcategory;
+                if(t.TryGetValue(90, out groupcategory))
+                {
+                    // roll through the age group. add selected to the dictionary
+                    var categories = new List<string>();
+                    foreach (var a in groupcategory.Attributes)
+                    {
+                        if (a.Selected)
+                        {
+                            categories.Add(a.Category);
+                        }
+                    }
+
+                    // add to the dict
+                    if (categories.Count > 0)
+                    {
+                        dict.Add("Categories", categories.ToArray());
+                    }
+                }
+
+
                 // Add the online property to the MapPin type - PJLPJL
                 //deal with the address restriction
 
                 // create the pin object
-                MapPin pin = new MapPin(group.GroupDescription, group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), groupid.ToString(), geohash, "", dict);
+                MapPin pin = new MapPin(group.GroupDescription, group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), 
+                    groupid.ToString(), geohash, "", dict, group.AvailableOnline != null ? (bool)group.AvailableOnline : false);
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
@@ -409,7 +432,7 @@ namespace crds_angular.Services
                 var url = SendProfilePhotoToFirestore(participantid);
 
                 // create the pin object
-                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash, url, null);
+                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash, url, null, false);
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
