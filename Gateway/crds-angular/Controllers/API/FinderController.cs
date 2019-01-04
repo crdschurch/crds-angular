@@ -389,40 +389,6 @@ namespace crds_angular.Controllers.API
             });
         }
 
- 
-
-        /// <summary>
-        /// Create Pin with provided address details
-        /// </summary>
-        [RequiresAuthorization]
-        [ResponseType(typeof(PinDto))]
-        [VersionedRoute(template: "finder/gathering/edit", minimumVersion: "1.0.0")]
-        [Route("finder/gathering/edit")]
-        [HttpPut]
-        public IHttpActionResult EditGatheringPin([FromBody] PinDto pin)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    if (pin.Contact_ID != _authenticationRepo.GetContactId(token))
-                    {
-                        throw new HttpResponseException(HttpStatusCode.Unauthorized);
-                    }
-
-                    pin = _finderService.UpdateGathering(pin);
-                    _awsCloudsearchService.UploadNewPinToAws(pin);
-
-                    return (Ok(pin));
-                }
-                catch (Exception e)
-                {
-                    _logger.Error("Could not update pin", e);
-                    var apiError = new ApiErrorDto("Save Pin Failed", e);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-            });
-        }
 
         [ResponseType(typeof(PinSearchResultsDto))]
         [VersionedRoute(template: "finder/findpinsbyaddress", minimumVersion: "1.0.0")]
@@ -585,44 +551,7 @@ namespace crds_angular.Controllers.API
             });
         }
 
-        /// <summary>
-        /// Logged in user requests to join gathering
-        /// </summary>
-        [RequiresAuthorization]
-        [VersionedRoute(template: "finder/pin/gatheringjoinrequest", minimumVersion: "1.0.0")]
-        [Route("finder/pin/gatheringjoinrequest")]
-        [HttpPost]
-        public IHttpActionResult GatheringJoinRequest([FromBody]int gatheringId)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    _finderService.GatheringJoinRequest(token, gatheringId);
-                    return (Ok());
-                }
-                catch (Exception e)
-                {
-                    _logger.Error("Could not generate request", e);
-                    if (e.Message == "User already has request")
-                    {
-                        throw new HttpResponseException(HttpStatusCode.Conflict);
-                    }
-                    else if (e.Message == "User already a member")
-                    {
-                        throw new HttpResponseException(HttpStatusCode.NotAcceptable);
-                    }
-                    else
-                    {
-                        throw new HttpResponseException(new ApiErrorDto("Gathering request failed", e).HttpResponseMessage);
-                    }
-
-                }
-            });
-        }
-
-
-
+    
         /// <summary>
         /// Logged in user requests to "try a group"
         /// </summary>
@@ -711,30 +640,6 @@ namespace crds_angular.Controllers.API
                         default:
                             throw new HttpResponseException(new ApiErrorDto("Try a group deny request failed", e).HttpResponseMessage);
                     }
-                }
-            });
-        }
-
-        /// <summary>
-        /// Logged in user says hi
-        /// </summary>
-        [RequiresAuthorization]
-        [VersionedRoute(template: "finder/sayhi/{fromId}/{toId}", minimumVersion: "1.0.0")]
-        [Route("finder/sayhi/{fromId}/{toId}")]
-        [HttpPost]
-        public IHttpActionResult SayHi([FromUri]int fromId, [FromUri]int toId, [FromBody]SayHiDTO hi)
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    _finderService.SayHi(fromId, toId, hi.Message);
-                    return Ok();
-                }
-                catch (Exception e)
-                {
-                    var apiError = new ApiErrorDto("Say Hi Failed", e);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
             });
         }

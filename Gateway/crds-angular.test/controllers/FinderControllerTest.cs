@@ -163,15 +163,6 @@ namespace crds_angular.test.controllers
             _finderService.VerifyAll();
         }
 
-        [Test]
-        [ExpectedException(typeof(HttpResponseException))]
-        public void TestNotAuthorized()
-        {
-            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _authenticationRepository.Setup(mocked => mocked.GetContactId("abc")).Returns(123456);
-            _fixture.EditGatheringPin(GetListOfPinDto()[0]);
-        }
-
         private static List<PinDto> GetListOfPinDto()
         {
             var list = new List<PinDto>();
