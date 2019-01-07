@@ -71,20 +71,23 @@
       const document = $injectedDocument[0];
       // work-around for displaying cr.net inside preview pane for CMS
       const domain = document.domain;
-      const parts = domain.split('.');
-      if (parts.length === 4) {
-        // possible ip address
-        const firstChar = parts[0].charAt(0);
-        if (firstChar >= '0' && firstChar <= '9') {
-          // ip address
-          document.domain = domain;
-          return;
+      if(!~domain.indexOf('netlify.com'))
+      {//Can't set a "top level domain", Netlify is considred "top level"
+        const parts = domain.split('.');
+        if (parts.length === 4) {
+          // possible ip address
+          const firstChar = parts[0].charAt(0);
+          if (firstChar >= '0' && firstChar <= '9') {
+            // ip address
+            document.domain = domain;
+            return;
+          }
         }
+        while (parts.length > 2) {
+          parts.shift();
+        }
+        document.domain = parts.join('.');
       }
-      while (parts.length > 2) {
-        parts.shift();
-      }
-      document.domain = parts.join('.');
     }
 
     Impersonate.clear();
