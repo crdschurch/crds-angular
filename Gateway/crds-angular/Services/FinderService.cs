@@ -204,12 +204,11 @@ namespace crds_angular.Services
             }
         }
 
-        public MeDTO GetMe(string token)
+        public MeDTO GetMe(int contactId)
         {
-            var addr = GetPersonAddress(token);
-            MpMyContact contact = _contactRepository.GetMyProfile(token);
-            MpParticipant participant = _participantRepository.GetParticipant(contact.Contact_ID); // showon map comes from here
-            
+            var addr = GetPersonAddress(contactId);
+            MpParticipant participant = _participantRepository.GetParticipant(contactId); // showon map comes from here
+            var contact = _contactRepository.GetContactById(contactId);
             var medto = new MeDTO
             {
                 Address = addr,
@@ -220,12 +219,12 @@ namespace crds_angular.Services
             return medto;
         }
 
-        public void SaveMe(string token, MeDTO medto)
+        public void SaveMe(int contactId, MeDTO medto)
         {
             try
             {
                 // address
-                var addressDTO = GetPersonAddress(token);
+                var addressDTO = GetPersonAddress(contactId);
                 addressDTO.AddressLine1 = medto.Address.AddressLine1;
                 addressDTO.AddressLine2 = medto.Address.AddressLine2;
                 addressDTO.City = medto.Address.City;
@@ -247,7 +246,7 @@ namespace crds_angular.Services
                 }
 
                 // congregation
-                MpMyContact contact = _contactRepository.GetMyProfile(token);
+                var contact = _contactRepository.GetContactById(contactId);
                 var household = new MpHousehold
                 {
                     Address_ID = contact.Address_ID ?? addressDTO.AddressID,
@@ -275,11 +274,10 @@ namespace crds_angular.Services
             }
         }
 
-        public void SayHiToParticipant(string token, int toParticipantId, string message)
+        public void SayHiToParticipant(int fromContactId, int toParticipantId, string message)
         {
             var to = _contactRepository.GetContactIdByParticipantId(toParticipantId);
-            var from = _contactRepository.GetContactId(token);
-            this.SayHi(from, to, message);
+            this.SayHi(fromContactId, to, message);
         }
 
         public List<int> GetAddressIdsWithNoGeoCode()
@@ -454,26 +452,7 @@ namespace crds_angular.Services
             }
         }
 
-        public void GatheringJoinRequest(string token, int gatheringId)
-        {
-            var group = _groupService.GetGroupDetails(gatheringId);
-
-            var commType = group.GroupTypeId == _smallGroupType ? _connectCommunicationTypeRequestToJoinSmallGroup : _connectCommunicationTypeRequestToJoinGathering;
-
-            var connection = new ConnectCommunicationDto
-            {
-                CommunicationTypeId = commType,
-                ToContactId = group.ContactId,
-                FromContactId = _contactRepository.GetContactId(token),
-                CommunicationStatusId = _configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusUnanswered"),
-                GroupId = gatheringId
-            };
-            RecordCommunication(connection);
-
-            _groupToolService.SubmitInquiry(token, gatheringId, true);
-        }
-
-        public void TryAGroup(string token, int groupId)
+        public void TryAGroup(int contactId, int groupId)
         {
             var group = _groupService.GetGroupDetails(groupId);
 
@@ -483,14 +462,14 @@ namespace crds_angular.Services
             {
                 CommunicationTypeId = commType,
                 ToContactId = group.ContactId,
-                FromContactId = _contactRepository.GetContactId(token),
+                FromContactId = contactId,
                 CommunicationStatusId = _configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusUnanswered"),
                 GroupId = groupId
             };
 
-            _groupToolService.SubmitInquiry(token, groupId, false);
+            _groupToolService.SubmitInquiry(contactId, groupId, false);
             RecordCommunication(connection);
-            SendTryAGroupEmailToLeader(token, group);
+            SendTryAGroupEmailToLeader(contactId, group);
         }
 
         public AddressDTO GetAddressForIp(string ip)
@@ -566,7 +545,7 @@ namespace crds_angular.Services
             return pins;
         }
 
-        public void AddUserDirectlyToGroup(string token, User user, int groupid, int roleId)
+        public void AddUserDirectlyToGroup( User user, int groupid, int roleId)
         {
 
             //check to see if user exists in MP. Exclude Guest Giver and Deceased status
@@ -582,7 +561,7 @@ namespace crds_angular.Services
             // groupParticipant == null then participant not in group
             if (groupParticipant == null)
             {
-                SendEmailToAddedUser(token, user, groupid);
+                SendEmailToAddedUser(contactId, user, groupid);
                 _groupService.addContactToGroup(groupid, contactId, roleId);
                 //send leader email
                 SendAddEmailToGroupLeaders(user, groupid);
@@ -874,14 +853,14 @@ namespace crds_angular.Services
             return (rad / Math.PI * 180.0);
         }
 
-        public List<PinDto> GetMyPins(string token, GeoCoordinate originCoords, int contactId, string finderType)
+        public List<PinDto> GetMyPins(GeoCoordinate originCoords, int contactId, string finderType)
         {
             var pins = new List<PinDto>();
             var participantId = GetParticipantIdFromContact(contactId);
 
             int[] groupTypesToFetch = finderType == _finderConnect ? new int[] { _anywhereGroupType } : new int[] { _smallGroupType };
 
-            var groupPins = GetMyGroupPins(token, groupTypesToFetch, participantId, finderType);
+            var groupPins = GetMyGroupPins(groupTypesToFetch, participantId, finderType);
             var personPin = GetPinDetailsForPerson(participantId);
 
             pins.AddRange(groupPins);
@@ -905,7 +884,7 @@ namespace crds_angular.Services
             return pins;
         }
 
-        public List<PinDto> GetMyGroupPins(string token, int[] groupTypeIds, int participantId, string finderType)
+        public List<PinDto> GetMyGroupPins(int[] groupTypeIds, int participantId, string finderType)
         {
             var groupsByType = _groupRepository.GetGroupsForParticipantByTypeOrID(participantId, null, groupTypeIds);
 
@@ -972,7 +951,7 @@ namespace crds_angular.Services
         }
 
 
-        public Invitation InviteToGroup(string token, int gatheringId, User person, string finderFlag)
+        public Invitation InviteToGroup(int contactId, int gatheringId, User person, string finderFlag)
         {
             var inviteType = finderFlag.Equals(_finderConnect) ? _anywhereGatheringInvitationTypeId : _groupInvitationTypeId;
 
@@ -986,8 +965,8 @@ namespace crds_angular.Services
                 RequestDate = DateTime.Now
             };
 
-            _invitationService.ValidateInvitation(invitation, token);
-            invitation = _invitationService.CreateInvitation(invitation, token);
+            _invitationService.ValidateInvitation(invitation, contactId);
+            invitation = _invitationService.CreateInvitation(invitation, contactId);
 
             // TODO US8247 - Guest giver stuff - see story for info
 
@@ -1015,7 +994,7 @@ namespace crds_angular.Services
             {
                 CommunicationTypeId = communicationType,
                 ToContactId = toContactId,
-                FromContactId = _contactRepository.GetContactId(token),
+                FromContactId = contactId,
                 CommunicationStatusId = _configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusUnanswered"),
                 GroupId = gatheringId
             };
@@ -1029,9 +1008,9 @@ namespace crds_angular.Services
             return _groupService.GetGroupDetails(groupId).Address;
         }
 
-        public AddressDTO GetPersonAddress(string token, int participantId = -1, bool shouldGetFullAddress = true)
+        public AddressDTO GetPersonAddress(int contactId, int participantId = -1, bool shouldGetFullAddress = true)
         {
-            var user = _participantRepository.GetParticipantRecord(token);
+            var user = _participantRepository.GetParticipant(contactId);
 
             if(participantId == -1)
             {
@@ -1086,14 +1065,14 @@ namespace crds_angular.Services
             RecordCommunication(connection);
         }
 
-        public void AcceptDenyGroupInvitation(string token, int groupId, string invitationGuid, bool accept)
+        public void AcceptDenyGroupInvitation(int contactId, int groupId, string invitationGuid, bool accept)
         {
             try
             {
-                _groupToolService.AcceptDenyGroupInvitation(token, groupId, invitationGuid, accept);
+                _groupToolService.AcceptDenyGroupInvitation(contactId, groupId, invitationGuid, accept);
 
                 var host = GetPinDetailsForPerson(GetLeaderParticipantIdFromGroup(groupId));
-                var cm = _contactRepository.GetContactById(_authenticationRepository.GetContactId(token));
+                var cm = _contactRepository.GetContactById(contactId);
 
                 var connection = new ConnectCommunicationDto
                 {
@@ -1327,11 +1306,11 @@ namespace crds_angular.Services
             return mergeData;
         }
 
-        private void SendTryAGroupEmailToLeader(string token, GroupDTO group)
+        private void SendTryAGroupEmailToLeader(int contactId, GroupDTO group)
         {
             try
             {
-                var newMemberId = _contactRepository.GetContactId(token);
+                var newMemberId = contactId;
                 var mergeData = GetEmailMergeData(newMemberId, group);
 
                 var emailTemplateId = _configurationWrapper.GetConfigIntValue("GroupRequestPendingReminderEmailTemplateId");
@@ -1380,11 +1359,11 @@ namespace crds_angular.Services
             }
         }
 
-        private void SendEmailToAddedUser(string token, User user, int groupid)
+        private void SendEmailToAddedUser(int contactId, User user, int groupid)
         {
             var emailTemplateId = _configurationWrapper.GetConfigIntValue("GroupsAddParticipantEmailNotificationTemplateId");
             var emailTemplate = _communicationRepository.GetTemplate(emailTemplateId);
-            var leaderContactId = _contactRepository.GetContactId(token);
+            var leaderContactId = contactId;
             var leaderContact = _contactRepository.GetContactById(leaderContactId);
             var leaderEmail = leaderContact.Email_Address;
             var userEmail = user.email;
@@ -1447,7 +1426,7 @@ namespace crds_angular.Services
             {
                 CommunicationTypeId = _connectCommunicationTypeInviteToSmallGroup,
                 ToContactId = newMemberContactId,
-                FromContactId = _contactRepository.GetContactId(token),
+                FromContactId = contactId,
                 CommunicationStatusId = _configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusNA"),
                 GroupId = groupid,
 
@@ -1546,11 +1525,10 @@ namespace crds_angular.Services
             return contactId != 0;
         }
 
-        public void ApproveDenyGroupInquiry(string token, bool approve, Inquiry inquiry)
+        public void ApproveDenyGroupInquiry(bool approve, Inquiry inquiry)
         {
             try
             {
-                _groupToolService.VerifyCurrentUserIsGroupLeader(token, inquiry.GroupId);
                 if (
                 _groupRepository.GetGroupParticipants(inquiry.GroupId, true)
                         .Exists(p => p.ContactId == inquiry.ContactId) || inquiry.Placed != null)
@@ -1670,15 +1648,12 @@ namespace crds_angular.Services
 
         }
 
-        public void TryAGroupAcceptDeny(string token, int groupId, int participantId, bool accept)
+        public void TryAGroupAcceptDeny(int groupId, int participantId, bool accept)
         {
             var contactId = _contactRepository.GetContactIdByParticipantId(participantId);
             var inquiry = _groupToolService.GetGroupInquiryForContactId(groupId, contactId);
-
-
-
             //accept or deny the inquiry
-            ApproveDenyGroupInquiry(token, accept, inquiry);
+            ApproveDenyGroupInquiry(accept, inquiry);
         }
     }
 }
