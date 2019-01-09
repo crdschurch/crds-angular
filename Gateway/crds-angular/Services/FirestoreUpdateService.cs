@@ -338,6 +338,9 @@ namespace crds_angular.Services
                     }
                 }
 
+                // Add the online property to the MapPin type - PJLPJL
+                //deal with the address restriction
+
                 // create the pin object
                 MapPin pin = new MapPin(group.GroupDescription, group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), groupid.ToString(), geohash, "", dict);
 

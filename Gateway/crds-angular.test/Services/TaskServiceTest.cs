@@ -137,7 +137,7 @@ namespace crds_angular.test.Services
 
             _taskRepository.Setup(m => m.GetRejectedRoomReservations()).Returns(testReturnValues);
 
-            _emailCommunicationService.Setup(m => m.SendEmail(email, token));
+            _emailCommunicationService.Setup(m => m.SendEmail(email));
 
             _fixture.RoomReservationRejectionNotification();
 
