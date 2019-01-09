@@ -6,7 +6,6 @@ import core from '../core/core';
 
 // Other modules needed to instantiate crossroads module not referenced in other tests already
 import search from '../app/search/search.module';
-import media from '../app/media/media.module';
 import formly from '../app/formlyBuilder/formlyBuilder.module';
 import invoices from '../app/invoices/invoices.module';
 import formBuilder from '../app/formBuilder/formBuilder.module'

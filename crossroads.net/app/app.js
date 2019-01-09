@@ -1,6 +1,5 @@
 require('./childcare');
 require('./mp_tools');
-require('./live_stream');
 require('ui-select/dist/select.css');
 require('./invoices/invoices.module');
 
@@ -15,8 +14,6 @@ require('./invoices/invoices.module');
     constants.MODULES.CORKBOARD,
     constants.MODULES.FORM_BUILDER,
     constants.MODULES.GO_VOLUNTEER,
-    constants.MODULES.MEDIA,
-    constants.MODULES.LIVE_STREAM,
     constants.MODULES.MPTOOLS,
     constants.MODULES.PROFILE,
     constants.MODULES.SEARCH,
@@ -39,10 +36,6 @@ require('./invoices/invoices.module');
 
   require('./corkboard');
   require('./signup');
-  /// #if INCLUDE_STYLEGUIDE
-  require('./styleguide');
-  /// #endif
-  require('./thedaily');
   require('./volunteer_signup');
   require('./volunteer_application');
   require('./leaveyourmark');
