@@ -1577,26 +1577,22 @@ namespace crds_angular.test.Services
                                                                                                          e.groupId == 123 &&
                                                                                                          e.TemplateId == GroupRequestPendingReminderEmailTemplateId &&
                                                                                                          e.ToContactId == 1231
-                                                                            ),
-                                                                        null));
+                                                                            )));
             _emailCommunicationService.Setup(mocked => mocked.SendEmail(It.Is<EmailCommunicationDTO>(e =>
                                                                                                          e.groupId == 123 &&
                                                                                                          e.TemplateId == GroupRequestPendingReminderEmailTemplateId &&
                                                                                                          e.ToContactId == 1233
-                                                                            ),
-                                                                        null));
+                                                                            )));
             _emailCommunicationService.Setup(mocked => mocked.SendEmail(It.Is<EmailCommunicationDTO>(e =>
                                                                                                          e.groupId == 456 &&
                                                                                                          e.TemplateId == GroupRequestPendingReminderEmailTemplateId &&
                                                                                                          e.ToContactId == 4561
-                                                                            ),
-                                                                        null));
+                                                                            )));
             _emailCommunicationService.Setup(mocked => mocked.SendEmail(It.Is<EmailCommunicationDTO>(e =>
                                                                                                          e.groupId == 456 &&
                                                                                                          e.TemplateId == GroupRequestPendingReminderEmailTemplateId &&
                                                                                                          e.ToContactId == 4563
-                                                                            ),
-                                                                        null));
+                                                                            )));
 
             _fixture.SendSmallGroupPendingInquiryReminderEmails();
             _groupToolRepository.VerifyAll();
@@ -1709,26 +1705,22 @@ namespace crds_angular.test.Services
                                                                                                          e.groupId == 123 &&
                                                                                                          e.TemplateId == GatheringRequestPendingReminderEmailTemplateId &&
                                                                                                          e.ToContactId == 1231
-                                                                            ),
-                                                                        null));
+                                                                            )));
             _emailCommunicationService.Setup(mocked => mocked.SendEmail(It.Is<EmailCommunicationDTO>(e =>
                                                                                                          e.groupId == 123 &&
                                                                                                          e.TemplateId == GatheringRequestPendingReminderEmailTemplateId &&
                                                                                                          e.ToContactId == 1233
-                                                                            ),
-                                                                        null));
+                                                                            )));
             _emailCommunicationService.Setup(mocked => mocked.SendEmail(It.Is<EmailCommunicationDTO>(e =>
                                                                                                          e.groupId == 456 &&
                                                                                                          e.TemplateId == GatheringRequestPendingReminderEmailTemplateId &&
                                                                                                          e.ToContactId == 4561
-                                                                            ),
-                                                                        null));
+                                                                            )));
             _emailCommunicationService.Setup(mocked => mocked.SendEmail(It.Is<EmailCommunicationDTO>(e =>
                                                                                                          e.groupId == 456 &&
                                                                                                          e.TemplateId == GatheringRequestPendingReminderEmailTemplateId &&
                                                                                                          e.ToContactId == 4563
-                                                                            ),
-                                                                        null));
+                                                                            )));
 
             _fixture.SendSmallGroupPendingInquiryReminderEmails();
             _groupToolRepository.VerifyAll();
