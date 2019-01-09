@@ -1,6 +1,6 @@
 R_Event_Name,R_Start_Date,R_End_Date,R_Event_Type,R_Program_Name,R_Contact_Email,R_Congregation_ID,Location_ID,Group_Name,Registration_Start_Date,Registration_End_Date,Online_Registration_Product_Name,,
-(t+auto) GO Bedrock 2018,1/1/2018,12/25/2018,GO Trips,(t+auto) GO Bedrock 2018,mpcrds+chell@aperture.com,5,,(t+auto) GO Bedrock 2018 (Trip Participants),,,,,
-(t) GO Midgar 2018,12/25/2018,12/31/2018,GO Trips,(t) GO Midgar 2018,mpcrds+chell@aperture.com,5,,(t) GO Midgar 2018 (Trip Participants),,,,,Creates an Event and adds it to a Group if specified
+(t+auto) GO Bedrock 2018,1/1/2019,12/25/2019,GO Trips,(t+auto) GO Bedrock 2018,mpcrds+chell@aperture.com,5,,(t+auto) GO Bedrock 2018 (Trip Participants),,,,,
+(t) GO Midgar 2018,12/25/2019,12/31/2019,GO Trips,(t) GO Midgar 2018,mpcrds+chell@aperture.com,5,,(t) GO Midgar 2018 (Trip Participants),,,,,Creates an Event and adds it to a Group if specified
 (t) Superbowl Oakley 10:00,12/22/2017 10:00,12/22/2017 11:00,(t) Superbowl Oakley daily 10:00,Kids Club,mpcrds+chell@aperture.com,1,3,(t) Superbowl Oakley Group,,,,,All fields are required except Location_ID and Group_Name
 (t) Superbowl Oakley 10:00,12/23/2017 10:00,12/23/2017 11:00,(t) Superbowl Oakley daily 10:00,Kids Club,mpcrds+chell@aperture.com,1,3,(t) Superbowl Oakley Group,,,,,
 (t) Superbowl Oakley 10:00,12/24/2017 10:00,12/24/2017 11:00,(t) Superbowl Oakley daily 10:00,Kids Club,mpcrds+chell@aperture.com,1,3,(t) Superbowl Oakley Group,,,,,Dependencies:
@@ -27,8 +27,8 @@ R_Event_Name,R_Start_Date,R_End_Date,R_Event_Type,R_Program_Name,R_Contact_Email
 (t) Kids Club Oakley 1:00,1/26/2018 13:00,1/26/2018 15:00,(t) KC Nursery Oakley weekly 1:00,Kids Club,mpcrds+chell@aperture.com,1,3,(t) KidsClub Oakley Group,,,,,
 (t) 1Time Mason with ChildCare,1/5/2018 13:00,1/8/2018 13:00,Onsite Groups,Kids Club,mpcrds+chell@aperture.com,6,5,(t) 1Time Mason Group with ChildCare,,,,,
 (t) 1Time Mason with ChildCare - Childcare,1/5/2018 13:00,1/8/2018 13:00,Childcare,Kids Club,mpcrds+chell@aperture.com,6,5,(t) 1Time Mason Group with ChildCare,,,,"Trigger will create this event automatically, this will update it",
-(t+auto) NOLA Trip,1/1/2019,12/31/2019,GO Trips,(t+auto) NOLA Trip,mpcrds+aliciakeys@gmail.com,5,,(t+auto) NOLA Trip,,,,,
-(t+auto) SA Trip,1/1/2019,12/31/2019,GO Trips,(t+auto) SA Trip,mpcrds+aliciakeys@gmail.com,5,,(t+auto) SA Trip,,,,,
-(t+auto) Camp Crystal Lake,1/1/2019,12/31/2019,Camp,(t+auto) Camp Crystal Lake Program,mpcrds+aliciakeys@gmail.com,5,,High School Grade 10,1/1/2018,12/31/2018,(t+auto) Camp Crystal Lake Product,,
-(t+auto) Camp Anawanna,1/1/2019,12/31/2019,Camp,(t+auto) Camp Anawanna Program,mpcrds+aliciakeys@gmail.com,5,,High School Grade 10,1/1/2018,12/31/2018,(t+auto) Camp Anawanna Product,,
-(t+auto) automation test form event,1/1/2019,12/31/2019,Outside Events,Reachout,mpcrds+aliciakeys@gmail.com,15,,,1/1/2018,12/31/2018,,,
+(t+auto) NOLA Trip,1/1/2020,12/31/2020,GO Trips,(t+auto) NOLA Trip,mpcrds+aliciakeys@gmail.com,5,,(t+auto) NOLA Trip,,,,,
+(t+auto) SA Trip,1/1/2020,12/31/2020,GO Trips,(t+auto) SA Trip,mpcrds+aliciakeys@gmail.com,5,,(t+auto) SA Trip,,,,,
+(t+auto) Camp Crystal Lake,1/1/2020,12/31/2020,Camp,(t+auto) Camp Crystal Lake Program,mpcrds+aliciakeys@gmail.com,5,,High School Grade 10,1/1/2019,12/31/2019,(t+auto) Camp Crystal Lake Product,,
+(t+auto) Camp Anawanna,1/1/2020,12/31/2020,Camp,(t+auto) Camp Anawanna Program,mpcrds+aliciakeys@gmail.com,5,,High School Grade 10,1/1/2019,12/31/2019,(t+auto) Camp Anawanna Product,,
+(t+auto) automation test form event,1/1/2020,12/31/2020,Outside Events,Reachout,mpcrds+aliciakeys@gmail.com,15,,,1/1/2019,12/31/2019,,,

@@ -26,23 +26,23 @@
             Meta: ['SystemPage', '$state', '$rootScope', function(SystemPage, $state, $rootScope) {
               return SystemPage.get({
                 state: $state.next.name
-              }).$promise.then(
+              }).then(
                   function(systemPage) {
-                    if (systemPage.systemPages[0]) {
+                    if (systemPage) {
                       if (!$state.next.data) {
                         $state.next.data = {};
                       }
 
-                      $rootScope.doRenderLegacyStyles = (typeof systemPage.systemPages[0].legacyStyles !== 'undefined'
-                        ? Boolean(parseInt(systemPage.systemPages[0].legacyStyles))
+                      $rootScope.doRenderLegacyStyles = (typeof systemPage.legacyStyles !== 'undefined'
+                        ? Boolean(parseInt(systemPage.legacyStyles))
                         : true); // revert to value set on route
 
                       $state.params.bodyClasses = [];
-                      if (typeof systemPage.systemPages[0].bodyClasses !== 'undefined' && systemPage.systemPages[0].bodyClasses !== null) {
-                        $state.params.bodyClasses = systemPage.systemPages[0].bodyClasses.replace(/\s/g, '').split(',');
+                      if (typeof systemPage.bodyClasses !== 'undefined' && systemPage.bodyClasses !== null) {
+                        $state.params.bodyClasses = systemPage.bodyClasses.replace(/\s/g, '').split(',');
                       }
 
-                      $state.next.data.meta = systemPage.systemPages[0];
+                      $state.next.data.meta = systemPage;
                     }
                   });
             }],
@@ -175,14 +175,6 @@
           controller: 'AdboxCtrl as adbox',
           templateUrl: 'adbox/adbox-index.html'
         })
-/// #if INCLUDE_STYLEGUIDE
-        .state('styleguide', {
-          parent: 'noHeaderOrFooter',
-          url: '/styleguide',
-          controller: 'StyleguideCtrl as styleguide',
-          templateUrl: 'styleguide/styleguide.html'
-        })
-/// #endif
         .state('volunteer-request', {
           parent: 'noSideBar',
           url: '{link:volunteerRouteType}',
@@ -254,12 +246,6 @@
               }).$promise;
             }
           }
-        })
-        .state('thedaily', {
-          parent: 'noSideBar',
-          url: '/thedaily',
-          controller: 'TheDailyController as dailyCtrl',
-          templateUrl: 'thedaily/thedaily.html'
         })
         .state('leaveyourmark', {
           parent: 'screenWidth',

@@ -149,7 +149,7 @@ namespace crds_angular.test.Services
         public void TestGetMyGroupInfoGroupNotFound()
         {
             _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(new List<GroupDTO>());
-            _fixture.GetMyGroupInfo("abc", 2);
+            _fixture.GetMyGroupInfo(123, 2);
         }
 
         [Test]
@@ -161,7 +161,7 @@ namespace crds_angular.test.Services
             {
                 ParticipantId = myParticipantId
             };
-            _participantRepository.Setup(mocked => mocked.GetParticipantRecord("abc")).Returns(myParticipant);
+            _participantRepository.Setup(mocked => mocked.GetParticipant(It.IsAny<int>())).Returns(myParticipant);
 
             var groups = new List<GroupDTO>
             {
@@ -177,8 +177,8 @@ namespace crds_angular.test.Services
                     }
                 }
             };
-            _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(groups);
-            _fixture.GetMyGroupInfo("abc", 2);
+            _groupService.Setup(mocked => mocked.GetGroupDetails( 2)).Returns(groups.FirstOrDefault());
+            _fixture.GetMyGroupInfo(123, 2);
         }
 
         [Test]
@@ -211,7 +211,7 @@ namespace crds_angular.test.Services
             {
                 ParticipantId = myParticipantId
             };
-            _participantRepository.Setup(mocked => mocked.GetParticipantRecord("abc")).Returns(myParticipant);
+            _participantRepository.Setup(mocked => mocked.GetParticipant(It.IsAny<int>())).Returns(myParticipant);
 
             var groups = new List<GroupDTO>
             {
@@ -227,10 +227,10 @@ namespace crds_angular.test.Services
                     }
                 }
             };
-            _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(groups);
-            var result = _fixture.GetMyGroupInfo("abc", 2);
+            _groupService.Setup(mocked => mocked.GetGroupDetails(2)).Returns(groups.FirstOrDefault());
+            var result = _fixture.GetMyGroupInfo(123, 2);
             _participantRepository.VerifyAll();
-            _groupService.VerifyAll();
+            // _groupService.VerifyAll();
 
             Assert.IsNotNull(result);
             Assert.AreSame(myParticipant, result.Me);
@@ -240,7 +240,6 @@ namespace crds_angular.test.Services
         [Test]
         public void TestAcceptDenyGroupInvitationAccepting()
         {
-            string token = "afdsak;fkjadfjkas;fpeiwjkja";
             int groupId = 23;
             string invitationGuid = "akdfjadfjajeoihqwpoi392053qiweur9";
 
@@ -252,13 +251,13 @@ namespace crds_angular.test.Services
 
             List<MpGroupParticipant> groupParticipants = new List<MpGroupParticipant>();
 
-            _participantRepository.Setup(mocked => mocked.GetParticipantRecord(It.IsAny<string>())).Returns(participant);
+            _participantRepository.Setup(mocked => mocked.GetParticipant(It.IsAny<int>())).Returns(participant);
             _groupRepository.Setup(
                 mocked => mocked.AddParticipantToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>(), false, It.IsAny<DateTime>(), null, null)).Returns(1);
             _groupRepository.Setup(mocked => mocked.GetGroupParticipants(It.IsAny<int>(), It.IsAny<bool>())).Returns(groupParticipants);
             _invitationRepositor.Setup(mocked => mocked.MarkInvitationAsUsed(It.IsAny<string>())).Verifiable();
 
-            _fixture.AcceptDenyGroupInvitation(token, groupId, invitationGuid, true);
+            _fixture.AcceptDenyGroupInvitation(123, groupId, invitationGuid, true);
             _participantRepository.VerifyAll();
             _groupRepository.VerifyAll();
             _invitationRepositor.VerifyAll();
@@ -294,7 +293,7 @@ namespace crds_angular.test.Services
 
             try
             {
-                _fixture.AcceptDenyGroupInvitation(token, groupId, invitationGuid, true);
+                _fixture.AcceptDenyGroupInvitation(123, groupId, invitationGuid, true);
                 Assert.Fail("expected exception was not thrown");
             }
             catch (DuplicateGroupParticipantException e)
@@ -317,7 +316,7 @@ namespace crds_angular.test.Services
 
             _invitationRepositor.Setup(mocked => mocked.MarkInvitationAsUsed(It.IsAny<string>())).Verifiable();
 
-            _fixture.AcceptDenyGroupInvitation(token, groupId, invitationGuid, false);
+            _fixture.AcceptDenyGroupInvitation(123, groupId, invitationGuid, false);
             _invitationRepositor.VerifyAll();
         }
 
@@ -464,11 +463,12 @@ namespace crds_angular.test.Services
 
 
         [Test]
-        [ExpectedException(typeof(GroupNotFoundForParticipantException))]
+        [ExpectedException(typeof(GroupParticipantRemovalException))]
         public void TestRemoveParticipantFromMyGroupGroupNotFound()
         {
-            _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(new List<GroupDTO>());
-            _fixture.RemoveParticipantFromMyGroup("abc", 2, 3, "message");
+            // GetMyGroupInfo(contactId, groupId);
+            _groupService.Setup(mocked => mocked.GetGroupDetails(2)).Returns(new GroupDTO());
+            _fixture.RemoveParticipantFromMyGroup(123, 2, 3, "message");
         }
 
         [Test]
@@ -480,7 +480,7 @@ namespace crds_angular.test.Services
             {
                 ParticipantId = myParticipantId
             };
-            _participantRepository.Setup(mocked => mocked.GetParticipantRecord("abc")).Returns(myParticipant);
+            _participantRepository.Setup(mocked => mocked.GetParticipant(It.IsAny<int>())).Returns(myParticipant);
 
             var groups = new List<GroupDTO>
             {
@@ -496,8 +496,8 @@ namespace crds_angular.test.Services
                     }
                 }
             };
-            _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(groups);
-            _fixture.RemoveParticipantFromMyGroup("abc", 2, 3, "message");
+            _groupService.Setup(mocked => mocked.GetGroupDetails(2)).Returns(groups.FirstOrDefault());
+            _fixture.RemoveParticipantFromMyGroup(123, 2, 3, "message");
         }
 
         [Test]
@@ -510,7 +510,7 @@ namespace crds_angular.test.Services
             {
                 ParticipantId = myParticipantId
             };
-            _participantRepository.Setup(mocked => mocked.GetParticipantRecord("abc")).Returns(myParticipant);
+            _participantRepository.Setup(mocked => mocked.GetParticipant(It.IsAny<int>())).Returns(myParticipant);
 
             const int removeParticipantId = 3;
             var groups = new List<GroupDTO>
@@ -531,14 +531,14 @@ namespace crds_angular.test.Services
                     }
                 }
             };
-            _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", groupId)).Returns(groups);
+            _groupService.Setup(mocked => mocked.GetGroupDetails( groupId)).Returns(groups.FirstOrDefault());
 
             var ex = new Exception("can't end date participant");
             _groupService.Setup(mocked => mocked.endDateGroupParticipant(groupId, removeParticipantId)).Throws(ex);
 
             try
             {
-                _fixture.RemoveParticipantFromMyGroup("abc", groupId, removeParticipantId, "message");
+                _fixture.RemoveParticipantFromMyGroup(123, groupId, removeParticipantId, "message");
                 Assert.Fail("expected exception was not thrown");
             }
             catch (GroupParticipantRemovalException e)
@@ -564,7 +564,7 @@ namespace crds_angular.test.Services
             {
                 ParticipantId = myParticipantId
             };
-            _participantRepository.Setup(mocked => mocked.GetParticipantRecord("abc")).Returns(myParticipant);
+            _participantRepository.Setup(mocked => mocked.GetParticipant(It.IsAny<int>())).Returns(myParticipant);
 
             const int removeParticipantId = 3;
             var groups = new List<GroupDTO>
@@ -586,12 +586,12 @@ namespace crds_angular.test.Services
                     }
                 }
             };
-            _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", groupId)).Returns(groups);
+            _groupService.Setup(mocked => mocked.GetGroupDetails(groupId)).Returns(groups.FirstOrDefault());
             _groupService.Setup(mocked => mocked.endDateGroupParticipant(groupId, removeParticipantId));
 
             var ex = new Exception("can't get template");
             _communicationRepository.Setup(mocked => mocked.GetTemplate(RemoveParticipantFromGroupEmailTemplateId)).Throws(ex);
-            _fixture.RemoveParticipantFromMyGroup("abc", groupId, removeParticipantId, "message");
+            _fixture.RemoveParticipantFromMyGroup(123, groupId, removeParticipantId, "message");
             _communicationRepository.VerifyAll();
             _groupToolRepository.VerifyAll();
             _groupService.VerifyAll();
@@ -1216,7 +1216,6 @@ namespace crds_angular.test.Services
         [Test]
         public void TestCreateGroupInquiryValid()
         {
-            var token = "123ABC";
             var groupId = 123;
             var syncedTime = System.DateTime.Now;
             var active = true;
@@ -1227,7 +1226,7 @@ namespace crds_angular.test.Services
                 EmailAddress = "test@test.com"
             };
 
-            _participantRepository.Setup(mocked => mocked.GetParticipantRecord(token)).Returns(contactParticipant);
+            _participantRepository.Setup(mocked => mocked.GetParticipant(It.IsAny<int>())).Returns(contactParticipant);
 
             MpMyContact mpMyContact = new MpMyContact
             {
@@ -1275,7 +1274,7 @@ namespace crds_angular.test.Services
             _communicationRepository.Setup(mocked => mocked.SendMessage(It.IsAny<MpCommunication>(), false)).Returns(1);
 
 
-            _fixture.SubmitInquiry(token, groupId,true);
+            _fixture.SubmitInquiry(1234567, groupId,true);
             _mockAnalyticService.Verify(x => x.Track(It.IsAny<string>(), "RequestedToJoinGroup", It.IsAny<EventProperties>()), Times.Once);
 
             _groupRepository.VerifyAll();
@@ -1286,7 +1285,6 @@ namespace crds_angular.test.Services
         [Test]
         public void TestCreateAnywhereGroupInquiryValid()
         {
-            var token = "123ABC";
             var syncedTime = System.DateTime.Now;
             var active = true;
             var group = new GroupDTO()
@@ -1317,7 +1315,7 @@ namespace crds_angular.test.Services
                 EmailAddress = "test@test.com"
             };
 
-            _participantRepository.Setup(mocked => mocked.GetParticipantRecord(token)).Returns(contactParticipant);
+            _participantRepository.Setup(mocked => mocked.GetParticipant(It.IsAny<int>())).Returns(contactParticipant);
 
             MpMyContact mpMyContact = new MpMyContact
             {
@@ -1353,7 +1351,7 @@ namespace crds_angular.test.Services
 
             _communicationRepository.Setup(mocked => mocked.SendMessage(It.IsAny<MpCommunication>(), false)).Returns(1);
 
-            _fixture.SubmitInquiry(token, group.GroupId, true);
+            _fixture.SubmitInquiry(1234567, group.GroupId, true);
             _mockAnalyticService.Verify(x => x.Track(It.IsAny<string>(), "RequestedToJoinGroup", It.Is<EventProperties>(props => 
                                     props["GroupName"].Equals(group.GroupName) 
                                     && props["GroupState"].Equals(group.Address.State)
@@ -1378,7 +1376,7 @@ namespace crds_angular.test.Services
                 ContactId = 1234567
             };
 
-            _participantRepository.Setup(mocked => mocked.GetParticipantRecord(token)).Returns(contactParticipant);
+            _participantRepository.Setup(mocked => mocked.GetParticipant(It.IsAny<int>())).Returns(contactParticipant);
 
             MpMyContact mpMyContact = new MpMyContact
             {
@@ -1432,7 +1430,7 @@ namespace crds_angular.test.Services
 
             try
             {
-                _fixture.SubmitInquiry(token, groupId, true);
+                _fixture.SubmitInquiry(123, groupId, true);
                 Assert.Fail("expected exception was not thrown");
             }
             catch (ExistingRequestException e)
