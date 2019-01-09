@@ -47,8 +47,15 @@ namespace crds_angular.Models.Map
                 geopoint = new GeoPoint(latitude, longitude),
                 geohash = geohash
             };
-           
-            this.point = coord;
+
+            if (latitude == 0 || longitude == 0)
+            {
+                this.point = null;
+            }
+            else
+            {
+                this.point = coord;
+            }
         }
     }
 }
