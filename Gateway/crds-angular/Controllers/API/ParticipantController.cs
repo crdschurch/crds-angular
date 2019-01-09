@@ -8,7 +8,7 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class ParticipantController : MPAuth
+    public class ParticipantController : ImpersonateAuthBaseController
     {
         private readonly IGroupService _groupService;
         public ParticipantController(IAuthTokenExpiryService authTokenExpiryService, 
@@ -31,7 +31,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult GetParticipant()
         {
-            return Authorized(token => Ok(_groupService.GetParticipantRecord(token)));
+            return Authorized(token => Ok(_groupService.GetParticipantRecord(token.UserInfo.Mp.ContactId)));
         }
 
         [RequiresAuthorization]

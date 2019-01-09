@@ -30,7 +30,7 @@ namespace crds_angular.test.controllers
                                                  new Mock<IUserImpersonationService>().Object, 
                                                  new Mock<IAuthenticationRepository>().Object);
 
-            _fixture.SetupAuthorization(AuthType, AuthToken);
+            //_fixture.SetupAuthorization(AuthType, AuthToken);
         }
 
         [Test]
