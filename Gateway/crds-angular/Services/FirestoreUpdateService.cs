@@ -29,6 +29,9 @@ namespace crds_angular.Services
         private readonly IContactRepository _contactRepository;
         private readonly IAddressRepository _addressRepository;
         private readonly IGroupService _groupService;
+        private readonly IAddressGeocodingService _addressGeocodingService;
+        private readonly ICongregationRepository _congregationRepository;
+        private readonly ILocationService _locationRepository;
 
         private readonly string _googleStorageBucketId;
         private readonly string _firestoreProjectId;
@@ -45,7 +48,10 @@ namespace crds_angular.Services
                                       IApiUserRepository apiUserRepository,
                                       IContactRepository contactRepository,
                                       IAddressRepository addressRepository,
-                                      IGroupService groupService)
+                                      IGroupService groupService,
+                                      IAddressGeocodingService addressGeocodingService,
+                                      ICongregationRepository congregationRepository,
+                                      ILocationService locationRepository)
         {
             // dependencies
             _imageService = imageService;
@@ -55,6 +61,9 @@ namespace crds_angular.Services
             _contactRepository = contactRepository;
             _addressRepository = addressRepository;
             _groupService = groupService;
+            _addressGeocodingService = addressGeocodingService;
+            _congregationRepository = congregationRepository;
+            _locationRepository = locationRepository;
             //constants
             _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
             _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
@@ -116,22 +125,27 @@ namespace crds_angular.Services
             try
             {
                 var recordList = _finderRepository.GetMapAuditRecords();
-                foreach (MpMapAudit mapAuditRecord in recordList)
+                while (recordList.Count > 0)
                 {
-                    switch (Convert.ToInt32(mapAuditRecord.pinType))
+                    foreach (MpMapAudit mapAuditRecord in recordList)
                     {
-                        case PIN_PERSON:
-                            var personpinupdatedsuccessfully = await PersonPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
-                            SetRecordProcessedFlag(mapAuditRecord, personpinupdatedsuccessfully);
-                            break;
-                        case PIN_GROUP:
-                            var grouppinupdatedsuccessfully = await GroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
-                            SetRecordProcessedFlag(mapAuditRecord, grouppinupdatedsuccessfully);
-                            break;
-                        case PIN_SITE:
-                            break;
+                        switch (Convert.ToInt32(mapAuditRecord.pinType))
+                        {
+                            case PIN_PERSON:
+                                var personpinupdatedsuccessfully = await PersonPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                                SetRecordProcessedFlag(mapAuditRecord, personpinupdatedsuccessfully);
+                                break;
+                            case PIN_GROUP:
+                                var grouppinupdatedsuccessfully = await GroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                                SetRecordProcessedFlag(mapAuditRecord, grouppinupdatedsuccessfully);
+                                break;
+                            case PIN_SITE:
+                                var sitepinupdatedsuccessfully = await SitePinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                                SetRecordProcessedFlag(mapAuditRecord, sitepinupdatedsuccessfully);
+                                break;
+                        }
                     }
-
+                    recordList = _finderRepository.GetMapAuditRecords();
                 }
             }
             catch (Exception e)
@@ -148,6 +162,68 @@ namespace crds_angular.Services
                 mapAuditRecord.dateProcessed = DateTime.Now;
                 _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
             }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// SITE PIN
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private async Task<bool> SitePinToFirestoreAsync(int congregationid, bool showOnMap, string pinType)
+        {
+            // showonmap = true then add to firestore
+            // showonmap = false then delete from firestore
+            Console.WriteLine($"congregationid = {congregationid}, showonmap = {showOnMap}, pintype = {pinType}");
+            if (showOnMap)
+            {
+                await DeleteSitePinFromFirestoreAsync(congregationid, pinType);
+                return await AddSitePinToFirestoreAsync(congregationid, pinType);
+            }
+            else
+            {
+                return await DeleteSitePinFromFirestoreAsync(congregationid, pinType);
+            }
+        }
+
+        private async Task<bool> DeleteSitePinFromFirestoreAsync(int congregationid, string pinType)
+        {
+            return await DeletePinFromFirestoreAsync(congregationid, pinType);
+        }
+
+        private async Task<bool> AddSitePinToFirestoreAsync(int congregationid, string pinType)
+        {
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
+            var address = new AddressDTO();
+            try
+            {
+                var congregation = _congregationRepository.GetCongregationById(congregationid);
+                var location = _locationRepository.GetAllCrossroadsLocations().Where(s => s.LocationId == congregation.LocationId).First();
+                // get the address including lat/lon
+                if (location.Address != null )
+                {
+                    address = location.Address;
+                }
+                else
+                {
+                    // no address for this contact/participant
+                    return true;
+                }
+
+                var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
+
+                // create the pin object
+                MapPin pin = new MapPin(congregation.Name, congregation.Name, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), congregationid.ToString(), geohash, "", null);
+
+                FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
+                CollectionReference collection = db.Collection("Pins");
+                DocumentReference document = await collection.AddAsync(pin);
+                Console.WriteLine(document.Id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Problem getting MP Data for PinSync");
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return true;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,11 +265,22 @@ namespace crds_angular.Services
                 if(group.Address.AddressID == null)
                 {
                     // Something with no address should not go on a map
-                    return false;
+                    return true;
                 }
 
                 var addrFromDB = _addressRepository.GetAddressById(apiToken, (int)group.Address.AddressID);
-                               
+                // if there is no lat/lon lets give one last attempt at geocoding
+                if (address.Latitude == null || address.Longitude == null || address.Latitude == 0 || address.Longitude == 0)
+                {
+                    var geo = _addressGeocodingService.GetGeoCoordinates(Mapper.Map<AddressDTO>(addrFromDB));
+                    if(geo.Latitude != 0 && geo.Longitude != 0)
+                    {
+                        addrFromDB.Latitude = geo.Latitude;
+                        addrFromDB.Longitude = geo.Longitude;
+                        _addressRepository.Update(addrFromDB);
+                    }
+                }
+
                 _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Address_ID = {addrFromDB.Address_ID}");
                 _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Address_Line_1 = {addrFromDB.Address_Line_1}");
                 _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.City = {addrFromDB.City}");
@@ -216,7 +303,7 @@ namespace crds_angular.Services
                    address.Longitude == null || 
                    (address.Latitude == 0 && address.Longitude == 0))
                 {
-                    return false;
+                    return true;
                 }
 
                 var dict = new Dictionary<string, string[]>();
@@ -238,8 +325,10 @@ namespace crds_angular.Services
                     var ageGroups = new List<string>();
                     foreach( var a in agegroup.Attributes)
                     {
-                        ageGroups.Add(a.Name);
-                        //create the array
+                        if (a.Selected)
+                        {
+                            ageGroups.Add(a.Name);
+                        }
                     }
 
                     // add to the dict
