@@ -85,7 +85,7 @@ namespace crds_angular.test.Services
             const int fakeUserId = 98124;
             var fakePerson = PersonMock(leaderDto);
 
-            _personService.Setup(m => m.GetLoggedInUserProfile(fakeToken)).Returns(fakePerson);
+            _personService.Setup(m => m.GetPerson(It.IsAny<int>())).Returns(fakePerson);
             _userRepo.Setup(m => m.GetUserIdByUsername(leaderDto.OldEmail)).Returns(fakeUserId);
             _userRepo.Setup(m => m.UpdateUser(It.IsAny<Dictionary<string, object>>())).Callback((Dictionary<string, object> userData) =>
             {
@@ -124,7 +124,7 @@ namespace crds_angular.test.Services
             const int fakeUserId = 98124;
             var leaderDto = GroupLeaderMock();
 
-            _personService.Setup(m => m.GetLoggedInUserProfile(fakeToken)).Throws(new Exception("no person to get"));            
+            _personService.Setup(m => m.GetPerson(It.IsAny<int>())).Throws(new Exception("no person to get"));            
             Assert.Throws<Exception>(() =>
             {
                 _fixture.SaveProfile(123, leaderDto).Wait();
