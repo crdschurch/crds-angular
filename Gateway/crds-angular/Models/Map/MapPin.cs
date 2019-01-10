@@ -25,11 +25,14 @@ namespace crds_angular.Models.Map
         public string imageUrl { get; set; }
 
         [FirestoreProperty]
+        public bool listOnly { get; set; }
+
+        [FirestoreProperty]
         public Dictionary<string, string[]> meta { get; set; }
 
         public MapPin() { }
 
-        public MapPin(string desc, string pinname, double latitude, double longitude, int pintype, string internalid, string geohash, string imageurl, Dictionary<string, string[]> filtermetadata)
+        public MapPin(string desc, string pinname, double latitude, double longitude, int pintype, string internalid, string geohash, string imageurl, Dictionary<string, string[]> filtermetadata, bool listonly)
         {
             this.description = desc;
             this.name = pinname;
@@ -37,14 +40,22 @@ namespace crds_angular.Models.Map
             this.internalId = internalid;
             this.imageUrl = imageurl;
             this.meta = filtermetadata;
+            this.listOnly = listonly;
 
             var coord = new MapCoordinates
             {
                 geopoint = new GeoPoint(latitude, longitude),
                 geohash = geohash
             };
-           
-            this.point = coord;
+
+            if (latitude == 0 || longitude == 0)
+            {
+                this.point = null;
+            }
+            else
+            {
+                this.point = coord;
+            }
         }
     }
 }
