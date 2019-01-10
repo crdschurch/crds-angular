@@ -61,7 +61,7 @@ namespace crds_angular.test.controllers
             _fixture.Request.Headers.Authorization = new AuthenticationHeaderValue(authType, authToken);
             var mockProfile = GroupLeaderMock();
             _groupLeaderService.Setup(m => m.SaveReferences(It.IsAny<GroupLeaderProfileDTO>())).Returns(Observable.Start(() => 1));
-            _groupLeaderService.Setup(m => m.SaveProfile(It.IsAny<string>(), mockProfile)).Throws(new Exception());            
+            _groupLeaderService.Setup(m => m.SaveProfile(It.IsAny<int>(), mockProfile)).Throws(new Exception());            
             Assert.Throws<HttpResponseException>(async () =>
             {
                 await _fixture.SaveProfile(mockProfile);                
@@ -73,7 +73,7 @@ namespace crds_angular.test.controllers
         {            
             var mockProfile = GroupLeaderMock();
             _groupLeaderService.Setup(m => m.SaveReferences(It.IsAny<GroupLeaderProfileDTO>())).Returns(Observable.Start(() => 1));
-            _groupLeaderService.Setup(m => m.SaveProfile(It.IsAny<string>(), mockProfile)).Throws(new Exception());
+            _groupLeaderService.Setup(m => m.SaveProfile(It.IsAny<int>(), mockProfile)).Throws(new Exception());
             Assert.Throws<HttpResponseException>(async () =>
             {
                 await _fixture.SaveProfile(mockProfile);                
@@ -85,7 +85,7 @@ namespace crds_angular.test.controllers
         public async void ShouldSaveInterestedStaus()
         {
             _fixture.Request.Headers.Authorization = new AuthenticationHeaderValue(authType, authToken);
-            _groupLeaderService.Setup(m => m.SetInterested($"{authType} {authToken}"));
+            _groupLeaderService.Setup(m => m.SetInterested(123));
 
             var response = await _fixture.InterestedInGroupLeadership();
             Assert.IsNotNull(response);
@@ -109,7 +109,7 @@ namespace crds_angular.test.controllers
             };
 
             _groupLeaderService.Setup(m => m.SaveSpiritualGrowth(It.IsAny<SpiritualGrowthDTO>())).Returns(Observable.Start(() => 1));
-            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<string>())).Returns(Observable.Start(() => 1));
+            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<int>())).Returns(Observable.Start(() => 1));
             _groupLeaderService.Setup(m => m.GetApplicationData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));            
 
             var response = await _fixture.SaveSpiritualGrowth(mockSpiritualGrowth);
@@ -131,7 +131,7 @@ namespace crds_angular.test.controllers
             };
 
             _groupLeaderService.Setup(m => m.SaveSpiritualGrowth(It.IsAny<SpiritualGrowthDTO>())).Returns(Observable.Start(() => 1));
-            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<string>())).Returns(Observable.Start(() => 1));
+            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<int>())).Returns(Observable.Start(() => 1));
             _groupLeaderService.Setup(m => m.GetApplicationData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));
 
             var response = await _fixture.SaveSpiritualGrowth(mockSpiritualGrowth);
@@ -155,7 +155,7 @@ namespace crds_angular.test.controllers
             };
 
             _groupLeaderService.Setup(m => m.SaveSpiritualGrowth(It.IsAny<SpiritualGrowthDTO>())).Returns(Observable.Start(() => 1));
-            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<string>())).Returns(Observable.Start(() => 1));
+            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<int>())).Returns(Observable.Start(() => 1));
             _groupLeaderService.Setup(m => m.GetApplicationData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));
             _groupLeaderService.Setup(m => m.SendStudentMinistryRequestEmail(It.IsAny<Dictionary<string, object>>())).Returns(Observable.Start(() => 1));
            
@@ -180,7 +180,7 @@ namespace crds_angular.test.controllers
             };
 
             _groupLeaderService.Setup(m => m.SaveSpiritualGrowth(It.IsAny<SpiritualGrowthDTO>())).Returns(Observable.Start(() => 1));
-            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<string>())).Returns(Observable.Start(() => 1));
+            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<int>())).Returns(Observable.Start(() => 1));
             _groupLeaderService.Setup(m => m.GetApplicationData(mockSpiritualGrowth.ContactId)).Returns(Observable.Start(() => referenceData));
             
             var response = await _fixture.SaveSpiritualGrowth(mockSpiritualGrowth);
@@ -216,7 +216,7 @@ namespace crds_angular.test.controllers
         public void ShouldThrowWhenSavingInterestedStaus()
         {
             _fixture.Request.Headers.Authorization = new AuthenticationHeaderValue(authType, authToken);
-            _groupLeaderService.Setup(m => m.SetInterested($"{authType} {authToken}")).Throws(new Exception());
+            _groupLeaderService.Setup(m => m.SetInterested(123)).Throws(new Exception());
 
             Assert.Throws<HttpResponseException>(async () =>
             {
@@ -229,7 +229,7 @@ namespace crds_angular.test.controllers
         {
             var mockSpiritualGrowth = SpiritualGrowthMock();
             _groupLeaderService.Setup(m => m.SaveSpiritualGrowth(It.IsAny<SpiritualGrowthDTO>())).Returns(Observable.Start(() => 1));
-            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<string>())).Returns(Observable.Create<int>((observer) =>
+            _groupLeaderService.Setup(m => m.SetApplied(It.IsAny<int>())).Returns(Observable.Create<int>((observer) =>
             {
                 observer.OnError(new Exception(""));
                 return Disposable.Empty;
@@ -260,7 +260,7 @@ namespace crds_angular.test.controllers
             var mockProfile = GroupLeaderMock();
 
             _groupLeaderService.Setup(m => m.SaveReferences(It.IsAny<GroupLeaderProfileDTO>())).Returns(Observable.Start(() => 1));
-            _groupLeaderService.Setup(m => m.SaveProfile(It.IsAny<string>(), It.IsAny<GroupLeaderProfileDTO>())).Throws<ApplicationException>();
+            _groupLeaderService.Setup(m => m.SaveProfile(It.IsAny<int>(), It.IsAny<GroupLeaderProfileDTO>())).Throws<ApplicationException>();
 
             Assert.Throws<HttpResponseException>(async () =>
             {
@@ -271,7 +271,7 @@ namespace crds_angular.test.controllers
         [Test]
         public async void ShouldGetLeaderStatus()
         {
-            _groupLeaderService.Setup(m => m.GetGroupLeaderStatus(It.IsAny<string>())).Returns(Observable.Start(() => 0));
+            _groupLeaderService.Setup(m => m.GetGroupLeaderStatus(It.IsAny<int>())).Returns(Observable.Start(() => 0));
 
             var response = await _fixture.GetLeaderStatus();
             Assert.IsInstanceOf<OkNegotiatedContentResult<GroupLeaderStatusDTO>>(response);
@@ -280,7 +280,7 @@ namespace crds_angular.test.controllers
         [Test]
         public void ShouldThrowExceptionWhenGettingStatusFails()
         {
-            _groupLeaderService.Setup(m => m.GetGroupLeaderStatus(It.IsAny<string>())).Throws<ApplicationException>();
+            _groupLeaderService.Setup(m => m.GetGroupLeaderStatus(It.IsAny<int>())).Throws<ApplicationException>();
 
             Assert.Throws<HttpResponseException>(async () =>
             {
