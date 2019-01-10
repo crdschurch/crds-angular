@@ -67,7 +67,7 @@ namespace crds_angular.test.Services
 
             _userRepo.Setup(m => m.GetUserIdByUsername(leaderDto.OldEmail)).Returns(fakeUserId);
             _userRepo.Setup(m => m.UpdateUser(It.IsAny<Dictionary<string, object>>()));
-            _personService.Setup(m => m.GetLoggedInUserProfile(fakeToken)).Returns(fakePerson);
+            _personService.Setup(m => m.GetPerson(It.IsAny<int>())).Returns(fakePerson);
             _contactMock.Setup(m => m.UpdateContact(It.IsAny<int>(), It.IsAny<Dictionary<string, object>>())).Callback((int contactId, Dictionary<string, object> obj) =>
             {
                 Assert.AreEqual(obj["Display_Name"], $"{leaderDto.LastName}, {leaderDto.NickName}");
@@ -105,7 +105,7 @@ namespace crds_angular.test.Services
             const int fakeUserId = 98124;
             var leaderDto = GroupLeaderMock();
             var fakePerson = PersonMock(leaderDto);
-            _personService.Setup(m => m.GetLoggedInUserProfile(fakeToken)).Returns(fakePerson);
+            _personService.Setup(m => m.GetPerson(It.IsAny<int>())).Returns(fakePerson);
             _userRepo.Setup(m => m.GetUserIdByUsername(leaderDto.OldEmail)).Returns(fakeUserId);
             _userRepo.Setup(m => m.UpdateUser(It.IsAny<Dictionary<string, object>>())).Callback((Dictionary<string, object> userData) =>
             {
@@ -250,7 +250,7 @@ namespace crds_angular.test.Services
             var mockParticpant = ParticipantMock();
 
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderInterested")).Returns(groupLeaderInterested);
-            _participantRepository.Setup(m => m.GetParticipantRecord(fakeToken)).Returns(mockParticpant);
+            _participantRepository.Setup(m => m.GetParticipant(It.IsAny<int>())).Returns(mockParticpant);
             mockParticpant.GroupLeaderStatus = groupLeaderInterested;
             _participantRepository.Setup(m => m.UpdateParticipant(mockParticpant));
             _fixture.SetInterested(123);
@@ -339,7 +339,7 @@ namespace crds_angular.test.Services
             const int groupLeaderAppliedId = 3;
             const string fakeToken = "letmein";
             var fakeParticipant = ParticipantMock();          
-            _participantRepository.Setup(m => m.GetParticipantRecord(fakeToken)).Returns(fakeParticipant);
+            _participantRepository.Setup(m => m.GetParticipant(It.IsAny<int>())).Returns(fakeParticipant);
             _participantRepository.Setup(m => m.UpdateParticipant(It.IsAny<MpParticipant>())).Callback((MpParticipant p) =>
             {
                 Assert.AreEqual(groupLeaderAppliedId, p.GroupLeaderStatus);
@@ -364,7 +364,7 @@ namespace crds_angular.test.Services
             const int groupLeaderAppliedId = 3;
             const string fakeToken = "letmein";
             var fakeParticipant = ParticipantMock();
-            _participantRepository.Setup(m => m.GetParticipantRecord(fakeToken)).Returns(fakeParticipant);
+            _participantRepository.Setup(m => m.GetParticipant(It.IsAny<int>())).Returns(fakeParticipant);
             _participantRepository.Setup(m => m.UpdateParticipant(It.IsAny<MpParticipant>())).Callback((MpParticipant p) =>
             {
                 Assert.AreEqual(groupLeaderAppliedId, p.GroupLeaderStatus);
@@ -384,7 +384,7 @@ namespace crds_angular.test.Services
         public void ShouldFailToSetApplicantAsAppliedIfUpGetProfileFails()
         {           
             const string fakeToken = "letmein";            
-            _participantRepository.Setup(m => m.GetParticipantRecord(fakeToken)).Throws<Exception>();                      
+            _participantRepository.Setup(m => m.GetParticipant(It.IsAny<int>())).Throws<Exception>();                      
             var res = _fixture.SetApplied(123);
             res.Subscribe((n) =>
             {
