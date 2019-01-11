@@ -118,7 +118,7 @@ namespace crds_angular.test.Services
             _participantService.Setup(m => m.GetParticipant(person.ContactId)).Returns(participant);
             _addressService.Setup(m => m.GetGeoLocationCascading(It.IsAny<AddressDTO>())).Returns(new GeoCoordinate(5, 6));
             _analyticsService.Setup(m => m.Track(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<EventProperties>()));
-            _fixture.SetProfile(token, person);
+            _fixture.SetProfile(person);
 
         }
 

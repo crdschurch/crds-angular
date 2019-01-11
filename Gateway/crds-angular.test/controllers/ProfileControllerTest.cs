@@ -168,7 +168,7 @@ namespace crds_angular.test.controllers
                 }
             };
 
-            _serveServiceMock.Setup(x => x.GetImmediateFamilyParticipants(_authType + " " + _authToken)).Returns(familyList);
+            _serveServiceMock.Setup(x => x.GetImmediateFamilyParticipants(It.IsAny<int>())).Returns(familyList);
             _personServiceMock.Setup(x => x.GetLoggedInUserProfile(_authType + " " + _authToken)).Returns(me);
             _personServiceMock.Setup(x => x.GetPerson(13579)).Returns(brady);
             
@@ -219,7 +219,7 @@ namespace crds_angular.test.controllers
             };
 
             _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _contactRelationshipService.Setup(x => x.GetMyImmediateFamilyRelationships(myContactId, _authType + " " + _authToken)).Returns(familyList);
+            _contactRelationshipService.Setup(x => x.GetMyImmediateFamilyRelationships(myContactId)).Returns(familyList);
 
             IHttpActionResult result = _fixture.GetMySpouse(myContactId);
 
@@ -245,7 +245,7 @@ namespace crds_angular.test.controllers
             };
 
             _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
-            _contactRelationshipService.Setup(x => x.GetMyImmediateFamilyRelationships(myContactId, _authType + " " + _authToken)).Returns(familyList);
+            _contactRelationshipService.Setup(x => x.GetMyImmediateFamilyRelationships(myContactId)).Returns(familyList);
 
             IHttpActionResult result = _fixture.GetMySpouse(myContactId);
 
