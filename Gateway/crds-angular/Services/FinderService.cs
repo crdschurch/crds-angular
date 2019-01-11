@@ -1327,31 +1327,33 @@ namespace crds_angular.Services
                     EmailAddress = emailTemplate.ReplyToEmailAddress
                 };
 
-                var primary = _contactRepository.GetContactById(_contactRepository.GetContactIdByParticipantId(_groupService.GetPrimaryContactParticipantId(group.GroupId)));
-
-                var to = new List<MpContact>
+                var leaders = GetParticipantsForGroup(group.GroupId).Where(w => w.GroupRoleId == _configurationWrapper.GetConfigIntValue("GroupRoleLeader"));
+                foreach (var leader in leaders)
                 {
-                    new MpContact
+                    mergeData["Recipient_First_Name"] = leader.NickName;
+                    var to = new List<MpContact>
+                        {
+                            new MpContact
+                            {
+                                ContactId = leader.ContactId,
+                                EmailAddress = leader.Email
+                            }
+                        };
+
+                    var confirmation = new MpCommunication
                     {
-                        // Just need a contact ID here, doesn't have to be for the recipient
-                        ContactId = primary.Contact_ID,
-                        EmailAddress = primary.Email_Address
-                    }
-                };
-
-                var confirmation = new MpCommunication
-                {
-                    EmailBody = emailTemplate.Body,
-                    EmailSubject = emailTemplate.Subject,
-                    AuthorUserId = 5,
-                    DomainId = _domainId,
-                    FromContact = fromContact,
-                    ReplyToContact = replyTo,
-                    TemplateId = emailTemplateId,
-                    ToContacts = to,
-                    MergeData = mergeData
-                };
-                _communicationRepository.SendMessage(confirmation);
+                        EmailBody = emailTemplate.Body,
+                        EmailSubject = emailTemplate.Subject,
+                        AuthorUserId = 5,
+                        DomainId = _domainId,
+                        FromContact = fromContact,
+                        ReplyToContact = replyTo,
+                        TemplateId = emailTemplateId,
+                        ToContacts = to,
+                        MergeData = mergeData
+                    };
+                    _communicationRepository.SendMessage(confirmation);
+                }
             }
             catch (Exception e)
             {
