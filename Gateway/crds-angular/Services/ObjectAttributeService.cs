@@ -164,7 +164,7 @@ namespace crds_angular.Services
             }
         }
 
-        public void SaveObjectMultiAttribute(string token, int objectId, ObjectAttributeDTO objectAttribute, MpObjectAttributeConfiguration configuration, bool parallel)
+        public void SaveObjectMultiAttribute(int objectId, ObjectAttributeDTO objectAttribute, MpObjectAttributeConfiguration configuration, bool parallel)
         {
             objectAttribute.StartDate = ConvertToServerDate(objectAttribute.StartDate);
             if (objectAttribute.EndDate != null)
@@ -179,7 +179,7 @@ namespace crds_angular.Services
             {
                 mpObjectAttribute.ObjectAttributeId = persistedAttributes[0].ObjectAttributeId;
             }
-             
+            var token = _apiUserService.GetDefaultApiClientToken();
             SaveAttribute(objectId, mpObjectAttribute, token, configuration, parallel);
         }
 
