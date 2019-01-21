@@ -175,14 +175,6 @@
           controller: 'AdboxCtrl as adbox',
           templateUrl: 'adbox/adbox-index.html'
         })
-/// #if INCLUDE_STYLEGUIDE
-        .state('styleguide', {
-          parent: 'noHeaderOrFooter',
-          url: '/styleguide',
-          controller: 'StyleguideCtrl as styleguide',
-          templateUrl: 'styleguide/styleguide.html'
-        })
-/// #endif
         .state('volunteer-request', {
           parent: 'noSideBar',
           url: '{link:volunteerRouteType}',
@@ -254,12 +246,6 @@
               }).$promise;
             }
           }
-        })
-        .state('thedaily', {
-          parent: 'noSideBar',
-          url: '/thedaily',
-          controller: 'TheDailyController as dailyCtrl',
-          templateUrl: 'thedaily/thedaily.html'
         })
         .state('leaveyourmark', {
           parent: 'screenWidth',

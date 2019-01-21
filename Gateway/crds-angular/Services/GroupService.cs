@@ -656,6 +656,27 @@ namespace crds_angular.Services
             _mpGroupRepository.EndDateGroup(groupId, DateTime.Now, reasonEndedId);
         }
 
+        public Participant GetParticipantRecord(int contactId)
+        {
+            var participant = _participantService.GetParticipant(contactId);
+            return new Participant
+            {
+                Age = participant.Age,
+                ApprovedSmallGroupLeader = participant.ApprovedSmallGroupLeader,
+                AttendanceStart = participant.AttendanceStart,
+                ContactId = participant.ContactId,
+                DisplayName = participant.DisplayName,
+                EmailAddress = participant.EmailAddress,
+                GroupLeaderStatus = participant.GroupLeaderStatus,
+                GroupName = participant.GroupName,
+                Nickname = participant.Nickname,
+                ParticipantId = participant.ParticipantId,
+                PreferredName = participant.PreferredName,
+                Role = participant.Role
+            };
+        }
+
+        // this method will be removed all endpoints have been moved to new Auth
         public Participant GetParticipantRecord(string token) 
         {
             var participant = _participantService.GetParticipantRecord(token);

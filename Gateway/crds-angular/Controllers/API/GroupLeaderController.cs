@@ -16,7 +16,7 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class GroupLeaderController : MPAuth
+    public class GroupLeaderController : ImpersonateAuthBaseController
     {
         private readonly IAuthTokenExpiryService _authTokenExpiryService;
         private readonly IGroupLeaderService _groupLeaderService;
@@ -38,7 +38,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _groupLeaderService.SetInterested(token);
+                    _groupLeaderService.SetInterested(token.UserInfo.Mp.ContactId);
                     return Ok();
                 }
                 catch (Exception e)
@@ -59,7 +59,7 @@ namespace crds_angular.Controllers.API
                 {
                     try
                     {                                                
-                        _groupLeaderService.SaveReferences(profile).Zip<int, IList<Unit>, int>(_groupLeaderService.SaveProfile(token, profile),
+                        _groupLeaderService.SaveReferences(profile).Zip<int, IList<Unit>, int>(_groupLeaderService.SaveProfile(token.UserInfo.Mp.ContactId, profile),
                                                      (int first, IList<Unit> second) => first).Wait();
                         
                         return Ok();
@@ -104,7 +104,7 @@ namespace crds_angular.Controllers.API
                     try
                     {
                         _groupLeaderService.SaveSpiritualGrowth(spiritualGrowth)
-                            .Concat(_groupLeaderService.SetApplied(token)).Wait();
+                            .Concat(_groupLeaderService.SetApplied(token.UserInfo.Mp.ContactId)).Wait();
 
                         _groupLeaderService.GetApplicationData(spiritualGrowth.ContactId).Subscribe((res) =>
                         {
@@ -135,7 +135,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var status = _groupLeaderService.GetGroupLeaderStatus(token).Wait();
+                    var status = _groupLeaderService.GetGroupLeaderStatus(token.UserInfo.Mp.ContactId).Wait();
                     return Ok(new GroupLeaderStatusDTO
                     {
                         Status = status

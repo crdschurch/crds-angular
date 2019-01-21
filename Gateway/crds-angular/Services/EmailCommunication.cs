@@ -76,13 +76,13 @@ namespace crds_angular.Services
             return client;
         }
 
-        public void SendEmail(EmailCommunicationDTO email, string token)
+        public void SendEmail(EmailCommunicationDTO email)
         {
             var template = _communicationService.GetTemplate(email.TemplateId);
 
-            if (token == null && email.FromUserId == null && template.FromContactId == 0)
+            if (email.FromUserId == null && template.FromContactId == 0)
             {
-                throw (new InvalidOperationException("Must provide either email.FromUserId from  or an authentication token."));
+                throw (new InvalidOperationException("Must provide either email.FromUserId or a valid FromContactId value."));
             }
 
             var replyToContactId = email.ReplyToContactId ?? template.ReplyToContactId;

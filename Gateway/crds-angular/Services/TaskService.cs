@@ -123,7 +123,7 @@ namespace crds_angular.Services
                         ToContactId = rejection.Requestor_Contact_ID,
                         MergeData = mergeData
                     };
-                    _emailCommunicationService.SendEmail(email, apiUserToken);
+                    _emailCommunicationService.SendEmail(email);
                 }
 
             }

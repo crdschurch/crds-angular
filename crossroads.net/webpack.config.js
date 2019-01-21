@@ -7,12 +7,9 @@ const environmentVars = require('./environment.config.js');
 const assetsPluginInstance = new AssetsPlugin();
 const definePlugin = new webpack.DefinePlugin(environmentVars.get());
 
-// Conditionally include/exclude the styleguide from the compiled bundle.
-// Dev builds will include the styleguide, int/demo/prod will exclude it.
 const ifdefPlugin = require('ifdef-loader');
 const ifdef_query = require('querystring').encode({
-  'ifdef-verbose': true,
-  'INCLUDE_STYLEGUIDE': false 
+  'ifdef-verbose': true
 });
 
 
