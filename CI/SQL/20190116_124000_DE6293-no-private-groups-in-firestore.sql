@@ -42,7 +42,7 @@ BEGIN
         IF (@I_Full = 0) AND (@I_AvailOnline = 1) AND (@I_OffsiteMeetingAddressId IS NOT NULL) AND (@I_EndDate IS NULL OR @I_EndDate > GETDATE())
             INSERT INTO cr_mapaudit(Participant_ID,ShowOnMap,Processed,PinType)
 			       VALUES(@Group_Id,1,0,2)
-        FETCH NEXT FROM @Groups_Cursor INTO @Group_Id, @I_Full, @I_EndDate
+        FETCH NEXT FROM @Groups_Cursor INTO @Group_Id, @I_Full, @I_EndDate, @I_AvailOnline, @I_OffsiteMeetingAddressId
     END
     CLOSE @Groups_Cursor
     DEALLOCATE @Groups_Cursor
