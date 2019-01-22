@@ -53,9 +53,8 @@ function htmlReplace(devBuild) {
       js: { src: assets.main.js, tpl: '<script src="%s" type="text/javascript"  defer></script>' },
       legacycss: assets.legacy.css
     }))
-    .pipe(replace('<base href="/">', function (match) {
-      console.log('Replace called on', match, process.env.DEPLOY_URL);
-      return `<base href="${process.env.DEPLOY_URL}">`
+    .pipe(replace('/assets', function (match) {
+      return `${process.env.DEPLOY_URL}/assets`;
     })
     ).pipe(gulp.dest('./'));
 
