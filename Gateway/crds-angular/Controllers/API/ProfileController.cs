@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Description;
-using AutoMapper;
 using crds_angular.Exceptions;
 using crds_angular.Exceptions.Models;
 using crds_angular.Models.Crossroads.Profile;
@@ -127,7 +126,6 @@ namespace crds_angular.Controllers.API
             return Authorized(token =>
             {
                 var user = _userService.GetByUserId(token.UserInfo.Mp.UserId.ToString());
-                // var r = token.Authorization.MpRoles.ToList<MinistryPlatform.Translation.Models.DTO.MpRoleDto>();
                 var roles = _userService.GetUserRoles(user.UserRecordId);
                 if (roles == null || !roles.Exists(r => _allowedAdminGetProfileRoles.Contains(r.Id)))
                 {
