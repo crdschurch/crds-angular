@@ -54,7 +54,7 @@ function htmlReplace(devBuild) {
       legacycss: assets.legacy.css
     }))
     .pipe(replace('/assets', function (match) {
-      return `${process.env.DEPLOY_URL}/assets`;
+      return `${process.env.DEPLOY_PRIME_URL}/assets`;
     })
     ).pipe(gulp.dest('./'));
 
