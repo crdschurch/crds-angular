@@ -21,7 +21,6 @@
   CRDS_STREAMSPOT_PLAYER_ID = '2887fba1'
   HEADER_CONTENTBLOCK_TITLE = 'sharedGlobalHeader'
   CRDS_APP_CLIENT_ENDPOINT = '/'
-  DEPLOY_URL = $DEPLOY_URL
 
 [context.production.environment]
   IN_MAESTRO = '0'
@@ -41,7 +40,6 @@
   CRDS_STREAMSPOT_PLAYER_ID = '1adb55de'
   HEADER_CONTENTBLOCK_TITLE = 'sharedGlobalHeader'
   CRDS_APP_CLIENT_ENDPOINT = '/'
-  DEPLOY_URL = $DEPLOY_URL
 
 [context.branch-deploy.environment]
 
@@ -69,7 +67,6 @@
   CRDS_STREAMSPOT_PLAYER_ID = '2887fba1'
   HEADER_CONTENTBLOCK_TITLE = 'sharedGlobalHeader'
   CRDS_APP_CLIENT_ENDPOINT = '/'
-  DEPLOY_URL = $DEPLOY_URL
 
 
 
