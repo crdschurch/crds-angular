@@ -22,8 +22,7 @@ module.exports = {
       __IMG_ENDPOINT__: JSON.stringify((process.env.CRDS_GATEWAY_CLIENT_ENDPOINT || 'https://int.crossroads.net/proxy/gateway/') + 'api/image/profile/'),
       __HEADER_CONTENTBLOCK_TITLE__: JSON.stringify(process.env.HEADER_CONTENTBLOCK_TITLE || 'sharedGlobalHeader'),
       __APP_CLIENT_ENDPOINT__: JSON.stringify(process.env.CRDS_APP_CLIENT_ENDPOINT || '/'),
-      __DEPLOY_URL__: JSON.stringify(process.env.DEPLOY_URL) || '/'
-
+      __DEPLOY_PRIME_URL__: JSON.stringify(process.env.DEPLOY_PRIME_URL) || '/'
     };
   },
   getTest() {
