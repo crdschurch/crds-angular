@@ -55,7 +55,7 @@ function htmlReplace(devBuild) {
     }))
     .pipe(replace('<base href="/">', function (match) {
       console.log('Replace called on', match, process.env.DEPLOY_URL);
-      return `<base href="//${process.env.DEPLOY_URL}">`
+      return `<base href="${process.env.DEPLOY_URL}">`
     })
     ).pipe(gulp.dest('./'));
 
