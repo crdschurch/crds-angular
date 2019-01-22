@@ -55,8 +55,7 @@ namespace Crossroads.AsyncJobs.Test.Processors
                         o =>
                             o.FromUserId == 333 && o.FromContactId == 222 && o.TemplateId == 123 && o.ToContactId == 222 && (int) o.MergeData["programId"] == 111 &&
                             o.MergeData["batchName"].Equals("batch123") && o.MergeData.ContainsKey("batch")
-                        ),
-                    null));
+                        )));
 
             _fixture.Execute(details);
         }
@@ -84,8 +83,7 @@ namespace Crossroads.AsyncJobs.Test.Processors
                         o =>
                             o.FromUserId == 333 && o.FromContactId == 222 && o.TemplateId == 456 && o.ToContactId == 222 && (int)o.MergeData["programId"] == 111 &&
                             o.MergeData["batchName"].Equals("batch123") && o.MergeData.ContainsKey("error")
-                        ),
-                    null));
+                        )));
 
             _fixture.Execute(details);
         }

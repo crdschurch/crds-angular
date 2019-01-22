@@ -78,13 +78,13 @@ namespace crds_angular.Services
             });         
         }
 
-        public IObservable<int> GetGroupLeaderStatus(string token)
+        public IObservable<int> GetGroupLeaderStatus(int contactId)
         {
             return Observable.Create<int>(observer =>
             {
                 try
                 {
-                    var participant = _participantRepository.GetParticipantRecord(token);
+                    var participant = _participantRepository.GetParticipant(contactId);
                     observer.OnNext(participant.GroupLeaderStatus);
                 }
                 catch (Exception e)
@@ -97,13 +97,13 @@ namespace crds_angular.Services
             });
         }
 
-        public IObservable<int> SetApplied(string token)
+        public IObservable<int> SetApplied(int contactId)
         {
             return Observable.Create<int>(observer =>
             {
                 try
                 {
-                    var participant = _participantRepository.GetParticipantRecord(token);
+                    var participant = _participantRepository.GetParticipant(contactId);
                     SetGroupLeaderStatus(participant, _configWrapper.GetConfigIntValue("GroupLeaderApplied"));
                     observer.OnNext(1);
                     observer.OnCompleted();
@@ -116,16 +116,16 @@ namespace crds_angular.Services
             });           
         }
 
-        public void SetInterested(string token)
+        public void SetInterested(int contactId)
         {
-            var participant = _participantRepository.GetParticipantRecord(token);
+            var participant = _participantRepository.GetParticipant(contactId);
             SetGroupLeaderStatus(participant, _configWrapper.GetConfigIntValue("GroupLeaderInterested"));
         }
 
-        public IObservable<IList<Unit>> SaveProfile(string token, GroupLeaderProfileDTO leader)
+        public IObservable<IList<Unit>> SaveProfile(int contactId, GroupLeaderProfileDTO leader)
         {
             // get the current contact data....
-            var currentPerson = _personService.GetLoggedInUserProfile(token);
+            var currentPerson = _personService.GetPerson(contactId);
             currentPerson.CongregationId = leader.Site;
             currentPerson.NickName = leader.NickName;
             currentPerson.LastName = leader.LastName;

@@ -12,8 +12,8 @@ namespace crds_angular.Services.Interfaces
         List<Invitation> GetInvitations(int sourceId, int invitationType, string token);
         List<Inquiry> GetInquiries(int groupId, string token);
 
-        void RemoveParticipantFromMyGroup(string token, int groupId, int groupParticipantId, string message = null);
-        void AcceptDenyGroupInvitation(string token, int groupId, string invitationGuid, bool approve);
+        void RemoveParticipantFromMyGroup(int contactId, int groupId, int groupParticipantId, string message = null);
+        void AcceptDenyGroupInvitation(int contactId, int groupId, string invitationGuid, bool approve);
 
         void SendGroupParticipantEmail(int groupId,
                                        GroupDTO group,
@@ -27,10 +27,10 @@ namespace crds_angular.Services.Interfaces
         MyGroup VerifyCurrentUserIsGroupLeader(string token, int groupId);
 	    void SendAllGroupParticipantsEmail(string token, int groupId, int groupTypeId, string subject, string message);
         void SendAllGroupLeadersEmail(string token, int groupId, GroupMessageDTO message);
-        void SubmitInquiry(string token, int groupId, bool sendEmail);
+        void SubmitInquiry(int contactId, int groupId, bool sendEmail);
         void EndGroup(int groupId, int reasonEndedId);
         int SendSingleGroupParticipantEmail(GroupParticipantDTO participant, int templateId, Dictionary<string, object> mergeData);
-        MyGroup GetMyGroupInfo(string token, int groupId);
+        MyGroup GetMyGroupInfo(int contactId, int groupId);
         void SendSmallGroupPendingInquiryReminderEmails();
         List<AttributeCategoryDTO> GetGroupCategories();
         void ArchivePendingGroupInquiriesOlderThan90Days();

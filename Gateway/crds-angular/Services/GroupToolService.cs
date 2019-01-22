@@ -184,11 +184,11 @@ namespace crds_angular.Services
             return requests;
         }
 
-        public void RemoveParticipantFromMyGroup(string token, int groupId, int groupParticipantId, string message = null)
+        public void RemoveParticipantFromMyGroup(int contactId, int groupId, int groupParticipantId, string message = null)
         {
             try
             {
-                var myGroup = GetMyGroupInfo(token, groupId);
+                var myGroup = GetMyGroupInfo(contactId, groupId);
 
                 _groupService.endDateGroupParticipant(groupId, groupParticipantId);
                
@@ -333,18 +333,17 @@ namespace crds_angular.Services
             };
         }
 
-        public MyGroup GetMyGroupInfo(string token, int groupId)
+        public MyGroup GetMyGroupInfo(int contactId, int groupId)
         {
-            var groups = _groupService.GetGroupByIdForAuthenticatedUser(token, groupId);
-            var group = groups == null || !groups.Any() ? null : groups.FirstOrDefault();
-
+            var group = _groupService.GetGroupDetails(groupId);
+            
             if (group == null)
             {
                 throw new GroupNotFoundForParticipantException($"Could not find group {groupId} for user");
             }
 
             var groupParticipants = group.Participants;
-            var me = _participantRepository.GetParticipantRecord(token);
+            var me = _participantRepository.GetParticipant(contactId);
 
             if (groupParticipants?.Find(p => p.ParticipantId == me.ParticipantId) == null ||
                 groupParticipants.Find(p => p.ParticipantId == me.ParticipantId).GroupRoleId != _groupRoleLeaderId)
@@ -381,14 +380,14 @@ namespace crds_angular.Services
         }
 
 
-        public void AcceptDenyGroupInvitation(string token, int groupId, string invitationGuid, bool accept)
+        public void AcceptDenyGroupInvitation(int contactId, int groupId, string invitationGuid, bool accept)
         {
             try
             {
                 //If they accept the invite get their participant record and them to the group as a member.
                 if (accept)
                 {
-                    var participant = _participantRepository.GetParticipantRecord(token);
+                    var participant = _participantRepository.GetParticipant(contactId);
 
                     // make sure the person isn't already in a group
                     var groupParticipants = _groupRepository.GetGroupParticipants(groupId, true);
@@ -609,10 +608,10 @@ namespace crds_angular.Services
             return _groupService.RemoveOnsiteParticipantsIfNotLeader(groups, token);
         }
 
-        public void SubmitInquiry(string token, int groupId, bool doSendEmail)
+        public void SubmitInquiry(int contactId, int groupId, bool doSendEmail)
         {
-            var participant = _participantRepository.GetParticipantRecord(token);
-            var contact = _contactRepository.GetContactById(participant.ContactId);
+            var contact = _contactRepository.GetContactById(contactId);
+            var participant = _participantRepository.GetParticipant(contactId);
 
             // check to see if the inquiry is going against a group where a person is already a member or has an outstanding request to join
             var requestsForContact = _groupToolRepository.GetInquiries(groupId).Where(r => r.ContactId == participant.ContactId && r.Placed == null);

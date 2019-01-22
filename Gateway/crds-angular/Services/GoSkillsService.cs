@@ -101,7 +101,7 @@ namespace crds_angular.Services
                     {
                         allSkillsObs.ForEachAsync(skill =>
                         {
-                            _objectAttributeService.SaveObjectMultiAttribute(token, con.Contact_ID, skill, configuration, true);
+                            _objectAttributeService.SaveObjectMultiAttribute(con.Contact_ID, skill, configuration, true);
                         });
                     }
                     catch (Exception e)

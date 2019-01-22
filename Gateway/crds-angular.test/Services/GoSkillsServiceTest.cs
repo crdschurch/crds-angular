@@ -81,7 +81,7 @@ namespace crds_angular.test.Services
                 {
                     skill.EndDate = It.IsAny<DateTime>();
                 }
-                _objectAttributeService.Setup(m => m.SaveObjectMultiAttribute(token, contact.Contact_ID, skill, It.IsAny<MpObjectAttributeConfiguration>(), false));
+                _objectAttributeService.Setup(m => m.SaveObjectMultiAttribute(contact.Contact_ID, skill, It.IsAny<MpObjectAttributeConfiguration>(), false));
                 _objectAttributeService.Verify();
             });
             _fixture.UpdateSkills(participantId, skills, token);            
