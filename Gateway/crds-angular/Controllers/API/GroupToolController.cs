@@ -22,7 +22,7 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class GroupToolController : MPAuth
+    public class GroupToolController : ImpersonateAuthBaseController
     {
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IGroupToolService _groupToolService;
@@ -88,7 +88,8 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _groupToolService.VerifyCurrentUserIsGroupLeader(token, groupId);
+                    _groupToolService.VerifyUserIsGroupLeader(token.UserInfo.Mp.ContactId, groupId);
+            
                     _groupToolService.EndGroup(groupId, 4);
                     return Ok();
                 }
@@ -135,7 +136,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _groupToolService.SendAllGroupLeadersEmail(token, groupId, message);
+                    _groupToolService.SendAllGroupLeadersEmail(token.UserInfo.Mp.ContactId, groupId, message);
                     return Ok();
                 }
                 catch (InvalidOperationException)
@@ -165,7 +166,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _groupService.RemoveParticipantFromGroup(token, groupInformation.GroupId, groupInformation.GroupParticipantId);
+                    _groupService.RemoveParticipantFromGroup(token.UserInfo.Mp.ContactId, groupInformation.GroupId, groupInformation.GroupParticipantId);
                     return Ok();
                 }
                 catch (GroupParticipantRemovalException e)
@@ -197,7 +198,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var requestors = _groupToolService.GetInquiries(groupId, token);
+                    var requestors = _groupToolService.GetInquiries(groupId, token.UserInfo.Mp.ContactId);
                     return Ok(requestors);
                 }
                 catch (Exception exception)

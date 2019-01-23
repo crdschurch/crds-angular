@@ -465,7 +465,7 @@ namespace crds_angular.Services
         private bool IsChildRsvpd(int contactId, GroupDTO ccEventGroup, string token)
         {
             var participant = _participantService.GetParticipant(contactId);
-            var childGroups = _groupService.GetGroupsByTypeForParticipant(token, participant.ParticipantId, _childcareGroupType);
+            var childGroups = _groupService.GetGroupsByTypeForParticipant(participant.ParticipantId, _childcareGroupType);
             return childGroups.Any(c => c.GroupId == ccEventGroup.GroupId);
         }
 
