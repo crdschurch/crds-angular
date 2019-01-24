@@ -124,7 +124,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var participant = _participantService.GetParticipantRecord(token);
+                    var participant = _participantService.GetParticipantRecord();
                     var contactId = _contactRepository.GetContactId(token);
 
                     var detail = _groupService.getGroupDetails(groupId, contactId, participant, token);

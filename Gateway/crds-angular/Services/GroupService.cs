@@ -531,7 +531,7 @@ namespace crds_angular.Services
         /// <returns></returns>
         public List<GroupDTO> GetGroupsByTypeOrId(string token, int? participantId = null, int[] groupTypeIds = null, int? groupId = null, bool? withParticipants = true, bool? withAttributes = true)
         {
-            if (participantId == null) participantId = _participantService.GetParticipantRecord(token).ParticipantId;
+            if (participantId == null) participantId = _participantService.GetParticipantRecord().ParticipantId;
             var groupsByType = _mpGroupRepository.GetGroupsForParticipantByTypeOrID(participantId.Value, null, groupTypeIds, groupId);
 
             if (groupsByType == null)
@@ -562,7 +562,7 @@ namespace crds_angular.Services
 
         public List<GroupDTO> RemoveOnsiteParticipantsIfNotLeader(List<GroupDTO> groups, string token)
         {
-            var participant = _participantService.GetParticipantRecord(token);
+            var participant = _participantService.GetParticipantRecord();
             foreach (var group in groups)
             {
                 if (group.GroupTypeId == _onsiteGroupTypeId)
@@ -679,7 +679,7 @@ namespace crds_angular.Services
         // this method will be removed all endpoints have been moved to new Auth
         public Participant GetParticipantRecord(string token) 
         {
-            var participant = _participantService.GetParticipantRecord(token);
+            var participant = _participantService.GetParticipantRecord();
             return new Participant
             {
                 Age = participant.Age,
@@ -780,7 +780,7 @@ namespace crds_angular.Services
                 return;
             }
 
-            var participant = _participantService.GetParticipantRecord(token);
+            var participant = _participantService.GetParticipantRecord();
 
             foreach (var currentParticpant in participantsToLookup)
             {
@@ -808,7 +808,7 @@ namespace crds_angular.Services
 
         public void SendAllGroupLeadersMemberRemovedEmail(string token, int groupId)
         {
-            var requestorParticipant = _participantService.GetParticipantRecord(token);
+            var requestorParticipant = _participantService.GetParticipantRecord();
             var group = this.GetGroupDetails(groupId);
 
             var leaders = @group.Participants.
@@ -973,7 +973,7 @@ namespace crds_angular.Services
 
         public void SendParticipantsEmail(string token, List<GroupParticipantDTO> participants, string subject, string body)
         {
-            var senderRecord = _participantService.GetParticipantRecord(token);
+            var senderRecord = _participantService.GetParticipantRecord();
 
             var fromContact = new MpContact
             {

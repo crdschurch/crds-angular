@@ -292,7 +292,7 @@ namespace crds_angular.test.Services
                 }
             };
 
-            participantService.Setup(mocked => mocked.GetParticipantRecord(It.IsAny<string>())).Returns(loggedInParticipant);
+            participantService.Setup(mocked => mocked.GetParticipantRecord()).Returns(loggedInParticipant);
 
             var results = fixture.RemoveOnsiteParticipantsIfNotLeader(groups, token);
 
@@ -612,7 +612,7 @@ namespace crds_angular.test.Services
             _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(token, groups[0].GroupId, It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
                 .Returns(objectAllAttribute);
 
-            participantService.Setup(mocked => mocked.GetParticipantRecord(token)).Returns(new Participant {ParticipantId = participantId});
+            participantService.Setup(mocked => mocked.GetParticipantRecord()).Returns(new Participant {ParticipantId = participantId});
 
             groupRepository.Setup(mocked => mocked.GetGroupsForParticipantByTypeOrID(42, (string)null, groupTypeIds, (int?)null)).Returns(groups);
 
@@ -811,7 +811,7 @@ namespace crds_angular.test.Services
         {
             fixture.LookupParticipantIfEmpty("123", mockParticipantSignup);
 
-            participantService.Verify(x => x.GetParticipantRecord(It.IsAny<string>()), Times.Never);
+            participantService.Verify(x => x.GetParticipantRecord(), Times.Never);
         }
 
         [Test]
@@ -820,7 +820,7 @@ namespace crds_angular.test.Services
             var token = "123";
             var participant = new Participant() {ParticipantId = 100};
 
-            participantService.Setup(x => x.GetParticipantRecord(token)).Returns(participant);
+            participantService.Setup(x => x.GetParticipantRecord()).Returns(participant);
             var participants = new List<ParticipantSignup>
             {
                 new ParticipantSignup()
@@ -831,7 +831,7 @@ namespace crds_angular.test.Services
             };
             fixture.LookupParticipantIfEmpty(token, participants);
 
-            participantService.Verify(x => x.GetParticipantRecord(It.IsAny<string>()), Times.Once);
+            participantService.Verify(x => x.GetParticipantRecord(), Times.Once);
 
             Assert.AreEqual(100, participants[0].particpantId);
         }
@@ -849,7 +849,7 @@ namespace crds_angular.test.Services
                 groupId = 98765
             };
 
-            participantService.Setup(x => x.GetParticipantRecord(token)).Returns(participant);
+            participantService.Setup(x => x.GetParticipantRecord()).Returns(participant);
 
             Assert.Throws<InvalidOperationException>(() => fixture.SendJourneyEmailInvite(communication, token));
             _communicationService.Verify(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false), Times.Never);
@@ -872,7 +872,7 @@ namespace crds_angular.test.Services
                 new MpGroup() {}
             };
 
-            participantService.Setup(x => x.GetParticipantRecord(token)).Returns(participant);
+            participantService.Setup(x => x.GetParticipantRecord()).Returns(participant);
             var membership = groups.Where(group => group.GroupId == groupId).ToList();
             Assert.AreEqual(membership.Count, 0);
             Assert.Throws<InvalidOperationException>(() => fixture.SendJourneyEmailInvite(communication, token));
@@ -912,7 +912,7 @@ namespace crds_angular.test.Services
 
             var attributes = new ObjectAllAttributesDTO();
 
-            participantService.Setup(x => x.GetParticipantRecord(token)).Returns(participant);
+            participantService.Setup(x => x.GetParticipantRecord()).Returns(participant);
             groupRepository.Setup(x => x.GetGroupsByTypeForParticipant(token, participant.ParticipantId, JOURNEY_GROUP_ID)).Returns(groups);
             _communicationService.Setup(mocked => mocked.GetTemplate(It.IsAny<int>())).Returns(template);
             _contactService.Setup(mocked => mocked.GetContactById(It.IsAny<int>())).Returns(contact);
@@ -1379,7 +1379,7 @@ namespace crds_angular.test.Services
                 EmailAddress = p.Email
             }).ToList();
 
-            participantService.Setup(mocked => mocked.GetParticipantRecord(token)).Returns(sender);
+            participantService.Setup(mocked => mocked.GetParticipantRecord()).Returns(sender);
             _communicationService.Setup(mocked => mocked.SendMessage(It.Is<MinistryPlatform.Translation.Models.MpCommunication>(
                 c =>
                     c.AuthorUserId == authorId && c.DomainId == DOMAIN_ID && c.EmailBody.Equals(body) && c.EmailSubject.Equals(subject) &&

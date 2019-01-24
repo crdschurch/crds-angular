@@ -421,7 +421,7 @@ namespace crds_angular.Services
 
         public void SendAllGroupLeadersEmail(string token, int groupId, GroupMessageDTO message)
         {
-            var requestor = _participantRepository.GetParticipantRecord(token);
+            var requestor = _participantRepository.GetParticipantRecord();
             var requestorContact = _contactRepository.GetContactById(requestor.ContactId);
             var group = _groupService.GetGroupDetails(groupId);
 
@@ -483,7 +483,7 @@ namespace crds_angular.Services
 
         public void SendAllGroupParticipantsEmail(string token, int groupId, int groupTypeId, string subject, string body)
         {
-            var leaderRecord = _participantRepository.GetParticipantRecord(token);
+            var leaderRecord = _participantRepository.GetParticipantRecord();
             var groups = _groupService.GetGroupByIdForAuthenticatedUser(token, groupId);
 
             if (groups == null || !groups.Any())
@@ -531,7 +531,7 @@ namespace crds_angular.Services
         public bool ValidateUserAsLeader(string token, int groupTypeId, int groupId, int groupParticipantId, GroupDTO group)
         {
             var groupParticipants = group.Participants;
-            var me = _participantRepository.GetParticipantRecord(token);
+            var me = _participantRepository.GetParticipantRecord();
 
             if (groupParticipants == null || groupParticipants.Find(p => p.ParticipantId == me.ParticipantId) == null)
             {

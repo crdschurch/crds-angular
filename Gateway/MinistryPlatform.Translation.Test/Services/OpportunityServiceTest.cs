@@ -66,7 +66,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const string comment = "Test Comment";
 
             const int mockParticipantId = 7777;
-            _participantService.Setup(m => m.GetParticipantRecord(It.IsAny<string>()))
+            _participantService.Setup(m => m.GetParticipantRecord())
                 .Returns(new MpParticipant {ParticipantId = mockParticipantId});
 
             const string opportunityResponsePageKey = "OpportunityResponses";
@@ -78,9 +78,9 @@ namespace MinistryPlatform.Translation.Test.Services
                                    true))
                 .Returns(3333);
 
-            Assert.DoesNotThrow(() => _fixture.RespondToOpportunity(It.IsAny<string>(), opportunityId, comment));
+            Assert.DoesNotThrow(() => _fixture.RespondToOpportunity(opportunityId, comment));
 
-            _participantService.Verify(m => m.GetParticipantRecord(It.IsAny<string>()), Times.Once);
+            _participantService.Verify(m => m.GetParticipantRecord(), Times.Once);
             _ministryPlatformService.VerifyAll();
         }
 
@@ -125,7 +125,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const int opportunityId = 10000000;
             const string comment = "Fail Test Comment";
             const int mockParticipantId = 7777;
-            _participantService.Setup(m => m.GetParticipantRecord(It.IsAny<string>()))
+            _participantService.Setup(m => m.GetParticipantRecord())
                 .Returns(new MpParticipant {ParticipantId = mockParticipantId});
 
             const string opportunityResponsePageKey = "OpportunityResponses";
@@ -142,9 +142,9 @@ namespace MinistryPlatform.Translation.Test.Services
                 .Throws(faultException);
 
             Assert.Throws<FaultException<ExceptionDetail>>(
-                () => _fixture.RespondToOpportunity(It.IsAny<string>(), opportunityId, comment));
+                () => _fixture.RespondToOpportunity( opportunityId, comment));
 
-            _participantService.Verify(m => m.GetParticipantRecord(It.IsAny<string>()), Times.Once);
+            _participantService.Verify(m => m.GetParticipantRecord(), Times.Once);
             _ministryPlatformService.VerifyAll();
         }
 
@@ -332,16 +332,16 @@ namespace MinistryPlatform.Translation.Test.Services
             const int mockParticipantId = 7777;
             const string pageKey = "OpportunityResponses";
 
-            _participantService.Setup(m => m.GetParticipantRecord(It.IsAny<string>()))
+            _participantService.Setup(m => m.GetParticipantRecord())
                 .Returns(new MpParticipant {ParticipantId = mockParticipantId});
 
             _ministryPlatformService.Setup(
                 m => m.CreateRecord(pageKey, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true))
                 .Returns(3333);
 
-            var responseId = _fixture.RespondToOpportunity(It.IsAny<string>(), opportunityId, comments);
+            var responseId = _fixture.RespondToOpportunity(opportunityId, comments);
 
-            _participantService.Verify(m => m.GetParticipantRecord(It.IsAny<string>()), Times.Once);
+            _participantService.Verify(m => m.GetParticipantRecord(), Times.Once);
             _ministryPlatformService.VerifyAll();
 
             Assert.IsNotNull(responseId);
@@ -466,7 +466,7 @@ namespace MinistryPlatform.Translation.Test.Services
                                         It.IsAny<string>()))
                 .Returns(expectedEvents);
 
-            var dates = _fixture.GetAllOpportunityDates(opportunityId, It.IsAny<string>());
+            var dates = _fixture.GetAllOpportunityDates(opportunityId);
             Assert.IsNotNull(dates);
             Assert.AreEqual(2, dates.Count);
             Assert.AreEqual(expectedDates, dates);
@@ -503,7 +503,7 @@ namespace MinistryPlatform.Translation.Test.Services
                                         It.IsAny<string>()))
                 .Returns(expectedEvents);
 
-            var lastDate = _fixture.GetLastOpportunityDate(opportunityId, It.IsAny<string>());
+            var lastDate = _fixture.GetLastOpportunityDate(opportunityId);
             Assert.IsNotNull(lastDate);
             Assert.AreEqual(expectedLastDate, lastDate);
         }
@@ -530,7 +530,7 @@ namespace MinistryPlatform.Translation.Test.Services
                                         It.IsAny<string>()))
                 .Returns(expectedEvents);
 
-            Assert.Throws<Exception>(() => _fixture.GetLastOpportunityDate(opportunityId, It.IsAny<string>()));
+            Assert.Throws<Exception>(() => _fixture.GetLastOpportunityDate(opportunityId));
         }
 
         [Test]
@@ -587,7 +587,7 @@ namespace MinistryPlatform.Translation.Test.Services
                                                It.IsAny<string>(),
                                                It.IsAny<int>())).Returns(expectedParticipants);
 
-            var output = _fixture.GetGroupParticipantsForOpportunity(opportunityId, It.IsAny<string>());
+            var output = _fixture.GetGroupParticipantsForOpportunity(opportunityId);
 
             _ministryPlatformService.VerifyAll();
             Assert.AreEqual(255, output.GroupId);

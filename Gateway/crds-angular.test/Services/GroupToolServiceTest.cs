@@ -283,7 +283,7 @@ namespace crds_angular.test.Services
             List<MpGroupParticipant> groupParticipants = new List<MpGroupParticipant>();
             groupParticipants.Add(groupParticipant);
 
-            _participantRepository.Setup(mocked => mocked.GetParticipantRecord(It.IsAny<string>())).Returns(participant);
+            _participantRepository.Setup(mocked => mocked.GetParticipantRecord()).Returns(participant);
             _groupRepository.Setup(
                 mocked => mocked.AddParticipantToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>(), false, It.IsAny<DateTime>(), null, null)).Returns(1);
             _groupRepository.Setup(mocked => mocked.GetGroupParticipants(It.IsAny<int>(), It.IsAny<bool>())).Returns(groupParticipants);
@@ -1037,7 +1037,7 @@ namespace crds_angular.test.Services
             groups.Add(group1);
 
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MpCommunication>(), false)).Returns(1);
-            _participantRepository.Setup(m => m.GetParticipantRecord(token)).Returns(groupParticipantDTO);
+            _participantRepository.Setup(m => m.GetParticipantRecord()).Returns(groupParticipantDTO);
             _groupService.Setup(m => m.GetGroupByIdForAuthenticatedUser(token, 1)).Returns(groups);
 
             _fixture.SendAllGroupParticipantsEmail(token, 1, 123, "aaa", "bbb");
@@ -1102,7 +1102,7 @@ namespace crds_angular.test.Services
             groups.Add(group1);
 
             _communicationRepository.Setup(m => m.SendMessage(It.Is<MpCommunication>(email => email.ToContacts.Count() == expectedToContactsCount), false)).Returns(1);
-            _participantRepository.Setup(m => m.GetParticipantRecord(token)).Returns(groupParticipantDTO);
+            _participantRepository.Setup(m => m.GetParticipantRecord()).Returns(groupParticipantDTO);
             _groupService.Setup(m => m.GetGroupByIdForAuthenticatedUser(token, 1)).Returns(groups);
 
             _fixture.SendAllGroupParticipantsEmail(token, 1, 123, "aaa", "bbb");
@@ -1150,7 +1150,7 @@ namespace crds_angular.test.Services
 
             _contactRepository.Setup(m => m.GetContactById(123)).Returns(requestorContact);
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MpCommunication>(), false)).Returns(1);
-            _participantRepository.Setup(m => m.GetParticipantRecord(It.IsAny<string>())).Returns(groupParticipantDTO);
+            _participantRepository.Setup(m => m.GetParticipantRecord()).Returns(groupParticipantDTO);
             _groupService.Setup(m => m.GetGroupDetails(It.IsAny<int>())).Returns(group);
 
             _fixture.SendAllGroupLeadersEmail(token, 1, message);

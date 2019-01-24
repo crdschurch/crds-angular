@@ -86,7 +86,7 @@ namespace crds_angular.test.controllers
             MpParticipant participant = new MpParticipant();
             participant.ParticipantId = 90210;
             _participantServiceMock.Setup(
-                mocked => mocked.GetParticipantRecord(_fixture.Request.Headers.Authorization.ToString()))
+                mocked => mocked.GetParticipantRecord())
                 .Returns(participant);
 
             _contactRepositoryMock.Setup(mocked => mocked.GetContactId(_fixture.Request.Headers.Authorization.ToString())).Returns(contactId);

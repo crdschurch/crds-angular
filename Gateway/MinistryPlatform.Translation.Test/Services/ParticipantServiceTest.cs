@@ -21,6 +21,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRestMock;
+		private Mock<IApiUserRepository> _apiUserRepositoryMock;
 
         [SetUp]
         public void SetUp()
@@ -29,6 +30,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
             _ministryPlatformRestMock = new Mock<IMinistryPlatformRestRepository>();
+			_apiUserRepositoryMock = new Mock<IApiUserRepository>();
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _configWrapper.Setup(m => m.GetConfigIntValue("Participants")).Returns(355);
@@ -38,7 +40,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 ExpiresIn = 123
             });
 
-            _fixture = new ParticipantRepository(_mpServiceMock.Object, _ministryPlatformRestMock.Object, _authService.Object, _configWrapper.Object);
+            _fixture = new ParticipantRepository(_apiUserRepositoryMock.Object, _mpServiceMock.Object, _ministryPlatformRestMock.Object, _authService.Object, _configWrapper.Object);
         }
 
         [Test]
@@ -96,7 +98,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderApproved")).Returns(4);
             _mpServiceMock.Setup(m => m.GetRecordsDict(viewKey, token, string.Empty, string.Empty)).Returns(mockDictionaryList);
 
-            var participant = _fixture.GetParticipantRecord(token);
+            var participant = _fixture.GetParticipantRecord();
 
             _mpServiceMock.VerifyAll();
 

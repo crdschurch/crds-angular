@@ -15,13 +15,15 @@ namespace MinistryPlatform.Translation.Repositories
     {
         public const string UpdateHuddleGroupParticipantStatusProc = "crds_Huddle_Participant_Status_Refresh";
         private readonly IMinistryPlatformService _ministryPlatformService;
+		private readonly IApiUserRepository _apiUserRepository;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
 
-        public ParticipantRepository(IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IAuthenticationRepository authenticationService , IConfigurationWrapper configurationWrapper)
+        public ParticipantRepository(IApiUserRepository apiUserRepository, IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IAuthenticationRepository authenticationService , IConfigurationWrapper configurationWrapper)
             : base(authenticationService, configurationWrapper)
         {
             this._ministryPlatformService = ministryPlatformService;
             this._ministryPlatformRestRepository = ministryPlatformRestRepository;
+			this._apiUserRepository = apiUserRepository;
         }
 
         public int CreateParticipantRecord(int contactId)
@@ -38,8 +40,9 @@ namespace MinistryPlatform.Translation.Repositories
         }
 
         //Get Participant IDs of a contact
-        public MpParticipant GetParticipantRecord(string token)
+        public MpParticipant GetParticipantRecord()
         {
+			var token = _apiUserRepository.GetDefaultApiClientToken();
             var results = _ministryPlatformService.GetRecordsDict("MyParticipantRecords", token);
             Dictionary<string, object> result = null;
             try

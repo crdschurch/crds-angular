@@ -690,7 +690,7 @@ namespace crds_angular.test.Services
                              Assert.AreEqual(registration.Self.EmailAddress, updatedUser.UserEmail);
                              Assert.AreEqual(registration.Self.LastName + ", " + registration.Self.FirstName, updatedUser.DisplayName);
                          });
-            _participantService.Setup(m => m.GetParticipantRecord(token))
+            _participantService.Setup(m => m.GetParticipantRecord())
                 .Returns(new MpParticipant() {ParticipantId = participantId});
             _configurationWrapper.Setup(m => m.GetConfigIntValue("CrossroadsOrganizationId"))
                 .Returns(_crossroadsOrganizationId);
@@ -751,7 +751,7 @@ namespace crds_angular.test.Services
                     Assert.AreEqual(registration.Self.EmailAddress, updatedUser.UserEmail);
                     Assert.AreEqual(registration.Self.LastName + ", " + registration.Self.FirstName, updatedUser.DisplayName);
                 });
-            _participantService.Setup(m => m.GetParticipantRecord(token))
+            _participantService.Setup(m => m.GetParticipantRecord())
                 .Returns(new MpParticipant() { ParticipantId = participantId });
 
             Assert.Throws<Exception>(() =>
