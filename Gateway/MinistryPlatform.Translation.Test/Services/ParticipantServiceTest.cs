@@ -95,6 +95,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 }
             };
 
+            _apiUserRepositoryMock.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderApproved")).Returns(4);
             _mpServiceMock.Setup(m => m.GetRecordsDict(viewKey, token, string.Empty, string.Empty)).Returns(mockDictionaryList);
 
