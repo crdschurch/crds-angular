@@ -46,7 +46,7 @@ namespace crds_angular.Services
             _analyticsService = analyticsService;
         }
 
-        public void SetProfile(string token, Person person)
+        public void SetProfile( Person person)
         {
             var contactDictionary = getDictionary(person.GetContact());
             var householdDictionary = getDictionary(person.GetHousehold());
