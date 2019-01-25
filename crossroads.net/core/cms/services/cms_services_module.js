@@ -14,10 +14,8 @@ cms_services_module.factory('SystemPage', function ($resource, $q) {
         var SystemPagesQuery = SystemPagesResource.get().$promise;
 
         return $q(function (resolve, reject) {
-            console.log('fetching pages');
             SystemPagesQuery.then(function (response) {
                 var page = response.systemPages.filter(page => page.stateName == state.state)[0];
-                console.log(page);
                 resolve(page);
             }).catch(function (response) {
                 reject(response);
