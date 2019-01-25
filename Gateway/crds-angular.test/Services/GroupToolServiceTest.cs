@@ -127,8 +127,9 @@ namespace crds_angular.test.Services
         [ExpectedException(typeof(GroupNotFoundForParticipantException))]
         public void TestVerifyCurrentUserIsGroupLeaderGroupNotFound()
         {
-            _groupRepository.Setup(mocked => mocked.GetAuthenticatedUserParticipationByGroupID("abc", 1)).Returns((MpGroupParticipant) null);
-            _fixture.VerifyCurrentUserIsGroupLeader("abc", 2);
+            var a = new List<MpGroupParticipant>();
+            _groupRepository.Setup(mocked => mocked.GetGroupParticipants( It.IsAny<int>(), It.IsAny<bool>())).Returns(a);
+            _fixture.VerifyUserIsGroupLeader(1, 2);
         }
 
         [Test]
@@ -139,16 +140,19 @@ namespace crds_angular.test.Services
             {
                 ParticipantId = 123,
                 GroupParticipantId = 321,
-                GroupRoleId = 8
+                GroupRoleId = 8,
+                ContactId = 1
             };
-            _groupRepository.Setup(mocked => mocked.GetAuthenticatedUserParticipationByGroupID("abc", 1)).Returns(myGroupParticipant);
-            _fixture.VerifyCurrentUserIsGroupLeader("abc", 1);
+            var a = new List<MpGroupParticipant>();
+            a.Add(myGroupParticipant);
+            _groupRepository.Setup(mocked => mocked.GetGroupParticipants(It.IsAny<int>(), It.IsAny<bool>())).Returns(a);
+            _fixture.VerifyUserIsGroupLeader(1,1);
         }
 
         [ExpectedException(typeof(GroupNotFoundForParticipantException))]
         public void TestGetMyGroupInfoGroupNotFound()
         {
-            _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(new List<GroupDTO>());
+            _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser(123, 2)).Returns(new List<GroupDTO>());
             _fixture.GetMyGroupInfo(123, 2);
         }
 
@@ -188,14 +192,17 @@ namespace crds_angular.test.Services
             {
                 GroupParticipantId = 5432,
                 ParticipantId = 4242,
-                GroupRoleId = GroupRoleLeader
+                GroupRoleId = GroupRoleLeader,
+                ContactId = 1
             };
+            var a = new List<MpGroupParticipant>();
+            a.Add(myGroupParticipant);
 
             const int groupId = 2;
 
-            _groupRepository.Setup(mocked => mocked.GetAuthenticatedUserParticipationByGroupID("abc", 2)).Returns(myGroupParticipant);
+            _groupRepository.Setup(mocked => mocked.GetGroupParticipants( 2, true)).Returns(a);
 
-            var result = _fixture.VerifyCurrentUserIsGroupLeader("abc", groupId);
+            var result = _fixture.VerifyUserIsGroupLeader(1, groupId);
             _groupRepository.VerifyAll();
 
             Assert.IsNotNull(result);
@@ -283,7 +290,7 @@ namespace crds_angular.test.Services
             List<MpGroupParticipant> groupParticipants = new List<MpGroupParticipant>();
             groupParticipants.Add(groupParticipant);
 
-            _participantRepository.Setup(mocked => mocked.GetParticipantRecord()).Returns(participant);
+            _participantRepository.Setup(mocked => mocked.GetParticipantRecord(It.IsAny<string>())).Returns(participant);
             _groupRepository.Setup(
                 mocked => mocked.AddParticipantToGroup(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>(), false, It.IsAny<DateTime>(), null, null)).Returns(1);
             _groupRepository.Setup(mocked => mocked.GetGroupParticipants(It.IsAny<int>(), It.IsAny<bool>())).Returns(groupParticipants);
@@ -881,10 +888,19 @@ namespace crds_angular.test.Services
             var invitationTypeId = 1;
             var token = "dude";
 
-            _groupRepository.Setup(m => m.GetAuthenticatedUserParticipationByGroupID("dude", sourceId))
-                .Returns(new MpGroupParticipant() {GroupParticipantId = 32, ParticipantId = 4, GroupRoleId = GroupRoleLeader});
+            var gp = new MpGroupParticipant
+            {
+                GroupParticipantId = 32,
+                ParticipantId = 4,
+                GroupRoleId = GroupRoleLeader,
+                ContactId = 1
+            };
+            var a = new List<MpGroupParticipant>();
+            a.Add(gp);
+
+            _groupRepository.Setup(m => m.GetGroupParticipants(1,true)).Returns(a);
             _groupToolRepository.Setup(m => m.GetInvitations(It.IsAny<int>(), It.IsAny<int>())).Returns(getMpInvations());
-            var invitations = _fixture.GetInvitations(sourceId, invitationTypeId, token);
+            var invitations = _fixture.GetInvitations(sourceId, invitationTypeId, 1);
 
             Assert.AreEqual(4, invitations.Count);
         }
@@ -990,13 +1006,20 @@ namespace crds_angular.test.Services
 
 
             var groupId = 1;
-            var token = "dude";
 
-            _groupRepository.Setup(mocked => mocked.GetAuthenticatedUserParticipationByGroupID("dude", groupId))
-                .Returns(new MpGroupParticipant() {GroupParticipantId = 37362, GroupRoleId = GroupRoleLeader, ParticipantId = 23});
+            var mp = new MpGroupParticipant()
+            {
+                GroupParticipantId = 37362,
+                GroupRoleId = GroupRoleLeader,
+                ParticipantId = 23,
+                ContactId = 1
+            };
+            var a = new List<MpGroupParticipant>();
+            a.Add(mp);
+            _groupRepository.Setup(m => m.GetGroupParticipants(1, true)).Returns(a);
             _groupToolRepository.Setup(m => m.GetInquiries(It.IsAny<int>())).Returns(mpResults);
 
-            var inquiries = _fixture.GetInquiries(groupId, token);
+            var inquiries = _fixture.GetInquiries(groupId, 1);
 
             Assert.AreEqual(1, inquiries.Count);
             Assert.AreEqual(dto[0].InquiryId, inquiries[0].InquiryId);
@@ -1037,10 +1060,10 @@ namespace crds_angular.test.Services
             groups.Add(group1);
 
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MpCommunication>(), false)).Returns(1);
-            _participantRepository.Setup(m => m.GetParticipantRecord()).Returns(groupParticipantDTO);
-            _groupService.Setup(m => m.GetGroupByIdForAuthenticatedUser(token, 1)).Returns(groups);
+            _participantRepository.Setup(m => m.GetParticipant(It.IsAny<int>())).Returns(groupParticipantDTO);
+            _groupService.Setup(m => m.GetGroupByIdForAuthenticatedUser(123, 1)).Returns(groups);
 
-            _fixture.SendAllGroupParticipantsEmail(token, 1, 123, "aaa", "bbb");
+            _fixture.SendAllGroupParticipantsEmail(123, 1, 123, "aaa", "bbb");
             _communicationRepository.VerifyAll();
         }
 
@@ -1102,10 +1125,10 @@ namespace crds_angular.test.Services
             groups.Add(group1);
 
             _communicationRepository.Setup(m => m.SendMessage(It.Is<MpCommunication>(email => email.ToContacts.Count() == expectedToContactsCount), false)).Returns(1);
-            _participantRepository.Setup(m => m.GetParticipantRecord()).Returns(groupParticipantDTO);
-            _groupService.Setup(m => m.GetGroupByIdForAuthenticatedUser(token, 1)).Returns(groups);
+            _participantRepository.Setup(m => m.GetParticipant(It.IsAny<int>())).Returns(groupParticipantDTO);
+            _groupService.Setup(m => m.GetGroupByIdForAuthenticatedUser(123, 1)).Returns(groups);
 
-            _fixture.SendAllGroupParticipantsEmail(token, 1, 123, "aaa", "bbb");
+            _fixture.SendAllGroupParticipantsEmail(123, 1, 123, "aaa", "bbb");
             _communicationRepository.VerifyAll();
         }
 
@@ -1150,10 +1173,10 @@ namespace crds_angular.test.Services
 
             _contactRepository.Setup(m => m.GetContactById(123)).Returns(requestorContact);
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MpCommunication>(), false)).Returns(1);
-            _participantRepository.Setup(m => m.GetParticipantRecord()).Returns(groupParticipantDTO);
+            _participantRepository.Setup(m => m.GetParticipant(It.IsAny<int>())).Returns(groupParticipantDTO);
             _groupService.Setup(m => m.GetGroupDetails(It.IsAny<int>())).Returns(group);
 
-            _fixture.SendAllGroupLeadersEmail(token, 1, message);
+            _fixture.SendAllGroupLeadersEmail(123, 1, message);
             _mockAnalyticService.Verify(x => x.Track(It.IsAny<string>(), "GroupLeaderContacted", It.IsAny<EventProperties>()), Times.Once);
             _communicationRepository.VerifyAll();
         }

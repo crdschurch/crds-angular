@@ -99,7 +99,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupLeaderApproved")).Returns(4);
             _mpServiceMock.Setup(m => m.GetRecordsDict(viewKey, token, string.Empty, string.Empty)).Returns(mockDictionaryList);
 
-            var participant = _fixture.GetParticipantRecord();
+            var participant = _fixture.GetParticipantRecord(token);
 
             _mpServiceMock.VerifyAll();
 

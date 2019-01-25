@@ -128,7 +128,6 @@ namespace crds_angular.test.Services
                                                                             It.IsAny<Dictionary<string, object>>())).Returns(communication);
             _commnuicationService.Setup(m => m.SendMessage(communication, false)).Returns(1);
             var success = _fixture.SendMail(registration);
-            _configurationWrapper.VerifyAll();
             _commnuicationService.VerifyAll();
             _contactService.VerifyAll();
             _groupConnectorService.VerifyAll();
@@ -178,8 +177,7 @@ namespace crds_angular.test.Services
             _commnuicationService.Setup(m => m.SendMessage(communication, false)).Returns(1);
                
                 
-            var success = _fixture.SendMail(registration);                
-            _configurationWrapper.VerifyAll();           
+            var success = _fixture.SendMail(registration);                     
             Assert.IsTrue(success);            
         }
 
@@ -193,8 +191,6 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(m => m.GetConfigIntValue("Children13To18")).Returns(registration.ChildAgeGroup[2].Id);
 
             var mergeData = _fixture.SetupMergeData(registration);
-
-            _configurationWrapper.VerifyAll();
 
             var styles = Styles();
 
@@ -245,8 +241,7 @@ namespace crds_angular.test.Services
 
             var mergeData = _fixture.SetupMergeData(registration);
 
-            _configurationWrapper.VerifyAll();
-
+       
             var styles = Styles();
 
             var listOfP = new List<HtmlElement>
@@ -413,8 +408,6 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(m => m.GetConfigIntValue("Children13To18")).Returns(registration.ChildAgeGroup[2].Id);
 
             var mergeData = _fixture.SetupMergeData(registration);
-
-            _configurationWrapper.VerifyAll();
 
             var styles = Styles();
 
@@ -690,7 +683,7 @@ namespace crds_angular.test.Services
                              Assert.AreEqual(registration.Self.EmailAddress, updatedUser.UserEmail);
                              Assert.AreEqual(registration.Self.LastName + ", " + registration.Self.FirstName, updatedUser.DisplayName);
                          });
-            _participantService.Setup(m => m.GetParticipantRecord())
+            _participantService.Setup(m => m.GetParticipantRecord(It.IsAny<string>()))
                 .Returns(new MpParticipant() {ParticipantId = participantId});
             _configurationWrapper.Setup(m => m.GetConfigIntValue("CrossroadsOrganizationId"))
                 .Returns(_crossroadsOrganizationId);
@@ -751,7 +744,7 @@ namespace crds_angular.test.Services
                     Assert.AreEqual(registration.Self.EmailAddress, updatedUser.UserEmail);
                     Assert.AreEqual(registration.Self.LastName + ", " + registration.Self.FirstName, updatedUser.DisplayName);
                 });
-            _participantService.Setup(m => m.GetParticipantRecord())
+            _participantService.Setup(m => m.GetParticipant(It.IsAny<int>()))
                 .Returns(new MpParticipant() { ParticipantId = participantId });
 
             Assert.Throws<Exception>(() =>
@@ -759,7 +752,6 @@ namespace crds_angular.test.Services
                                          _fixture.CreateAnywhereRegistration(registration, projectId, token);
                                      });
             _apiUserRepository.VerifyAll();
-            _groupConnectorService.VerifyAll();
             _contactService.VerifyAll();
             _userService.VerifyAll();
             _participantService.VerifyAll();
@@ -831,7 +823,6 @@ namespace crds_angular.test.Services
                                                   });
 
             _apiUserRepository.VerifyAll();
-            _groupConnectorService.VerifyAll();
             _contactService.VerifyAll();
             _userService.VerifyAll();
             _participantService.VerifyAll();

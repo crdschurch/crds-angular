@@ -66,7 +66,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const string comment = "Test Comment";
 
             const int mockParticipantId = 7777;
-            _participantService.Setup(m => m.GetParticipantRecord())
+            _participantService.Setup(m => m.GetParticipant(It.IsAny<int>()))
                 .Returns(new MpParticipant {ParticipantId = mockParticipantId});
 
             const string opportunityResponsePageKey = "OpportunityResponses";
@@ -78,9 +78,9 @@ namespace MinistryPlatform.Translation.Test.Services
                                    true))
                 .Returns(3333);
 
-            Assert.DoesNotThrow(() => _fixture.RespondToOpportunity(opportunityId, comment));
+            Assert.DoesNotThrow(() => _fixture.RespondToOpportunity(opportunityId, comment, 123));
 
-            _participantService.Verify(m => m.GetParticipantRecord(), Times.Once);
+            _participantService.Verify(m => m.GetParticipant(It.IsAny<int>()), Times.Once);
             _ministryPlatformService.VerifyAll();
         }
 
@@ -125,7 +125,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const int opportunityId = 10000000;
             const string comment = "Fail Test Comment";
             const int mockParticipantId = 7777;
-            _participantService.Setup(m => m.GetParticipantRecord())
+            _participantService.Setup(m => m.GetParticipant(It.IsAny<int>()))
                 .Returns(new MpParticipant {ParticipantId = mockParticipantId});
 
             const string opportunityResponsePageKey = "OpportunityResponses";
@@ -142,9 +142,9 @@ namespace MinistryPlatform.Translation.Test.Services
                 .Throws(faultException);
 
             Assert.Throws<FaultException<ExceptionDetail>>(
-                () => _fixture.RespondToOpportunity( opportunityId, comment));
+                () => _fixture.RespondToOpportunity( opportunityId, comment, 123));
 
-            _participantService.Verify(m => m.GetParticipantRecord(), Times.Once);
+            _participantService.Verify(m => m.GetParticipant(It.IsAny<int>()), Times.Once);
             _ministryPlatformService.VerifyAll();
         }
 
@@ -332,16 +332,16 @@ namespace MinistryPlatform.Translation.Test.Services
             const int mockParticipantId = 7777;
             const string pageKey = "OpportunityResponses";
 
-            _participantService.Setup(m => m.GetParticipantRecord())
+            _participantService.Setup(m => m.GetParticipant(It.IsAny<int>()))
                 .Returns(new MpParticipant {ParticipantId = mockParticipantId});
 
             _ministryPlatformService.Setup(
                 m => m.CreateRecord(pageKey, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true))
                 .Returns(3333);
 
-            var responseId = _fixture.RespondToOpportunity(opportunityId, comments);
+            var responseId = _fixture.RespondToOpportunity(opportunityId, comments, 123);
 
-            _participantService.Verify(m => m.GetParticipantRecord(), Times.Once);
+            _participantService.Verify(m => m.GetParticipant(It.IsAny<int>()), Times.Once);
             _ministryPlatformService.VerifyAll();
 
             Assert.IsNotNull(responseId);

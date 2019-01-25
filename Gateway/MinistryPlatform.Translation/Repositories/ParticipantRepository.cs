@@ -38,11 +38,8 @@ namespace MinistryPlatform.Translation.Repositories
 
             return _ministryPlatformService.CreateRecord(pageId, participantDictionary, token);
         }
-
-        //Get Participant IDs of a contact
-        public MpParticipant GetParticipantRecord()
+        public MpParticipant GetParticipantRecord(string token)
         {
-			var token = _apiUserRepository.GetDefaultApiClientToken();
             var results = _ministryPlatformService.GetRecordsDict("MyParticipantRecords", token);
             Dictionary<string, object> result = null;
             try
@@ -75,6 +72,7 @@ namespace MinistryPlatform.Translation.Repositories
             return participant;
         }
 
+        //Get Participant IDs of a contact
         public MpParticipant GetParticipant(int contactId)
         {             
             try

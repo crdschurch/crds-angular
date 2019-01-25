@@ -711,7 +711,7 @@ namespace crds_angular.Services
             _contactService.UpdateContact(registration.Self.ContactId, dict);
 
             //get participant
-            var participant = _participantService.GetParticipantRecord();
+            var participant = _participantService.GetParticipantRecord(token);
             return participant.ParticipantId;
         }
 

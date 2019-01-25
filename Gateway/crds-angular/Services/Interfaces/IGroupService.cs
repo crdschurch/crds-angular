@@ -11,9 +11,9 @@ namespace crds_angular.Services.Interfaces
     {
         GroupDTO GetGroupDetails(int groupId);
 
-        GroupDTO getGroupDetails(int groupId, int contactId, MpParticipant participant, string authUserToken);
+        GroupDTO getGroupDetails(int groupId, int contactId, MpParticipant participant);
 
-        GroupDTO GetGroupDetailsByInvitationGuid(string token, string invitationGuid);
+        GroupDTO GetGroupDetailsByInvitationGuid(string invitationGuid);
 
         void addParticipantToGroupNoEvents(int groupId, ParticipantSignup participant);
 
@@ -23,29 +23,26 @@ namespace crds_angular.Services.Interfaces
 
         void endDateGroupParticipant(int groupId, int groupParticipantId);
 
-        List<Event> GetGroupEvents(int groupId, string token = null);
+        List<Event> GetGroupEvents(int groupId);
 
         List<GroupContactDTO> GetGroupMembersByEvent(int groupId, int eventId, string recipients);
 		
         GroupDTO CreateGroup(GroupDTO group);
 
-        List<GroupDTO> GetGroupsForParticipant(string token, int participantId);
+        List<GroupDTO> GetGroupsForParticipant(int participantId);
 
-        List<GroupDTO> GetGroupsByTypeForParticipant(string token, int participantId, int groupTypeId);
+        List<GroupDTO> GetGroupsByTypeForParticipant(int participantId, int groupTypeId);
 
-        Participant GetParticipantRecord(string token);
-
+  
         Participant GetParticipantRecord(int contactId);
 
-        void SendJourneyEmailInvite(EmailCommunicationDTO email, string token);
+        void SendJourneyEmailInvite(EmailCommunicationDTO email, int contactId);
 
         List<GroupParticipantDTO> GetGroupParticipants(int groupId, bool active = true);
 
-        void LookupParticipantIfEmpty(string token, List<ParticipantSignup> partId);
+        void LookupParticipantIfEmpty(int contactId, List<ParticipantSignup> partId);
 
-        List<GroupDTO> GetGroupsForAuthenticatedUser(string token, int[] groupTypeIds);
-
-        List<GroupDTO> GetGroupByIdForAuthenticatedUser(string token, int groupId);
+        List<GroupDTO> GetGroupByIdForAuthenticatedUser(int contactId, int groupId);
 
         GroupDTO UpdateGroup(GroupDTO @group);
 
@@ -54,18 +51,18 @@ namespace crds_angular.Services.Interfaces
         void UpdateGroupParticipantRole(GroupParticipantDTO participant);
         void UpdateGroupParticipantRole(int groupId, int participantId, int roleId);
 
-        void SendParticipantsEmail(string token, List<GroupParticipantDTO> participants, string subject, string body);
+        void SendParticipantsEmail(int contactId, List<GroupParticipantDTO> participants, string subject, string body);
 
-        List<GroupDTO> RemoveOnsiteParticipantsIfNotLeader(List<GroupDTO> groups, string token);
-        List<GroupDTO> GetGroupsByTypeOrId(string token, int? participantId = null, int[] groupTypeIds = null, int? groupId = null, bool? withParticipants = true, bool? withAttributes = true);
+        List<GroupDTO> RemoveOnsiteParticipantsIfNotLeader(List<GroupDTO> groups, int contactId);
+        List<GroupDTO> GetGroupsByTypeOrId(int contactId, int? participantId = null, int[] groupTypeIds = null, int? groupId = null, bool? withParticipants = true, bool? withAttributes = true);
 
         int GetPrimaryContactParticipantId(int groupId);
 
         List<GroupParticipantDTO> GetGroupParticipantsWithoutAttributes(int groupId);
 
-        void RemoveParticipantFromGroup(string token, int groupId, int groupParticipantId);
+        void RemoveParticipantFromGroup(int contactId, int groupId, int groupParticipantId);
 
-        void SendAllGroupLeadersMemberRemovedEmail(string token, int groupId);
+        void SendAllGroupLeadersMemberRemovedEmail(int contactId, int groupId);
 
         void UpdateHuddleGroupParticipantStatus();
 

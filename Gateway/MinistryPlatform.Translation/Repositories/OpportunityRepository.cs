@@ -267,10 +267,10 @@ namespace MinistryPlatform.Translation.Repositories
             }
         }
 
-        public int RespondToOpportunity( int opportunityId, string comments)
+        public int RespondToOpportunity( int opportunityId, string comments, int contactId)
         {
 			var token = _apiUserService.GetDefaultApiClientToken();
-            var participant = _participantService.GetParticipantRecord();
+            var participant = _participantService.GetParticipant(contactId);
             var participantId = participant.ParticipantId;
 
             var values = new Dictionary<string, object>

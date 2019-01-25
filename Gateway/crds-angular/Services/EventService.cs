@@ -820,7 +820,7 @@ namespace crds_angular.Services
 
         public MpEvent GetMyChildcareEvent(int parentEventId, string token)
         {
-            var participantRecord = _participantService.GetParticipantRecord();
+            var participantRecord = _participantService.GetParticipantRecord(token);
             if (!_eventService.EventHasParticipant(parentEventId, participantRecord.ParticipantId))
             {
                 return null;

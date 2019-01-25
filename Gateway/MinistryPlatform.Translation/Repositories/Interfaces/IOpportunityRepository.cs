@@ -15,7 +15,7 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         MpGroup GetGroupParticipantsForOpportunity(int id);
         DateTime GetLastOpportunityDate(int opportunityId);
         int DeleteResponseToOpportunities(int participantId, int opportunityId, int eventId);
-        int RespondToOpportunity( int opportunityId, string comments);
+        int RespondToOpportunity( int opportunityId, string comments, int contactId);
         MpResponse GetMyOpportunityResponses(int contactId, int opportunityId);
         MpResponse GetOpportunityResponse(int contactId, int opportunityId);
         MpResponse GetOpportunityResponse(int opportunityId, int eventId, MpParticipant participant);

@@ -42,7 +42,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var id = _opportunityService.RespondToOpportunity( opportunityId, comments);
+                    var id = _opportunityService.RespondToOpportunity( opportunityId, comments, authDto.UserInfo.Mp.ContactId);
                     return Ok(id);
                 }
                 catch (Exception ex)
