@@ -744,7 +744,7 @@ namespace crds_angular.test.Services
                     Assert.AreEqual(registration.Self.EmailAddress, updatedUser.UserEmail);
                     Assert.AreEqual(registration.Self.LastName + ", " + registration.Self.FirstName, updatedUser.DisplayName);
                 });
-            _participantService.Setup(m => m.GetParticipant(It.IsAny<int>()))
+            _participantService.Setup(m => m.GetParticipantRecord(It.IsAny<string>()))
                 .Returns(new MpParticipant() { ParticipantId = participantId });
 
             Assert.Throws<Exception>(() =>
