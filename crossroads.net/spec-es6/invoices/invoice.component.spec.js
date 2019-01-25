@@ -40,7 +40,7 @@ describe('Invoice Component', () => {
     });
 
     it('should set urls, set the view as ready', () => {
-      expect(fixture.returnUrl).toBe(`https://crossroads.net/invoices/${invoiceId}/email`);
+      expect(fixture.returnUrl).toBe(`https://www.crossroads.net/invoices/${invoiceId}/email`);
       expect(fixture.viewReady).toBeTruthy();
     });
 
