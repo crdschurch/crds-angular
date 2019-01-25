@@ -460,19 +460,18 @@ namespace crds_angular.test.Services
                     Participant_Id = 222
                 }
             };
-            contactRelationshipService.Setup(mocked => mocked.GetMyCurrentRelationships(777, "auth token")).Returns(contactRelations);
+            contactRelationshipService.Setup(mocked => mocked.GetMyCurrentRelationships(It.IsAny<int>(), It.IsAny<string>())).Returns(contactRelations);
 
             var participant = new Participant
             {
                 ParticipantId = 555,
             };
-            groupRepository.Setup(mocked => mocked.checkIfUserInGroup(555, It.IsAny<List<MpGroupParticipant>>())).Returns(false);
-            groupRepository.Setup(mocked => mocked.checkIfUserInGroup(222, It.IsAny<List<MpGroupParticipant>>())).Returns(false);
-
+            groupRepository.Setup(mocked => mocked.checkIfUserInGroup(It.IsAny<int>(), It.IsAny<List<MpGroupParticipant>>())).Returns(false);
+            
             var attributes = new ObjectAllAttributesDTO();
-            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>())).Returns(attributes);
+            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes( It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>())).Returns(attributes);
 
-            var response = fixture.getGroupDetails(456, 777, participant, "auth token");
+            var response = fixture.getGroupDetails(456, 777, participant);
 
             groupRepository.VerifyAll();
             contactRelationshipService.VerifyAll();
@@ -517,10 +516,10 @@ namespace crds_angular.test.Services
             groupRepository.Setup(mocked => mocked.GetSmallGroupDetailsById(123123)).Returns(g);
             _attributeRepository.Setup(mocked => mocked.GetAttributes(It.IsAny<int>())).Returns(new List<MpAttribute>());
             _objectAttributeService.Setup(
-                mocked => mocked.GetObjectAttributes(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
+                mocked => mocked.GetObjectAttributes(It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
                 .Returns(objectAllAttribute);
 
-            var response = fixture.GetGroupDetailsByInvitationGuid("akjsfkasjfd;alsdfsa;f,", "crazy long guid");
+            var response = fixture.GetGroupDetailsByInvitationGuid("crazy long guid");
 
             groupRepository.VerifyAll();
             contactRelationshipService.VerifyAll();
@@ -537,11 +536,11 @@ namespace crds_angular.test.Services
 
             var attributes = new ObjectAllAttributesDTO();
 
-            groupRepository.Setup(mocked => mocked.GetGroupsForParticipant(token, participantId)).Returns(MockGroup());
-            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(token, It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
+            groupRepository.Setup(mocked => mocked.GetGroupsForParticipant(It.IsAny<string>(), participantId)).Returns(MockGroup());
+            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes( It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
                 .Returns(attributes);
 
-            var grps = fixture.GetGroupsForParticipant(token, participantId);
+            var grps = fixture.GetGroupsForParticipant(participantId);
 
             groupRepository.VerifyAll();
             Assert.IsNotNull(grps);
@@ -609,7 +608,7 @@ namespace crds_angular.test.Services
             _attributeRepository.Setup(mocked => mocked.GetAttributes((int?) null)).Returns(allAttributes);
 
 
-            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(token, groups[0].GroupId, It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
+            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes( groups[0].GroupId, It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
                 .Returns(objectAllAttribute);
 
             participantService.Setup(mocked => mocked.GetParticipantRecord(token)).Returns(new Participant {ParticipantId = participantId});
@@ -689,7 +688,7 @@ namespace crds_angular.test.Services
 
             _attributeRepository.Setup(mocked => mocked.GetAttributes((int?)null)).Returns(allAttributes);
 
-            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(token, It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
+            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
                 .Returns(objectAllAttribute);
 
             groupRepository.Setup(mocked => mocked.GetGroupsForParticipantByTypeOrID(42, (string)null, groupTypeIds, (int?)null)).Returns(groups);
@@ -743,11 +742,11 @@ namespace crds_angular.test.Services
 
             var attributes = new ObjectAllAttributesDTO();
 
-            groupRepository.Setup(mocked => mocked.GetGroupsByTypeForParticipant(token, participantId, groupTypeId)).Returns(groups);
-            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(token, It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
+            groupRepository.Setup(mocked => mocked.GetGroupsByTypeForParticipant(participantId, groupTypeId)).Returns(groups);
+            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
                 .Returns(attributes);
 
-            var grps = fixture.GetGroupsByTypeForParticipant(token, participantId, groupTypeId);
+            var grps = fixture.GetGroupsByTypeForParticipant(participantId, groupTypeId);
 
             groupRepository.VerifyAll();
             Assert.IsNotNull(grps);
@@ -913,10 +912,10 @@ namespace crds_angular.test.Services
             var attributes = new ObjectAllAttributesDTO();
 
             participantService.Setup(x => x.GetParticipantRecord(token)).Returns(participant);
-            groupRepository.Setup(x => x.GetGroupsByTypeForParticipant(token, participant.ParticipantId, JOURNEY_GROUP_ID)).Returns(groups);
+            groupRepository.Setup(x => x.GetGroupsByTypeForParticipant(participant.ParticipantId, JOURNEY_GROUP_ID)).Returns(groups);
             _communicationService.Setup(mocked => mocked.GetTemplate(It.IsAny<int>())).Returns(template);
             _contactService.Setup(mocked => mocked.GetContactById(It.IsAny<int>())).Returns(contact);
-            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(token, It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
+            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>()))
                 .Returns(attributes);
             _communicationService.Setup(m => m.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false)).Verifiable();
 
@@ -1047,7 +1046,7 @@ namespace crds_angular.test.Services
                 }
             });
             groupRepository.Setup(mocked => mocked.UpdateGroup(It.IsAny<MpGroup>())).Returns(14);
-            this._objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>()))
+            this._objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>()))
                 .Returns(new ObjectAllAttributesDTO());
 
             var groupResp = fixture.UpdateGroup(group);
@@ -1130,7 +1129,7 @@ namespace crds_angular.test.Services
                         false)).Returns(77);
 
             groupRepository.Setup(mocked => mocked.UpdateGroup(It.IsAny<MpGroup>())).Returns(14);
-            this._objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>()))
+            this._objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>()))
                 .Returns(new ObjectAllAttributesDTO());
 
             var groupResp = fixture.UpdateGroup(group);
@@ -1211,7 +1210,7 @@ namespace crds_angular.test.Services
 
             groupRepository.Setup(mocked => mocked.CreateGroup(It.IsAny<MpGroup>())).Returns(14);
             _awsCloudsearchService.Setup(mocked => mocked.UploadSingleGroupToAwsFromMp(It.IsAny<int>()));
-            this._objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>()))
+            this._objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>()))
                 .Returns(new ObjectAllAttributesDTO());
 
             var groupResp = fixture.CreateGroup(group);
@@ -1406,7 +1405,7 @@ namespace crds_angular.test.Services
             groupRepository.Setup(x => x.GetMyGroupParticipationByType(token, It.IsAny<int[]>(), null)).Returns(testGroups);
             groupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(participants);
             _attributeRepository.Setup(x => x.GetAttributes(It.IsAny<int>())).Returns(new List<MpAttribute>());
-            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(),It.IsAny<List<MpAttribute>>())).Returns(attributes);
+            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(),It.IsAny<List<MpAttribute>>())).Returns(attributes);
 
             var groups = fixture.GetGroupsForAuthenticatedUser(token, It.IsAny<int[]>());
             groupRepository.VerifyAll();
@@ -1427,7 +1426,7 @@ namespace crds_angular.test.Services
             groupRepository.Setup(x => x.GetMyGroupParticipationByType(token, null, It.IsAny<int>())).Returns(testGroups);
             groupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(participants);
             _attributeRepository.Setup(x => x.GetAttributes(It.IsAny<int>())).Returns(new List<MpAttribute>());
-            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>())).Returns(attributes);
+            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>(), It.IsAny<List<MpAttribute>>())).Returns(attributes);
 
             var group = fixture.GetGroupByIdForAuthenticatedUser(token, groupId).FirstOrDefault();
             groupRepository.VerifyAll();

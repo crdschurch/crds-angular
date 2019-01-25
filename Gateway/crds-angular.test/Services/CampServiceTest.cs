@@ -1008,7 +1008,7 @@ namespace crds_angular.test.Services
             _contactService.Setup(m => m.GetContactById(contactId)).Returns(myContact);
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _groupRepository.Setup(m => m.GetGradeGroupForContact(contactId, apiToken)).Returns(participant);
-            _objectAttributeService.Setup(m => m.GetObjectAttributes(apiToken, contactId, It.IsAny<MpObjectAttributeConfiguration>())).Returns(attributesDto);
+            _objectAttributeService.Setup(m => m.GetObjectAttributes(contactId, It.IsAny<MpObjectAttributeConfiguration>())).Returns(attributesDto);
 
             var result = _fixture.GetCamperInfo(token, eventId, contactId);
             Assert.AreEqual(result.ContactId, 2187211);
@@ -1061,7 +1061,7 @@ namespace crds_angular.test.Services
             _contactService.Setup(m => m.GetContactById(contactId)).Returns(myContact);
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _groupRepository.Setup(m => m.GetGradeGroupForContact(contactId, apiToken)).Returns(participant);
-            _objectAttributeService.Setup(m => m.GetObjectAttributes(apiToken, contactId, It.IsAny<MpObjectAttributeConfiguration>())).Returns(attributesDto);
+            _objectAttributeService.Setup(m => m.GetObjectAttributes(contactId, It.IsAny<MpObjectAttributeConfiguration>())).Returns(attributesDto);
 
             var result = _fixture.GetCamperInfo(token, eventId, contactId);
             _contactService.VerifyAll();

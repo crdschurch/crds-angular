@@ -797,7 +797,7 @@ namespace crds_angular.Services
                 ? new Err<MpCongregation>("Congregation not set")
                 : _congregationRepository.GetCongregationByName(crossroadsSite, apiToken);
             var configuration = MpObjectAttributeConfigurationFactory.Contact();
-            var attributesTypes = _objectAttributeService.GetObjectAttributes(apiToken, contactId, configuration);
+            var attributesTypes = _objectAttributeService.GetObjectAttributes(contactId, configuration);
 
             return new CampReservationDTO
             {
