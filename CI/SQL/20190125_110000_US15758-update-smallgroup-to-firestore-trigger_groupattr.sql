@@ -13,12 +13,12 @@ GO
 -- Description: 
 -- =============================================
 CREATE OR ALTER  TRIGGER [dbo].[crds_tr_Small_Group_To_Firestore_GroupAttr]
-   ON  [dbo].[Groups]
+   ON  [dbo].[Group_Attributes]
    AFTER INSERT, UPDATE
 AS
 BEGIN
     SET NOCOUNT ON;
-    DECLARE @GroupAttributess_Cursor CURSOR;
+    DECLARE @GroupAttributes_Cursor CURSOR;
 
 	DECLARE @IN_PERSON_GROUP INTEGER = 2;
 	DECLARE @ONLINE_GROUP INTEGER = 4;
@@ -58,6 +58,6 @@ END
 
 GO
 
-ALTER TABLE [dbo].[Groups_Attributes] ENABLE TRIGGER [crds_tr_Small_Group_To_Firestore_GroupAttr]
+ALTER TABLE [dbo].[Group_Attributes] ENABLE TRIGGER [crds_tr_Small_Group_To_Firestore_GroupAttr]
 GO
 
