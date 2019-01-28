@@ -1,0 +1,5 @@
+/assets/cr.svg
+  # Headers for that path:
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Headers: "X-Requested-With"
+  Access-Control-Allow-Methods: "GET"
