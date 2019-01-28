@@ -22,7 +22,7 @@
     $sceDelegateProvider) {
     $sceDelegateProvider.resourceUrlWhitelist([
       'self',
-      'https://*crds-angular.netlify.com/'
+      'https://*crds-angular.netlify.com/**'
     ]);
     $provide.decorator('$state', function ($delegate, $rootScope) {
 
