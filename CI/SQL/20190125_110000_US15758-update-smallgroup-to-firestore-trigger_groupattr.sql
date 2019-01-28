@@ -36,7 +36,7 @@ BEGIN
     DECLARE @I_EndDate DateTime;
 	DECLARE @I_OffsiteMeetingAddressId INT;
 	
-    OPEN @Groups_Cursor
+    OPEN @GroupAttributes_Cursor
     FETCH NEXT FROM @GroupAttributes_Cursor INTO @Group_Id, @I_EndDate, @I_OffsiteMeetingAddressId
     WHILE @@FETCH_STATUS = 0
     BEGIN
