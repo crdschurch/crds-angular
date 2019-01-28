@@ -54,7 +54,7 @@
     // in any 'Allow-Header' from any CORS request
     // This needs to be here because of IE.
     commonHeaders['X-Use-The-Force'] = true;
-    commonHeaders['Access-Control-Allow-Origin'] = "*";
+    commonHeaders['Access-Control-Allow-Origin'] = __APP_SERVER_ENDPOINT__;
     commonHeaders['Access-Control-Allow-Headers'] = "X-Requested-With";
     commonHeaders['Access-Control-Allow-Methods'] = "GET";
 
