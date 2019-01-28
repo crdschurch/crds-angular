@@ -1,5 +1,5 @@
 /assets/cr.svg
   # Headers for that path:
   Access-Control-Allow-Origin: *
-  Access-Control-Allow-Headers: "X-Requested-With, crds-api-key"
+  Access-Control-Allow-Headers: "crds-api-key,x-use-the-force"
   Access-Control-Allow-Methods: "GET"
