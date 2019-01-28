@@ -81,6 +81,11 @@ namespace crds_angular.Services
             return (_mpDonorService.GetContactDonor(contactId));
         }
 
+        public MpContactDonor GetContactDonorByContactId(int contactId)
+        {
+            return (_mpDonorService.GetContactDonor(contactId));
+        }
+
         public MpContactDonor GetContactDonorForDonorId(int donorId)
         {
             return (_mpDonorService.GetEmailViaDonorId(donorId));
