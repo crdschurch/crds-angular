@@ -7,8 +7,6 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-
-
 -- =============================================
 -- Author:      Phil Lachmann
 -- Create date: 01/25/2019
@@ -16,7 +14,7 @@ GO
 -- =============================================
 CREATE OR ALTER  TRIGGER [dbo].[crds_tr_Small_Group_To_Firestore_GroupAttr]
    ON  [dbo].[Groups]
-   AFTER INSERT
+   AFTER INSERT, UPDATE
 AS
 BEGIN
     SET NOCOUNT ON;
