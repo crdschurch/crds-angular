@@ -110,7 +110,7 @@ namespace crds_angular.test.Services
 
             _participantService.Setup(m => m.CreateParticipantRecord(654)).Returns(567);
             _donorRepository.Setup(m => m.CreateDonorRecord(654, null, It.IsAny<DateTime>(), 1, 1, 2, null));
-            _subscriptionService.Setup(mocked => mocked.SetSubscriptions(It.IsAny<Dictionary<string, object>>(), 654, "1234567890")).Returns(999);
+            _subscriptionService.Setup(mocked => mocked.SetSubscriptions(It.IsAny<Dictionary<string, object>>(), 654)).Returns(999);
 
             _fixture.RegisterPerson(newUserData, null);
 
