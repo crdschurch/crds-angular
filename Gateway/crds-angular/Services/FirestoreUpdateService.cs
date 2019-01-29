@@ -41,6 +41,7 @@ namespace crds_angular.Services
         private const int PIN_PERSON = 1;
         private const int PIN_GROUP = 2;
         private const int PIN_SITE = 3;
+        private const int PIN_ONLINEGROUP = 4;
 
         public FirestoreUpdateService(IImageService imageService, 
                                       IConfigurationWrapper configurationWrapper, 
@@ -142,6 +143,10 @@ namespace crds_angular.Services
                             case PIN_SITE:
                                 var sitepinupdatedsuccessfully = await SitePinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
                                 SetRecordProcessedFlag(mapAuditRecord, sitepinupdatedsuccessfully);
+                                break;
+                            case PIN_ONLINEGROUP:
+                                var onlinegrouppinupdatedsuccessfully = await OnlineGroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                                SetRecordProcessedFlag(mapAuditRecord, onlinegrouppinupdatedsuccessfully);
                                 break;
                         }
                     }
@@ -306,62 +311,9 @@ namespace crds_angular.Services
                     return true;
                 }
 
-                var dict = new Dictionary<string, string[]>();
-                
-                // get grouptype
-                ObjectSingleAttributeDTO grouptype;
-                if (s.TryGetValue(73, out grouptype))
-                {
-                    // grouptype is now equal to the value
-                    var x = grouptype.Value;
-                    dict.Add("GroupType", new string[] { x.Name });
-                }
-
-                // get age groups
-                ObjectAttributeTypeDTO agegroup;
-                if(t.TryGetValue(91, out agegroup))
-                {
-                    // roll through the age group. add selected to the dictionary
-                    var ageGroups = new List<string>();
-                    foreach( var a in agegroup.Attributes)
-                    {
-                        if (a.Selected)
-                        {
-                            ageGroups.Add(a.Name);
-                        }
-                    }
-
-                    // add to the dict
-                    if(ageGroups.Count > 0)
-                    {
-                        dict.Add("AgeGroups",  ageGroups.ToArray() );
-                    }
-                }
-
-                // get group categories
-                ObjectAttributeTypeDTO groupcategory;
-                if(t.TryGetValue(90, out groupcategory))
-                {
-                    // roll through the age group. add selected to the dictionary
-                    var categories = new List<string>();
-                    foreach (var a in groupcategory.Attributes)
-                    {
-                        if (a.Selected)
-                        {
-                            categories.Add(a.Category);
-                        }
-                    }
-
-                    // add to the dict
-                    if (categories.Count > 0)
-                    {
-                        dict.Add("Categories", categories.ToArray());
-                    }
-                }
-
                 // create the pin object
                 MapPin pin = new MapPin(group.GroupDescription, group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), 
-                    groupid.ToString(), geohash, "", dict);
+                    groupid.ToString(), geohash, "", BuildGroupAttributeDictionary(s, t));
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
@@ -401,8 +353,6 @@ namespace crds_angular.Services
             DeleteProfilePhotoFromFirestore(participantid);
             return await DeletePinFromFirestoreAsync(participantid, pinType);
         }
-
-        
 
         private async Task<bool> AddPersonPinToFirestoreAsync(int participantid, string pinType)
         {
@@ -444,9 +394,119 @@ namespace crds_angular.Services
             return true;
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// ONLINEGROUP PIN
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private async Task<bool> OnlineGroupPinToFirestoreAsync(int groupid, bool showOnMap, string pinType)
+        {
+            // showonmap = true then add to firestore
+            // showonmap = false then delete from firestore
+            Console.WriteLine($"groupid = {groupid}, showonmap = {showOnMap}, pintype = {pinType}");
+            if (showOnMap)
+            {
+                await DeleteOnlineGroupPinFromFirestoreAsync(groupid, pinType);
+                return await AddOnlineGroupPinToFirestoreAsync(groupid, pinType);
+            }
+            else
+            {
+                return await DeleteOnlineGroupPinFromFirestoreAsync(groupid, pinType);
+            }
+        }
+
+        private async Task<bool> DeleteOnlineGroupPinFromFirestoreAsync(int groupid, string pinType)
+        {
+            return await DeletePinFromFirestoreAsync(groupid, pinType);
+        }
+
+        private async Task<bool> AddOnlineGroupPinToFirestoreAsync(int groupid, string pinType)
+        {
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
+            var address = new AddressDTO();
+            try
+            {
+                //var group = _groupRepository.getGroupDetails(groupid);
+                var group = _groupService.GetGroupDetailsWithAttributes(groupid);
+                var s = group.SingleAttributes;
+                var t = group.AttributeTypes;
+
+                // create the pin object
+                MapPin pin = new MapPin(group.GroupDescription, group.GroupName, Convert.ToInt32(pinType), groupid.ToString(), "", BuildGroupAttributeDictionary(s,t));
+
+                FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
+                CollectionReference collection = db.Collection("Pins");
+                DocumentReference document = await collection.AddAsync(pin);
+                Console.WriteLine(document.Id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Problem getting MP Data for PinSync");
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return true;
+        }
+
         //////////////////////////////////////////////
         /// Common
         //////////////////////////////////////////////
+        private Dictionary<string, string[]> BuildGroupAttributeDictionary(Dictionary<int,ObjectSingleAttributeDTO> s, Dictionary<int, ObjectAttributeTypeDTO> t)
+        {
+            var dict = new Dictionary<string, string[]>();
+
+            // get grouptype
+            ObjectSingleAttributeDTO grouptype;
+            if (s.TryGetValue(73, out grouptype))
+            {
+                // grouptype is now equal to the value
+                var x = grouptype.Value;
+                dict.Add("GroupType", new string[] { x.Name });
+            }
+
+            // get age groups
+            ObjectAttributeTypeDTO agegroup;
+            if (t.TryGetValue(91, out agegroup))
+            {
+                // roll through the age group. add selected to the dictionary
+                var ageGroups = new List<string>();
+                foreach (var a in agegroup.Attributes)
+                {
+                    if (a.Selected)
+                    {
+                        ageGroups.Add(a.Name);
+                    }
+                }
+
+                // add to the dict
+                if (ageGroups.Count > 0)
+                {
+                    dict.Add("AgeGroups", ageGroups.ToArray());
+                }
+            }
+
+            // get group categories
+            ObjectAttributeTypeDTO groupcategory;
+            if (t.TryGetValue(90, out groupcategory))
+            {
+                // roll through the age group. add selected to the dictionary
+                var categories = new List<string>();
+                foreach (var a in groupcategory.Attributes)
+                {
+                    if (a.Selected)
+                    {
+                        categories.Add(a.Category);
+                    }
+                }
+
+                // add to the dict
+                if (categories.Count > 0)
+                {
+                    dict.Add("Categories", categories.ToArray());
+                }
+            }
+
+            return dict;
+        }
+
         private async Task<bool> DeletePinFromFirestoreAsync(int internalid, string pinType)
         {
             FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
