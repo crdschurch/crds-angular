@@ -260,11 +260,11 @@ namespace crds_angular.Services
                 var group = _groupService.GetGroupDetailsWithAttributes(groupid);              
                 var s = group.SingleAttributes;
                 var t = group.AttributeTypes;
-                
-                // get the address including lat/lon
-                if(group.Address.AddressID == null)
+
+                // get the address including lat/lon	
+                if (group.Address.AddressID == null)
                 {
-                    // Something with no address should not go on a map
+                    // Something with no address should not go on a map	
                     return true;
                 }
 
@@ -273,7 +273,7 @@ namespace crds_angular.Services
                 if (address.Latitude == null || address.Longitude == null || address.Latitude == 0 || address.Longitude == 0)
                 {
                     var geo = _addressGeocodingService.GetGeoCoordinates(Mapper.Map<AddressDTO>(addrFromDB));
-                    if(geo.Latitude != 0 && geo.Longitude != 0)
+                    if (geo.Latitude != 0 && geo.Longitude != 0)
                     {
                         addrFromDB.Latitude = geo.Latitude;
                         addrFromDB.Longitude = geo.Longitude;
@@ -298,9 +298,9 @@ namespace crds_angular.Services
                 _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.Latitude = {address.Latitude}");
                 _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.Longitude = {address.Longitude}");
 
-                // if we are at 0,0 we should fail.
-                if (address.Latitude == null || 
-                   address.Longitude == null || 
+                // if we are at 0,0 we should fail.	
+                if (address.Latitude == null ||
+                   address.Longitude == null ||
                    (address.Latitude == 0 && address.Longitude == 0))
                 {
                     return true;
@@ -338,8 +338,30 @@ namespace crds_angular.Services
                     }
                 }
 
+                // get group categories
+                ObjectAttributeTypeDTO groupcategory;
+                if(t.TryGetValue(90, out groupcategory))
+                {
+                    // roll through the age group. add selected to the dictionary
+                    var categories = new List<string>();
+                    foreach (var a in groupcategory.Attributes)
+                    {
+                        if (a.Selected)
+                        {
+                            categories.Add(a.Category);
+                        }
+                    }
+
+                    // add to the dict
+                    if (categories.Count > 0)
+                    {
+                        dict.Add("Categories", categories.ToArray());
+                    }
+                }
+
                 // create the pin object
-                MapPin pin = new MapPin(group.GroupDescription, group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), groupid.ToString(), geohash, "", dict);
+                MapPin pin = new MapPin(group.GroupDescription, group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), 
+                    groupid.ToString(), geohash, "", dict);
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");

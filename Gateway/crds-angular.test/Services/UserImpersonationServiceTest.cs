@@ -29,7 +29,7 @@ namespace crds_angular.test.Services
         [Test]
         public void TestWithImpersonationNotAuthorized()
         {
-            _userService.Setup(mocked => mocked.GetByAuthenticationToken("123")).Returns(new MpUser
+            _userService.Setup(mocked => mocked.GetByUserId("123")).Returns(new MpUser
             {
                 CanImpersonate = false
             });
@@ -51,7 +51,7 @@ namespace crds_angular.test.Services
         [Test]
         public void TestWithImpersonationUserNotFound()
         {
-            _userService.Setup(mocked => mocked.GetByAuthenticationToken("123")).Returns(new MpUser
+            _userService.Setup(mocked => mocked.GetByUserId("123")).Returns(new MpUser
             {
                 CanImpersonate = true
             });
@@ -75,7 +75,7 @@ namespace crds_angular.test.Services
         [Test]
         public void TestWithImpersonation()
         {
-            _userService.Setup(mocked => mocked.GetByAuthenticationToken("123")).Returns(new MpUser
+            _userService.Setup(mocked => mocked.GetByUserId("123")).Returns(new MpUser
             {
                 CanImpersonate = true
             });

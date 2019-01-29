@@ -66,7 +66,7 @@ namespace crds_angular.test.Services
             var participantId = TestHelpers.RandomInt();
             _configurationWrapper.Setup(m => m.GetConfigIntValue("AttributeTypeIdSkills")).Returns(SKILLSATTRIBUTETYPEID);
             _contactService.Setup(m => m.GetContactByParticipantId(participantId)).Returns(contact);
-            _objectAttributeService.Setup(m => m.GetObjectAttributes(token, contact.Contact_ID, It.IsAny<MpObjectAttributeConfiguration>())).Returns(currentSkills);
+            _objectAttributeService.Setup(m => m.GetObjectAttributes(contact.Contact_ID, It.IsAny<MpObjectAttributeConfiguration>())).Returns(currentSkills);
 
             var toEndDate = _fixture.SkillsToEndDate(skills, currentSkills.MultiSelect[1].Attributes).Select(sk =>
             {
@@ -81,7 +81,7 @@ namespace crds_angular.test.Services
                 {
                     skill.EndDate = It.IsAny<DateTime>();
                 }
-                _objectAttributeService.Setup(m => m.SaveObjectMultiAttribute(token, contact.Contact_ID, skill, It.IsAny<MpObjectAttributeConfiguration>(), false));
+                _objectAttributeService.Setup(m => m.SaveObjectMultiAttribute(contact.Contact_ID, skill, It.IsAny<MpObjectAttributeConfiguration>(), false));
                 _objectAttributeService.Verify();
             });
             _fixture.UpdateSkills(participantId, skills, token);            

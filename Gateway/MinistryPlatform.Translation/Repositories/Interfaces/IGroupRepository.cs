@@ -44,7 +44,7 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
 
         List<MpGroup> GetGroupsForParticipant(string token, int participantId);
 
-        List<MpGroup> GetGroupsByTypeForParticipant(string token, int participantId, int groupTypeId);
+        List<MpGroup> GetGroupsByTypeForParticipant(int participantId, int groupTypeId);
 
         void UpdateGroupRemainingCapacity(MpGroup group);
 

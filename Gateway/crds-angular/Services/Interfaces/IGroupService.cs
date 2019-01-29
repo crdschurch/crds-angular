@@ -11,9 +11,9 @@ namespace crds_angular.Services.Interfaces
     {
         GroupDTO GetGroupDetails(int groupId);
 
-        GroupDTO getGroupDetails(int groupId, int contactId, MpParticipant participant, string authUserToken);
+        GroupDTO getGroupDetails(int groupId, int contactId, MpParticipant participant);
 
-        GroupDTO GetGroupDetailsByInvitationGuid(string token, string invitationGuid);
+        GroupDTO GetGroupDetailsByInvitationGuid(string invitationGuid);
 
         void addParticipantToGroupNoEvents(int groupId, ParticipantSignup participant);
 
@@ -23,17 +23,19 @@ namespace crds_angular.Services.Interfaces
 
         void endDateGroupParticipant(int groupId, int groupParticipantId);
 
-        List<Event> GetGroupEvents(int groupId, string token = null);
+        List<Event> GetGroupEvents(int groupId);
 
         List<GroupContactDTO> GetGroupMembersByEvent(int groupId, int eventId, string recipients);
 		
         GroupDTO CreateGroup(GroupDTO group);
 
-        List<GroupDTO> GetGroupsForParticipant(string token, int participantId);
+        List<GroupDTO> GetGroupsForParticipant(int participantId);
 
-        List<GroupDTO> GetGroupsByTypeForParticipant(string token, int participantId, int groupTypeId);
+        List<GroupDTO> GetGroupsByTypeForParticipant(int participantId, int groupTypeId);
 
         Participant GetParticipantRecord(string token);
+
+        Participant GetParticipantRecord(int contactId);
 
         void SendJourneyEmailInvite(EmailCommunicationDTO email, string token);
 
@@ -61,9 +63,9 @@ namespace crds_angular.Services.Interfaces
 
         List<GroupParticipantDTO> GetGroupParticipantsWithoutAttributes(int groupId);
 
-        void RemoveParticipantFromGroup(string token, int groupId, int groupParticipantId);
+        void RemoveParticipantFromGroup(int contactId, int groupId, int groupParticipantId);
 
-        void SendAllGroupLeadersMemberRemovedEmail(string token, int groupId);
+        void SendAllGroupLeadersMemberRemovedEmail(int contactId, int groupId);
 
         void UpdateHuddleGroupParticipantStatus();
 

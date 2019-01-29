@@ -23,11 +23,11 @@ namespace MinistryPlatform.Translation.Repositories
             this._ministryPlatformService = ministryPlatformService;
         }
 
-        public IEnumerable<MpContactRelationship> GetMyImmediateFamilyRelationships(int contactId, string token)
+        public IEnumerable<MpContactRelationship> GetMyImmediateFamilyRelationships(int contactId)
         {
             var viewRecords = _ministryPlatformService.GetSubpageViewRecords("MyContactFamilyRelationshipViewId",
                                                                              contactId,
-                                                                             token);
+                                                                             ApiLogin());
 
             return viewRecords.Select(viewRecord => new MpContactRelationship
             {
@@ -64,11 +64,11 @@ namespace MinistryPlatform.Translation.Repositories
             }
         }
 
-        public IEnumerable<MpContactRelationship> GetMyCurrentRelationships(int contactId, string token)
+        public IEnumerable<MpContactRelationship> GetMyCurrentRelationships(int contactId, string param2)
         {
             var viewRecords = _ministryPlatformService.GetSubpageViewRecords(_getMyCurrentRelationships,
                                                                              contactId,
-                                                                             token);
+                                                                             ApiLogin());
 
             return viewRecords.Select(viewRecord => new MpContactRelationship
             {

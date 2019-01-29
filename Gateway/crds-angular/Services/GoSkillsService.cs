@@ -80,7 +80,7 @@ namespace crds_angular.Services
             var contactObs = Observable.Start(() => _contactService.GetContactByParticipantId(participantId));
             contactObs.Subscribe(con =>
             {
-                var attrs = Observable.Start(() => _objectAttributeService.GetObjectAttributes(token, con.Contact_ID, configuration));
+                var attrs = Observable.Start(() => _objectAttributeService.GetObjectAttributes(con.Contact_ID, configuration));
 
                 attrs.Subscribe(attr =>
                 {
@@ -101,7 +101,7 @@ namespace crds_angular.Services
                     {
                         allSkillsObs.ForEachAsync(skill =>
                         {
-                            _objectAttributeService.SaveObjectMultiAttribute(token, con.Contact_ID, skill, configuration, true);
+                            _objectAttributeService.SaveObjectMultiAttribute(con.Contact_ID, skill, configuration, true);
                         });
                     }
                     catch (Exception e)
@@ -142,7 +142,7 @@ namespace crds_angular.Services
         {
             var contact = _contactService.GetMyProfile(token);
             var configuration = MpObjectAttributeConfigurationFactory.Contact();
-            var attributesTypes = _objectAttributeService.GetObjectAttributes(apiToken, contact.Contact_ID, configuration);
+            var attributesTypes = _objectAttributeService.GetObjectAttributes(contact.Contact_ID, configuration);
             ObjectAttributeTypeDTO contactSkills;
             var skillsAttributeTypeId = _configurationWrapper.GetConfigIntValue("AttributeTypeIdSkills");
             attributesTypes.MultiSelect.TryGetValue(skillsAttributeTypeId, out contactSkills);

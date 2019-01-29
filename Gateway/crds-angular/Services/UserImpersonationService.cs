@@ -23,11 +23,11 @@ namespace crds_angular.Services
             _userService = userService;
         }
 
-        public TOutput WithImpersonation<TOutput>(string authToken, string useridToImpersonate, Func<TOutput> action)
+        public TOutput WithImpersonation<TOutput>(string userLoggedIn, string useridToImpersonate, Func<TOutput> action)
         {
             ImpersonatedUserGuid.Clear();
 
-            var authUser = _userService.GetByAuthenticationToken(authToken);
+            var authUser = _userService.GetByUserId(userLoggedIn);
             if (authUser == null || !authUser.CanImpersonate)
             {
                 throw (new ImpersonationNotAllowedException());
@@ -39,7 +39,7 @@ namespace crds_angular.Services
                 throw (new ImpersonationUserNotFoundException(useridToImpersonate));
             }
 
-            ImpersonatedUserGuid.Set(user.Guid, authToken);
+            ImpersonatedUserGuid.Set(user.Guid, useridToImpersonate);
 
             try
             {
