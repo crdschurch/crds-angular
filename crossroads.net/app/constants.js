@@ -156,6 +156,11 @@
     MINISTRY: {
       SPIRITUAL_GROWTH: '8'
     },
+    COMMON_AIRPORT_NAMES: {
+      CVG: 'Cincinnati(CVG)',
+      LEX: 'Lexington(LEX)',
+      OTHER: 'Other'
+    },
     COOKIES: {
       SESSION_ID: `${__CRDS_ENV__}sessionId`,
       REFRESH_TOKEN: `${__CRDS_ENV__}refreshToken`,
