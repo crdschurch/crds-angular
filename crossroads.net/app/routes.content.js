@@ -67,7 +67,7 @@
 
               var childPromise = promise.then(function (originalPromise) {
 
-                if (originalPromise.pages.length > 0) {
+                if (originalPromise.pages.length > 0 && link !== '/') {
                   ContentPageService.page = originalPromise.pages[0];
                   // check if page is redirect
                   if (ContentPageService.page.pageType === 'RedirectorPage') {
@@ -89,7 +89,6 @@
                 }
 
                 redirectToMaestro();
-                return;
 
                 // Redirecting micro clients app back to maestro from w/in angular app
                 // Maestro adds a cookie w/ the micro client routes when passing off to angular
