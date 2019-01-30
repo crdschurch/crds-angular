@@ -266,7 +266,7 @@
     //    templateUrl: __CMS_CLIENT_ENDPOINT__ + '/page-not-found/'
     //});
 
-    $urlRouterProvider.otherwise('/');
+    //$urlRouterProvider.otherwise('/');
   }
 
   function addTrailingSlashIfNecessary(link) {
