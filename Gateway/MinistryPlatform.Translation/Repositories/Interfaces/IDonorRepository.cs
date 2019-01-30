@@ -44,7 +44,7 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         void UpdateRecurringGift(int pageView, string token, int recurringGiftId, Dictionary<string, object> recurringGiftValues);
         int GetDonorAccountPymtType(int donorAccountId);
 
-        MpDonorStatement GetDonorStatement(string token);
-        void UpdateDonorStatement(string token, MpDonorStatement statement);
+        MpDonorStatement GetDonorStatement(int contactId);
+        void UpdateDonorStatement(MpDonorStatement statement);
     }
 }
