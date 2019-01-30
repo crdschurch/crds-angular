@@ -78,7 +78,7 @@
 
               var childPromise = promise.then(function (originalPromise) {
 
-                if (originalPromise.pages.length > 0) {
+                if (originalPromise.pages.length > 0 && link !== '/') {
                   ContentPageService.page = originalPromise.pages[0];
                   // check if page is redirect
                   if (ContentPageService.page.pageType === 'RedirectorPage') {
@@ -99,44 +99,7 @@
                   return originalPromise;
                 }
 
-                // Redirecting micro clients app back to maestro from w/in angular app
-                // Maestro adds a cookie w/ the micro client routes when passing off to angular
-                var maestroPages = $cookies.get('maestro-pages');
-                if (maestroPages !== undefined) {
-                  maestroPages = maestroPages.split(",")
-                
-                  for (var i = 0; i < maestroPages.length; i++) {
-                    var page = maestroPages[i].trim();
-                    if (link.match(new RegExp('^\/'+page+'\/'))){
-                      redirectToMaestro();
-                      return;
-                    }
-                  }
-                }
-                
-                if (link.match(new RegExp('^\/serve-signup'))){
-                  redirectToMaestro();
-                  return;
-                }
-
-                if (link.match(new RegExp('^\/me/giving'))){
-                  redirectToMaestro();
-                  return;
-                }
-
-                var notFoundPromise = Page.get({ url: '/page-not-found/' }).$promise;
-                notFoundPromise.then(function (promise) {
-                  if (promise.pages.length > 0) {
-                    ContentPageService.page = promise.pages[0];
-                  } else {
-                    ContentPageService.page = {
-                      content: '404 Content not found',
-                      pageType: '',
-                      title: 'Page not found'
-                    };
-                  }
-                });
-                return notFoundPromise;
+                redirectToMaestro();
 
               });
 
