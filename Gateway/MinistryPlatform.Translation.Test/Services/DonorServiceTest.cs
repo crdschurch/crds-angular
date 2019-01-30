@@ -927,7 +927,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             // TODO Mocking the test fixture in order to mock SendEmail.  Probably ought to refactor SendEmail to a separate class - shouldn't have to mock the class we're testing...
-            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object)
+            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object, _apiUserRepositoryMock.Object)
             {
                 CallBase = true
             };
@@ -959,7 +959,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             // TODO Mocking the test fixture in order to mock SendEmail.  Probably ought to refactor SendEmail to a separate class - shouldn't have to mock the class we're testing...
-            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object)
+            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object, _apiUserRepositoryMock.Object)
             {
                 CallBase = true
             };
@@ -991,7 +991,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             // TODO Mocking the test fixture in order to mock SendEmail.  Probably ought to refactor SendEmail to a separate class - shouldn't have to mock the class we're testing...
-            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object)
+            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object, _apiUserRepositoryMock.Object)
             {
                 CallBase = true
             };
