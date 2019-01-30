@@ -71,7 +71,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 ExpiresIn = 123
             });
 
-            _fixture = new DonorRepository(_apiUserRepositoryMock.Object, _ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object);
+            _fixture = new DonorRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object, _apiUserRepositoryMock.Object);
         }
 
         [Test]

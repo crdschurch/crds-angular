@@ -62,7 +62,7 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly DateTimeFormatInfo _dateTimeFormat;
         
 
-        public DonorRepository(IApiUserRepository apiUserRepository, IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IProgramRepository programService, ICommunicationRepository communicationService, IAuthenticationRepository authenticationService, IContactRepository contactService,  IConfigurationWrapper configuration, ICryptoProvider crypto)
+        public DonorRepository(IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IProgramRepository programService, ICommunicationRepository communicationService, IAuthenticationRepository authenticationService, IContactRepository contactService,  IConfigurationWrapper configuration, ICryptoProvider crypto, IApiUserRepository apiUserRepository)
             : base(authenticationService, configuration)
         {
             _ministryPlatformService = ministryPlatformService;

@@ -410,7 +410,7 @@ namespace crds_angular.test.Services
                                                      null, 
                                                      null)).Returns(recurringGiftId);
 
-            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById("auth", recurringGiftId)).Returns(recurringGift);
+            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(recurringGiftId)).Returns(recurringGift);
             _mpDonorService.Setup(mocked => mocked.GetDonorAccountPymtType(recurringGift.DonorAccountId.Value)).Returns(1);
             _mpDonorService.Setup(
                 mocked =>
@@ -787,10 +787,10 @@ namespace crds_angular.test.Services
             };
 
             _apiUserRepositoryMock.Setup(m => m.GetDefaultApiClientToken()).Returns(authUserToken);
-            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(authUserToken, recurringGiftId)).Returns(gift);
+            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(recurringGiftId)).Returns(gift);
             _paymentService.Setup(mocked => mocked.CancelSubscription(gift.StripeCustomerId, gift.SubscriptionId)).Returns(subscription);
             _paymentService.Setup(mocked => mocked.CancelPlan(subscription.Plan.Id)).Returns(plan);
-            _mpDonorService.Setup(mocked => mocked.CancelRecurringGift(authUserToken, recurringGiftId));
+            _mpDonorService.Setup(mocked => mocked.CancelRecurringGift(recurringGiftId));
 
             _mpDonorService.Setup(mocked => mocked.GetDonorAccountPymtType(gift.DonorAccountId.Value)).Returns(3);
             _mpDonorService.Setup(
@@ -836,7 +836,7 @@ namespace crds_angular.test.Services
             };
 
             _apiUserRepositoryMock.Setup(m => m.GetDefaultApiClientToken()).Returns(authUserToken);
-            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(authUserToken, editGift.RecurringGiftId)).Returns(existingGift);
+            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(editGift.RecurringGiftId)).Returns(existingGift);
 
             var result = _fixture.EditRecurringGift(editGift, donor);
             _mpDonorService.VerifyAll();
@@ -892,7 +892,7 @@ namespace crds_angular.test.Services
             const int newDonorAccountId = 987;
 
             _apiUserRepositoryMock.Setup(m => m.GetDefaultApiClientToken()).Returns(authUserToken);
-            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(authUserToken, editGift.RecurringGiftId)).Returns(existingGift);
+            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(editGift.RecurringGiftId)).Returns(existingGift);
             _paymentService.Setup(mocked => mocked.UpdateCustomerSource(existingGift.StripeCustomerId, editGift.StripeTokenId)).Returns(stripeSource);
             _mpDonorService.Setup(mocked => mocked.CreateDonorAccount(null, "0", stripeSource.bank_last4, null, existingGift.DonorId, stripeSource.id, existingGift.StripeCustomerId)).Returns(newDonorAccountId);
             _mpDonorService.Setup(mocked => mocked.UpdateRecurringGiftDonorAccount(existingGift.RecurringGiftId.Value, newDonorAccountId));
@@ -1002,7 +1002,7 @@ namespace crds_angular.test.Services
 
 
             _apiUserRepositoryMock.Setup(m => m.GetDefaultApiClientToken()).Returns(authUserToken);
-            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(authUserToken, editGift.RecurringGiftId)).Returns(existingGift);
+            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(editGift.RecurringGiftId)).Returns(existingGift);
             _paymentService.Setup(mocked => mocked.UpdateCustomerSource(existingGift.StripeCustomerId, editGift.StripeTokenId)).Returns(stripeSource);
             _mpDonorService.Setup(mocked => mocked.CreateDonorAccount(stripeSource.brand, "0", stripeSource.last4, null, existingGift.DonorId, stripeSource.id, existingGift.StripeCustomerId)).Returns(newDonorAccountId);
             _paymentService.Setup(mocked => mocked.GetSubscription(existingGift.StripeCustomerId, existingGift.SubscriptionId)).Returns(oldSubscription);
@@ -1022,7 +1022,7 @@ namespace crds_angular.test.Services
                                                      newSubscription.Id, contact.Congregation_ID.Value, 
                                                      null, 
                                                      null)).Returns(newRecurringGiftId);
-            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(authUserToken, newRecurringGiftId)).Returns(newRecurringGift);
+            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(newRecurringGiftId)).Returns(newRecurringGift);
 
             _mpDonorService.Setup(mocked => mocked.GetDonorAccountPymtType(234)).Returns(1);
             _mpDonorService.Setup(
@@ -1137,7 +1137,7 @@ namespace crds_angular.test.Services
             };
 
             _apiUserRepositoryMock.Setup(m => m.GetDefaultApiClientToken()).Returns(authUserToken);
-            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(authUserToken, editGift.RecurringGiftId)).Returns(existingGift);
+            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(editGift.RecurringGiftId)).Returns(existingGift);
             _paymentService.Setup(mocked => mocked.UpdateCustomerSource(existingGift.StripeCustomerId, editGift.StripeTokenId)).Returns(stripeSource);
             _mpDonorService.Setup(mocked => mocked.CreateDonorAccount(stripeSource.brand, "0", stripeSource.last4, null, existingGift.DonorId, stripeSource.id, existingGift.StripeCustomerId)).Returns(newDonorAccountId);
             _paymentService.Setup(mocked => mocked.CancelSubscription(existingGift.StripeCustomerId, existingGift.SubscriptionId)).Returns(oldSubscription);
@@ -1157,7 +1157,7 @@ namespace crds_angular.test.Services
                                                      newSubscription.Id, contact.Congregation_ID.Value, 
                                                      null, 
                                                      null)).Returns(newRecurringGiftId);
-            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(authUserToken, newRecurringGiftId)).Returns(newRecurringGift);
+            _mpDonorService.Setup(mocked => mocked.GetRecurringGiftById(newRecurringGiftId)).Returns(newRecurringGift);
 
             var result = _fixture.EditRecurringGift(editGift, donor);
             _mpDonorService.VerifyAll();
