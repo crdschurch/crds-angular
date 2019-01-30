@@ -32,16 +32,17 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         List<MpDonation> GetDonationsForAuthenticatedUser(string userToken, bool? softCredit = null, string donationYear = null, bool? includeRecurring = true);
         MpCreateDonationDistDto GetRecurringGiftForSubscription(string subscription, string optionalSourceId = "");
         MpCreateDonationDistDto GetRecurringGiftById(string authorizedUserToken, int recurringGiftId);
-        int CreateRecurringGiftRecord(string authorizedUserToken, int donorId, int donorAccountId, string planInterval, decimal planAmount, DateTime startDate, string program, string subscriptionId, int congregationId, string sourceUrl = null, decimal? predefinedAmount = null);
-        void UpdateRecurringGiftDonorAccount(string authorizedUserToken, int recurringGiftId, int donorAccountId);
+        MpCreateDonationDistDto GetRecurringGiftById(int recurringGiftId);
+        int CreateRecurringGiftRecord(int donorId, int donorAccountId, string planInterval, decimal planAmount, DateTime startDate, string program, string subscriptionId, int congregationId, string sourceUrl = null, decimal? predefinedAmount = null);
+        void UpdateRecurringGiftDonorAccount(int recurringGiftId, int donorAccountId);
         void CancelRecurringGift(string authorizedUserToken, int recurringGiftId);
         void CancelRecurringGift(int recurringGiftId);
         int CreateDonorAccount(string institutionName, string routingNumber, string acctNumber, string encryptedAcct, int donorId, string processorAcctId, string processorId);
-        void DeleteDonorAccount(string authorizedUserToken, int donorAccountId);
+        void DeleteDonorAccount(int donorAccountId);
         List<MpRecurringGift> GetRecurringGiftsForAuthenticatedUser(string userToken);
         void ProcessRecurringGiftDecline(string subscription_id, string error);
         void UpdateRecurringGiftFailureCount(int recurringGiftId, int failureCount);
-        void UpdateRecurringGift(int pageView, string token, int recurringGiftId, Dictionary<string, object> recurringGiftValues);
+        void UpdateRecurringGift(int pageView, int recurringGiftId, Dictionary<string, object> recurringGiftValues);
         int GetDonorAccountPymtType(int donorAccountId);
 
         MpDonorStatement GetDonorStatement(string token);

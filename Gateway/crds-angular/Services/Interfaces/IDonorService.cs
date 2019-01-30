@@ -22,11 +22,11 @@ namespace crds_angular.Services.Interfaces
 
         string DecryptValues(string value);
 
-        int CreateRecurringGift(string authorizedUserToken, RecurringGiftDto recurringGiftDto, MpContactDonor mpContact, string email, string displayName);
+        int CreateRecurringGift(RecurringGiftDto recurringGiftDto, MpContactDonor mpContact, string email, string displayName);
 
-        RecurringGiftDto EditRecurringGift(string authorizedUserToken, RecurringGiftDto editGift, MpContactDonor donor);
+        RecurringGiftDto EditRecurringGift(RecurringGiftDto editGift, MpContactDonor donor);
 
-        Boolean CancelRecurringGift(string authorizedUserToken, int recurringGiftId, bool sendEmail);
+        Boolean CancelRecurringGift(int recurringGiftId, bool sendEmail);
 
         MpCreateDonationDistDto GetRecurringGiftForSubscription(string subscriptionId);
 
@@ -34,5 +34,6 @@ namespace crds_angular.Services.Interfaces
 
         List<PledgeDto> GetCapitalCampaignPledgesForAuthenticatedUser(string userToken);
         MpContactDonor GetContactDonorByContactId(int contactId);
+        MpContactDonor GetContactDonorByUserId(int userId);
     }
 }
