@@ -17,6 +17,7 @@ using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.PlatformService;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using Newtonsoft.Json.Linq;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 using Constants = Crossroads.Utilities.Constants;
 
@@ -57,10 +58,11 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly ICommunicationRepository _communicationService;
         private readonly IContactRepository _contactService;
         private readonly ICryptoProvider _crypto;
+        private readonly IApiUserRepository _apiUserRepository;
         private readonly DateTimeFormatInfo _dateTimeFormat;
         
 
-        public DonorRepository(IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IProgramRepository programService, ICommunicationRepository communicationService, IAuthenticationRepository authenticationService, IContactRepository contactService,  IConfigurationWrapper configuration, ICryptoProvider crypto)
+        public DonorRepository(IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IProgramRepository programService, ICommunicationRepository communicationService, IAuthenticationRepository authenticationService, IContactRepository contactService,  IConfigurationWrapper configuration, ICryptoProvider crypto, IApiUserRepository apiUserRepository)
             : base(authenticationService, configuration)
         {
             _ministryPlatformService = ministryPlatformService;
@@ -68,6 +70,7 @@ namespace MinistryPlatform.Translation.Repositories
             _programService = programService;
             _communicationService = communicationService;
             _contactService = contactService;
+            _apiUserRepository = apiUserRepository;
             _crypto = crypto;
 
             _donorPageId = configuration.GetConfigIntValue("Donors");
@@ -175,8 +178,9 @@ namespace MinistryPlatform.Translation.Repositories
            
         }
 
-        public void DeleteDonorAccount(string authorizedUserToken, int donorAccountId)
+        public void DeleteDonorAccount(int donorAccountId)
         {
+            var authorizedUserToken = _apiUserRepository.GetDefaultApiClientToken();
             try
             {
                 _ministryPlatformService.DeleteRecord(_donorAccountsPageId, donorAccountId, new []
@@ -193,16 +197,17 @@ namespace MinistryPlatform.Translation.Repositories
             }
         }
 
-        public void UpdateRecurringGiftDonorAccount(string authorizedUserToken, int recurringGiftId, int donorAccountId)
+        public void UpdateRecurringGiftDonorAccount(int recurringGiftId, int donorAccountId)
         {
             var recurringGiftValues = new Dictionary<string, object>
             {
                 {"Donor_Account_ID", donorAccountId}
             };
 
-            UpdateRecurringGift(_myHouseholdDonationRecurringGifts, authorizedUserToken, recurringGiftId, recurringGiftValues);
+            UpdateRecurringGift(_myHouseholdDonationRecurringGifts, recurringGiftId, recurringGiftValues);
         }
 
+        [Obsolete("Use cancel recurring without token")]
         public void CancelRecurringGift(string authorizedUserToken, int recurringGiftId)
         {
             var recurringGiftValues = new Dictionary<string, object>
@@ -210,7 +215,7 @@ namespace MinistryPlatform.Translation.Repositories
                 {"End_Date", DateTime.Now.Date}
             };
            
-            UpdateRecurringGift(_myHouseholdDonationRecurringGifts, authorizedUserToken, recurringGiftId, recurringGiftValues);
+            UpdateRecurringGift(_myHouseholdDonationRecurringGifts, recurringGiftId, recurringGiftValues);
         }
 
         public void CancelRecurringGift(int recurringGiftId)
@@ -219,8 +224,7 @@ namespace MinistryPlatform.Translation.Repositories
             {
                 {"End_Date", DateTime.Now.Date}
             };
-            var apiToken = ApiLogin();
-            UpdateRecurringGift(_recurringGiftPageId, apiToken, recurringGiftId, recurringGiftValues);
+            UpdateRecurringGift(_recurringGiftPageId, recurringGiftId, recurringGiftValues);
         }
         
         public void UpdateRecurringGiftFailureCount(int recurringGiftId, int failCount)
@@ -232,8 +236,7 @@ namespace MinistryPlatform.Translation.Repositories
 
             try
             {
-                var apiToken = ApiLogin();
-                UpdateRecurringGift(_recurringGiftPageId, apiToken, recurringGiftId, recurringGiftValues);
+                UpdateRecurringGift(_recurringGiftPageId, recurringGiftId, recurringGiftValues);
             }
             catch (Exception e)
             {
@@ -244,8 +247,9 @@ namespace MinistryPlatform.Translation.Repositories
         }
 
 
-        public void UpdateRecurringGift(int pageView, string token, int recurringGiftId, Dictionary<string, object> recurringGiftValues)
+        public void UpdateRecurringGift(int pageView, int recurringGiftId, Dictionary<string, object> recurringGiftValues)
         {
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             recurringGiftValues["Recurring_Gift_ID"] = recurringGiftId;
 
             try
@@ -847,8 +851,7 @@ namespace MinistryPlatform.Translation.Repositories
             return string.Join(" or ", ids.Select(id => string.Format("\"{0}\"", id)));
         }
 
-        public int CreateRecurringGiftRecord(string authorizedUserToken, 
-                                             int donorId, 
+        public int CreateRecurringGiftRecord(int donorId, 
                                              int donorAccountId, 
                                              string planInterval, 
                                              decimal planAmount, 
@@ -895,6 +898,7 @@ namespace MinistryPlatform.Translation.Repositories
             int recurringGiftId;
             try
             {
+                var authorizedUserToken = _apiUserRepository.GetDefaultApiClientToken();
                 recurringGiftId = _ministryPlatformService.CreateRecord(_myHouseholdDonationRecurringGifts, values, authorizedUserToken, true);
             }
             catch (Exception e)
@@ -943,6 +947,37 @@ namespace MinistryPlatform.Translation.Repositories
             }
 
             return createDonation;
+        }
+
+        public MpCreateDonationDistDto GetRecurringGiftById(int recurringGiftId)
+        {
+            var token = _apiUserRepository.GetDefaultApiClientToken();
+            var columns = new List<string>
+            {
+                "Recurring_Gifts.[Recurring_Gift_ID]",
+                "Donor_ID_Table.[Donor_ID]",
+                "Frequency_ID_Table.[Frequency_ID]",
+                "Day_Of_Week_ID_Table.[Day_Of_Week_ID]",
+                "Recurring_Gifts.[Day_Of_Month]",
+                "Recurring_Gifts.[Start_Date]",
+                "Recurring_Gifts.[Amount]",
+                "Program_ID_Table.[Program_ID]",
+                "Program_ID_Table_Congregation_ID_Table.[Congregation_ID]",
+                "Donor_Account_ID_Table_Account_Type_ID_Table.[Account_Type_ID]",
+                "Donor_Account_ID_Table.[Donor_Account_ID]",
+                "Recurring_Gifts.[Subscription_ID]",
+                "Donor_Account_ID_Table.[Processor_ID]",
+                "Donor_Account_ID_Table.[Processor_Account_ID]",
+                "Program_ID_Table.[Program_Name]",
+            };
+            var filter = $"Recurring_Gifts.[Recurring_Gift_ID] = {recurringGiftId}";
+            var results = _ministryPlatformRestRepository.UsingAuthenticationToken(token)
+                .Search<MpCreateDonationDistDto>(filter, columns);
+            if (results != null && results.Any())
+            {
+                return results.First();
+            }
+            return null;
         }
 
         public MpCreateDonationDistDto GetRecurringGiftForSubscription(string subscription, string optionalSourceId = "")
@@ -997,7 +1032,6 @@ namespace MinistryPlatform.Translation.Repositories
             var records = _ministryPlatformService.GetRecordsDict(_myHouseholdDonationRecurringGifts, userToken);
             return records.Select(MapRecordToRecurringGift).ToList();
         }
-
 
         public void ProcessRecurringGiftDecline(string subscriptionId, string error)
         {
