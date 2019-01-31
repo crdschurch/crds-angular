@@ -1087,30 +1087,26 @@ namespace MinistryPlatform.Translation.Repositories
             };
         }
 
-        public MpDonorStatement GetDonorStatement(string token)
+        public MpDonorStatement GetDonorStatement(int contactId)
         {
-            var records = _ministryPlatformService.GetRecordsDict(_myDonorPageId, token);
+            var records = GetContactDonor(contactId);
 
-            if (records.Count > 1)
-            {
-                throw new ApplicationException("More than 1 donor for the current contact");            
-            }
-
-            if (records.Count == 0)
+            if (records == null)
             {
                 return null;
             }
 
             var postalStatementId = _configurationWrapper.GetConfigValue("PostalMailStatement");
             var statementMethod = new MpDonorStatement();
-            statementMethod.DonorId = records[0].ToInt("dp_RecordID");
+            statementMethod.DonorId = records.DonorId;
             
-            statementMethod.Paperless = records[0].ToString("Statement_Method_ID") != postalStatementId;
+            statementMethod.Paperless = records.StatementTypeId.ToString() != postalStatementId;
             return statementMethod;
         }
 
-        public void UpdateDonorStatement(string token, MpDonorStatement statement)
-        {           
+        public void UpdateDonorStatement(MpDonorStatement statement)
+        {
+            var token = ApiLogin();
             var onlineStatementId = _configurationWrapper.GetConfigValue("EmailOnlineStatement");
             var postalStatementId = _configurationWrapper.GetConfigValue("PostalMailStatement");
 
