@@ -12,7 +12,7 @@ namespace crds_angular.Services.Interfaces
         DonationDTO GetDonationByProcessorPaymentId(string processorPaymentId);
         DonationBatchDTO CreateDonationBatch(DonationBatchDTO batch);
         DonationBatchDTO GetDonationBatchByDepositId(int depositId);
-        List<DepositDTO> GetSelectedDonationBatches(int selectionId, string token);
+        List<DepositDTO> GetSelectedDonationBatches(int selectionId);
         void ProcessDeclineEmail(string processorPaymentId);
         DepositDTO CreateDeposit(DepositDTO deposit);
         void CreatePaymentProcessorEventError(StripeEvent stripeEvent, StripeEventResponseDTO stripeEventResponse);
@@ -25,13 +25,13 @@ namespace crds_angular.Services.Interfaces
         int? CreateDonationForBankAccountErrorRefund(StripeRefund refund);
         
             // ReSharper disable once InconsistentNaming
-        List<GPExportDatumDTO> GetGpExport(int depositId, string token);
+        List<GPExportDatumDTO> GetGpExport(int depositId);
         // ReSharper disable once InconsistentNaming
-        MemoryStream CreateGPExport(int selectionId, int depositId, string token);
+        MemoryStream CreateGPExport(int selectionId, int depositId);
         // ReSharper disable once InconsistentNaming
         string GPExportFileName(DepositDTO deposit);
         // ReSharper disable once InconsistentNaming
-        List<DepositDTO> GenerateGPExportFileNames(int selectionId, string token);
+        List<DepositDTO> GenerateGPExportFileNames(int selectionId);
 
         void SendMessageToDonor(int donorId, int donationDistributionId, int fromContactId, string body, string tripName);
         DepositDTO GetDepositByProcessorTransferId(string processorTransferId);
