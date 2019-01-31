@@ -200,9 +200,10 @@ namespace MinistryPlatform.Translation.Test.Services
             const int depositPageId = 7070;
             const string token = "afasdfoweradfafewwefafdsajfdafoew";
 
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _ministryPlatformService.Setup(mocked => mocked.GetSelectionsForPageDict(depositPageId, selectionId, token)).Returns(MockDepositList);
 
-            var result = _fixture.GetSelectedDonationBatches(selectionId, token);
+            var result = _fixture.GetSelectedDonationBatches(selectionId);
             _ministryPlatformService.VerifyAll();
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Count, 2);
@@ -452,7 +453,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRest.Setup(mock => mock.Get<MPGLAccountMapping>(It.IsAny<int>(), (string)null)).Returns(MockGLAccountMapping());
             _config.Setup(mocked => mocked.GetConfigIntValue("ProcessingMappingId")).Returns(127);
             
-            var result = _fixture.GetGpExport(depositId, token);
+            var result = _fixture.GetGpExport(depositId);
             _ministryPlatformService.VerifyAll();
             Assert.IsNotNull(result);
             Assert.AreEqual(12, result.Count);
@@ -1307,7 +1308,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformService.Setup(mocked => mocked.UpdateRecord(7070, expectedParms, It.IsAny<string>()));
             _ministryPlatformService.Setup(mocked => mocked.RemoveSelection(selectionId, new [] {depositId}, It.IsAny<string>()));
 
-            _fixture.UpdateDepositToExported(selectionId, depositId, "afasdfasdf");
+            _fixture.UpdateDepositToExported(selectionId, depositId);
             _ministryPlatformService.VerifyAll();
         }
 
