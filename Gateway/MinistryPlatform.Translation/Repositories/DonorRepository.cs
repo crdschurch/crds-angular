@@ -1100,7 +1100,7 @@ namespace MinistryPlatform.Translation.Repositories
             var statementMethod = new MpDonorStatement();
             statementMethod.DonorId = records.DonorId;
             
-            statementMethod.Paperless = records.StatementMethod != postalStatementId;
+            statementMethod.Paperless = records.StatementMethodId.ToString() != postalStatementId;
             return statementMethod;
         }
 

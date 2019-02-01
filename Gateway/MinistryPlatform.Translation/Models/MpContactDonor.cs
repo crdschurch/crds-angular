@@ -22,6 +22,7 @@ namespace MinistryPlatform.Translation.Models
         public string StatementType { get; set; }
         public int StatementTypeId { get; set; }
         public string StatementMethod { get; set; }
+        public int StatementMethodId { get; set; }
         public DateTime SetupDate { get; set; }
         public string ProcessorId { get; set; }
         public string Email { get; set; }
