@@ -53,7 +53,10 @@ namespace crds_angular.Security
         /// <returns>An IHttpActionResult from the lambda expression that was executed.</returns>
         protected IHttpActionResult Authorized(Func<AuthDTO, IHttpActionResult> actionWhenAuthorized, Func<IHttpActionResult> actionWhenNotAuthorized)
         {
-            string accessToken = Request.Headers.GetValues("Authorization").FirstOrDefault();
+            string accessToken;
+            IEnumerable<string> accessTokens;
+            Request.Headers.TryGetValues("Authorization", out accessTokens);
+            accessToken = accessTokens == null? string.Empty: accessTokens.FirstOrDefault();
 
             AuthDTO auth;
             try
