@@ -772,7 +772,7 @@ namespace crds_angular.Services
             return participants;
         }
 
-        public void LookupParticipantIfEmpty(string token, List<ParticipantSignup> partId)
+        public void LookupParticipantIfEmpty(int loggedInPartId, List<ParticipantSignup> partId)
         {
             var participantsToLookup = partId.Where(x => x.particpantId == null).ToList();
             if (participantsToLookup.Count <= 0)
@@ -780,11 +780,9 @@ namespace crds_angular.Services
                 return;
             }
 
-            var participant = _participantService.GetParticipantRecord(token);
-
             foreach (var currentParticpant in participantsToLookup)
             {
-                currentParticpant.particpantId = participant.ParticipantId;
+                currentParticpant.particpantId = loggedInPartId;
             }
         }
 
