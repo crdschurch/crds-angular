@@ -138,15 +138,19 @@ namespace crds_angular.Security
                     }
                 }
 
-                
-                if (impersonate)
+                authorized = Request.Headers.GetValues("Authorization").FirstOrDefault();   
+                if (authorized != null && (authorized != "null" || authorized != ""))
                 {
-                    return _userImpersonationService.WithImpersonation(authorized, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO));
+                    if (impersonate)
+                    {
+                        return _userImpersonationService.WithImpersonation(authorized, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO));
+                    }
+                    else
+                    {
+                        return actionWhenAuthorized(authDTO);
+                    }
                 }
-                else
-                {
-                    return actionWhenAuthorized(authDTO);
-                }
+                return actionWhenNotAuthorized();
             }
             catch (System.InvalidOperationException e)
             {
