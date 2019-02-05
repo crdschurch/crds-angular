@@ -44,7 +44,7 @@ namespace crds_angular.Services
             var authUser = _userService.GetByAuthenticationToken(accessToken);
             if (authUser == null || !authUser.CanImpersonate)
             {
-                throw (new ImpersonationUserNotFoundException());
+                throw (new ImpersonationUserNotFoundException(usernameToImpersonate));
             }
 
             return DoImpersonation(usernameToImpersonate, action);
