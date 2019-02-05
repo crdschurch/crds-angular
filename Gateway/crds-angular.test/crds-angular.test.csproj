@@ -331,7 +331,6 @@
     <Compile Include="controllers\StripeEventControllerTest.cs" />
     <Compile Include="controllers\TextCommunicationControllerTest.cs" />
     <Compile Include="controllers\TripControllerTest.cs" />
-    <Compile Include="controllers\UserControllerTest.cs" />
     <Compile Include="controllers\WaiverControllerTest.cs" />
     <Compile Include="DataAccess\EzScanCheckScannerDaoTest.cs" />
     <Compile Include="Exceptions\GroupParticipantRemovalExceptionTest.cs" />
