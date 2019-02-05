@@ -3,6 +3,8 @@ using System.Data.Entity.Core;
 using crds_angular.Exceptions;
 using crds_angular.Services.Interfaces;
 using Crossroads.Utilities.Services;
+using Crossroads.Web.Auth.Models;
+using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.Services
@@ -23,23 +25,36 @@ namespace crds_angular.Services
             _userService = userService;
         }
 
-        public TOutput WithImpersonation<TOutput>(string userIdLoggedIn, string useridToImpersonate, Func<TOutput> action)
+        public TOutput WithImpersonation<TOutput>(AuthDTO authDTO, string usernameToImpersonate, Func<TOutput> action)
         {
             ImpersonatedUserGuid.Clear();
 
-            var authUser = _userService.GetByUserId(userIdLoggedIn);
+            if (!authDTO.UserInfo.Mp.CanImpersonate.Value)
+            {
+                throw (new ImpersonationNotAllowedException());
+            }
+
+            return DoImpersonation(usernameToImpersonate, action);
+        }
+
+        public TOutput WithImpersonation<TOutput>(string accessToken, string usernameToImpersonate, Func<TOutput> action)
+        {
+            ImpersonatedUserGuid.Clear();
+
+            var authUser = _userService.GetByAuthenticationToken(accessToken);
             if (authUser == null || !authUser.CanImpersonate)
             {
                 throw (new ImpersonationNotAllowedException());
             }
 
-            var user = _userService.GetByUserId(useridToImpersonate);
-            if (user == null)
-            {
-                throw (new ImpersonationUserNotFoundException(useridToImpersonate));
-            }
+            return DoImpersonation(usernameToImpersonate, action);
+        }
 
-            ImpersonatedUserGuid.Set(user.Guid, useridToImpersonate);
+        private TOutput DoImpersonation<TOutput>(string usernameToImpersonate, Func<TOutput> action)
+        {
+            MpUser user = GetUser(usernameToImpersonate);
+
+            ImpersonatedUserGuid.Set(user.Guid, usernameToImpersonate);
 
             try
             {
@@ -49,6 +64,17 @@ namespace crds_angular.Services
             {
                 ImpersonatedUserGuid.Clear();
             }
+        }
+
+        private MpUser GetUser(string username)
+        {
+            MpUser user = _userService.GetByUserId(username);
+            if (user == null)
+            {
+                throw (new ImpersonationUserNotFoundException(username));
+            }
+
+            return user;
         }
     }
 }

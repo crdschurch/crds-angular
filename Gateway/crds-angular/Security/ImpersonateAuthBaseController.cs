@@ -126,7 +126,7 @@ namespace crds_angular.Security
                         {
                             result =
                                 new HttpAuthResult(
-                                    _userImpersonationService.WithImpersonation(accessToken, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO)),
+                                    _userImpersonationService.WithImpersonation(authDTO, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO)),
                                     accessToken,
                                     refreshToken);
                         }
@@ -142,7 +142,7 @@ namespace crds_angular.Security
                 {
                     if (impersonate)
                     {
-                        return _userImpersonationService.WithImpersonation(authDTO.UserInfo.Mp.UserId.ToString(), impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO));
+                        return _userImpersonationService.WithImpersonation(authDTO, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO));
                     }
                     else
                     {
