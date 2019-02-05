@@ -101,7 +101,7 @@ namespace crds_angular.Security
                 IEnumerable<string> refreshTokens;
                 IEnumerable<string> impersonateUserIds;
                 bool impersonate = false;
-                var authorized = "";
+                var accessToken = "";
 
                 if (Request.Headers.TryGetValues("ImpersonateUserId", out impersonateUserIds) && impersonateUserIds.Any())
                 {
@@ -119,31 +119,30 @@ namespace crds_angular.Security
                     var authData = AuthenticationRepository.RefreshToken(refreshTokens.FirstOrDefault());
                     if (authData != null)
                     {
-                        authorized = authData.AccessToken;
+                        accessToken = authData.AccessToken;
                         var refreshToken = authData.RefreshToken;
                         IHttpActionResult result = null;
                         if (impersonate)
                         {
                             result =
                                 new HttpAuthResult(
-                                    _userImpersonationService.WithImpersonation(authorized, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO)),
-                                    authorized,
+                                    _userImpersonationService.WithImpersonation(accessToken, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO)),
+                                    accessToken,
                                     refreshToken);
                         }
                         else
                         {
-                            result = new HttpAuthResult(actionWhenAuthorized(authDTO), authorized, refreshToken);
+                            result = new HttpAuthResult(actionWhenAuthorized(authDTO), accessToken, refreshToken);
                         }
                         return result;
                     }
                 }
-
-                authorized = Request.Headers.GetValues("Authorization").FirstOrDefault();   
-                if (authorized != null && (authorized != "null" || authorized != ""))
+                accessToken = Request.Headers.GetValues("Authorization").FirstOrDefault();
+                if (accessToken != null && (accessToken != "null" || accessToken != ""))
                 {
                     if (impersonate)
                     {
-                        return _userImpersonationService.WithImpersonation(authorized, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO));
+                        return _userImpersonationService.WithImpersonation(authDTO.UserInfo.Mp.UserId.ToString(), impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO));
                     }
                     else
                     {

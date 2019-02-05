@@ -23,11 +23,11 @@ namespace crds_angular.Services
             _userService = userService;
         }
 
-        public TOutput WithImpersonation<TOutput>(string userLoggedIn, string useridToImpersonate, Func<TOutput> action)
+        public TOutput WithImpersonation<TOutput>(string userIdLoggedIn, string useridToImpersonate, Func<TOutput> action)
         {
             ImpersonatedUserGuid.Clear();
 
-            var authUser = _userService.GetByUserId(userLoggedIn);
+            var authUser = _userService.GetByUserId(userIdLoggedIn);
             if (authUser == null || !authUser.CanImpersonate)
             {
                 throw (new ImpersonationNotAllowedException());
