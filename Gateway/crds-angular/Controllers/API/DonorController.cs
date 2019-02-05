@@ -33,6 +33,7 @@ namespace crds_angular.Controllers.API
         private readonly IAuthenticationRepository _authenticationService;
         private readonly IUserImpersonationService _impersonationService;
         private readonly IAnalyticsService _analyticsService;
+        private readonly IConfigurationService _configuration;
 
         public DonorController(IAuthTokenExpiryService authTokenExpiryService, 
                                 IDonorService donorService,
@@ -41,7 +42,8 @@ namespace crds_angular.Controllers.API
                                 MPInterfaces.IDonorRepository mpDonorService, 
                                 IAuthenticationRepository authenticationService,
                                 IUserImpersonationService impersonationService,
-                                IAnalyticsService analyticsService) 
+                                IAnalyticsService analyticsService,
+                                IConfigurationService configuration) 
             : base(authTokenExpiryService, impersonationService, authenticationService)
         {
             _donorService = donorService;
@@ -51,6 +53,7 @@ namespace crds_angular.Controllers.API
             _mpDonorService = mpDonorService;
             _impersonationService = impersonationService;
             _analyticsService = analyticsService;
+            _configuration = configuration;
         }
     
         [ResponseType(typeof(DonorDTO))]
@@ -433,9 +436,8 @@ namespace crds_angular.Controllers.API
 
         private void VerifyGatewayServiceKey()
         {
-            var config = new ConfigurationWrapper();
             var headerValue = Request.Headers.GetValues("GatewayServiceKey").FirstOrDefault();
-            var value = config.GetMpConfigValue("SERVICES", "CrdsGatewayServiceKey");
+            var value = _configuration.GetMpConfigValue("SERVICES", "CrdsGatewayServiceKey");
 
             if (headerValue != value)
             {
