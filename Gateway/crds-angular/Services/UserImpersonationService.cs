@@ -31,7 +31,7 @@ namespace crds_angular.Services
 
             if (!authDTO.UserInfo.Mp.CanImpersonate.Value)
             {
-                throw (new ImpersonationNotAllowedException());
+                throw new ImpersonationNotAllowedException();
             }
 
             return DoImpersonation(usernameToImpersonate, action);
@@ -44,7 +44,7 @@ namespace crds_angular.Services
             var authUser = _userService.GetByAuthenticationToken(accessToken);
             if (authUser == null || !authUser.CanImpersonate)
             {
-                throw (new ImpersonationUserNotFoundException(usernameToImpersonate));
+                throw new ImpersonationNotAllowedException();
             }
 
             return DoImpersonation(usernameToImpersonate, action);
@@ -53,6 +53,11 @@ namespace crds_angular.Services
         private TOutput DoImpersonation<TOutput>(string usernameToImpersonate, Func<TOutput> action)
         {
             MpUser user = GetUser(usernameToImpersonate);
+
+            if (user == null)
+            {
+                throw new ImpersonationUserNotFoundException(usernameToImpersonate);
+            }
 
             ImpersonatedUserGuid.Set(user.Guid, usernameToImpersonate);
 
