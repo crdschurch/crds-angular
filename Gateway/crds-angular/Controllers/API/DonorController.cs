@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Web.Http;
 using System.Web.Http.Description;
 using crds_angular.Exceptions;
@@ -19,6 +20,7 @@ using Crossroads.Web.Common;
 using Crossroads.Web.Common.Security;
 using crds_angular.Services.Analytics;
 using Crossroads.Web.Auth.Models;
+using Crossroads.Web.Common.Configuration;
 
 namespace crds_angular.Controllers.API
 {
@@ -410,34 +412,35 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "donor/recurrence/{recurringGiftId}", minimumVersion: "1.0.0")]
         [Route("donor/recurrence/{recurringGiftId:int}")]
         [HttpDelete]
-        public IHttpActionResult CancelRecurringGift([FromUri]int recurringGiftId, [FromUri(Name = "impersonateDonorId")] int? impersonateDonorId = null, [FromUri(Name = "sendEmail")] bool sendEmail = true)
+        public IHttpActionResult CancelRecurringGift([FromUri]int recurringGiftId, [FromUri(Name = "sendEmail")] bool sendEmail = true)
         {
-            return (Authorized(authDto =>
+             try
              {
+                VerifyGatewayServiceKey();
+                  _donorService.CancelRecurringGift(recurringGiftId, sendEmail);
+                 return (Ok());
+             }
+             catch (PaymentProcessorException stripeException)
+             {
+                 return (stripeException.GetStripeResult());
+             }
+             catch (ApplicationException applicationException)
+             {
+                 var apiError = new ApiErrorDto("Error calling Ministry Platform " + applicationException.Message, applicationException);
+                 throw new HttpResponseException(apiError.HttpResponseMessage);
+             }
+        }
 
-                 try
-                 {
-                     var impersonateUserId = impersonateDonorId == null ? string.Empty : _mpDonorService.GetEmailViaDonorId(impersonateDonorId.Value).Email;
+        private void VerifyGatewayServiceKey()
+        {
+            var config = new ConfigurationWrapper();
+            var headerValue = Request.Headers.GetValues("GatewayServiceKey").FirstOrDefault();
+            var value = config.GetMpConfigValue("SERVICES", "CrdsGatewayServiceKey");
 
-                     var result = (impersonateDonorId != null)
-                         ? _impersonationService.WithImpersonation(authDto.UserInfo.Mp.UserId.ToString(),
-                                                                   impersonateUserId,
-                                                                   () =>
-                                                                       _donorService.CancelRecurringGift(recurringGiftId, sendEmail))
-                         : _donorService.CancelRecurringGift(recurringGiftId, sendEmail);
-
-                     return (Ok());
-                 }
-                 catch (PaymentProcessorException stripeException)
-                 {
-                     return (stripeException.GetStripeResult());
-                 }
-                 catch (ApplicationException applicationException)
-                 {
-                     var apiError = new ApiErrorDto("Error calling Ministry Platform " + applicationException.Message, applicationException);
-                     throw new HttpResponseException(apiError.HttpResponseMessage);
-                 }
-             }));
+            if (headerValue != value)
+            {
+                throw new AuthenticationException();
+            }
         }
 
 
