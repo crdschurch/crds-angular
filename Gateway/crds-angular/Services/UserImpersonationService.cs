@@ -54,11 +54,6 @@ namespace crds_angular.Services
         {
             MpUser user = GetUser(usernameToImpersonate);
 
-            if (user == null)
-            {
-                throw new ImpersonationUserNotFoundException(usernameToImpersonate);
-            }
-
             ImpersonatedUserGuid.Set(user.Guid, usernameToImpersonate);
 
             try
@@ -76,7 +71,7 @@ namespace crds_angular.Services
             MpUser user = _userService.GetByUserId(username);
             if (user == null)
             {
-                throw (new ImpersonationUserNotFoundException(username));
+                throw new ImpersonationUserNotFoundException(username);
             }
 
             return user;
