@@ -8,7 +8,7 @@ GO
 -- =============================================
 
 DECLARE @Application_Code VARCHAR(max) = 'SERVICES'
-DECLARE @Key_Name VARCHAR(max) = 'GatewayServiceKey'
+DECLARE @Key_Name VARCHAR(max) = 'CrdsGatewayServiceKey'
 DECLARE @Config_Value VARCHAR(max) = '77811978-0c01-4e63-9703-14e58846533b'
 DECLARE @Config_Description VARCHAR(max) = 'This is used to validate a service to service call to Gateway from another service.'
 DECLARE @Domain_ID int = 1
