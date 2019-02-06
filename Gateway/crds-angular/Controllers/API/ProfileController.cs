@@ -63,14 +63,14 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult GetProfile([FromUri(Name = "impersonateDonorId")]int? impersonateDonorId = null)
         {
-            return Authorized(token =>
+            return Authorized(authDTO =>
             {
                 var impersonateUserId = impersonateDonorId == null ? string.Empty : _donorService.GetContactDonorForDonorId(impersonateDonorId.Value).Email;
                 try
                 {
                     var person = (impersonateDonorId != null)
-                        ? _impersonationService.WithImpersonation(token.UserInfo.Mp.UserId.ToString(), impersonateUserId, () => _personService.GetPerson(token.UserInfo.Mp.ContactId))
-                        : _personService.GetPerson(token.UserInfo.Mp.ContactId);
+                        ? _impersonationService.WithImpersonation(authDTO, impersonateUserId, () => _personService.GetPerson(authDTO.UserInfo.Mp.ContactId))
+                        : _personService.GetPerson(authDTO.UserInfo.Mp.ContactId);
                     if (person == null)
                     {
                         return Unauthorized();

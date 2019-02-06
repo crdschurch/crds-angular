@@ -317,14 +317,14 @@ namespace crds_angular.Controllers.API
                 try
                 {
                     var contactDonor = (impersonateDonorId != null)
-                        ? _impersonationService.WithImpersonation(authDto.UserInfo.Mp.UserId.ToString(),
+                        ? _impersonationService.WithImpersonation(authDto,
                                                                   impersonateUserId,
                                                                   () =>
                                                                       _donorService.GetContactDonorByUserId(Convert.ToInt32(impersonateUserId)))                        
                                                                   : _donorService.GetContactDonorByContactId(authDto.UserInfo.Mp.ContactId);
                     var donor = _donorService.CreateOrUpdateContactDonor(contactDonor, string.Empty, string.Empty, string.Empty, string.Empty);
                     var recurringGift = !string.IsNullOrWhiteSpace(impersonateUserId)
-                        ? _impersonationService.WithImpersonation(authDto.UserInfo.Mp.UserId.ToString(),
+                        ? _impersonationService.WithImpersonation(authDto,
                                                                   impersonateUserId,
                                                                   () =>
                                                                       _donorService.CreateRecurringGift(recurringGiftDto, donor, donor.Email, donor.Details?.DisplayName))
@@ -373,14 +373,14 @@ namespace crds_angular.Controllers.API
                 try
                 {
                     var donor = (impersonateDonorId != null)
-                        ? _impersonationService.WithImpersonation(authDto.UserInfo.Mp.ContactId.ToString(),
+                        ? _impersonationService.WithImpersonation(authDto,
                                                                   impersonateUserId,
                                                                   () =>
                                                                       _donorService.GetContactDonorByUserId(Convert.ToInt32(impersonateUserId)))
                         : _donorService.GetContactDonorByContactId(authDto.UserInfo.Mp.ContactId);
 
                     var recurringGift = !string.IsNullOrWhiteSpace(impersonateUserId)
-                        ? _impersonationService.WithImpersonation(authDto.UserInfo.Mp.ContactId.ToString(),
+                        ? _impersonationService.WithImpersonation(authDto,
                                                                   impersonateUserId,
                                                                   () =>
                                                                       _donorService.EditRecurringGift(editGift, donor))

@@ -113,7 +113,7 @@ namespace crds_angular.Controllers.API
                 try
                 {
                     var donations = (impersonateDonorId != null)
-                        ? _impersonationService.WithImpersonation(authDto.UserInfo.Mp.UserId.ToString(),
+                        ? _impersonationService.WithImpersonation(authDto,
                                                                   impersonateUserId,
                                                                   () =>
                                                                       _gatewayDonationService.GetDonationsForDonor(impersonateDonorId.Value, donationYear, concretSoftCredit))
@@ -155,7 +155,7 @@ namespace crds_angular.Controllers.API
                 try
                 {
                     var donationYears = (impersonateDonorId != null)
-                        ? _impersonationService.WithImpersonation(authDto.UserInfo.Mp.UserId.ToString(), impersonateUserId, () => _gatewayDonationService.GetDonationYearsForDonor(impersonateDonorId.Value))
+                        ? _impersonationService.WithImpersonation(authDto, impersonateUserId, () => _gatewayDonationService.GetDonationYearsForDonor(impersonateDonorId.Value))
                         : _gatewayDonationService.GetDonationYearsForDonor(authDto.UserInfo.Mp.DonorId.Value);
 
                     if (donationYears == null || !donationYears.HasYears)
