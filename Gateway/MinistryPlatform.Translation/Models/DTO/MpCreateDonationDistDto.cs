@@ -13,10 +13,10 @@ namespace MinistryPlatform.Translation.Models.DTO
         [JsonProperty(PropertyName = "Donor_ID")]
         public int DonorId { get; set; }
 
-        [JsonProperty(PropertyName = "Congregation_ID ")]
+        [JsonProperty(PropertyName = "Congregation_ID")]
         public int CongregationId { get; set; }
         
-        [JsonProperty(PropertyName = "Payment_Type")]
+        [JsonProperty(PropertyName = "Account_Type_ID")]
         public string PaymentType { get; set; }
 
         [JsonProperty(PropertyName = "Program_ID")]
@@ -31,31 +31,31 @@ namespace MinistryPlatform.Translation.Models.DTO
         [JsonProperty(PropertyName = "Donor_Account_ID")]
         public int? DonorAccountId { get; set; }
 
-        [JsonProperty(PropertyName = "Frequency")]
+        [JsonProperty(PropertyName = "Frequency_ID")]
         public int Frequency { get; set; }
 
         [JsonProperty(PropertyName = "Recurrence")]
         public string Recurrence { get; set; }
 
-        [JsonProperty(PropertyName = "Day_Of_Week")]
+        [JsonProperty(PropertyName = "Day_Of_Week_ID")]
         public int? DayOfWeek { get; set; }
 
-        [JsonProperty(PropertyName = "Day_Of_Month")]
+        [JsonProperty(PropertyName = "Day_Of_Month_ID")]
         public int? DayOfMonth { get; set; }
 
         [JsonProperty(PropertyName = "Start_Date")]
         public DateTime? StartDate { get; set; }
 
-        [JsonProperty(PropertyName = "Subscription_ID ")]
+        [JsonProperty(PropertyName = "Subscription_ID")]
         public string SubscriptionId { get; set; }
 
-        [JsonProperty(PropertyName = "Consecutive_Failure_Count ")]
+        [JsonProperty(PropertyName = "Consecutive_Failure_Count")]
         public int ConsecutiveFailureCount { get; set; }
 
-        [JsonProperty(PropertyName = "Stripe_Customer_ID")]
+        [JsonProperty(PropertyName = "Processor_ID")]
         public string StripeCustomerId { get; set; }
 
-        [JsonProperty(PropertyName = "Stripe_Account_ID ")]
+        [JsonProperty(PropertyName = "Processor_Account_ID")]
         public string StripeAccountId { get; set; }
     }
 }
