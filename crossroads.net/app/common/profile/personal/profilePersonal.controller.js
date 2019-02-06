@@ -95,7 +95,6 @@
     vm.viewReady = false;
     vm.zipFormat = /^(\d{5}([\-]\d{4})?)$/;
     vm.scrollToAnchor= scrollToAnchor;
-    vm.allow
 
     // TODO: Remove this hack and move the promises below into resolves on the directive.
     // Hack to overcome issue where Bootstrap UI Datepicker picks up the date value as string and can't parse it correctly, so it raises validation error.
