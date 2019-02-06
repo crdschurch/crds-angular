@@ -1098,7 +1098,7 @@ namespace MinistryPlatform.Translation.Repositories
         {
             var records = GetContactDonor(contactId);
 
-            if (records == null)
+            if (records == null || records.DonorId == 0)
             {
                 return null;
             }
