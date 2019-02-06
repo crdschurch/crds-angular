@@ -20,7 +20,9 @@
     '$modal',
     'PasswordService',
     'Session',
-    'emailChange'
+    'emailChange',
+    'AuthService',
+    'CRDS_TOOLS_CONSTANTS'
   ];
 
   function ProfilePersonalController(
@@ -38,12 +40,16 @@
       $modal,
       PasswordService,
       Session,
-      emailChange) {
+      emailChange,
+      AuthService,
+      CRDS_TOOLS_CONSTANTS
+      ) {
 
     var vm = this;
     var attributeTypeIds = require('crds-constants').ATTRIBUTE_TYPE_IDS;
     var now = new Date();
 
+    vm.allowAccess = allowAccess;
     vm.allowPasswordChange = angular.isDefined(vm.allowPasswordChange) ?  vm.allowPasswordChange : 'true';
     vm.allowSave = angular.isDefined(vm.allowSave) ? vm.allowSave : 'true';
     vm.closeModal = closeModal;
@@ -89,6 +95,7 @@
     vm.viewReady = false;
     vm.zipFormat = /^(\d{5}([\-]\d{4})?)$/;
     vm.scrollToAnchor= scrollToAnchor;
+    vm.allow
 
     // TODO: Remove this hack and move the promises below into resolves on the directive.
     // Hack to overcome issue where Bootstrap UI Datepicker picks up the date value as string and can't parse it correctly, so it raises validation error.
@@ -175,6 +182,11 @@
         // need to scroll up by toast message height
         window.scrollBy(0, -100);
       }
+    }
+
+
+    function allowAccess() {
+      return (AuthService.isAuthenticated() && AuthService.isAuthorized(CRDS_TOOLS_CONSTANTS.SECURITY_ROLES.ServeSignupTool));
     }
 
     function configurePerson() {
