@@ -570,6 +570,7 @@
     <Compile Include="Services\CampaignService.cs" />
     <Compile Include="Services\CampRules.cs" />
     <Compile Include="Services\CampService.cs" />
+    <Compile Include="Services\ConfigurationService.cs" />
     <Compile Include="Services\CongregationService.cs" />
     <Compile Include="Services\CorkboardService.cs" />
     <Compile Include="Services\FinderService.cs" />
@@ -589,6 +590,7 @@
     <Compile Include="Services\ImageService.cs" />
     <Compile Include="Services\Interfaces\GroupAttributeDTO.cs" />
     <Compile Include="Services\Interfaces\IAuthTokenExpiryService.cs" />
+    <Compile Include="Services\Interfaces\IConfigurationService.cs" />
     <Compile Include="Services\Interfaces\ICorkboardService.cs" />
     <Compile Include="Services\Interfaces\IFirestoreUpdateService.cs" />
     <Compile Include="Services\Interfaces\IGroupLeaderService.cs" />

@@ -975,7 +975,14 @@ namespace MinistryPlatform.Translation.Repositories
                 .Search<MpCreateDonationDistDto>(filter, columns);
             if (results != null && results.Any())
             {
-                return results.First();
+                var result = results.First();
+                result.StartDate = result.StartDate?.ToUniversalTime().Date;
+                result.Amount = (int) ((result.Amount as decimal? ?? 0.00M) *
+                                       Constants.StripeDecimalConversionValue);
+                result.PaymentType = (int) AccountType.Checking == Convert.ToInt32(result.PaymentType)
+                    ? PaymentType.Bank.abbrv
+                    : PaymentType.CreditCard.abbrv;
+                return result;
             }
             return null;
         }
