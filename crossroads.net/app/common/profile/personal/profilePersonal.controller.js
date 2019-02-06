@@ -185,7 +185,7 @@
 
 
     function allowAccess() {
-      return (AuthService.isAuthenticated() && AuthService.isAuthorized(CRDS_TOOLS_CONSTANTS.SECURITY_ROLES.ServeSignupTool));
+      return (AuthService.isAuthenticated());
     }
 
     function configurePerson() {
