@@ -123,32 +123,40 @@ namespace crds_angular.Services
         /// <returns></returns>
         public async Task ProcessMapAuditRecords()
         {
+            var updateStatus = false;
             try
             {
                 var recordList = _finderRepository.GetMapAuditRecords();
+                
                 while (recordList.Count > 0)
                 {
                     foreach (MpMapAudit mapAuditRecord in recordList)
                     {
-                        switch (Convert.ToInt32(mapAuditRecord.pinType))
+                        // if we have multiple records with the same type and id in our collection then only process it once
+                        // this condition can occur when multiple db triggers add to the cr_mapAudit table
+                        if( recordList.FindIndex(f => f.pinType == mapAuditRecord.pinType && f.ParticipantId == mapAuditRecord.ParticipantId && f.processed == true) != -1)
                         {
-                            case PIN_PERSON:
-                                var personpinupdatedsuccessfully = await PersonPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
-                                SetRecordProcessedFlag(mapAuditRecord, personpinupdatedsuccessfully);
-                                break;
-                            case PIN_GROUP:
-                                var grouppinupdatedsuccessfully = await GroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
-                                SetRecordProcessedFlag(mapAuditRecord, grouppinupdatedsuccessfully);
-                                break;
-                            case PIN_SITE:
-                                var sitepinupdatedsuccessfully = await SitePinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
-                                SetRecordProcessedFlag(mapAuditRecord, sitepinupdatedsuccessfully);
-                                break;
-                            case PIN_ONLINEGROUP:
-                                var onlinegrouppinupdatedsuccessfully = await OnlineGroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
-                                SetRecordProcessedFlag(mapAuditRecord, onlinegrouppinupdatedsuccessfully);
-                                break;
+                            updateStatus = true;
                         }
+                       else 
+                        {
+                            switch (Convert.ToInt32(mapAuditRecord.pinType))
+                            {
+                                case PIN_PERSON:
+                                    updateStatus = await PersonPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                                    break;
+                                case PIN_GROUP:
+                                    updateStatus = await GroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                                    break;
+                                case PIN_SITE:
+                                    updateStatus = await SitePinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                                    break;
+                                case PIN_ONLINEGROUP:
+                                    updateStatus = await OnlineGroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
+                                    break;
+                            }  
+                        }
+                        SetRecordProcessedFlag(mapAuditRecord, updateStatus);
                     }
                     recordList = _finderRepository.GetMapAuditRecords();
                 }
