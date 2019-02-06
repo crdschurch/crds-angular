@@ -56,6 +56,8 @@ namespace crds_angular.test.Services
                 CanImpersonate = true
             });
 
+            _userService.Setup(mocked => mocked.GetByUserId("me@here.com")).Returns((MpUser)null);
+
             try
             {
                 _fixture.WithImpersonation("123", "me@here.com", () => (_action.Object));
