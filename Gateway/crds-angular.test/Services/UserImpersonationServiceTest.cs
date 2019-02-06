@@ -34,6 +34,12 @@ namespace crds_angular.test.Services
                 CanImpersonate = false
             });
 
+            _userService.Setup(mocked => mocked.GetByAuthenticationToken("123")).Returns(new MpUser
+            {
+                CanImpersonate = true
+            });
+
+
             try
             {
                 _fixture.WithImpersonation("123", "me@here.com", () => (_action.Object));
@@ -57,6 +63,11 @@ namespace crds_angular.test.Services
             });
 
             _userService.Setup(mocked => mocked.GetByUserId("me@here.com")).Returns((MpUser)null);
+
+            _userService.Setup(mocked => mocked.GetByAuthenticationToken("123")).Returns(new MpUser
+            {
+                CanImpersonate = true
+            });
 
             try
             {
@@ -83,6 +94,11 @@ namespace crds_angular.test.Services
             _userService.Setup(mocked => mocked.GetByUserId("me@here.com")).Returns(new MpUser
             {
                 Guid = "12345"
+            });
+
+            _userService.Setup(mocked => mocked.GetByAuthenticationToken("123")).Returns(new MpUser
+            {
+                CanImpersonate = true
             });
 
             var guid = _fixture.WithImpersonation("123", "me@here.com", () => (ImpersonatedUserGuid.Get()));
