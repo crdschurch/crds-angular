@@ -214,7 +214,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<DateTime> GetAllOpportunityDates(int opportunityId)
         {
-			//First get the event type
+            //First get the event type
 			var token = _apiUserService.GetDefaultApiClientToken();
             var opp = _ministryPlatformService.GetRecordDict(_opportunityPage, opportunityId, token);
             var eventType = opp["Event_Type_ID_Text"];
@@ -269,7 +269,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public int RespondToOpportunity( int opportunityId, string comments, int contactId)
         {
-			var token = _apiUserService.GetDefaultApiClientToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var participant = _participantService.GetParticipant(contactId);
             var participantId = participant.ParticipantId;
 
