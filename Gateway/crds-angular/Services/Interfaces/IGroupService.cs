@@ -40,7 +40,7 @@ namespace crds_angular.Services.Interfaces
 
         List<GroupParticipantDTO> GetGroupParticipants(int groupId, bool active = true);
 
-        void LookupParticipantIfEmpty(int contactId, List<ParticipantSignup> partId);
+        void LookupParticipantIfEmpty(int loggedInPartId, List<ParticipantSignup> partId);
 
         List<GroupDTO> GetGroupByIdForAuthenticatedUser(int contactId, int groupId);
 

@@ -41,7 +41,7 @@ class InvoiceController {
         this.returnUrl = `https://demo.crossroads.net/invoices/${this.invoiceId}/email`;
         break;
       default:
-        this.returnUrl = `https://crossroads.net/invoices/${this.invoiceId}/email`;
+        this.returnUrl = `https://www.crossroads.net/invoices/${this.invoiceId}/email`;
         break;
     }
   }

@@ -29,11 +29,11 @@ namespace crds_angular.test.Services
         [Test]
         public void TestWithImpersonationNotAuthorized()
         {
-            _userService.Setup(mocked => mocked.GetByUserId("123")).Returns(new MpUser
+            _userService.Setup(mocked => mocked.GetByAuthenticationToken("123")).Returns(new MpUser
             {
                 CanImpersonate = false
             });
-
+            
             try
             {
                 _fixture.WithImpersonation("123", "me@here.com", () => (_action.Object));
@@ -51,7 +51,7 @@ namespace crds_angular.test.Services
         [Test]
         public void TestWithImpersonationUserNotFound()
         {
-            _userService.Setup(mocked => mocked.GetByUserId("123")).Returns(new MpUser
+            _userService.Setup(mocked => mocked.GetByAuthenticationToken("123")).Returns(new MpUser
             {
                 CanImpersonate = true
             });
@@ -75,14 +75,14 @@ namespace crds_angular.test.Services
         [Test]
         public void TestWithImpersonation()
         {
-            _userService.Setup(mocked => mocked.GetByUserId("123")).Returns(new MpUser
-            {
-                CanImpersonate = true
-            });
-
             _userService.Setup(mocked => mocked.GetByUserId("me@here.com")).Returns(new MpUser
             {
                 Guid = "12345"
+            });
+
+            _userService.Setup(mocked => mocked.GetByAuthenticationToken("123")).Returns(new MpUser
+            {
+                CanImpersonate = true
             });
 
             var guid = _fixture.WithImpersonation("123", "me@here.com", () => (ImpersonatedUserGuid.Get()));

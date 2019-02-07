@@ -809,17 +809,14 @@ namespace crds_angular.test.Services
         public void WhenLookupParticipantIsCalledWithAllParticipantIdSpecified_ShouldNotLookupParticipant()
         {
             fixture.LookupParticipantIfEmpty(123, mockParticipantSignup);
-
-            participantService.Verify(x => x.GetParticipant(It.IsAny<int>()), Times.Never);
         }
 
         [Test]
         public void WhenLookupParticipantIsCalledWithoutParticipantIdSpecified_ShouldLookupParticipantAndSetParticipantId()
         {
-            var token = "123";
+            var leaderpartid = 123;
             var participant = new Participant() {ParticipantId = 100};
 
-            participantService.Setup(x => x.GetParticipant(It.IsAny<int>())).Returns(participant);
             var participants = new List<ParticipantSignup>
             {
                 new ParticipantSignup()
@@ -828,11 +825,8 @@ namespace crds_angular.test.Services
                     SendConfirmationEmail = true
                 },
             };
-            fixture.LookupParticipantIfEmpty(123, participants);
-
-            participantService.Verify(x => x.GetParticipant(It.IsAny<int>()), Times.Once);
-
-            Assert.AreEqual(100, participants[0].particpantId);
+            fixture.LookupParticipantIfEmpty(leaderpartid, participants);
+            Assert.AreEqual(123, participants[0].particpantId);
         }
 
         [Test]
