@@ -1247,7 +1247,7 @@ namespace crds_angular.test.Services
           
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false)).Returns(1);
 
-            var resp = _fixture.SendCampConfirmationEmail(eventId, invoiceId, paymentId, token);
+            var resp = _fixture.SendCampConfirmationEmail(eventId, invoiceId, paymentId);
            
             _paymentRepository.VerifyAll();
             _contactService.VerifyAll();
