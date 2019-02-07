@@ -125,9 +125,9 @@ namespace crds_angular.test.Services
         [Test]
         public void TestGetSelectedDonationBatches()
         {
-            _mpDonationService.Setup(mocked => mocked.GetSelectedDonationBatches(12424, "afdasfsafd")).Returns(MockDepositList);
+            _mpDonationService.Setup(mocked => mocked.GetSelectedDonationBatches(12424)).Returns(MockDepositList);
 
-            var result = _fixture.GetSelectedDonationBatches(12424, "afdasfsafd");
+            var result = _fixture.GetSelectedDonationBatches(12424);
             _mpDonationService.VerifyAll();
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Count, 2);
@@ -311,9 +311,9 @@ namespace crds_angular.test.Services
             var date = DateTime.Today;
             var fileName = string.Format("XRDReceivables-Test_Deposit_Name_1_{0}{1}{2}.txt", date.ToString("yy"), date.ToString("MM"), date.ToString("dd"));
 
-            _mpDonationService.Setup(mocked => mocked.GetSelectedDonationBatches(12424, "afdasfsafd")).Returns(MockDepositList);
+            _mpDonationService.Setup(mocked => mocked.GetSelectedDonationBatches(12424)).Returns(MockDepositList);
 
-            var results = _fixture.GenerateGPExportFileNames(12424, "afdasfsafd");
+            var results = _fixture.GenerateGPExportFileNames(12424);
 
             _mpDonationService.VerifyAll();
             Assert.AreEqual(fileName, results[0].ExportFileName);
@@ -328,9 +328,9 @@ namespace crds_angular.test.Services
 
             var expectedReturn = MockExpectedGpExportDto();
 
-            _mpDonationService.Setup(mocked => mocked.GetGpExport(depositId, It.IsAny<string>())).Returns(mockedExport);
+            _mpDonationService.Setup(mocked => mocked.GetGpExport(depositId)).Returns(mockedExport);
             
-            var result = _fixture.GetGpExport(depositId, "asdfafasdfas");
+            var result = _fixture.GetGpExport(depositId);
 
             _mpDonationService.VerifyAll();
 

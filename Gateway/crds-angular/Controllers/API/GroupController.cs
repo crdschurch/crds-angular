@@ -9,17 +9,16 @@ using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Groups;
 using crds_angular.Security;
 using log4net;
-using MinistryPlatform.Translation.Exceptions;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using crds_angular.Services.Interfaces;
 using Event = crds_angular.Models.Crossroads.Events.Event;
 using Crossroads.ApiVersioning;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Security;
+using MinistryPlatform.Translation.Exceptions;
 
 namespace crds_angular.Controllers.API
 {
-    public class GroupController : MPAuth
+    public class GroupController : ImpersonateAuthBaseController
     {
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IGroupService _groupService;
@@ -95,7 +94,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _groupToolService.VerifyCurrentUserIsGroupLeader(token, @group.GroupId);
+                    _groupToolService.VerifyUserIsGroupLeader(token.UserInfo.Mp.ContactId, @group.GroupId);
                     if (group.Address != null && string.IsNullOrEmpty(group.Address.AddressLine1) == false)
                     {
                         _addressService.FindOrCreateAddress(group.Address, true);
@@ -124,10 +123,10 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var participant = _participantService.GetParticipantRecord(token);
-                    var contactId = _contactRepository.GetContactId(token);
+                    var participant = _participantService.GetParticipant(token.UserInfo.Mp.ContactId);
+                   
 
-                    var detail = _groupService.getGroupDetails(groupId, contactId, participant, token);
+                    var detail = _groupService.getGroupDetails(groupId, token.UserInfo.Mp.ContactId, participant);
 
                     return Ok(detail);
                 }
@@ -166,7 +165,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var group = _groupService.GetGroupDetailsByInvitationGuid(token, invitationKey);
+                    var group = _groupService.GetGroupDetailsByInvitationGuid(invitationKey);
 
                     return Ok(group);
                 }
@@ -189,7 +188,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var eventList = _groupService.GetGroupEvents(groupId, token);
+                    var eventList = _groupService.GetGroupEvents(groupId);
                     return Ok(eventList);
                 }
                 catch (Exception e)
@@ -244,41 +243,13 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var participant = _groupService.GetParticipantRecord(token);
-                    var groups = _groupService.GetGroupsByTypeForParticipant(token, participant.ParticipantId, groupTypeId);
+                    var participant = _groupService.GetParticipantRecord(token.UserInfo.Mp.ContactId);
+                    var groups = _groupService.GetGroupsByTypeForParticipant(participant.ParticipantId, groupTypeId);
                     return Ok(groups);
                 }
                 catch (Exception ex)
                 {
                     var apiError = new ApiErrorDto("Error getting groups for group type ID " + groupTypeId, ex);
-                    throw new HttpResponseException(apiError.HttpResponseMessage);
-                }
-
-            });
-        }
-
-        /// <summary>
-        /// This takes in a Group Type ID and retrieves all groups of that type for the current user.
-        /// If one or more groups are found, then the group detail data is returned.
-        /// If no groups are found, then an empty list will be returned.
-        /// </summary>
-        /// <returns>A list of all small groups for the given user (group type of 1)</returns>
-        [RequiresAuthorization]
-        [ResponseType(typeof(List<GroupDTO>))]
-        [VersionedRoute(template: "group/mine", minimumVersion: "1.0.0")]
-        [Route("group/mine")]
-        public IHttpActionResult GetMyGroups()
-        {
-            return Authorized(token =>
-            {
-                try
-                {
-                    var groups = _groupToolService.GetGroupToolGroups(token);
-                    return Ok(groups);
-                }
-                catch (Exception ex)
-                {
-                    var apiError = new ApiErrorDto("Error getting Groups for logged in user.", ex);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
 
@@ -396,11 +367,11 @@ namespace crds_angular.Controllers.API
             });
         }
 
-        /// <summary>	
-        /// Enroll the currently logged-in user into a Community Group, and register this user for all events for the CG.	
-        /// Also send email confirmation to user if joining a CG	
-        /// Or Add Journey/Small Group Participant to a Group	
-        /// </summary>	
+        /// <summary>		
+        /// Enroll the currently logged-in user into a Community Group, and register this user for all events for the CG.		
+        /// Also send email confirmation to user if joining a CG		
+        /// Or Add Journey/Small Group Participant to a Group		
+        /// </summary>		
         [RequiresAuthorization]
         [ResponseType(typeof(GroupDTO))]
         [VersionedRoute(template: "group/{groupId}/participants", minimumVersion: "1.0.0")]
@@ -412,7 +383,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _groupService.LookupParticipantIfEmpty(token, partId);
+                    _groupService.LookupParticipantIfEmpty((int)token.UserInfo.Mp.ParticipantId, partId);
 
                     _groupService.addParticipantsToGroup(groupId, partId);
                     _logger.Debug(String.Format("Successfully added participants {0} to group {1}", partId, groupId));
@@ -422,8 +393,8 @@ namespace crds_angular.Controllers.API
                 {
                     var responseMessage = new ApiErrorDto("Group Is Full", e).HttpResponseMessage;
 
-                    // Using HTTP Status code 422/Unprocessable Entity to indicate Group Is Full	
-                    // http://tools.ietf.org/html/rfc4918#section-11.2	
+                    // Using HTTP Status code 422/Unprocessable Entity to indicate Group Is Full	      	
+                    // http://tools.ietf.org/html/rfc4918#section-11.2		
                     responseMessage.StatusCode = (HttpStatusCode)422;
                     throw new HttpResponseException(responseMessage);
                 }

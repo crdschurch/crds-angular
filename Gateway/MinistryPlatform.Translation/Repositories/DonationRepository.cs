@@ -145,8 +145,9 @@ namespace MinistryPlatform.Translation.Repositories
             }));
         }
 
-        public List<MpDeposit> GetSelectedDonationBatches(int selectionId, string token)
+        public List<MpDeposit> GetSelectedDonationBatches(int selectionId)
         {
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var results = _ministryPlatformService.GetSelectionsForPageDict(_depositsPageId, selectionId, token);
             var deposits = new List<MpDeposit>();
 
@@ -428,8 +429,9 @@ namespace MinistryPlatform.Translation.Repositories
             return trips;
         }
 
-        public List<MpGPExportDatum> GetGpExport(int depositId, string token)
-        {                        
+        public List<MpGPExportDatum> GetGpExport(int depositId)
+        {
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var gpExportDonationLevel = GetGpExportData(depositId, token);
             gpExportDonationLevel.AddRange(GetGPExportDataForPayments(depositId, token));
             
@@ -664,8 +666,9 @@ namespace MinistryPlatform.Translation.Repositories
             return _ministryPlatformRest.UsingAuthenticationToken(token).Get<MPGLAccountMapping>(processingFeeMapping);
         }
 
-        public void UpdateDepositToExported(int selectionId, int depositId, string token)
+        public void UpdateDepositToExported(int selectionId, int depositId)
         {
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var paramaters = new Dictionary<string, object>
             {
                 {"Deposit_ID", depositId},

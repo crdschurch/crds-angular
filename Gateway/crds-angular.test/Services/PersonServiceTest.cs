@@ -118,7 +118,7 @@ namespace crds_angular.test.Services
             _participantService.Setup(m => m.GetParticipant(person.ContactId)).Returns(participant);
             _addressService.Setup(m => m.GetGeoLocationCascading(It.IsAny<AddressDTO>())).Returns(new GeoCoordinate(5, 6));
             _analyticsService.Setup(m => m.Track(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<EventProperties>()));
-            _fixture.SetProfile(token, person);
+            _fixture.SetProfile(person);
 
         }
 
@@ -131,7 +131,7 @@ namespace crds_angular.test.Services
             _contactService.Setup(mocked => mocked.GetHouseholdFamilyMembers(7)).Returns(_householdMembers);
             _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("something");
             var allAttributesDto = new ObjectAllAttributesDTO();
-            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>())).Returns(allAttributesDto);
+            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes( It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>())).Returns(allAttributesDto);
             var person = _fixture.GetPerson(contactId);
             _contactService.VerifyAll();
 

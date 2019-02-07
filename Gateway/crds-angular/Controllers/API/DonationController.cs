@@ -20,10 +20,11 @@ using Crossroads.Web.Common;
 using Crossroads.Web.Common.Security;
 using Newtonsoft.Json;
 using crds_angular.Services.Analytics;
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.Controllers.API
 {
-    public class DonationController : MPAuth
+    public class DonationController : ImpersonateAuthBaseController
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(DonationController));
 
@@ -92,6 +93,7 @@ namespace crds_angular.Controllers.API
         /// <param name="limit">A limit of donations to return starting at the most resent - defaults to null, meaning return all available donations with no limit.</param>
         /// <param name="includeRecurring">Include recurring donations</param>
         /// <returns>A list of DonationDTOs</returns>
+        // TODO: Include recurring gifts flag
         [VersionedRoute(template: "donations", minimumVersion: "1.0.0")]
         [Route("donations")]
         [VersionedRoute(template: "donations/{donationYear:regex(\\d{4})?}", minimumVersion: "1.0.0")]
@@ -104,17 +106,18 @@ namespace crds_angular.Controllers.API
                                               [FromUri(Name = "impersonateDonorId")] int? impersonateDonorId = null,
                                               bool? includeRecurring = true)
         {
-            return (Authorized(token =>
+            return (Authorized(authDto =>
             {
                 var impersonateUserId = impersonateDonorId == null ? string.Empty : _mpDonorService.GetEmailViaDonorId(impersonateDonorId.Value).Email;
+                var concretSoftCredit = softCredit.HasValue ? softCredit.Value : false;
                 try
                 {
                     var donations = (impersonateDonorId != null)
-                        ? _impersonationService.WithImpersonation(token,
+                        ? _impersonationService.WithImpersonation(authDto,
                                                                   impersonateUserId,
                                                                   () =>
-                                                                      _gatewayDonationService.GetDonationsForAuthenticatedUser(token, donationYear, limit, softCredit, includeRecurring))
-                        : _gatewayDonationService.GetDonationsForAuthenticatedUser(token, donationYear, limit, softCredit, includeRecurring);
+                                                                      _gatewayDonationService.GetDonationsForDonor(impersonateDonorId.Value, donationYear, concretSoftCredit))
+                        : _gatewayDonationService.GetDonationsForDonor(authDto.UserInfo.Mp.DonorId.Value, donationYear, concretSoftCredit);
 
                     if (donations == null || !donations.HasDonations)
                     {
@@ -146,14 +149,14 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult GetDonationYears([FromUri(Name = "impersonateDonorId")] int? impersonateDonorId = null)
         {
-            return (Authorized(token =>
+            return (Authorized(authDto =>
             {
                 var impersonateUserId = impersonateDonorId == null ? string.Empty : _mpDonorService.GetEmailViaDonorId(impersonateDonorId.Value).Email;
                 try
                 {
                     var donationYears = (impersonateDonorId != null)
-                        ? _impersonationService.WithImpersonation(token, impersonateUserId, () => _gatewayDonationService.GetDonationYearsForAuthenticatedUser(token))
-                        : _gatewayDonationService.GetDonationYearsForAuthenticatedUser(token);
+                        ? _impersonationService.WithImpersonation(authDto, impersonateUserId, () => _gatewayDonationService.GetDonationYearsForDonor(impersonateDonorId.Value))
+                        : _gatewayDonationService.GetDonationYearsForDonor(authDto.UserInfo.Mp.DonorId.Value);
 
                     if (donationYears == null || !donationYears.HasYears)
                     {
@@ -180,8 +183,8 @@ namespace crds_angular.Controllers.API
         [Route("donation")]
         public IHttpActionResult Post([FromBody] CreateDonationDTO dto)
         {
-            return (Authorized(token =>
-                                   CreateDonationAndDistributionAuthenticated(token, dto),
+            return (Authorized(authDto =>
+                                   CreateDonationAndDistributionAuthenticated(authDto.UserInfo.Mp.ContactId, dto),
                                () => CreateDonationAndDistributionUnauthenticated(dto)));
         }
 
@@ -189,10 +192,9 @@ namespace crds_angular.Controllers.API
         [Route("donation/message")]
         public IHttpActionResult SendMessageToDonor([FromBody] MessageToDonorDTO dto)
         {
-            return (Authorized(token =>
+            return (Authorized(authDto =>
             {
-                var contactId = _contactRepository.GetContactId(token);
-                _gatewayDonationService.SendMessageToDonor(dto.DonorId, dto.DonationDistributionId, contactId, dto.Message, dto.TripName);
+                _gatewayDonationService.SendMessageToDonor(dto.DonorId, dto.DonationDistributionId, authDto.UserInfo.Mp.ContactId, dto.Message, dto.TripName);
                 return Ok();
             }));
         }
@@ -203,14 +205,14 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult GetGPExportFile(int selectionId, int depositId)
         {
-            return Authorized(token =>
+            return Authorized(authDto =>
             {
                 try
                 {
                     // get export file and name
                     var deposit = _gatewayDonationService.GetDepositById(depositId);
                     var fileName = _gatewayDonationService.GPExportFileName(deposit);
-                    var stream = _gatewayDonationService.CreateGPExport(selectionId, depositId, token);
+                    var stream = _gatewayDonationService.CreateGPExport(selectionId, depositId);
 
                     return new FileResult(stream, fileName);
                 }
@@ -228,11 +230,11 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult GetGPExportFileNames(int selectionId)
         {
-            return Authorized(token =>
+            return Authorized(authDto =>
             {
                 try
                 {
-                    var deposits = _gatewayDonationService.GenerateGPExportFileNames(selectionId, token);
+                    var deposits = _gatewayDonationService.GenerateGPExportFileNames(selectionId);
                     return Ok(deposits);
                 }
                 catch (Exception ex)
@@ -243,7 +245,7 @@ namespace crds_angular.Controllers.API
             });
         }
 
-        private IHttpActionResult CreateDonationAndDistributionAuthenticated(String token, CreateDonationDTO dto)
+        private IHttpActionResult CreateDonationAndDistributionAuthenticated(int contactId, CreateDonationDTO dto)
         {
             bool isPayment = (dto.TransactionType != null && dto.TransactionType.Equals("PAYMENT"));
             MpContactDonor donor = null;
@@ -260,7 +262,6 @@ namespace crds_angular.Controllers.API
                     }
                 }
 
-                var contactId = _contactRepository.GetContactId(token);
                 donor = _mpDonorService.GetContactDonor(contactId);
                 var charge = _stripeService.ChargeCustomer(donor.ProcessorId, dto.Amount, donor.DonorId, isPayment,donor.Email, donor.Details?.DisplayName);
                 var fee = charge.BalanceTransaction != null ? charge.BalanceTransaction.Fee : null;

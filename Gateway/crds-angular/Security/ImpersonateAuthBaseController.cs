@@ -53,7 +53,10 @@ namespace crds_angular.Security
         /// <returns>An IHttpActionResult from the lambda expression that was executed.</returns>
         protected IHttpActionResult Authorized(Func<AuthDTO, IHttpActionResult> actionWhenAuthorized, Func<IHttpActionResult> actionWhenNotAuthorized)
         {
-            string accessToken = Request.Headers.GetValues("Authorization").FirstOrDefault();
+            string accessToken;
+            IEnumerable<string> accessTokens;
+            Request.Headers.TryGetValues("Authorization", out accessTokens);
+            accessToken = accessTokens == null? string.Empty: accessTokens.FirstOrDefault();
 
             AuthDTO auth;
             try
@@ -98,7 +101,7 @@ namespace crds_angular.Security
                 IEnumerable<string> refreshTokens;
                 IEnumerable<string> impersonateUserIds;
                 bool impersonate = false;
-                var authorized = "";
+                var accessToken = "";
 
                 if (Request.Headers.TryGetValues("ImpersonateUserId", out impersonateUserIds) && impersonateUserIds.Any())
                 {
@@ -116,34 +119,37 @@ namespace crds_angular.Security
                     var authData = AuthenticationRepository.RefreshToken(refreshTokens.FirstOrDefault());
                     if (authData != null)
                     {
-                        authorized = authData.AccessToken;
+                        accessToken = authData.AccessToken;
                         var refreshToken = authData.RefreshToken;
                         IHttpActionResult result = null;
                         if (impersonate)
                         {
                             result =
                                 new HttpAuthResult(
-                                    _userImpersonationService.WithImpersonation(authorized, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO)),
-                                    authorized,
+                                    _userImpersonationService.WithImpersonation(authDTO, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO)),
+                                    accessToken,
                                     refreshToken);
                         }
                         else
                         {
-                            result = new HttpAuthResult(actionWhenAuthorized(authDTO), authorized, refreshToken);
+                            result = new HttpAuthResult(actionWhenAuthorized(authDTO), accessToken, refreshToken);
                         }
                         return result;
                     }
                 }
-
-                
-                if (impersonate)
+                accessToken = Request.Headers.GetValues("Authorization").FirstOrDefault();
+                if (accessToken != null && (accessToken != "null" || accessToken != ""))
                 {
-                    return _userImpersonationService.WithImpersonation(authorized, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO));
+                    if (impersonate)
+                    {
+                        return _userImpersonationService.WithImpersonation(authDTO, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO));
+                    }
+                    else
+                    {
+                        return actionWhenAuthorized(authDTO);
+                    }
                 }
-                else
-                {
-                    return actionWhenAuthorized(authDTO);
-                }
+                return actionWhenNotAuthorized();
             }
             catch (System.InvalidOperationException e)
             {

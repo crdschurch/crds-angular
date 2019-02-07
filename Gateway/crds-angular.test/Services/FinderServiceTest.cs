@@ -1097,7 +1097,7 @@ namespace crds_angular.test.Services
                 ReplyToEmailAddress = "ss@g.com"
             };
 
-            _mpGroupToolService.Setup(x => x.VerifyCurrentUserIsGroupLeader(token, groupId));
+            _mpGroupToolService.Setup(x => x.VerifyUserIsGroupLeader(234, groupId));
             _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(new List<MpGroupParticipant>());
             _groupService.Setup(x => x.GetGroupDetails(groupId)).Returns(group);
             _lookupService.Setup(x => x.GetMeetingDayFromId(group.MeetingDayId)).Returns("Friday");
@@ -1201,7 +1201,7 @@ namespace crds_angular.test.Services
                 ReplyToEmailAddress = "ss@g.com"
             };
 
-            _mpGroupToolService.Setup(x => x.VerifyCurrentUserIsGroupLeader(token, groupId));
+            _mpGroupToolService.Setup(x => x.VerifyUserIsGroupLeader(234, groupId));
             _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(new List<MpGroupParticipant>());
             _groupService.Setup(x => x.GetGroupDetails(groupId)).Returns(group);
             _lookupService.Setup(x => x.GetMeetingDayFromId(group.MeetingDayId)).Returns("Friday");
@@ -1306,7 +1306,7 @@ namespace crds_angular.test.Services
 
             _mpContactRepository.Setup(x => x.GetContactIdByParticipantId(participantId)).Returns(contactId);
             _mpGroupToolService.Setup(x => x.GetGroupInquiryForContactId(groupId, contactId)).Returns(inquiry);
-            _mpGroupToolService.Setup(x => x.VerifyCurrentUserIsGroupLeader(token, groupId));
+            _mpGroupToolService.Setup(x => x.VerifyUserIsGroupLeader(234, groupId));
             _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(new List<MpGroupParticipant>());
             _groupService.Setup(x => x.GetGroupDetails(groupId)).Returns(group);
             _lookupService.Setup(x => x.GetMeetingDayFromId(group.MeetingDayId)).Returns("Friday");
@@ -1413,7 +1413,7 @@ namespace crds_angular.test.Services
 
             _mpContactRepository.Setup(x => x.GetContactIdByParticipantId(participantId)).Returns(contactId);
             _mpGroupToolService.Setup(x => x.GetGroupInquiryForContactId(groupId, contactId)).Returns(inquiry);
-            _mpGroupToolService.Setup(x => x.VerifyCurrentUserIsGroupLeader(token, groupId));
+            _mpGroupToolService.Setup(x => x.VerifyUserIsGroupLeader(234, groupId));
             _mpGroupRepository.Setup(x => x.GetGroupParticipants(groupId, true)).Returns(new List<MpGroupParticipant>());
             _groupService.Setup(x => x.GetGroupDetails(groupId)).Returns(group);
             _lookupService.Setup(x => x.GetMeetingDayFromId(group.MeetingDayId)).Returns("Friday");

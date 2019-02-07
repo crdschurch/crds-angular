@@ -1,5 +1,5 @@
 'use strict()';
-(function() {
+(function () {
   var app = angular.module('crossroads.core');
   var cookieNames = require('crds-constants').COOKIES;
   app.config(AppConfig);
@@ -10,16 +10,23 @@
     '$locationProvider',
     'datepickerConfig',
     'datepickerPopupConfig',
-    '$cookiesProvider'];
+    '$cookiesProvider',
+    '$sceDelegateProvider'];
 
   function AppConfig($provide,
-        $httpProvider,
-        $locationProvider,
-        datepickerConfig,
-        datepickerPopupConfig,
-        $cookiesProvider) {
-    $provide.decorator('$state', function($delegate, $rootScope) {
-      $rootScope.$on('$stateChangeStart', function(event, state, params) {
+    $httpProvider,
+    $locationProvider,
+    datepickerConfig,
+    datepickerPopupConfig,
+    $cookiesProvider,
+    $sceDelegateProvider) {
+    $sceDelegateProvider.resourceUrlWhitelist([
+      'self',
+      'https://*crds-angular.netlify.com/**'
+    ]);
+    $provide.decorator('$state', function ($delegate, $rootScope) {
+
+      $rootScope.$on('$stateChangeStart', function (event, state, params) {
         $delegate.next = state;
         $delegate.toParams = params;
       });
@@ -28,8 +35,8 @@
     });
 
     $locationProvider.html5Mode({
-      enabled:true,
-      requireBase:false
+      enabled: true,
+      requireBase: false
     });
 
     let commonHeaders = $httpProvider.defaults.headers.common;
@@ -52,14 +59,14 @@
     configureDatePickersDefaults(datepickerConfig, datepickerPopupConfig);
   }
 
-  var configureDefaultCookieScope =  function($cookiesProvider) {
+  var configureDefaultCookieScope = function ($cookiesProvider) {
     $cookiesProvider.defaults.path = '/';
-    if(__COOKIE_DOMAIN__) {
+    if (__COOKIE_DOMAIN__) {
       $cookiesProvider.defaults.domain = __COOKIE_DOMAIN__;
     }
   };
 
-  var configureDatePickersDefaults = function(datepickerConfig, datepickerPopupConfig) {
+  var configureDatePickersDefaults = function (datepickerConfig, datepickerPopupConfig) {
     datepickerConfig.showWeeks = false;
     datepickerPopupConfig.showWeeks = false;
   };

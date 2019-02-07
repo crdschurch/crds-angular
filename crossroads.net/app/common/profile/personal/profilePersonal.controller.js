@@ -20,7 +20,9 @@
     '$modal',
     'PasswordService',
     'Session',
-    'emailChange'
+    'emailChange',
+    'AuthService',
+    'CRDS_TOOLS_CONSTANTS'
   ];
 
   function ProfilePersonalController(
@@ -38,12 +40,16 @@
       $modal,
       PasswordService,
       Session,
-      emailChange) {
+      emailChange,
+      AuthService,
+      CRDS_TOOLS_CONSTANTS
+      ) {
 
     var vm = this;
     var attributeTypeIds = require('crds-constants').ATTRIBUTE_TYPE_IDS;
     var now = new Date();
 
+    vm.allowAccess = allowAccess;
     vm.allowPasswordChange = angular.isDefined(vm.allowPasswordChange) ?  vm.allowPasswordChange : 'true';
     vm.allowSave = angular.isDefined(vm.allowSave) ? vm.allowSave : 'true';
     vm.closeModal = closeModal;
@@ -175,6 +181,11 @@
         // need to scroll up by toast message height
         window.scrollBy(0, -100);
       }
+    }
+
+
+    function allowAccess() {
+      return (AuthService.isAuthenticated());
     }
 
     function configurePerson() {
