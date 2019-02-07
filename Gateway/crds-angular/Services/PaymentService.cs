@@ -18,6 +18,7 @@ using MinistryPlatform.Translation.Models.Payments;
 using MinistryPlatform.Translation.Models.Product;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using PaymentType = MinistryPlatform.Translation.Enum.PaymentType;
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.Services
 {
@@ -149,11 +150,10 @@ namespace crds_angular.Services
 
         public PaymentDetailDTO GetPaymentDetails(int invoiceId)
         {
-            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
-            return GetPaymentDetails(0, invoiceId, apiToken, true);
+            return GetPaymentDetails(0, invoiceId, null, true);
         }
 
-        public PaymentDetailDTO GetPaymentDetails(int paymentId, int invoiceId, string token, bool useInvoiceContact = false)
+        public PaymentDetailDTO GetPaymentDetails(int paymentId, int invoiceId, AuthDTO token, bool useInvoiceContact = false)
         {
 
             var invoice = _invoiceRepository.GetInvoice(invoiceId);
@@ -319,7 +319,7 @@ namespace crds_angular.Services
             _invoiceRepository.SetInvoiceStatus(invoiceId, paymentTotal > 0 ? _somepaidStatus : _nonePaidStatus);
         }
 
-        public bool DepositExists(int invoiceId, string token)
+        public bool DepositExists(int invoiceId, AuthDTO token)
         {
             var me = _contactRepository.GetMyProfile(token);
             var payments = _paymentRepository.GetPaymentsForInvoice(invoiceId);
@@ -327,7 +327,7 @@ namespace crds_angular.Services
             return payments.Any();
         }
 
-        public void SendPaymentConfirmation(int paymentId , int eventId , string token )
+        public void SendPaymentConfirmation(int paymentId , int eventId , AuthDTO token )
         {
             var payment = _paymentRepository.GetPaymentById(paymentId);
             var mpEvent = _eventPRepository.GetEvent(eventId);
@@ -363,7 +363,7 @@ namespace crds_angular.Services
             return invoiceDetail;
         }
 
-        public void SendInvoicePaymentConfirmation(int paymentId, int invoiceId, string token)
+        public void SendInvoicePaymentConfirmation(int paymentId, int invoiceId, AuthDTO token)
         {
             var payment = _paymentRepository.GetPaymentById(paymentId);
             var me = _contactRepository.GetMyProfile(token);

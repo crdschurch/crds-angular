@@ -13,7 +13,7 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class CampController : MPAuth
+    public class CampController : ImpersonateAuthBaseController
     {
         private readonly ICampService _campService;
 

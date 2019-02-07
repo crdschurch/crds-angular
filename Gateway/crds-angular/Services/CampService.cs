@@ -13,6 +13,7 @@ using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Product;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.Services
 {
@@ -106,7 +107,7 @@ namespace crds_angular.Services
             return campEventInfo;
         }
 
-        public ProductDTO GetCampProductDetails(int eventId, int camperContactId, string token)
+        public ProductDTO GetCampProductDetails(int eventId, int camperContactId, AuthDTO token)
         {
             var formId = _configurationWrapper.GetConfigIntValue("SummerCampFormID");
             var formFieldId = _configurationWrapper.GetConfigIntValue("SummerCampForm.FinancialAssistance");
@@ -133,7 +134,7 @@ namespace crds_angular.Services
             return campProductInfo;
         }
 
-        public List<CampFamilyMember> GetEligibleFamilyMembers(int eventId, string token)
+        public List<CampFamilyMember> GetEligibleFamilyMembers(int eventId, AuthDTO token)
         {
             var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var myContact = _contactRepository.GetMyProfile(token);
@@ -190,7 +191,7 @@ namespace crds_angular.Services
             };
         }
 
-        public void SaveCamperEmergencyContactInfo(List<CampEmergencyContactDTO> emergencyContacts, int eventId, int contactId, string token)
+        public void SaveCamperEmergencyContactInfo(List<CampEmergencyContactDTO> emergencyContacts, int eventId, int contactId, AuthDTO token)
         {
             var loggedInContact = _contactRepository.GetMyProfile(token);
             var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
@@ -270,7 +271,7 @@ namespace crds_angular.Services
             _formSubmissionRepository.SubmitFormResponse(formResponse);
         }
 
-        public CampReservationDTO SaveCampReservation(CampReservationDTO campReservation, int eventId, string token)
+        public CampReservationDTO SaveCampReservation(CampReservationDTO campReservation, int eventId, AuthDTO token)
         {
             var nickName = string.IsNullOrWhiteSpace(campReservation.PreferredName) ? campReservation.FirstName : campReservation.PreferredName;
             var contactId = Convert.ToInt32(campReservation.ContactId);
@@ -432,7 +433,7 @@ namespace crds_angular.Services
             _eventRepository.SetParticipantAsRegistered(eventId, participant.ParticipantId);
         }
 
-        public List<MyCampDTO> GetMyCampInfo(string token)
+        public List<MyCampDTO> GetMyCampInfo(AuthDTO token)
         {
             var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var campType = _configurationWrapper.GetConfigValue("CampEventTypeName");
@@ -492,7 +493,7 @@ namespace crds_angular.Services
             }).ToList();
         }
 
-        public void SaveWaivers(string token, int eventId, int contactId, List<CampWaiverResponseDTO> waivers)
+        public void SaveWaivers(AuthDTO token, int eventId, int contactId, List<CampWaiverResponseDTO> waivers)
         {
             var loggedInContact = _contactRepository.GetMyProfile(token);
             var eventParticipantId = _eventParticipantRepository.GetEventParticipantByContactId(eventId, contactId);
@@ -506,7 +507,7 @@ namespace crds_angular.Services
             _eventRepository.SetWaivers(waiverResponses);
         }
 
-        public void SaveInvoice(CampProductDTO campProductDto, string token)
+        public void SaveInvoice(CampProductDTO campProductDto, AuthDTO token)
         {
             var loggedInContact = _contactRepository.GetMyProfile(token);
             var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
@@ -562,7 +563,7 @@ namespace crds_angular.Services
             
         }
 
-        public bool SendCampConfirmationEmail(int eventId, int invoiceId, int paymentId, string token)
+        public bool SendCampConfirmationEmail(int eventId, int invoiceId, int paymentId, AuthDTO token)
         {
             var baseUrl = _configurationWrapper.GetConfigValue("BaseUrl");
             var templateId = _configurationWrapper.GetConfigIntValue("CampConfirmationEmailTemplate");
@@ -604,7 +605,7 @@ namespace crds_angular.Services
             }
         }
 
-        public void SaveCamperMedicalInfo(MedicalInfoDTO medicalInfo, int contactId, string token)
+        public void SaveCamperMedicalInfo(MedicalInfoDTO medicalInfo, int contactId, AuthDTO token)
         {
             var loggedInContact = _contactRepository.GetMyProfile(token);
             var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
@@ -675,7 +676,7 @@ namespace crds_angular.Services
 
 
 
-        public MedicalInfoDTO GetCampMedicalInfo(int eventId, int contactId, string token)
+        public MedicalInfoDTO GetCampMedicalInfo(int eventId, int contactId, AuthDTO token)
         {
             var loggedInContact = _contactRepository.GetMyProfile(token);
             var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
@@ -739,7 +740,7 @@ namespace crds_angular.Services
             return camperMedInfo;
         }
 
-        public List<CampEmergencyContactDTO> GetCamperEmergencyContactInfo(int eventId, int contactId, string token)
+        public List<CampEmergencyContactDTO> GetCamperEmergencyContactInfo(int eventId, int contactId, AuthDTO token)
         {
             var formId = _configurationWrapper.GetConfigIntValue("SummerCampFormID");
             var response = _formSubmissionRepository.GetFormResponse(formId, contactId, eventId);
@@ -767,7 +768,7 @@ namespace crds_angular.Services
             return emergencyContacts;
         }
 
-        public CampReservationDTO GetCamperInfo(string token, int eventId, int contactId)
+        public CampReservationDTO GetCamperInfo(AuthDTO token, int eventId, int contactId)
         {
             var loggedInContact = _contactRepository.GetMyProfile(token);
             var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);

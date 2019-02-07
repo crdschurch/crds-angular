@@ -17,6 +17,7 @@ using MinistryPlatform.Translation.Models.Product;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.test.Services
 {
@@ -84,7 +85,8 @@ namespace crds_angular.test.Services
             const int invoiceId = 3389753;
             const int contactId = 12323354;
             const string emailAddress = "help_me@usa.com";
-            const string token = "NOOOOO";
+            AuthDTO token = new AuthDTO();
+            const string apiToken = "apiToken";
             StripeCharge charge = new StripeCharge()
             {
                 Source = new StripeSource()
@@ -119,7 +121,8 @@ namespace crds_angular.test.Services
             const int invoiceId = 3389753;
             const int contactId = 12323354;
             const string emailAddress = "help_me@usa.com";
-            const string token = "NOOOOO";
+            AuthDTO token = new AuthDTO();
+            const string apiToken = "apiToken";
             StripeCharge charge = new StripeCharge()
             {
                 Source = new StripeSource()
@@ -154,7 +157,8 @@ namespace crds_angular.test.Services
             const int invoiceId = 3389753;
             const int contactId = 12323354;
             const string emailAddress = "help_me@usa.com";
-            const string token = "NOOOOO";
+            AuthDTO token = new AuthDTO();
+            const string apiToken = "apiToken";
 
             var me = fakeMyContact(contactId, emailAddress);
             var invoice = fakeInvoice(invoiceId, contactId, 500.00M);
@@ -396,7 +400,8 @@ namespace crds_angular.test.Services
 
         public void DepositAlreadyExists()
         {
-            const string token = "letmein";
+            AuthDTO token = new AuthDTO();
+            const string apiToken = "apiToken";
             const int payerId = 3333;           
             const int invoiceId = 89989;
 
@@ -413,7 +418,8 @@ namespace crds_angular.test.Services
         [Test]
         public void DepositDoesNotExist()
         {
-            const string token = "letmein";
+            AuthDTO token = new AuthDTO();
+            const string apiToken = "apiToken";
             const int payerId = 3333;
             const int invoiceId = 89989;
 
@@ -433,7 +439,8 @@ namespace crds_angular.test.Services
             const int paymentId = 345;
             const int eventId = 231;
             const int emailTemplateId = 555;
-            const string token = "testingapi";
+            AuthDTO token = new AuthDTO();
+            const string apiToken = "apiToken";
             const int contactId = 8484;
             const string baseUrl = "some url.com";
 
@@ -502,7 +509,8 @@ namespace crds_angular.test.Services
             const int paymentId = 345;
             const int eventId = 231;
             const int emailTemplateId = 555;
-            const string token = "testingapi";
+            AuthDTO token = new AuthDTO();
+            const string apiToken = "apiToken";
             const int contactId = 8484;
             const string baseUrl = "some url.com";
 
