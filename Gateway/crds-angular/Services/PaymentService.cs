@@ -157,19 +157,24 @@ namespace crds_angular.Services
         {
 
             var invoice = _invoiceRepository.GetInvoice(invoiceId);
-            var me = new MpMyContact();
+            int contactID;
+            string email;
              if (useInvoiceContact)
             {
-                me = _contactRepository.GetContactById(invoice.PurchaserContactId);
+                var invoiceContact = new MpMyContact();
+                invoiceContact = _contactRepository.GetContactById(invoice.PurchaserContactId);
+                contactID = invoiceContact.Contact_ID;
+                email = invoiceContact.Email_Address;
             }
             else
             {
-                me = _contactRepository.GetMyProfile(token);
+                contactID = token.UserInfo.Mp.ContactId;
+                email = token.UserInfo.Mp.Email;
             }
 
             var payments = _paymentRepository.GetPaymentsForInvoice(invoiceId);
             
-            var currentPayment = payments.Where(p => p.PaymentId == paymentId && p.ContactId == me.Contact_ID).ToList();
+            var currentPayment = payments.Where(p => p.PaymentId == paymentId && p.ContactId == contactID).ToList();
 
             if (currentPayment.Any() || paymentId == 0)
             {
@@ -183,7 +188,7 @@ namespace crds_angular.Services
                 return new PaymentDetailDTO()
                 {
                     PaymentAmount = currentPayment.Any() ? currentPayment.First().PaymentTotal : 0M,
-                    RecipientEmail = me.Email_Address,
+                    RecipientEmail = email,
                     TotalToPay = leftToPay,
                     InvoiceTotal = invoice.InvoiceTotal,
                     RecentPaymentId = payments.Any() ? payments.First().PaymentId : 0,
@@ -191,7 +196,7 @@ namespace crds_angular.Services
                     RecentPaymentLastFour = charge != null ? charge.Source?.AccountNumberLast4 : ""
                 };
             }
-            throw new Exception("No Payment found for " + me.Email_Address + " with id " + paymentId);
+            throw new Exception("No Payment found for " + email + " with id " + paymentId);
         }
 
 
@@ -321,9 +326,8 @@ namespace crds_angular.Services
 
         public bool DepositExists(int invoiceId, AuthDTO token)
         {
-            var me = _contactRepository.GetMyProfile(token);
             var payments = _paymentRepository.GetPaymentsForInvoice(invoiceId);
-            payments = payments.Where(p => p.ContactId == me.Contact_ID).ToList();
+            payments = payments.Where(p => p.ContactId == token.UserInfo.Mp.ContactId).ToList();
             return payments.Any();
         }
 
@@ -331,7 +335,6 @@ namespace crds_angular.Services
         {
             var payment = _paymentRepository.GetPaymentById(paymentId);
             var mpEvent = _eventPRepository.GetEvent(eventId);
-            var me = _contactRepository.GetMyProfile(token);
 
             var templateIdResult = _eventPRepository.GetProductEmailTemplate(eventId);
             var templateId = (templateIdResult.Status) ? templateIdResult.Value : _configWrapper.GetConfigIntValue("DefaultPaymentEmailTemplate");
@@ -349,8 +352,8 @@ namespace crds_angular.Services
                                                                 mpEvent.PrimaryContact.EmailAddress,
                                                                 mpEvent.PrimaryContactId,
                                                                 mpEvent.PrimaryContact.EmailAddress,
-                                                                me.Contact_ID,
-                                                                me.Email_Address,
+                                                                token.UserInfo.Mp.ContactId,
+                                                                token.UserInfo.Mp.Email,
                                                                 mergeData);
             _communicationRepository.SendMessage(comm);
         }
@@ -366,7 +369,6 @@ namespace crds_angular.Services
         public void SendInvoicePaymentConfirmation(int paymentId, int invoiceId, AuthDTO token)
         {
             var payment = _paymentRepository.GetPaymentById(paymentId);
-            var me = _contactRepository.GetMyProfile(token);
             var invoiceDetail = Mapper.Map<MpInvoiceDetail, InvoiceDetailDTO>(_invoiceRepository.GetInvoiceDetailForInvoice(invoiceId));
             var product = _productRepository.GetProduct(invoiceDetail.ProductId);
             invoiceDetail.Product = Mapper.Map<MpProduct, ProductDTO>(product);
@@ -386,8 +388,8 @@ namespace crds_angular.Services
             };
 
             var comm = _communicationRepository.GetTemplateAsCommunication(templateId,
-              me.Contact_ID,
-              me.Email_Address,
+              token.UserInfo.Mp.ContactId,
+              token.UserInfo.Mp.Email,
               mergeData);
             _communicationRepository.SendMessage(comm);
         }

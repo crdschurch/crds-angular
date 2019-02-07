@@ -16,10 +16,10 @@ namespace crds_angular.Services.Interfaces
         List<CampFamilyMember> GetEligibleFamilyMembers(int eventId, AuthDTO token);
         void SaveCamperMedicalInfo(MedicalInfoDTO medicalInfo, int contactId, AuthDTO token);
         MedicalInfoDTO GetCampMedicalInfo(int eventId, int contactId, AuthDTO token);
-        List<CampEmergencyContactDTO> GetCamperEmergencyContactInfo(int eventId, int contactId, AuthDTO token);
+        List<CampEmergencyContactDTO> GetCamperEmergencyContactInfo(int eventId, int contactId);
         ProductDTO GetCampProductDetails(int eventId, int contactId, AuthDTO token);
         void SaveInvoice(CampProductDTO campProductDto, AuthDTO token);
-        bool SendCampConfirmationEmail(int eventId, int invoiceId, int paymentId, AuthDTO token);
+        bool SendCampConfirmationEmail(int eventId, int invoiceId, int paymentId);
         void SetCamperAsRegistered(int eventId, int contactId);
     }
 }
