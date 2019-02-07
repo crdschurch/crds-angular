@@ -1,21 +1,17 @@
 USE [MinistryPlatform]
 GO
-
-/****** Object:  Trigger [dbo].[crds_tr_Small_Group_To_Firestore]    Script Date: 2/6/2019 4:18:41 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
-
-
 -- =============================================
 -- Author:      Phil Lachmann
 -- Create date: 12/04/2018
 -- Description: 
 -- =============================================
-CREATE     TRIGGER [dbo].[crds_tr_Small_Group_To_Firestore]
+CREATE OR ALTER TRIGGER [dbo].[crds_tr_Small_Group_To_Firestore]
    ON  [dbo].[Groups]
    AFTER INSERT, UPDATE
 AS
