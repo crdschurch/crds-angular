@@ -181,7 +181,7 @@ namespace crds_angular.test.Services
                 res.CurrentGrade = groupId;
             });
             var group = FactoryGirl.NET.FactoryGirl.Build<MpGroupParticipant>((res) => res.GroupId = groupId);
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int eventParticipantId = 6;
             const int newEventparticipantId = 0;
@@ -264,7 +264,7 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldThrowExceptionIfRulesDonotPass()
         {
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int groupId = 123;
             const int eventId = 4;
@@ -324,7 +324,7 @@ namespace crds_angular.test.Services
         {
 
             const int groupId = 123;
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int eventParticipantId = 6;
             const int eventId = 4;
@@ -387,7 +387,7 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetCampFamilyMembersNotSignedUp()
         {
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             var myContactId = 2187211;
             var eventId = 5433;
@@ -412,7 +412,7 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetCampFamilyNotHeadNotSignedUp()
         {
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int myContactId = 2187211;
             const int eventId = 5433;
@@ -437,7 +437,7 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetCampFamilyHouseholdPositionNotSet()
         {
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int myContactId = 2187211;
             const int eventId = 5433;
@@ -462,7 +462,7 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetCampFamilyNotHeadSignedUp()
         {
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int myContactId = 2187211;
             const int eventId = 5433;
@@ -492,7 +492,7 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetCampFamilyNotHeadPendingParticipant()
         {
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int myContactId = 2187211;
             const int eventId = 5433;
@@ -527,7 +527,7 @@ namespace crds_angular.test.Services
         public void shouldSaveEmergencyContact()
         {
             var contactId = 12345;
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             var formId = 10;
             var eventId = 6789;
@@ -578,7 +578,7 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetEmptyListOfFamilyMembers()
         {
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             var myContactId = 2187211;
             var eventId = 1234;
@@ -600,7 +600,7 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldGetMyCampInfo()
         {
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int myContactId = 2187211;
             var myContact = getFakeContact(myContactId);
@@ -677,7 +677,7 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldSaveMedicalInfo()
         {
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int contactId = 123;
             var medicalInfo = new MedicalInfoDTO
@@ -742,7 +742,7 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldSaveMedicalInfoWithNullValuesInMedsAdministered()
         {
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int contactId = 123;
             var medicalInfo = new MedicalInfoDTO
@@ -812,7 +812,7 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldSaveMedicalInfoWithAllNullValuesInMedsAdministered()
         {
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int contactId = 123;
             var medicalInfo = new MedicalInfoDTO
@@ -885,7 +885,7 @@ namespace crds_angular.test.Services
             const int eventId = 1289;
             const int contactId = 123; // this is set in the getFakeHouseholdMembers() method
             const int loggedInContactId = 6767;
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
 
             var me = getFakeContact(loggedInContactId);
@@ -923,7 +923,7 @@ namespace crds_angular.test.Services
             const int eventId = 1289;
             const int contactId = 123; // this is set in the getFakeHouseholdMembers() method
             const int loggedInContactId = 6767;
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
 
             var me = getFakeContact(loggedInContactId);
@@ -958,7 +958,7 @@ namespace crds_angular.test.Services
         public void ShouldGetCamperInfo()
         {
             const int eventId = 123;
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int contactId = 2187211;
             var myContact = getFakeContact(contactId);
@@ -1035,7 +1035,7 @@ namespace crds_angular.test.Services
         public void shouldGetCamperInfoNoGrade()
         {
             const int eventId = 123;
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int contactId = 2187211;
             var myContact = getFakeContact(contactId);
@@ -1086,7 +1086,7 @@ namespace crds_angular.test.Services
         public void ShouldGetProductInfo()
         {
             const int eventId = 1234;
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             var product = new MpProduct
             {
@@ -1157,7 +1157,7 @@ namespace crds_angular.test.Services
       public void ShouldGetProductInfoWhenThereIsNoInvoiceYet()
       {
         const int eventId = 1234;
-        AuthDTO token = new AuthDTO();
+        AuthDTO token = getFakeAuthDTO();
         const string apiToken = "apiToken";
         var product = new MpProduct
         {
@@ -1220,7 +1220,7 @@ namespace crds_angular.test.Services
         public void shouldSendConfirmationEmail()
         {
             const int eventId = 1234554;
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int paymentId = 98789;
             const int invoiceId = 8767;
@@ -1247,7 +1247,7 @@ namespace crds_angular.test.Services
           
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false)).Returns(1);
 
-            var resp = _fixture.SendCampConfirmationEmail(eventId, invoiceId, paymentId);
+            var resp = _fixture.SendCampConfirmationEmail(eventId, invoiceId, paymentId, token);
            
             _paymentRepository.VerifyAll();
             _contactService.VerifyAll();
@@ -1261,7 +1261,7 @@ namespace crds_angular.test.Services
         public void ShouldSaveInvoiceAndChooseBestOptionPrice()
         {
             const int loggedInContactId = 456;
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int eventParticipantId = 7878;
             const int summerCampFinancialAssistanceField = 99;
@@ -1340,7 +1340,7 @@ namespace crds_angular.test.Services
         public void ShouldSaveInvoiceAndFilterOutOldOptionPrices()
         {
             const int loggedInContactId = 456;
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int eventParticipantId = 7878;
             const int summerCampFinancialAssistanceField = 99;
@@ -1420,7 +1420,7 @@ namespace crds_angular.test.Services
         public void ShouldUpdateAnInvoiceIfOneExistsAlready()
         {
             const int loggedInContactId = 456;
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = getFakeAuthDTO();
             const string apiToken = "apiToken";
             const int eventParticipantId = 7878;
             const int summerCampFinancialAssistanceField = 99;
@@ -1546,6 +1546,17 @@ namespace crds_angular.test.Services
 
         }
 
+        private AuthDTO getFakeAuthDTO()
+        {
+            AuthDTO token = new AuthDTO();
+            token.UserInfo = new UserInfo();
+            token.UserInfo.Mp = new MpUserInfo();
+            token.UserInfo.Mp.ContactId = 2187211;
+            token.UserInfo.Mp.HouseholdId = 23;
+            token.UserInfo.Mp.Email = "some@email.com";
+
+            return token;
+        }
         private List<MpHouseholdMember> getFakeHouseholdMembers(MpMyContact me, bool isHead = true, string positionIfNotHead = null)
         {
             return new List<MpHouseholdMember>
