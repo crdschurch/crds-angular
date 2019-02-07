@@ -208,10 +208,10 @@ namespace crds_angular.Services
             var newSubscription = new Dictionary<string, object>();
             newSubscription["Publication_ID"] = _configurationWrapper.GetConfigValue("KidsClubPublication");
             newSubscription["Unsubscribed"] = false;
-            _subscriptionsService.SetSubscriptions(newSubscription, contactRecordId, token);
+            _subscriptionsService.SetSubscriptions(newSubscription, contactRecordId);
             newSubscription["Publication_ID"] = _configurationWrapper.GetConfigValue("CrossroadsPublication");
             newSubscription["Unsubscribed"] = false;
-            _subscriptionsService.SetSubscriptions(newSubscription, contactRecordId, token);
+            _subscriptionsService.SetSubscriptions(newSubscription, contactRecordId);
         }
 
     }
