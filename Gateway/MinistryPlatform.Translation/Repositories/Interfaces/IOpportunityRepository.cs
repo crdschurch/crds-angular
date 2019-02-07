@@ -11,11 +11,11 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
 
         MpOpportunity GetOpportunityById(int opportunityId, string token);
         int GetOpportunitySignupCount(int opportunityId, int eventId, string token);
-        List<DateTime> GetAllOpportunityDates(int id, string token);
-        MpGroup GetGroupParticipantsForOpportunity(int id, string token);
-        DateTime GetLastOpportunityDate(int opportunityId, string token);
+        List<DateTime> GetAllOpportunityDates(int id);
+        MpGroup GetGroupParticipantsForOpportunity(int id);
+        DateTime GetLastOpportunityDate(int opportunityId);
         int DeleteResponseToOpportunities(int participantId, int opportunityId, int eventId);
-        int RespondToOpportunity(string token, int opportunityId, string comments);
+        int RespondToOpportunity( int opportunityId, string comments, int contactId);
         MpResponse GetMyOpportunityResponses(int contactId, int opportunityId);
         MpResponse GetOpportunityResponse(int contactId, int opportunityId);
         MpResponse GetOpportunityResponse(int opportunityId, int eventId, MpParticipant participant);

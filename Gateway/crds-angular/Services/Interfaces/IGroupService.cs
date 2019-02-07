@@ -33,19 +33,16 @@ namespace crds_angular.Services.Interfaces
 
         List<GroupDTO> GetGroupsByTypeForParticipant(int participantId, int groupTypeId);
 
-        Participant GetParticipantRecord(string token);
-
+  
         Participant GetParticipantRecord(int contactId);
 
-        void SendJourneyEmailInvite(EmailCommunicationDTO email, string token);
+        void SendJourneyEmailInvite(EmailCommunicationDTO email, int contactId);
 
         List<GroupParticipantDTO> GetGroupParticipants(int groupId, bool active = true);
 
         void LookupParticipantIfEmpty(int loggedInPartId, List<ParticipantSignup> partId);
 
-        List<GroupDTO> GetGroupsForAuthenticatedUser(string token, int[] groupTypeIds);
-
-        List<GroupDTO> GetGroupByIdForAuthenticatedUser(string token, int groupId);
+        List<GroupDTO> GetGroupByIdForAuthenticatedUser(int contactId, int groupId);
 
         GroupDTO UpdateGroup(GroupDTO @group);
 
@@ -54,10 +51,10 @@ namespace crds_angular.Services.Interfaces
         void UpdateGroupParticipantRole(GroupParticipantDTO participant);
         void UpdateGroupParticipantRole(int groupId, int participantId, int roleId);
 
-        void SendParticipantsEmail(string token, List<GroupParticipantDTO> participants, string subject, string body);
+        void SendParticipantsEmail(int contactId, List<GroupParticipantDTO> participants, string subject, string body);
 
-        List<GroupDTO> RemoveOnsiteParticipantsIfNotLeader(List<GroupDTO> groups, string token);
-        List<GroupDTO> GetGroupsByTypeOrId(string token, int? participantId = null, int[] groupTypeIds = null, int? groupId = null, bool? withParticipants = true, bool? withAttributes = true);
+        List<GroupDTO> RemoveOnsiteParticipantsIfNotLeader(List<GroupDTO> groups, int contactId);
+        List<GroupDTO> GetGroupsByTypeOrId(int contactId, int? participantId = null, int[] groupTypeIds = null, int? groupId = null, bool? withParticipants = true, bool? withAttributes = true);
 
         int GetPrimaryContactParticipantId(int groupId);
 

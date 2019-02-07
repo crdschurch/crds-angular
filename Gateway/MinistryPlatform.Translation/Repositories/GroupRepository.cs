@@ -804,12 +804,12 @@ namespace MinistryPlatform.Translation.Repositories
             }).ToList();
         }
 
-        public List<MpGroup> GetGroupsForParticipant(string token, int participantId)
+        public List<MpGroup> GetGroupsForParticipant(int participantId)
         {
             var viewId = _configurationWrapper.GetConfigIntValue("CurrentGroupParticipantsByGroupTypePageView");           
             var searchString = ",\"" + participantId + "\"";
 
-            var records = ministryPlatformService.GetPageViewRecords(viewId, token, searchString);
+            var records = ministryPlatformService.GetPageViewRecords(viewId, ApiLogin(), searchString);
             return records.Select(details => new MpGroup
             {
                 GroupId = details.ToInt("Group_ID"),
@@ -1058,7 +1058,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public bool ParticipantGroupHasStudents(string token, int participantId, int groupParticipantId)
         {
-            var groups = GetGroupsForParticipant(token, participantId);
+            var groups = GetGroupsForParticipant(participantId);
             var groupId = 0;
             foreach (var group in groups)
             {

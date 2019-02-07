@@ -618,10 +618,10 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _configWrapper.Setup(m => m.GetConfigIntValue("CurrentGroupParticipantsByGroupTypePageView")).Returns(pageViewId);
 
-            _ministryPlatformService.Setup(m => m.GetPageViewRecords(pageViewId, token, searchString, It.IsAny<string>(), It.IsAny<int>()))
+            _ministryPlatformService.Setup(m => m.GetPageViewRecords(pageViewId, It.IsAny<string>(), searchString, It.IsAny<string>(), It.IsAny<int>()))
                 .Returns(MockMyGroups);
 
-            _fixture.GetGroupsForParticipant(token, participantId);
+            _fixture.GetGroupsForParticipant(participantId);
 
             _ministryPlatformService.VerifyAll();
 

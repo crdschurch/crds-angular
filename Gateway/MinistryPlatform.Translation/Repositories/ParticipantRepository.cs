@@ -15,13 +15,15 @@ namespace MinistryPlatform.Translation.Repositories
     {
         public const string UpdateHuddleGroupParticipantStatusProc = "crds_Huddle_Participant_Status_Refresh";
         private readonly IMinistryPlatformService _ministryPlatformService;
+		private readonly IApiUserRepository _apiUserRepository;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
 
-        public ParticipantRepository(IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IAuthenticationRepository authenticationService , IConfigurationWrapper configurationWrapper)
+        public ParticipantRepository(IApiUserRepository apiUserRepository, IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IAuthenticationRepository authenticationService , IConfigurationWrapper configurationWrapper)
             : base(authenticationService, configurationWrapper)
         {
             this._ministryPlatformService = ministryPlatformService;
             this._ministryPlatformRestRepository = ministryPlatformRestRepository;
+			this._apiUserRepository = apiUserRepository;
         }
 
         public int CreateParticipantRecord(int contactId)
@@ -36,8 +38,6 @@ namespace MinistryPlatform.Translation.Repositories
 
             return _ministryPlatformService.CreateRecord(pageId, participantDictionary, token);
         }
-
-        //Get Participant IDs of a contact
         public MpParticipant GetParticipantRecord(string token)
         {
             var results = _ministryPlatformService.GetRecordsDict("MyParticipantRecords", token);
@@ -72,6 +72,7 @@ namespace MinistryPlatform.Translation.Repositories
             return participant;
         }
 
+        //Get Participant IDs of a contact
         public MpParticipant GetParticipant(int contactId)
         {             
             try
