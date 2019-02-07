@@ -53,7 +53,7 @@ describe('Camps Payment Component', () => {
       fixture.$onInit();
       fixture.buildUrl();
 
-      const url = 'https%3A%2F%2Fcrossroads.net%2Fmycamps';
+      const url = 'https%3A%2F%2Fwww.crossroads.net%2Fmycamps';
 
       expect(sce.trustAsResourceUrl).toHaveBeenCalledWith(`/give?type=payment&min_payment=${fixture.depositPrice}&invoice_id=${invoiceId}&total_cost=${fixture.totalPrice}&title=${fixture.campsService.campTitle}&url=${url}`);
     });
@@ -64,7 +64,7 @@ describe('Camps Payment Component', () => {
       fixture.$onInit();
       fixture.buildUrl();
 
-      const url = `https%3A%2F%2Fcrossroads.net%2Fcamps%2F${state.toParams.campId}%2F${state.toParams.redirectTo}%2F${state.toParams.contactId}`;
+      const url = `https%3A%2F%2Fwww.crossroads.net%2Fcamps%2F${state.toParams.campId}%2F${state.toParams.redirectTo}%2F${state.toParams.contactId}`;
 
       expect(sce.trustAsResourceUrl).toHaveBeenCalledWith(`/give?type=payment&min_payment=${fixture.depositPrice}&invoice_id=${invoiceId}&total_cost=${fixture.totalPrice}&title=${fixture.campsService.campTitle}&url=${url}`);
     });
@@ -75,7 +75,7 @@ describe('Camps Payment Component', () => {
       fixture.$onInit();
       fixture.buildUrl();
 
-      const url = `https%3A%2F%2Fcrossroads.net%2Fcamps%2F${state.toParams.campId}%2Fpayment-confirmation%2F${state.toParams.contactId}`;
+      const url = `https%3A%2F%2Fwww.crossroads.net%2Fcamps%2F${state.toParams.campId}%2Fpayment-confirmation%2F${state.toParams.contactId}`;
 
       expect(sce.trustAsResourceUrl).toHaveBeenCalledWith(`/give?type=payment&min_payment=${fixture.depositPrice}&invoice_id=${invoiceId}&total_cost=${fixture.totalPrice}&title=${fixture.campsService.campTitle}&url=${url}`);
     });
