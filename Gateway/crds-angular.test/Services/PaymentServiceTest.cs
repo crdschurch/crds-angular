@@ -102,7 +102,6 @@ namespace crds_angular.test.Services
             _invoiceRepository.Setup(m => m.GetInvoice(invoiceId)).Returns(invoice);
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);
             _paymentProcessorService.Setup(m => m.GetCharge(It.IsAny<string>())).Returns(charge);
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
 
             PaymentDetailDTO ret = _fixture.GetPaymentDetails(paymentId, invoiceId, token, false);
             Assert.AreEqual(24M, ret.PaymentAmount);
@@ -134,8 +133,7 @@ namespace crds_angular.test.Services
             var me = fakeMyContact(contactId, emailAddress);
             var invoice = fakeInvoice(invoiceId, contactId, 500.00M);
             var payments = fakePayments(contactId, 24M, paymentId);
-
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
+            
             _invoiceRepository.Setup(m => m.GetInvoice(invoiceId)).Returns(invoice);
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);
             _paymentProcessorService.Setup(m => m.GetCharge(It.IsAny<string>())).Returns(charge);
@@ -163,8 +161,7 @@ namespace crds_angular.test.Services
             var me = fakeMyContact(contactId, emailAddress);
             var invoice = fakeInvoice(invoiceId, contactId, 500.00M);
             var payments = fakePayments(1, 24M, paymentId);
-
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
+            
             _invoiceRepository.Setup(m => m.GetInvoice(invoiceId)).Returns(invoice);
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);
 
@@ -408,8 +405,7 @@ namespace crds_angular.test.Services
 
             var payments = fakePayments(payerId, 500);
             var me = fakeMyContact(payerId, emailAddress);
-
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
+            
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);            
                 
             var result = _fixture.DepositExists(invoiceId, token);
@@ -428,8 +424,6 @@ namespace crds_angular.test.Services
 
             var payments = fakePayments(1234, 500);
             var me = fakeMyContact(contactId, emailAddress);
-
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);
 
             var result = _fixture.DepositExists(invoiceId, token);
@@ -483,7 +477,6 @@ namespace crds_angular.test.Services
 
             _paymentRepository.Setup(m => m.GetPaymentById(paymentId)).Returns(payment);
             _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpEvent);
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
             _eventRepository.Setup(m => m.GetProductEmailTemplate(eventId)).Returns(new Ok<int>(emailTemplateId));
             _configWrapper.Setup(m => m.GetConfigValue("BaseUrl")).Returns(baseUrl);
             //_configWrapper.Setup(m => m.GetConfigIntValue("DefaultPaymentEmailTempalte")).Returns(defaultTemplateId);
@@ -547,7 +540,6 @@ namespace crds_angular.test.Services
 
             _paymentRepository.Setup(m => m.GetPaymentById(paymentId)).Returns(payment);
             _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpEvent);
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
             _eventRepository.Setup(m => m.GetProductEmailTemplate(eventId)).Returns(new Err<int>("Template Not Found"));
 
             _configWrapper.Setup(m => m.GetConfigValue("BaseUrl")).Returns(baseUrl);
