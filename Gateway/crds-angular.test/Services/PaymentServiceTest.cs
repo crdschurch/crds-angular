@@ -94,8 +94,7 @@ namespace crds_angular.test.Services
                     AccountNumberLast4 = "2342"
                 }
             };
-
-            var me = fakeMyContact(contactId, emailAddress);
+            
             var invoice = fakeInvoice(invoiceId, contactId, 500.00M);
             var payments = fakePayments(contactId, 24M, paymentId);
 
@@ -129,8 +128,6 @@ namespace crds_angular.test.Services
                     AccountNumberLast4 = "2342"
                 }
             };
-
-            var me = fakeMyContact(contactId, emailAddress);
             var invoice = fakeInvoice(invoiceId, contactId, 500.00M);
             var payments = fakePayments(contactId, 24M, paymentId);
             
@@ -157,8 +154,7 @@ namespace crds_angular.test.Services
             const string emailAddress = "help_me@usa.com";
             AuthDTO token = fakeAuthDTO(contactId, emailAddress);
             const string apiToken = "apiToken";
-
-            var me = fakeMyContact(contactId, emailAddress);
+            
             var invoice = fakeInvoice(invoiceId, contactId, 500.00M);
             var payments = fakePayments(1, 24M, paymentId);
             
@@ -404,7 +400,6 @@ namespace crds_angular.test.Services
             const int invoiceId = 89989;
 
             var payments = fakePayments(payerId, 500);
-            var me = fakeMyContact(payerId, emailAddress);
             
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);            
                 
@@ -423,7 +418,6 @@ namespace crds_angular.test.Services
             const int invoiceId = 89989;
 
             var payments = fakePayments(1234, 500);
-            var me = fakeMyContact(contactId, emailAddress);
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);
 
             var result = _fixture.DepositExists(invoiceId, token);
@@ -445,11 +439,6 @@ namespace crds_angular.test.Services
             const string eventTitle = "My Awesome Event";
             const decimal paymentTotal = 56M;
 
-            var me = FactoryGirl.NET.FactoryGirl.Build<MpMyContact>(m =>
-            {
-                m.Contact_ID = contactId;
-                m.Email_Address = emailAddress;
-            });
             var payment = FactoryGirl.NET.FactoryGirl.Build<MpPayment>(m => { m.PaymentId = paymentId; m.PaymentTotal = paymentTotal; });
             var mpEvent = FactoryGirl.NET.FactoryGirl.Build<MpEvent>(m =>
             {
@@ -488,8 +477,8 @@ namespace crds_angular.test.Services
                                                  mpEvent.PrimaryContact.EmailAddress,
                                                  mpEvent.PrimaryContactId,
                                                  mpEvent.PrimaryContact.EmailAddress,
-                                                 me.Contact_ID,
-                                                 me.Email_Address,
+                                                 contactId,
+                                                 emailAddress,
                                                  mergeData));
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
             _fixture.SendPaymentConfirmation(paymentId, eventId, token);
@@ -514,18 +503,17 @@ namespace crds_angular.test.Services
 
             const string eventTitle = "My Awesome Event";
             const decimal paymentTotal = 56.1M;
-
-            var me = FactoryGirl.NET.FactoryGirl.Build<MpMyContact>(m => m.Contact_ID = contactId);
+           
             var payment = FactoryGirl.NET.FactoryGirl.Build<MpPayment>(m => { m.PaymentId = paymentId; m.PaymentTotal = paymentTotal; });
             var mpEvent = FactoryGirl.NET.FactoryGirl.Build<MpEvent>(m => {
                 m.EventId = eventId;
                 m.EventTitle = eventTitle;
-                m.PrimaryContactId = contactId;
+                m.PrimaryContactId = 1234;
                 m.PrimaryContact = new MpContact
                 {
                     EmailAddress = "Lucille@bluth.com",
                     PreferredName = "Lucille",
-                    ContactId = contactId
+                    ContactId = 1234
                 };
             });
 
@@ -552,8 +540,8 @@ namespace crds_angular.test.Services
                                                  mpEvent.PrimaryContact.EmailAddress,
                                                  mpEvent.PrimaryContactId,
                                                  mpEvent.PrimaryContact.EmailAddress,
-                                                 me.Contact_ID,
-                                                 me.Email_Address,
+                                                 contactId,
+                                                 emailAddress,
                                                  mergeData));
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
             _fixture.SendPaymentConfirmation(paymentId, eventId, token);
