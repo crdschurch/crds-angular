@@ -63,7 +63,7 @@ namespace crds_angular.Security
             Request.Headers.TryGetValues("RefreshToken", out refreshTokens);
             string refreshToken = refreshTokens == null ? null : refreshTokens.FirstOrDefault();
 
-            bool shouldGetNewAccessToken = authTokenCloseToExpiry && refreshToken != null;
+            bool shouldGetNewAccessToken = authTokenCloseToExpiry && (refreshToken != null);
 
             if (shouldGetNewAccessToken) // Check if request is an mp token with an mp refresh token, if so we may need to refresh
             {
@@ -97,11 +97,8 @@ namespace crds_angular.Security
             }
 
             IEnumerable<string> impersonateUserIds;
-            bool impersonate = false;
-            if (Request.Headers.TryGetValues("ImpersonateUserId", out impersonateUserIds) && impersonateUserIds.Any())
-            {
-                impersonate = true;
-            }
+            Request.Headers.TryGetValues("ImpersonateUserId", out impersonateUserIds);
+            bool impersonate = (impersonateUserIds != null) && impersonateUserIds.Any();
 
             //If its an mp token we need to perform the token refresh logic:
             if (auth.Authentication.Provider == "mp")
