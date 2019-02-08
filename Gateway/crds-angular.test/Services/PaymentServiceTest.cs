@@ -83,7 +83,7 @@ namespace crds_angular.test.Services
         {
             const int paymentId = 12345;
             const int invoiceId = 3389753;
-            const int contactId = 12323354;
+            const int contactId = 123;
             const string emailAddress = "help_me@usa.com";
             AuthDTO token = fakeAuthDTO(contactId, emailAddress);
             const string apiToken = "apiToken";
@@ -448,7 +448,7 @@ namespace crds_angular.test.Services
             var me = FactoryGirl.NET.FactoryGirl.Build<MpMyContact>(m =>
             {
                 m.Contact_ID = contactId;
-                m.Email_Address = "me.com@.com";
+                m.Email_Address = emailAddress;
             });
             var payment = FactoryGirl.NET.FactoryGirl.Build<MpPayment>(m => { m.PaymentId = paymentId; m.PaymentTotal = paymentTotal; });
             var mpEvent = FactoryGirl.NET.FactoryGirl.Build<MpEvent>(m =>
@@ -687,9 +687,20 @@ namespace crds_angular.test.Services
           var noProgram = fakeProgram3(productId);
           int templateId2 = noProgram == null ? defaultInvoicePaymentTemplate : noProgram.CommunicationTemplateId ?? defaultInvoicePaymentTemplate;
           Assert.AreEqual(templateId2, defaultInvoicePaymentTemplate);
-    }
+        }
 
-    private static List<MpPayment> fakePayments(int payerId, decimal paymentTotal, int paymentIdOfOne = 34525, int paymentStatus = 0)
+        private AuthDTO fakeAuthDTO(int contactId, string emailAddress)
+        {
+            AuthDTO token = new AuthDTO();
+            token.UserInfo = new UserInfo();
+            token.UserInfo.Mp = new MpUserInfo();
+            token.UserInfo.Mp.ContactId = contactId;
+            token.UserInfo.Mp.Email = emailAddress;
+
+            return token;
+        }
+
+        private static List<MpPayment> fakePayments(int payerId, decimal paymentTotal, int paymentIdOfOne = 34525, int paymentStatus = 0)
         {
             return new List<MpPayment>
             {
@@ -781,17 +792,6 @@ namespace crds_angular.test.Services
         private static MpProgram fakeProgram3(int productId)
         {
           return new MpProgram();
-        }
-
-        private AuthDTO fakeAuthDTO(int contactId, string emailAddress)
-        {
-            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
-            token.UserInfo = new UserInfo();
-            token.UserInfo.Mp = new MpUserInfo();
-            token.UserInfo.Mp.ContactId = contactId;
-            token.UserInfo.Mp.Email = emailAddress;
-
-            return token;
         }
 
     }
