@@ -455,12 +455,12 @@ namespace crds_angular.test.Services
             {
                 m.EventId = eventId;
                 m.EventTitle = eventTitle;
-                m.PrimaryContactId = 1234;
+                m.PrimaryContactId = contactId;
                 m.PrimaryContact = new MpContact
                 {
                     EmailAddress = "Lucille@bluth.com",
                     PreferredName = "Lucille",
-                    ContactId = 1234
+                    ContactId = contactId
                 };
             });
 
@@ -507,7 +507,7 @@ namespace crds_angular.test.Services
             const int eventId = 231;
             const int emailTemplateId = 555;
             const int contactId = 8484;
-            const string emailAddress = "help_me@usa.com";
+            const string emailAddress = "Lucille@bluth.com";
             AuthDTO token = fakeAuthDTO(contactId, emailAddress);
             const string apiToken = "apiToken";
             const string baseUrl = "some url.com";
@@ -520,12 +520,12 @@ namespace crds_angular.test.Services
             var mpEvent = FactoryGirl.NET.FactoryGirl.Build<MpEvent>(m => {
                 m.EventId = eventId;
                 m.EventTitle = eventTitle;
-                m.PrimaryContactId = 1234;
+                m.PrimaryContactId = contactId;
                 m.PrimaryContact = new MpContact
                 {
                     EmailAddress = "Lucille@bluth.com",
                     PreferredName = "Lucille",
-                    ContactId = 1234
+                    ContactId = contactId
                 };
             });
 
