@@ -1532,7 +1532,7 @@ namespace crds_angular.test.Services
             token.UserInfo = new UserInfo();
             token.UserInfo.Mp = new MpUserInfo();
             token.UserInfo.Mp.ContactId = contactId;
-            token.UserInfo.Mp.HouseholdId = householdId;
+            token.UserInfo.Mp.HouseholdId = new int?(householdId);
             token.UserInfo.Mp.Email = emailAddress;
 
             return token;

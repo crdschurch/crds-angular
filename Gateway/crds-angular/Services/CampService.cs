@@ -504,7 +504,7 @@ namespace crds_angular.Services
         }
 
         public void SaveInvoice(CampProductDTO campProductDto, AuthDTO token)
-        {
+        {   
             var family = _contactRepository.GetHouseholdFamilyMembers(token.UserInfo.Mp.HouseholdId.Value);
             family.AddRange(_contactRepository.GetOtherHouseholdMembers(token.UserInfo.Mp.HouseholdId.Value));
 
