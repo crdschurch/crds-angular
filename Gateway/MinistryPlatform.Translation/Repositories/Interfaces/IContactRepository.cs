@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.MinistryPlatform.Translation.Models;
+using Crossroads.Web.Auth.Models;
 
 namespace MinistryPlatform.Translation.Repositories.Interfaces
 {
@@ -16,7 +17,8 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         int GetContactIdByParticipantId(int participantId);
         List<MpHouseholdMember> GetHouseholdFamilyMembers(int householdId);
         List<MpHouseholdMember> GetOtherHouseholdMembers(int contactId);
-        MpMyContact GetMyProfile(string token);
+        MpMyContact GetMyProfile(AuthDTO token);
+        MpMyContact GetMyProfile(String token);
         int CreateContactForGuestGiver(string emailAddress, string displayName, string firstName = null, string lastName = null);
         int CreateContactForSponsoredChild(string firstName, string lastName, string town, string idCard);
         int CreateContactForNewDonor(MpContactDonor mpContactDonor);
