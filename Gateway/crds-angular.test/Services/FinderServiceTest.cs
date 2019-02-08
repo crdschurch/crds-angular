@@ -1006,7 +1006,7 @@ namespace crds_angular.test.Services
             _groupService.Setup(x => x.GetGroupDetails(It.IsAny<int>())).Returns(group);
             _lookupService.Setup(x => x.GetMeetingDayFromId(It.IsAny<int>())).Returns("Friday");
             _mpParticipantRepository.Setup(x => x.GetParticipant(It.IsAny<int>())).Returns(mpParticpant);
-            _groupService.Setup(x => x.GetGroupsByTypeOrId(It.IsAny<string>(), It.IsAny<int>(), null, It.IsAny<int>(),true, false)).Returns(groupList);
+            _groupService.Setup(x => x.GetGroupsByTypeOrId(It.IsAny<int>(), It.IsAny<int>(), null, It.IsAny<int>(),true, false)).Returns(groupList);
 
             _mpContactRepository.Setup(x => x.GetActiveContactIdByEmail("ae@g.com")).Returns(123987);
             _groupService.Setup(x => x.GetGroupParticipants(12345, false)).Returns(gplist);

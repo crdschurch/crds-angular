@@ -25,7 +25,7 @@ namespace crds_angular.Services.Interfaces
                                        MpParticipant fromParticipant = null);
 
         MyGroup VerifyUserIsGroupLeader(int contactId, int groupId);
-        void SendAllGroupParticipantsEmail(string token, int groupId, int groupTypeId, string subject, string message);
+        void SendAllGroupParticipantsEmail(int contactId, int groupId, int groupTypeId, string subject, string message);
         void SendAllGroupLeadersEmail(int contactId, int groupId, GroupMessageDTO message);
         void SubmitInquiry(int contactId, int groupId, bool sendEmail);
         void EndGroup(int groupId, int reasonEndedId);
@@ -34,7 +34,7 @@ namespace crds_angular.Services.Interfaces
         void SendSmallGroupPendingInquiryReminderEmails();
         List<AttributeCategoryDTO> GetGroupCategories();
         void ArchivePendingGroupInquiriesOlderThan90Days();
-        List<GroupDTO> GetGroupToolGroups(string token);
+        List<GroupDTO> GetGroupToolGroups(int contactId);
         Inquiry GetGroupInquiryForContactId(int groupId, int contactId);
         string GetCurrentJourney();
     }

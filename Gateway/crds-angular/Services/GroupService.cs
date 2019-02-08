@@ -377,21 +377,19 @@ namespace crds_angular.Services
 
         public GroupDTO GetGroupDetailsWithAttributes(int groupId)
         {
-            var apiToken = _apiUserService.GetDefaultApiClientToken();
             var group = GetGroupDetails(groupId);
-            GetGroupAttributes(apiToken, new List<GroupDTO> { group });
+            GetGroupAttributes(new List<GroupDTO> { group });
             return group;
         }
 
         public GroupDTO GetGroupDetailsByInvitationGuid(string invitationGuid)
         {
-            var apiToken = _apiUserService.GetDefaultApiClientToken();
             var invitation = _invitationRepository.GetOpenInvitation(invitationGuid);
 
             var group = Mapper.Map<MpGroup, GroupDTO>(_mpGroupRepository.GetSmallGroupDetailsById(invitation.SourceId));
             var groups = new List<GroupDTO> {@group};
 
-            GetGroupAttributes(apiToken, groups);
+            GetGroupAttributes(groups);
             GetGroupParticipants(groups);
 
             return groups[0];
@@ -482,7 +480,7 @@ namespace crds_angular.Services
         public List<GroupDTO> GetGroupsForParticipant(int participantId)
         {
             var apiToken = _apiUserService.GetDefaultApiClientToken();
-            var groups = _mpGroupRepository.GetGroupsForParticipant(apiToken, participantId);
+            var groups = _mpGroupRepository.GetGroupsForParticipant(participantId);
             if (groups == null)
                 return null;
 
@@ -529,9 +527,9 @@ namespace crds_angular.Services
         /// <param name="groupTypeId"></param>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        public List<GroupDTO> GetGroupsByTypeOrId(string token, int? participantId = null, int[] groupTypeIds = null, int? groupId = null, bool? withParticipants = true, bool? withAttributes = true)
+        public List<GroupDTO> GetGroupsByTypeOrId(int contactId, int? participantId = null, int[] groupTypeIds = null, int? groupId = null, bool? withParticipants = true, bool? withAttributes = true)
         {
-            if (participantId == null) participantId = _participantService.GetParticipantRecord(token).ParticipantId;
+            if (participantId == null) participantId = _participantService.GetParticipant(contactId).ParticipantId;
             var groupsByType = _mpGroupRepository.GetGroupsForParticipantByTypeOrID(participantId.Value, null, groupTypeIds, groupId);
 
             if (groupsByType == null)
@@ -560,9 +558,9 @@ namespace crds_angular.Services
             return groupDetail;
         }
 
-        public List<GroupDTO> RemoveOnsiteParticipantsIfNotLeader(List<GroupDTO> groups, string token)
+        public List<GroupDTO> RemoveOnsiteParticipantsIfNotLeader(List<GroupDTO> groups, int contactId)
         {
-            var participant = _participantService.GetParticipantRecord(token);
+            var participant = _participantService.GetParticipant(contactId);
             foreach (var group in groups)
             {
                 if (group.GroupTypeId == _onsiteGroupTypeId)
@@ -576,24 +574,15 @@ namespace crds_angular.Services
             return groups;
         }
 
-        public List<GroupDTO> GetGroupsForAuthenticatedUser(string token, int[] groupTypeIds)
+        public List<GroupDTO> GetGroupByIdForAuthenticatedUser(int contactId, int groupId)
         {
-            var groups = _mpGroupRepository.GetMyGroupParticipationByType(token, groupTypeIds, null);
+            var participant = _participantService.GetParticipant(contactId);
+            var groups = _mpGroupRepository.GetGroupsForParticipant(participant.ParticipantId);
             if (groups == null)
             {
                 return null;
             }
-            return GetAttributesAndParticipants(token, groups);
-        }
-
-        public List<GroupDTO> GetGroupByIdForAuthenticatedUser(string token, int groupId)
-        {
-            var groups = _mpGroupRepository.GetMyGroupParticipationByType(token, null, groupId);
-            if (groups == null)
-            {
-                return null;
-            }
-            return GetAttributesAndParticipants(token,groups);
+            return GetAttributesAndParticipants(groups);
         }
 
         public List<GroupParticipantDTO> GetGroupParticipantsWithoutAttributes(int groupId)
@@ -607,11 +596,11 @@ namespace crds_angular.Services
             return new List<GroupParticipantDTO>();
         }
 
-        private List<GroupDTO> GetAttributesAndParticipants(string token, List<MpGroup> groups)
+        private List<GroupDTO> GetAttributesAndParticipants(List<MpGroup> groups)
         {
             var groupDetail = groups.Select(Mapper.Map<MpGroup, GroupDTO>).ToList();
 
-            GetGroupAttributes(token, groupDetail);
+            GetGroupAttributes(groupDetail);
             GetGroupParticipants(groupDetail);
 
             return groupDetail;
@@ -629,7 +618,7 @@ namespace crds_angular.Services
             }
         }
 
-        private void GetGroupAttributes(string token, List<GroupDTO> groups)
+        private void GetGroupAttributes(List<GroupDTO> groups)
         {
             var configuration = MpObjectAttributeConfigurationFactory.Group();
 
@@ -676,30 +665,9 @@ namespace crds_angular.Services
             };
         }
 
-        // this method will be removed all endpoints have been moved to new Auth
-        public Participant GetParticipantRecord(string token) 
+        public void SendJourneyEmailInvite(EmailCommunicationDTO communication, int contactId)
         {
-            var participant = _participantService.GetParticipantRecord(token);
-            return new Participant
-            {
-                Age = participant.Age,
-                ApprovedSmallGroupLeader = participant.ApprovedSmallGroupLeader,
-                AttendanceStart = participant.AttendanceStart,
-                ContactId = participant.ContactId,
-                DisplayName = participant.DisplayName,
-                EmailAddress = participant.EmailAddress,
-                GroupLeaderStatus = participant.GroupLeaderStatus,
-                GroupName = participant.GroupName,
-                Nickname = participant.Nickname,
-                ParticipantId = participant.ParticipantId,
-                PreferredName = participant.PreferredName,
-                Role = participant.Role
-            };
-        }
-
-        public void SendJourneyEmailInvite(EmailCommunicationDTO communication, string token)
-        {
-            var participant = GetParticipantRecord(token);
+            var participant = GetParticipantRecord(contactId);
             var groups = GetGroupsByTypeForParticipant(participant.ParticipantId, _journeyGroupTypeId);
 
             if (groups == null ||  groups.Count == 0)
@@ -969,9 +937,9 @@ namespace crds_angular.Services
             return _mpGroupRepository.GetParticipantIdFromGroup(groupId, _apiUserService.GetDefaultApiClientToken());
         }
 
-        public void SendParticipantsEmail(string token, List<GroupParticipantDTO> participants, string subject, string body)
+        public void SendParticipantsEmail(int contactId, List<GroupParticipantDTO> participants, string subject, string body)
         {
-            var senderRecord = _participantService.GetParticipantRecord(token);
+            var senderRecord = _participantService.GetParticipant(contactId);
 
             var fromContact = new MpContact
             {

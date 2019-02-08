@@ -482,17 +482,17 @@ namespace crds_angular.Services
 
         }
 
-        public void SendAllGroupParticipantsEmail(string token, int groupId, int groupTypeId, string subject, string body)
+        public void SendAllGroupParticipantsEmail(int contactId, int groupId, int groupTypeId, string subject, string body)
         {
-            var leaderRecord = _participantRepository.GetParticipantRecord(token);
-            var groups = _groupService.GetGroupByIdForAuthenticatedUser(token, groupId);
+            var leaderRecord = _participantRepository.GetParticipant(contactId);
+            var groups = _groupService.GetGroupByIdForAuthenticatedUser(contactId, groupId);
 
             if (groups == null || !groups.Any())
             {
                 throw new GroupNotFoundForParticipantException($"Could not find group {groupId} for groupParticipant {leaderRecord.ParticipantId}");
             }
 
-            if (!ValidateUserAsLeader(token, groupTypeId, groupId, leaderRecord.ParticipantId, groups.First()))
+            if (!ValidateUserAsLeader(contactId, groupTypeId, groupId, leaderRecord.ParticipantId, groups.First()))
             {
                 throw new NotGroupLeaderException($"Group participant ID {leaderRecord.ParticipantId} is not a leader of group {groupId}");
             }
@@ -529,10 +529,10 @@ namespace crds_angular.Services
             _communicationRepository.SendMessage(email);
         }
 
-        public bool ValidateUserAsLeader(string token, int groupTypeId, int groupId, int groupParticipantId, GroupDTO group)
+        public bool ValidateUserAsLeader(int contactId, int groupTypeId, int groupId, int groupParticipantId, GroupDTO group)
         {
             var groupParticipants = group.Participants;
-            var me = _participantRepository.GetParticipantRecord(token);
+            var me = _participantRepository.GetParticipant(contactId);
 
             if (groupParticipants == null || groupParticipants.Find(p => p.ParticipantId == me.ParticipantId) == null)
             {
@@ -602,11 +602,11 @@ namespace crds_angular.Services
             return _communicationRepository.SendMessage(message, false);
         }
 
-        public List<GroupDTO> GetGroupToolGroups(string token)
+        public List<GroupDTO> GetGroupToolGroups(int contactId)
         {
-            var groups = _groupService.GetGroupsByTypeOrId(token,null, new int[] { _smallGroupTypeId, _onsiteGroupTypeId }, null);
+            var groups = _groupService.GetGroupsByTypeOrId(contactId, null, new int[] { _smallGroupTypeId, _onsiteGroupTypeId }, null);
 
-            return _groupService.RemoveOnsiteParticipantsIfNotLeader(groups, token);
+            return _groupService.RemoveOnsiteParticipantsIfNotLeader(groups, contactId);
         }
 
         public void SubmitInquiry(int contactId, int groupId, bool doSendEmail)

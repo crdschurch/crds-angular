@@ -165,7 +165,7 @@ namespace crds_angular.Services
         public DateTime GetLastServingDate(int opportunityId, string token)
         {
             logger.Debug(string.Format("GetLastOpportunityDate({0}) ", opportunityId));
-            return _opportunityService.GetLastOpportunityDate(opportunityId, token);
+            return _opportunityService.GetLastOpportunityDate(opportunityId);
         }
 
         public List<QualifiedServerDto> GetQualifiedServers(int groupId, int opportunityId, int contactId)
