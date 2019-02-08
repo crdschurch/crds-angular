@@ -872,7 +872,7 @@ namespace crds_angular.test.Services
             const int eventId = 1289;
             const int contactId = 123; // this is set in the getFakeHouseholdMembers() method
             const int loggedInContactId = 6767;
-            AuthDTO token = fakeAuthDTO(loggedInContactId);
+            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
             const string apiToken = "apiToken";
 
             var me = getFakeContact(loggedInContactId);
@@ -909,7 +909,7 @@ namespace crds_angular.test.Services
             const int eventId = 1289;
             const int contactId = 123; // this is set in the getFakeHouseholdMembers() method
             const int loggedInContactId = 6767;
-            AuthDTO token = fakeAuthDTO(loggedInContactId);
+            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
             const string apiToken = "apiToken";
 
             var me = getFakeContact(loggedInContactId);
@@ -1255,7 +1255,7 @@ namespace crds_angular.test.Services
             var eventEndDate = DateTime.Now.AddDays(191);            
 
             var myContact = getFakeContact(loggedInContactId);
-            AuthDTO token = fakeAuthDTO(loggedInContactId);
+            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
             var myFamily = getFakeHouseholdMembers(myContact);
             var campDto = FactoryGirl.NET.FactoryGirl.Build<CampProductDTO>(m => m.ContactId = myFamily.FirstOrDefault().ContactId);
             var participant = FactoryGirl.NET.FactoryGirl.Build<MpParticipant>(m =>
@@ -1333,7 +1333,7 @@ namespace crds_angular.test.Services
             var eventEndDate = DateTime.Now.AddDays(191);
 
             var myContact = getFakeContact(loggedInContactId);
-            AuthDTO token = fakeAuthDTO(loggedInContactId);
+            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
             var myFamily = getFakeHouseholdMembers(myContact);
             var campDto = FactoryGirl.NET.FactoryGirl.Build<CampProductDTO>(m => m.ContactId = myFamily.FirstOrDefault().ContactId);
             var participant = FactoryGirl.NET.FactoryGirl.Build<MpParticipant>(m =>
@@ -1412,7 +1412,7 @@ namespace crds_angular.test.Services
             var eventEndDate = DateTime.Now.AddDays(191);
 
             var myContact = getFakeContact(loggedInContactId);
-            AuthDTO token = fakeAuthDTO(loggedInContactId);
+            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
             var myFamily = getFakeHouseholdMembers(myContact);
             var campDto = FactoryGirl.NET.FactoryGirl.Build<CampProductDTO>(m => m.ContactId = myFamily.FirstOrDefault().ContactId);
             var participant = FactoryGirl.NET.FactoryGirl.Build<MpParticipant>(m =>
