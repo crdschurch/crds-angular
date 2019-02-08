@@ -103,7 +103,7 @@ namespace crds_angular.test.Services
         {
             var apiToken = "apiToken";
             var myContactId = 2187211;
-            var token = fakeAuthDTO(myContactId, 0, "");
+            var token = fakeAuthDTO(myContactId, 23);
             var signedUpDate = DateTime.Now;
             var eventId = 5433;
             var myContact = getFakeContact(myContactId);
@@ -219,7 +219,7 @@ namespace crds_angular.test.Services
             {
                 EventParticipantId = newEventparticipantId
             };
-            AuthDTO token = fakeAuthDTO(newContactId, household.Household_ID, "");
+            AuthDTO token = fakeAuthDTO(newContactId, household.Household_ID);
 
             _contactService.Setup(m => m.CreateContact(It.IsAny<MpContact>())).Returns(contact);
             _participantRepository.Setup(m => m.GetParticipant(newContactId)).Returns(participant);
@@ -669,7 +669,6 @@ namespace crds_angular.test.Services
         {
             const string apiToken = "apiToken";
             const int contactId = 123;
-            AuthDTO token = fakeAuthDTO(contactId);
             var medicalInfo = new MedicalInfoDTO
             {
                 InsuranceCompany = "Ins. Co. Name",
@@ -692,6 +691,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 999999,
                 Household_ID = 77777
             };
+            AuthDTO token = fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
 
             var myHousehold = new List<MpHouseholdMember>
             {
@@ -733,7 +733,6 @@ namespace crds_angular.test.Services
         {
             const string apiToken = "apiToken";
             const int contactId = 123;
-            AuthDTO token = fakeAuthDTO(contactId);
             var medicalInfo = new MedicalInfoDTO
             {
                 InsuranceCompany = "Ins. Co. Name",
@@ -764,6 +763,7 @@ namespace crds_angular.test.Services
                     ContactId = contactId
                 }
             };
+            AuthDTO token = fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
 
             var otherHousehold = new List<MpHouseholdMember>
             {
@@ -802,7 +802,6 @@ namespace crds_angular.test.Services
         {
             const string apiToken = "apiToken";
             const int contactId = 123;
-            AuthDTO token = fakeAuthDTO(contactId);
             var medicalInfo = new MedicalInfoDTO
             {
                 InsuranceCompany = "Ins. Co. Name",
@@ -825,6 +824,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 999999,
                 Household_ID = 77777
             };
+            AuthDTO token = fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
 
             var myHousehold = new List<MpHouseholdMember>
             {
@@ -946,7 +946,6 @@ namespace crds_angular.test.Services
             const string apiToken = "apiToken";
             const int contactId = 2187211;
             var myContact = getFakeContact(contactId);
-            AuthDTO token = fakeAuthDTO(contactId);
             const int childContactId = 123456789;
 
             const int summerCampFormId = 28;
@@ -968,6 +967,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 56789,
                 Household_ID = 10000
             };
+            AuthDTO token = fakeAuthDTO(loggedInContact.Contact_ID, loggedInContact.Household_ID);
 
             var householdfamily = new List<MpHouseholdMember>
             {
@@ -1021,7 +1021,6 @@ namespace crds_angular.test.Services
             const int eventId = 123;
             const string apiToken = "apiToken";
             const int contactId = 2187211;
-            AuthDTO token = fakeAuthDTO(contactId);
             var myContact = getFakeContact(contactId);
             const int childContactId = 123456789;
 
@@ -1033,6 +1032,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 56789,
                 Household_ID = 10000
             };
+            AuthDTO token = fakeAuthDTO(loggedInContact.Contact_ID, loggedInContact.Household_ID);
 
             var householdfamily = new List<MpHouseholdMember>
             {
@@ -1526,7 +1526,7 @@ namespace crds_angular.test.Services
 
         }
 
-        private AuthDTO fakeAuthDTO(int contactId, int householdId=0, string emailAddress="")
+        private AuthDTO fakeAuthDTO(int contactId, int householdId=23, string emailAddress="")
         {
             AuthDTO token = new AuthDTO();
             token.UserInfo = new UserInfo();
