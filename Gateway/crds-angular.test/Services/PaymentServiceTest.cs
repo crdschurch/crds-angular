@@ -85,7 +85,7 @@ namespace crds_angular.test.Services
             const int invoiceId = 3389753;
             const int contactId = 12323354;
             const string emailAddress = "help_me@usa.com";
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
             const string apiToken = "apiToken";
             StripeCharge charge = new StripeCharge()
             {
@@ -121,7 +121,7 @@ namespace crds_angular.test.Services
             const int invoiceId = 3389753;
             const int contactId = 12323354;
             const string emailAddress = "help_me@usa.com";
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
             const string apiToken = "apiToken";
             StripeCharge charge = new StripeCharge()
             {
@@ -157,7 +157,7 @@ namespace crds_angular.test.Services
             const int invoiceId = 3389753;
             const int contactId = 12323354;
             const string emailAddress = "help_me@usa.com";
-            AuthDTO token = new AuthDTO();
+            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
             const string apiToken = "apiToken";
 
             var me = fakeMyContact(contactId, emailAddress);
@@ -400,13 +400,14 @@ namespace crds_angular.test.Services
 
         public void DepositAlreadyExists()
         {
-            AuthDTO token = new AuthDTO();
-            const string apiToken = "apiToken";
-            const int payerId = 3333;           
+            const int payerId = 3333;
+            const string emailAddress = "help_me@usa.com";
+            AuthDTO token = fakeAuthDTO(payerId, emailAddress);
+            const string apiToken = "apiToken";          
             const int invoiceId = 89989;
 
             var payments = fakePayments(payerId, 500);
-            var me = fakeMyContact(payerId, "faekemail@jon.com");
+            var me = fakeMyContact(payerId, emailAddress);
 
             _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);            
@@ -418,13 +419,15 @@ namespace crds_angular.test.Services
         [Test]
         public void DepositDoesNotExist()
         {
-            AuthDTO token = new AuthDTO();
+            const int contactId = 12323354;
+            const string emailAddress = "help_me@usa.com";
+            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
             const string apiToken = "apiToken";
             const int payerId = 3333;
             const int invoiceId = 89989;
 
             var payments = fakePayments(1234, 500);
-            var me = fakeMyContact(payerId, "faekemail@jon.com");
+            var me = fakeMyContact(contactId, emailAddress);
 
             _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);
@@ -439,9 +442,10 @@ namespace crds_angular.test.Services
             const int paymentId = 345;
             const int eventId = 231;
             const int emailTemplateId = 555;
-            AuthDTO token = new AuthDTO();
             const string apiToken = "apiToken";
             const int contactId = 8484;
+            const string emailAddress = "help_me@usa.com";
+            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
             const string baseUrl = "some url.com";
 
             const string eventTitle = "My Awesome Event";
@@ -509,9 +513,10 @@ namespace crds_angular.test.Services
             const int paymentId = 345;
             const int eventId = 231;
             const int emailTemplateId = 555;
-            AuthDTO token = new AuthDTO();
-            const string apiToken = "apiToken";
             const int contactId = 8484;
+            const string emailAddress = "help_me@usa.com";
+            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
+            const string apiToken = "apiToken";
             const string baseUrl = "some url.com";
 
             const string eventTitle = "My Awesome Event";
@@ -786,6 +791,17 @@ namespace crds_angular.test.Services
           return new MpProgram();
         }
 
-  }
+        private AuthDTO fakeAuthDTO(int contactId, string emailAddress)
+        {
+            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
+            token.UserInfo = new UserInfo();
+            token.UserInfo.Mp = new MpUserInfo();
+            token.UserInfo.Mp.ContactId = contactId;
+            token.UserInfo.Mp.Email = emailAddress;
+
+            return token;
+        }
+
+    }
 }
 
