@@ -90,7 +90,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult GetProfile(int contactId)
         {
-            return Authorized(token =>
+            return Authorized(authDTO =>
             {
                 try
                 {
