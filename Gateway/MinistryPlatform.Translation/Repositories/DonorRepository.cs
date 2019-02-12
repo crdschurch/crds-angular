@@ -1125,7 +1125,7 @@ namespace MinistryPlatform.Translation.Repositories
 
             try
             {
-                _ministryPlatformService.UpdateRecord(_myDonorPageId, dictionary, token);
+                _ministryPlatformRestRepository.UsingAuthenticationToken(token).UpdateRecord("Donors", statement.DonorId, dictionary);
             }
             catch (Exception e)
             {
