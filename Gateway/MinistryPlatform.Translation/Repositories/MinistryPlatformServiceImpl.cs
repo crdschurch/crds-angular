@@ -381,8 +381,8 @@ namespace MinistryPlatform.Translation.Repositories
             {
                 return;
             }
-
-            if (ImpersonatedUserGuid.GetToken() != currentToken)
+            if ((ImpersonatedUserGuid.GetToken() != currentToken)
+                && (ImpersonatedUserGuid.GetToken() != ImpersonatedUserGuid.NewAuthImpersonateToken))
             {
                 return;
             }

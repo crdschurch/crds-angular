@@ -96,17 +96,21 @@ namespace crds_angular.Controllers.API
                 {
                     // does the logged in user have permission to view this contact?
                     //TODO: Move this security logic to MP, if for some reason we absulutly can't then centerlize all security logic that exists in the gateway
-                    var family = _serveService.GetImmediateFamilyParticipants(contactId);
                     Person person = null;
-                    if (family.Where(f => f.ContactId == contactId).ToList().Count > 0)
+                    if (authDTO.UserInfo.Mp.ContactId == contactId) // This is not an impersonation case
                     {
-
                         person = _personService.GetPerson(contactId);
                     }
+                    else if (authDTO.UserInfo.Mp.CanImpersonate.Value)
+                    {
+                        person = _personService.GetPerson(contactId);
+                    }
+                    
                     if (person == null)
                     {
                         return Unauthorized();
                     }
+
                     return Ok(person);
                 }
                 catch (Exception e)
