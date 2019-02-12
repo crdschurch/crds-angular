@@ -257,67 +257,48 @@ namespace crds_angular.test.Services
             Assert.AreEqual(result.PinType, PinType.PERSON);
         }
 
-
-        [Test]
-        public void ShouldGetGroupPinDetailsAnywhere()
-        {
-
-            var searchresults = new SearchResponse();
-            searchresults.Hits = new Hits();
-            searchresults.Hits.Found = 1;
-            searchresults.Hits.Start = 0;
-            searchresults.Hits.Hit = new List<Hit>();
-            var hit = new Hit();
-            var fields = new Dictionary<string, List<string>>();
-            fields.Add("firstname", new List<string>() {"Sara"});
-            fields.Add("lastname", new List<string>() {"Smith"});
-            fields.Add("pintype", new List<string>() {"2"});
-            fields.Add("latlong", new List<string>() {"38.94526,-84.661275"});
-            fields.Add("groupid", new List<string>() {"121212"});
-            fields.Add("city", new List<string>() {"Union"});
-            fields.Add("zip", new List<string>() {"41091"});
-            fields.Add("contactid", new List<string>() {"111111"});
-
-            hit.Fields = fields;
-            searchresults.Hits.Hit.Add(hit);
-
-            _awsCloudsearchService.Setup(
-                mocked => mocked.SearchByGroupId(It.IsAny<string>())).Returns(searchresults);
-
-            var result = _fixture.GetPinDetailsForGroup(121212, new GeoCoordinate(38.94526, -84.661275));
-
-            Assert.IsInstanceOf<PinDto>(result);
-
-            Assert.AreEqual(result.FirstName, "Sara");
-            Assert.AreEqual(result.Gathering.GroupId, 121212);
-            Assert.AreEqual(result.PinType, PinType.GATHERING);
-        }
-
         [Test]
         public void ShouldGetGroupPinDetailsSmallGroup()
         {
-            var searchresults = new SearchResponse();
-            searchresults.Hits = new Hits();
-            searchresults.Hits.Found = 1;
-            searchresults.Hits.Start = 0;
-            searchresults.Hits.Hit = new List<Hit>();
-            var hit = new Hit();
-            var fields = new Dictionary<string, List<string>>();
-            fields.Add("firstname", new List<string>() {"Sara"});
-            fields.Add("lastname", new List<string>() {"Smith"});
-            fields.Add("pintype", new List<string>() {"4"});
-            fields.Add("latlong", new List<string>() {"38.94526,-84.661275"});
-            fields.Add("groupid", new List<string>() {"121212"});
-            fields.Add("groupname", new List<string>() {"Sara S."});
-            fields.Add("city", new List<string>() {"Union"});
-            fields.Add("zip", new List<string>() {"41091"});
-            fields.Add("contactid", new List<string>() {"111111"});
+            var c = new MpMyContact
+            {
+                First_Name = "Sara",
+                Last_Name = "Smith",
+                Contact_ID = 123,
+                Household_ID = 456
+            };
 
-            hit.Fields = fields;
-            searchresults.Hits.Hit.Add(hit);
+            var g = new MpGroup
+            {
+                GroupId = 121212,
+                CongregationId = 8,
+                Name = "Test Group 1",
+                GroupRoleId = 16,
+                GroupDescription = "Test Group 1",
+                MinistryId = 8,
+                ContactId = 3,
+                GroupType = 1,
+                StartDate = Convert.ToDateTime("2016-02-12"),
+                MeetingDayId = 3,
+                MeetingDay = "Wednesday",
+                MeetingFrequency = "Daily",
+                GroupTypeName = "Name",
+                MeetingTime = "10:00",
+                AvailableOnline = true,
+                Address = new MpAddress()
+                {
+                    Address_Line_1 = "123 Main St",
+                    Address_Line_2 = "",
+                    City = "Somewhere",
+                    State = "OH",
+                    Postal_Code = "45454",
+                    Latitude = 39.0,
+                    Longitude = -84.51
+                }
+            };
 
-            _awsCloudsearchService.Setup(
-                mocked => mocked.SearchByGroupId(It.IsAny<string>())).Returns(searchresults);
+            _mpContactRepository.Setup(m => m.GetContactById(It.IsAny<int>())).Returns(c);
+            _mpGroupRepository.Setup(m => m.getGroupDetails(It.IsAny<int>())).Returns(g);
 
             var result = _fixture.GetPinDetailsForGroup(121212, new GeoCoordinate(38.94526, -84.661275));
 
