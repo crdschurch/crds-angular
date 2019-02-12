@@ -7,6 +7,8 @@ namespace Crossroads.Utilities.Services
     {
         private static ThreadLocal<ImpersonatedData> _instance = new ThreadLocal<ImpersonatedData>();
 
+        public static readonly string NewAuthImpersonateToken = "NewAuthTokenString";
+
         public static void Set(string guid, string token)
         {
             _instance.Value = new ImpersonatedData() {Guid = guid, Token = token};
