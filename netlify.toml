@@ -45,11 +45,13 @@
 
 [context.deploy-preview.environment]
 
+[context.development.environment]
+
 [context.master.environment]
 
 [context.release.environment]
   IN_MAESTRO = '0'
-  CRDS_ENV = ''
+  CRDS_ENV = 'demo'
   CRDS_COOKIE_DOMAIN = '.crossroads.net'
   CROSSROADS_API_TOKEN = '9a3f6689-679e-425a-a3b5-ee7b73665ebb'
   CRDS_APP_SERVER_ENDPOINT = 'https://demo.crossroads.net/'
