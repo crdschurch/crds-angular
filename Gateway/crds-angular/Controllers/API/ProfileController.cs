@@ -90,23 +90,34 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult GetProfile(int contactId)
         {
-            return Authorized(token =>
+            return Authorized(authDTO =>
             {
                 try
                 {
                     // does the logged in user have permission to view this contact?
                     //TODO: Move this security logic to MP, if for some reason we absulutly can't then centerlize all security logic that exists in the gateway
-                    var family = _serveService.GetImmediateFamilyParticipants(token.UserInfo.Mp.ContactId);
                     Person person = null;
-                    if (family.Where(f => f.ContactId == contactId).ToList().Count > 0)
-                    {
+                    bool requestedContactIdIsSameAsTokenContactId = authDTO.UserInfo.Mp.ContactId == contactId;
+                    bool canImpersonate = authDTO.UserInfo.Mp.CanImpersonate.Value;
 
+                    if (requestedContactIdIsSameAsTokenContactId) // This is not an impersonation case
+                    {
                         person = _personService.GetPerson(contactId);
                     }
+                    else if (canImpersonate)
+                    {
+                        person = _personService.GetPerson(contactId);
+                    }
+                    else
+                    {
+                        return Unauthorized();
+                    }
+
                     if (person == null)
                     {
                         return Unauthorized();
                     }
+
                     return Ok(person);
                 }
                 catch (Exception e)

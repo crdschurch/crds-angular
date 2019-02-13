@@ -34,7 +34,7 @@ namespace crds_angular.Services
                 throw new ImpersonationNotAllowedException();
             }
 
-            return DoImpersonation(usernameToImpersonate, action);
+            return DoImpersonation(usernameToImpersonate, ImpersonatedUserGuid.NewAuthImpersonateToken, action);
         }
 
         public TOutput WithImpersonation<TOutput>(string accessToken, string usernameToImpersonate, Func<TOutput> action)
@@ -47,14 +47,14 @@ namespace crds_angular.Services
                 throw new ImpersonationNotAllowedException();
             }
 
-            return DoImpersonation(usernameToImpersonate, action);
+            return DoImpersonation(usernameToImpersonate, accessToken, action);
         }
 
-        private TOutput DoImpersonation<TOutput>(string usernameToImpersonate, Func<TOutput> action)
+        private TOutput DoImpersonation<TOutput>(string usernameToImpersonate, string token, Func<TOutput> action)
         {
             MpUser user = GetUser(usernameToImpersonate);
 
-            ImpersonatedUserGuid.Set(user.Guid, usernameToImpersonate);
+            ImpersonatedUserGuid.Set(user.Guid, token);
 
             try
             {
