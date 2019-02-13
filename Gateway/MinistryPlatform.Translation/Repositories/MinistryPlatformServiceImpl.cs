@@ -382,7 +382,9 @@ namespace MinistryPlatform.Translation.Repositories
                 return;
             }
 
-            if (ImpersonatedUserGuid.GetToken() != currentToken)
+            bool userTokenIsSameAsImpersonateToken = ImpersonatedUserGuid.GetToken() == currentToken;
+            bool impersonateTokenEqualsNewAuthToken = ImpersonatedUserGuid.GetToken() == ImpersonatedUserGuid.NewAuthImpersonateToken;
+            if (!userTokenIsSameAsImpersonateToken && !impersonateTokenEqualsNewAuthToken)
             {
                 return;
             }
