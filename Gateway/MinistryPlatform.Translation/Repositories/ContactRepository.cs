@@ -13,6 +13,7 @@ using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using Crossroads.Web.Auth.Models;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -324,8 +325,13 @@ namespace MinistryPlatform.Translation.Repositories
                 Nickname = hm.Nickname,
             }).ToList();
             return householdMembers;
-        }      
+        }
+        public MpMyContact GetMyProfile(AuthDTO token)
+        {
+            return this.GetContactById(token.UserInfo.Mp.ContactId);
+        }
 
+        [Obsolete("Use GetMyProfile with an AuthDTO token")]
         public MpMyContact GetMyProfile(string token)
         {
             var recordsDict = _ministryPlatformService.GetRecordsDict("MyProfile", token);
