@@ -17,6 +17,8 @@ using NUnit.Framework;
 using MinistryPlatform.Translation.Models.MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Payments;
 using MinistryPlatform.Translation.Models.Product;
+using Crossroads.Web.Common.Security;
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.test.Services
 {
@@ -99,17 +101,16 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetCampFamilyMembers()
         {
-            var token = "asdfasdfasdfasdf";
             var apiToken = "apiToken";
             var myContactId = 2187211;
+            var token = fakeAuthDTO(myContactId, 23);
             var signedUpDate = DateTime.Now;
             var eventId = 5433;
             var myContact = getFakeContact(myContactId);
             var eventParticipant = new MpEventParticipant
             {
             };
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact));
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(new List<MpHouseholdMember>());
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
@@ -179,7 +180,8 @@ namespace crds_angular.test.Services
                 res.CurrentGrade = groupId;
             });
             var group = FactoryGirl.NET.FactoryGirl.Build<MpGroupParticipant>((res) => res.GroupId = groupId);
-            const string token = "1234";
+
+            const string apiToken = "apiToken";
             const int eventParticipantId = 6;
             const int newEventparticipantId = 0;
             const int eventId = 4;
@@ -217,8 +219,8 @@ namespace crds_angular.test.Services
             {
                 EventParticipantId = newEventparticipantId
             };
+            AuthDTO token = fakeAuthDTO(newContactId, household.Household_ID);
 
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(household);
             _contactService.Setup(m => m.CreateContact(It.IsAny<MpContact>())).Returns(contact);
             _participantRepository.Setup(m => m.GetParticipant(newContactId)).Returns(participant);
             _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(camp);
@@ -227,11 +229,11 @@ namespace crds_angular.test.Services
                                                                      It.IsAny<Dictionary<int, ObjectAttributeTypeDTO>>(),
                                                                      It.IsAny<Dictionary<int, ObjectSingleAttributeDTO>>(),
                                                                      It.IsAny<MpObjectAttributeConfiguration>()));
-            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
 
             _campRules.Setup(m => m.VerifyCampRules(eventId, campReservation.Gender)).Returns(true);
 
-            _groupRepository.Setup(g => g.GetGradeGroupForContact(newContactId, token)).Returns(new Result<MpGroupParticipant>(true, group));
+            _groupRepository.Setup(g => g.GetGradeGroupForContact(newContactId, apiToken)).Returns(new Result<MpGroupParticipant>(true, group));
              
             _configurationWrapper.Setup(m => m.GetConfigIntValue("SummerCampFormID")).Returns(formId);            
             _configurationWrapper.Setup(m => m.GetConfigIntValue("SummerCampForm.SchoolAttendingNextYear")).Returns(12);
@@ -261,8 +263,8 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldThrowExceptionIfRulesDonotPass()
         {
+            const string apiToken = "apiToken";
             const int groupId = 123;
-            const string token = "1234";
             const int eventId = 4;
             const int contactId = 231;
 
@@ -289,7 +291,8 @@ namespace crds_angular.test.Services
                 Name = "mASON"
             };
 
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(household);
+            AuthDTO token = fakeAuthDTO(contactId, household.Household_ID);
+
             _congregationRepository.Setup(m => m.GetCongregationById(campReservation.CrossroadsSite)).Returns(congregation);
             _contactService.Setup(m => m.UpdateContact(contactId, It.IsAny<Dictionary<string, object>>()));
             _participantRepository.Setup(m => m.GetParticipant(contactId)).Returns(participant);
@@ -299,8 +302,8 @@ namespace crds_angular.test.Services
                                                                      It.IsAny<Dictionary<int, ObjectAttributeTypeDTO>>(),
                                                                      It.IsAny<Dictionary<int, ObjectSingleAttributeDTO>>(),
                                                                      It.IsAny<MpObjectAttributeConfiguration>()));
-            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
-            _groupRepository.Setup(g => g.GetGradeGroupForContact(contactId, token)).Returns(new Result<MpGroupParticipant>(true, group));
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
+            _groupRepository.Setup(g => g.GetGradeGroupForContact(contactId, apiToken)).Returns(new Result<MpGroupParticipant>(true, group));
 
 
             _campRules.Setup(m => m.VerifyCampRules(eventId, campReservation.Gender)).Returns(false);
@@ -320,7 +323,7 @@ namespace crds_angular.test.Services
         {
 
             const int groupId = 123;
-            const string token = "1234";
+            const string apiToken = "apiToken";
             const int eventParticipantId = 6;
             const int eventId = 4;
             const int formId = 8;
@@ -353,8 +356,8 @@ namespace crds_angular.test.Services
             {
                 Name = "mASON"
             };
+            AuthDTO token = fakeAuthDTO(contactId, household.Household_ID);
 
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(household);
             _congregationRepository.Setup(m => m.GetCongregationById(campReservation.CrossroadsSite)).Returns(congregation);
             _contactService.Setup(m => m.UpdateContact(contactId, It.IsAny<Dictionary<string, object>>()));
             _participantRepository.Setup(m => m.GetParticipant(contactId)).Returns(participant);
@@ -364,8 +367,8 @@ namespace crds_angular.test.Services
                                                                      It.IsAny<Dictionary<int, ObjectAttributeTypeDTO>>(),
                                                                      It.IsAny<Dictionary<int, ObjectSingleAttributeDTO>>(),
                                                                      It.IsAny<MpObjectAttributeConfiguration>()));
-            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
-            _groupRepository.Setup(g => g.GetGradeGroupForContact(contactId, token)).Returns(new Result<MpGroupParticipant>(true, group));
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
+            _groupRepository.Setup(g => g.GetGradeGroupForContact(contactId, apiToken)).Returns(new Result<MpGroupParticipant>(true, group));
             _campRules.Setup(m => m.VerifyCampRules(eventId, campReservation.Gender)).Returns(true);
             _configurationWrapper.Setup(m => m.GetConfigIntValue("SummerCampFormID")).Returns(formId);
             _configurationWrapper.Setup(m => m.GetConfigIntValue("SummerCampForm.SchoolAttendingNextYear")).Returns(12);
@@ -382,14 +385,13 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetCampFamilyMembersNotSignedUp()
         {
-            var token = "asdfasdfasdfasdf";
-            var apiToken = "apiToken";
+            const string apiToken = "apiToken";
             var myContactId = 2187211;
             var eventId = 5433;
             var myContact = getFakeContact(myContactId);
             var eventParticipant = new MpEventParticipant();
+            AuthDTO token = fakeAuthDTO(myContactId);
 
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact));
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(new List<MpHouseholdMember>());
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
@@ -407,14 +409,13 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetCampFamilyNotHeadNotSignedUp()
         {
-            const string token = "asdfasdfasdfasdf";
             const string apiToken = "apiToken";
             const int myContactId = 2187211;
             const int eventId = 5433;
             var myContact = getFakeContact(myContactId);
             var eventParticipant = new MpEventParticipant();
+            AuthDTO token = fakeAuthDTO(myContactId);
 
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact, false, "Adult Child"));            
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _groupRepository.Setup(m => m.IsMemberOfEventGroup(myContact.Contact_ID, eventId, apiToken)).Returns(true);
@@ -432,14 +433,13 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetCampFamilyHouseholdPositionNotSet()
         {
-            const string token = "asdfasdfasdfasdf";
             const string apiToken = "apiToken";
             const int myContactId = 2187211;
             const int eventId = 5433;
             var myContact = getFakeContact(myContactId);
             var eventParticipant = new MpEventParticipant();
+            AuthDTO token = fakeAuthDTO(myContactId);
 
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact, false));
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _groupRepository.Setup(m => m.IsMemberOfEventGroup(myContact.Contact_ID, eventId, apiToken)).Returns(true);
@@ -457,19 +457,18 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetCampFamilyNotHeadSignedUp()
         {
-            const string token = "asdfasdfasdfasdf";
             const string apiToken = "apiToken";
             const int myContactId = 2187211;
             const int eventId = 5433;
             var myContact = getFakeContact(myContactId);
+            AuthDTO token = fakeAuthDTO(myContactId);
 
             var signedUpOn = DateTime.Now;
             var eventParticipant = new MpEventParticipant
             {
                 SetupDate = signedUpOn
             };
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact, false, "Adult Child"));
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _eventParticipantRepository.Setup(m => m.GetEventParticipantEligibility(eventId, It.IsAny<int>())).Returns(eventParticipant);
@@ -487,12 +486,12 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetCampFamilyNotHeadPendingParticipant()
         {
-            const string token = "asdfasdfasdfasdf";
             const string apiToken = "apiToken";
             const int myContactId = 2187211;
             const int eventId = 5433;
             const int interestedStatus = 456;
             var myContact = getFakeContact(myContactId);
+            AuthDTO token = fakeAuthDTO(myContactId);
 
             var signedUpOn = DateTime.Now;
             var eventParticipant = new MpEventParticipant
@@ -503,7 +502,6 @@ namespace crds_angular.test.Services
 
             _configurationWrapper.Setup(m => m.GetConfigIntValue("Participant_Status_Cancelled"));
             _configurationWrapper.Setup(m => m.GetConfigIntValue("Participant_Status_Interested")).Returns(interestedStatus);
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact, false, "Adult Child"));
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _eventParticipantRepository.Setup(m => m.GetEventParticipantEligibility(eventId, It.IsAny<int>())).Returns(eventParticipant);
@@ -522,7 +520,7 @@ namespace crds_angular.test.Services
         public void shouldSaveEmergencyContact()
         {
             var contactId = 12345;
-            var token = "444";
+            const string apiToken = "apiToken";
             var formId = 10;
             var eventId = 6789;
             var participant = new MpParticipant
@@ -534,6 +532,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 999999,
                 Household_ID = 77777
             };
+            AuthDTO token = fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
 
             var myHousehold = new List<MpHouseholdMember>
             {
@@ -550,8 +549,7 @@ namespace crds_angular.test.Services
                     ContactId = 5555555
                 }
             };
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(myHousehold);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(otherHousehold);
             _participantRepository.Setup(m => m.GetParticipant(contactId)).Returns(participant);
@@ -572,16 +570,15 @@ namespace crds_angular.test.Services
         [Test]
         public void shouldGetEmptyListOfFamilyMembers()
         {
-            var token = "asdfasdfasdfasdf";
-            var apiToken = "apiToken";
+            const string apiToken = "apiToken";
             var myContactId = 2187211;
             var eventId = 1234;
             var myContact = getFakeContact(myContactId);
+            AuthDTO token = fakeAuthDTO(myContactId);
 
             // Get a family list with only me in it i.e. no family
             var family = getFakeHouseholdMembers(myContact).Where(member => member.ContactId == myContactId).ToList();
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(family);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(new List<MpHouseholdMember>());
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);            
@@ -594,10 +591,10 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldGetMyCampInfo()
         {
-            const string token = "asdfasdfasdfasdf";
             const string apiToken = "apiToken";
             const int myContactId = 2187211;
             var myContact = getFakeContact(myContactId);
+            AuthDTO token = fakeAuthDTO(myContactId);
             const string campType = "Camp";
             var product = new MpProduct
             {
@@ -649,7 +646,6 @@ namespace crds_angular.test.Services
 
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _configurationWrapper.Setup(m => m.GetConfigValue("CampEventTypeName")).Returns(campType);
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(family);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(new List<MpHouseholdMember>());
 
@@ -671,7 +667,7 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldSaveMedicalInfo()
         {
-            const string token = "theToken";
+            const string apiToken = "apiToken";
             const int contactId = 123;
             var medicalInfo = new MedicalInfoDTO
             {
@@ -695,6 +691,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 999999,
                 Household_ID = 77777
             };
+            AuthDTO token = fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
 
             var myHousehold = new List<MpHouseholdMember>
             {
@@ -711,8 +708,7 @@ namespace crds_angular.test.Services
                     ContactId = 5555555
                 }
             };
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(myHousehold);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(otherHousehold);
 
@@ -735,7 +731,7 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldSaveMedicalInfoWithNullValuesInMedsAdministered()
         {
-            const string token = "theToken";
+            const string apiToken = "apiToken";
             const int contactId = 123;
             var medicalInfo = new MedicalInfoDTO
             {
@@ -767,6 +763,7 @@ namespace crds_angular.test.Services
                     ContactId = contactId
                 }
             };
+            AuthDTO token = fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
 
             var otherHousehold = new List<MpHouseholdMember>
             {
@@ -775,8 +772,7 @@ namespace crds_angular.test.Services
                     ContactId = 5555555
                 }
             };
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(myHousehold);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(otherHousehold);
 
@@ -804,7 +800,7 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldSaveMedicalInfoWithAllNullValuesInMedsAdministered()
         {
-            const string token = "theToken";
+            const string apiToken = "apiToken";
             const int contactId = 123;
             var medicalInfo = new MedicalInfoDTO
             {
@@ -828,6 +824,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 999999,
                 Household_ID = 77777
             };
+            AuthDTO token = fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
 
             var myHousehold = new List<MpHouseholdMember>
             {
@@ -844,8 +841,7 @@ namespace crds_angular.test.Services
                     ContactId = 5555555
                 }
             };
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(myHousehold);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(otherHousehold);
 
@@ -876,7 +872,8 @@ namespace crds_angular.test.Services
             const int eventId = 1289;
             const int contactId = 123; // this is set in the getFakeHouseholdMembers() method
             const int loggedInContactId = 6767;
-            const string token = "LetMeIN!";
+            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
+            const string apiToken = "apiToken";
 
             var me = getFakeContact(loggedInContactId);
             var family = getFakeHouseholdMembers(me);
@@ -890,8 +887,7 @@ namespace crds_angular.test.Services
                 PhysicianPhone = "1-800-ido-care",
                 PolicyHolder = "Lindsey",               
             };
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(me);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(me.Household_ID)).Returns(family);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(me.Household_ID)).Returns(new List<MpHouseholdMember>());
             _medicalInformationRepository.Setup(m => m.GetMedicalInformation(contactId)).Returns(mpMedInfo);
@@ -913,7 +909,8 @@ namespace crds_angular.test.Services
             const int eventId = 1289;
             const int contactId = 123; // this is set in the getFakeHouseholdMembers() method
             const int loggedInContactId = 6767;
-            const string token = "LetMeIN!";
+            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
+            const string apiToken = "apiToken";
 
             var me = getFakeContact(loggedInContactId);
             var family = getFakeHouseholdMembers(me);
@@ -927,8 +924,7 @@ namespace crds_angular.test.Services
                 PhysicianPhone = "1-800-ido-care",
                 PolicyHolder = "Lindsey",
             };
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(me);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(me.Household_ID)).Returns(family);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(me.Household_ID)).Returns(new List<MpHouseholdMember>());
             _medicalInformationRepository.Setup(m => m.GetMedicalInformation(contactId)).Returns(mpMedInfo);
@@ -947,7 +943,6 @@ namespace crds_angular.test.Services
         public void ShouldGetCamperInfo()
         {
             const int eventId = 123;
-            const string token = "asdf";
             const string apiToken = "apiToken";
             const int contactId = 2187211;
             var myContact = getFakeContact(contactId);
@@ -972,6 +967,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 56789,
                 Household_ID = 10000
             };
+            AuthDTO token = fakeAuthDTO(loggedInContact.Contact_ID, loggedInContact.Household_ID);
 
             var householdfamily = new List<MpHouseholdMember>
             {
@@ -1001,8 +997,7 @@ namespace crds_angular.test.Services
 
             // get congregation Id by name
             _congregationRepository.Setup(m => m.GetCongregationByName("Oakley", apiToken)).Returns(new Ok<MpCongregation>(congregation));
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(loggedInContact);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(loggedInContact.Household_ID)).Returns(householdfamily);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(loggedInContact.Household_ID)).Returns(otherHouseholdfamily);
             _contactService.Setup(m => m.GetContactById(contactId)).Returns(myContact);
@@ -1024,7 +1019,6 @@ namespace crds_angular.test.Services
         public void shouldGetCamperInfoNoGrade()
         {
             const int eventId = 123;
-            const string token = "asdf";
             const string apiToken = "apiToken";
             const int contactId = 2187211;
             var myContact = getFakeContact(contactId);
@@ -1038,6 +1032,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 56789,
                 Household_ID = 10000
             };
+            AuthDTO token = fakeAuthDTO(loggedInContact.Contact_ID, loggedInContact.Household_ID);
 
             var householdfamily = new List<MpHouseholdMember>
             {
@@ -1055,7 +1050,6 @@ namespace crds_angular.test.Services
                 }
 
             };
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(loggedInContact);
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(loggedInContact.Household_ID)).Returns(householdfamily);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(loggedInContact.Household_ID)).Returns(otherHouseholdfamily);
             _contactService.Setup(m => m.GetContactById(contactId)).Returns(myContact);
@@ -1074,8 +1068,8 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldGetProductInfo()
         {
-            const int eventId = 1234;
-            const string token = "1aaaa";
+            const int eventId = 1234;   
+            const string apiToken = "apiToken";
             var product = new MpProduct
             {
                 ProductId = 111,
@@ -1126,6 +1120,7 @@ namespace crds_angular.test.Services
             var mpInvoiceResult = new Result<MpInvoiceDetail>(true, new MpInvoiceDetail() { InvoiceId = 1234 });
             var mpoptionlist = new List<MpProductOptionPrice>() {mpprodoption1, mpprodoption2};
             const int contactid = 12345;
+            AuthDTO token = fakeAuthDTO(contactid);
 
             _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpevent);
             _productRepository.Setup(m => m.GetProductForEvent(eventId)).Returns(product);
@@ -1144,8 +1139,8 @@ namespace crds_angular.test.Services
       [Test]
       public void ShouldGetProductInfoWhenThereIsNoInvoiceYet()
       {
-      const int eventId = 1234;
-        const string token = "1aaaa";
+        const int eventId = 1234;
+        const string apiToken = "apiToken";
         var product = new MpProduct
         {
           ProductId = 111,
@@ -1189,8 +1184,9 @@ namespace crds_angular.test.Services
         var mpInvoiceResult = new Result<MpInvoiceDetail>(false, "No invoice");
         var mpoptionlist = new List<MpProductOptionPrice>() { mpprodoption1, mpprodoption2 };
         const int contactid = 12345;
+        AuthDTO token = fakeAuthDTO(contactid);
 
-        _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpevent);
+            _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpevent);
         _productRepository.Setup(m => m.GetProductForEvent(eventId)).Returns(product);
         _productRepository.Setup(m => m.GetProductOptionPricesForProduct(product.ProductId)).Returns(mpoptionlist);
         _formSubmissionRepository.Setup(m => m.GetFormResponseAnswer(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns("true");
@@ -1207,12 +1203,13 @@ namespace crds_angular.test.Services
         public void shouldSendConfirmationEmail()
         {
             const int eventId = 1234554;
-            const string token = "letmein";
+            const string apiToken = "apiToken";
             const int paymentId = 98789;
             const int invoiceId = 8767;
             const int contactId = 67676;
             const int templateId = 12345;
             const string baseUrl = "localhost:3000";
+            AuthDTO token = fakeAuthDTO(contactId);
 
             var startDate = DateTime.Now;
             var endDate = new DateTime(2017, 8, 20); 
@@ -1233,7 +1230,7 @@ namespace crds_angular.test.Services
           
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false)).Returns(1);
 
-            var resp = _fixture.SendCampConfirmationEmail(eventId, invoiceId, paymentId, token);
+            var resp = _fixture.SendCampConfirmationEmail(eventId, invoiceId, paymentId);
            
             _paymentRepository.VerifyAll();
             _contactService.VerifyAll();
@@ -1247,7 +1244,7 @@ namespace crds_angular.test.Services
         public void ShouldSaveInvoiceAndChooseBestOptionPrice()
         {
             const int loggedInContactId = 456;
-            const string token = "whyNoTestBefore?";
+            const string apiToken = "apiToken";
             const int eventParticipantId = 7878;
             const int summerCampFinancialAssistanceField = 99;
             const int summerCampFormId = 9;
@@ -1258,6 +1255,7 @@ namespace crds_angular.test.Services
             var eventEndDate = DateTime.Now.AddDays(191);            
 
             var myContact = getFakeContact(loggedInContactId);
+            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
             var myFamily = getFakeHouseholdMembers(myContact);
             var campDto = FactoryGirl.NET.FactoryGirl.Build<CampProductDTO>(m => m.ContactId = myFamily.FirstOrDefault().ContactId);
             var participant = FactoryGirl.NET.FactoryGirl.Build<MpParticipant>(m =>
@@ -1290,8 +1288,7 @@ namespace crds_angular.test.Services
                 })
             };
             var invoiceDetails = new Result<MpInvoiceDetail>(false, "no invoice found");
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(myFamily);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(new List<MpHouseholdMember>());
 
@@ -1325,7 +1322,7 @@ namespace crds_angular.test.Services
         public void ShouldSaveInvoiceAndFilterOutOldOptionPrices()
         {
             const int loggedInContactId = 456;
-            const string token = "whyNoTestBefore?";
+            const string apiToken = "apiToken";
             const int eventParticipantId = 7878;
             const int summerCampFinancialAssistanceField = 99;
             const int summerCampFormId = 9;
@@ -1336,6 +1333,7 @@ namespace crds_angular.test.Services
             var eventEndDate = DateTime.Now.AddDays(191);
 
             var myContact = getFakeContact(loggedInContactId);
+            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
             var myFamily = getFakeHouseholdMembers(myContact);
             var campDto = FactoryGirl.NET.FactoryGirl.Build<CampProductDTO>(m => m.ContactId = myFamily.FirstOrDefault().ContactId);
             var participant = FactoryGirl.NET.FactoryGirl.Build<MpParticipant>(m =>
@@ -1368,8 +1366,7 @@ namespace crds_angular.test.Services
                 })
             };
             var invoiceDetails = new Result<MpInvoiceDetail>(false, "no invoice found");
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(myFamily);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(new List<MpHouseholdMember>());
 
@@ -1404,7 +1401,7 @@ namespace crds_angular.test.Services
         public void ShouldUpdateAnInvoiceIfOneExistsAlready()
         {
             const int loggedInContactId = 456;
-            const string token = "whyNoTestBefore?";
+            const string apiToken = "apiToken";
             const int eventParticipantId = 7878;
             const int summerCampFinancialAssistanceField = 99;
             const int summerCampFormId = 9;
@@ -1415,6 +1412,7 @@ namespace crds_angular.test.Services
             var eventEndDate = DateTime.Now.AddDays(191);
 
             var myContact = getFakeContact(loggedInContactId);
+            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
             var myFamily = getFakeHouseholdMembers(myContact);
             var campDto = FactoryGirl.NET.FactoryGirl.Build<CampProductDTO>(m => m.ContactId = myFamily.FirstOrDefault().ContactId);
             var participant = FactoryGirl.NET.FactoryGirl.Build<MpParticipant>(m =>
@@ -1448,8 +1446,7 @@ namespace crds_angular.test.Services
             };
          
             var invoiceDetails = new Result<MpInvoiceDetail>(true, new MpInvoiceDetail() { InvoiceId = invoiceId });
-
-            _contactService.Setup(m => m.GetMyProfile(token)).Returns(myContact);
+            
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(myFamily);
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(new List<MpHouseholdMember>());
 
@@ -1529,6 +1526,17 @@ namespace crds_angular.test.Services
 
         }
 
+        private AuthDTO fakeAuthDTO(int contactId, int householdId=23, string emailAddress="")
+        {
+            AuthDTO token = new AuthDTO();
+            token.UserInfo = new UserInfo();
+            token.UserInfo.Mp = new MpUserInfo();
+            token.UserInfo.Mp.ContactId = contactId;
+            token.UserInfo.Mp.HouseholdId = new int?(householdId);
+            token.UserInfo.Mp.Email = emailAddress;
+
+            return token;
+        }
         private List<MpHouseholdMember> getFakeHouseholdMembers(MpMyContact me, bool isHead = true, string positionIfNotHead = null)
         {
             return new List<MpHouseholdMember>

@@ -61,7 +61,7 @@ namespace crds_angular.Services
         private readonly ILocationService _locationService;
         private readonly IAddressRepository _addressRepository;
         private readonly IFirestoreUpdateService _firestoreUpdateService;
-        
+
         private readonly int _approvedHost;
         private readonly int _pendingHost;
         private readonly int _anywhereGroupType;
@@ -93,7 +93,7 @@ namespace crds_angular.Services
         private readonly int _connectGatheringRequestToJoin;
         private readonly int _sayHiWithMessageTemplateId;
         private readonly int _sayHiWithoutMessageTemplateId;
-        
+
         private readonly Random _random = new Random(DateTime.Now.Millisecond);
         private const double MinutesInDegree = 60;
         private const double StatuteMilesInNauticalMile = 1.1515;
@@ -268,9 +268,9 @@ namespace crds_angular.Services
                     DisablePin(participant.ParticipantId);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                throw(e);
+                throw (e);
             }
         }
 
@@ -292,13 +292,8 @@ namespace crds_angular.Services
 
         public PinDto GetPinDetailsForGroup(int groupId, GeoCoordinate originCoords)
         {
-            List<PinDto> pins = null;
-            var cloudReturn = _awsCloudsearchService.SearchByGroupId(groupId.ToString());
-
-            pins = ConvertFromAwsSearchResponse(cloudReturn);
-            this.AddPinMetaData(pins, originCoords);
-
-            return pins.First();
+            var g = _groupRepository.getGroupDetails(groupId);
+            return (ConvertMpGroupToPinDTO(g));
         }
 
         public PersonDTO GetPerson(int participantId)
@@ -342,7 +337,7 @@ namespace crds_angular.Services
 
         public void SetShowOnMap(int participantId, Boolean showOnMap)
         {
-            if(showOnMap)
+            if (showOnMap)
             {
                 _finderRepository.RecordPinHistory(participantId, ADD_TO_MAP);
             }
@@ -350,13 +345,13 @@ namespace crds_angular.Services
             {
                 _finderRepository.RecordPinHistory(participantId, REMOVE_FROM_MAP);
             }
-            
+
             var dictionary = new Dictionary<string, object>()
             {
                 {"Participant_ID", participantId },
                 {"Show_On_Map", showOnMap }
             };
-           
+
             _participantRepository.UpdateParticipant(dictionary);
         }
 
@@ -545,7 +540,7 @@ namespace crds_angular.Services
             return pins;
         }
 
-        public void AddUserDirectlyToGroup( User userBeingAdded, int groupid, int roleId, int leaderContactId)
+        public void AddUserDirectlyToGroup( User user, int groupid, int roleId)
         {
 
             //check to see if user exists in MP. Exclude Guest Giver and Deceased status
@@ -738,6 +733,56 @@ namespace crds_angular.Services
                 default:
                     return _connectPersonPinUrl;
             }
+        }
+
+        private PinDto ConvertMpGroupToPinDTO(MpGroup mpGroup)
+        {
+            var contact = _contactRepository.GetContactById(Convert.ToInt32(mpGroup.PrimaryContact));
+
+            var pin = new PinDto
+            {
+                Proximity = null,
+                PinType = PinType.SMALL_GROUP,
+                FirstName = contact.First_Name != null ? contact.First_Name : null,
+                LastName = contact.Last_Name != null ? contact.Last_Name : null,
+                SiteName = null,
+                Contact_ID = contact.Contact_ID,
+                Household_ID = contact.Household_ID,
+                Address = new AddressDTO
+                {
+                    AddressID = mpGroup.Address.Address_ID != null ? mpGroup.Address.Address_ID : (int?)null,
+                    City = mpGroup.Address.City != null ? mpGroup.Address.City : null,
+                    State = mpGroup.Address.State != null ? mpGroup.Address.City : null,
+                    PostalCode = mpGroup.Address.Postal_Code != null ? mpGroup.Address.Postal_Code : null,
+                    Latitude = mpGroup.Address.Latitude != null ? mpGroup.Address.Latitude : (double?)null,
+                    Longitude = mpGroup.Address.Longitude != null ? mpGroup.Address.Longitude : (double?)null,
+                }
+            };
+
+            pin.Gathering = new FinderGroupDto
+            {
+                GroupId = mpGroup.GroupId,
+                GroupName = mpGroup.Name ?? null,
+                GroupDescription = mpGroup.GroupDescription ?? null,
+                PrimaryContactEmail = mpGroup.PrimaryContactEmail ?? null,
+                Address = pin.Address,
+                ContactId = pin.Contact_ID.Value,
+                MinistryId = _spritualGrowthMinistryId,
+                KidsWelcome = mpGroup.KidsWelcome,
+                MeetingDay = mpGroup.MeetingDay,
+                MeetingTime = mpGroup.MeetingTime,
+                MeetingFrequency = mpGroup.MeetingFrequency,
+                GroupType = mpGroup.GroupTypeName,
+                VirtualGroup = (bool)mpGroup.AvailableOnline && mpGroup.OffsiteMeetingAddressId != null,
+                PrimaryContactFirstName = contact.First_Name != null ? contact.First_Name : null,
+                PrimaryContactLastName = contact.Last_Name != null ? contact.Last_Name : null,
+                PrimaryContactCongregation =  null,
+                // GroupAgesRangeList = hit.Fields.ContainsKey("groupagerange") ? hit.Fields["groupagerange"].Where(s => !String.IsNullOrEmpty(s)).Select(x => x.Trim()).ToList() : null,
+                // GroupCategoriesList = hit.Fields.ContainsKey("groupcategory") ? hit.Fields["groupcategory"].Where(s => !String.IsNullOrEmpty(s)).Select(x => x.Trim()).ToList() : null,
+                AvailableOnline = mpGroup.AvailableOnline,
+                StartDate = mpGroup.StartDate
+            };
+            return pin;
         }
 
         private List<PinDto> ConvertFromAwsSearchResponse(SearchResponse response)

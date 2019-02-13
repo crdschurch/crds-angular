@@ -10,7 +10,7 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class PaymentController : MPAuth
+    public class PaymentController : ImpersonateAuthBaseController
     {
         private readonly IPaymentService _paymentService;
         public PaymentController(IAuthTokenExpiryService authTokenExpiryService, 
