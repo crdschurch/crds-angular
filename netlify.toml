@@ -45,8 +45,6 @@
 
 [context.deploy-preview.environment]
 
-[context.development.environment]
-
 [context.master.environment]
 
 [context.release.environment]
