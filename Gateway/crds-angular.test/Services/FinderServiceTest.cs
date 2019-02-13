@@ -22,6 +22,7 @@ using crds_angular.Services.Analytics;
 using Crossroads.Web.Common.Security;
 using MvcContrib.TestHelper;
 using Crossroads.Web.Auth.Models;
+using crds_angular.Models.Crossroads.Attribute;
 
 namespace crds_angular.test.Services
 {
@@ -260,6 +261,14 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldGetGroupPinDetailsSmallGroup()
         {
+            var a = new AttributeDTO();
+            a.Name = "Interest";
+            var s = new ObjectSingleAttributeDTO();
+            s.Description = "desc";
+            s.Notes = "notes";
+            s.Value = a;
+
+
             var c = new MpMyContact
             {
                 First_Name = "Sara",
@@ -268,16 +277,16 @@ namespace crds_angular.test.Services
                 Household_ID = 456
             };
 
-            var g = new MpGroup
+            var g = new GroupDTO
             {
                 GroupId = 121212,
                 CongregationId = 8,
-                Name = "Test Group 1",
+                GroupName = "Test Group 1",
                 GroupRoleId = 16,
                 GroupDescription = "Test Group 1",
                 MinistryId = 8,
                 ContactId = 3,
-                GroupType = 1,
+                GroupTypeId = 1,
                 StartDate = Convert.ToDateTime("2016-02-12"),
                 MeetingDayId = 3,
                 MeetingDay = "Wednesday",
@@ -285,20 +294,21 @@ namespace crds_angular.test.Services
                 GroupTypeName = "Name",
                 MeetingTime = "10:00",
                 AvailableOnline = true,
-                Address = new MpAddress()
+                Address = new AddressDTO()
                 {
-                    Address_Line_1 = "123 Main St",
-                    Address_Line_2 = "",
+                    AddressLine1 = "123 Main St",
+                    AddressLine2 = "",
                     City = "Somewhere",
                     State = "OH",
-                    Postal_Code = "45454",
+                    PostalCode = "45454",
                     Latitude = 39.0,
                     Longitude = -84.51
                 }
             };
 
+            _mpContactRepository.Setup(m => m.GetActiveContactIdByEmail(It.IsAny<string>())).Returns(999);
             _mpContactRepository.Setup(m => m.GetContactById(It.IsAny<int>())).Returns(c);
-            _mpGroupRepository.Setup(m => m.getGroupDetails(It.IsAny<int>())).Returns(g);
+            _groupService.Setup(m => m.GetGroupDetailsWithAttributes(It.IsAny<int>())).Returns(g);
 
             var result = _fixture.GetPinDetailsForGroup(121212, new GeoCoordinate(38.94526, -84.661275));
 
