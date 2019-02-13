@@ -842,9 +842,9 @@ namespace MinistryPlatform.Translation.Repositories
             }).ToList();            
         }
 
-        public List<MpGroup> GetGroupsByTypeForParticipant(string token, int participantId, int groupTypeId)
+        public List<MpGroup> GetGroupsByTypeForParticipant(int participantId, int groupTypeId)
         {
-            var groupDetails = ministryPlatformService.GetPageViewRecords(MyCurrentGroupsPageView, token, String.Format(",,{0}", groupTypeId));
+            var groupDetails = ministryPlatformService.GetPageViewRecords(MyCurrentGroupsPageView, ApiLogin(), String.Format(",,{0}", groupTypeId));
 
             if (groupDetails == null || groupDetails.Count == 0)
             {

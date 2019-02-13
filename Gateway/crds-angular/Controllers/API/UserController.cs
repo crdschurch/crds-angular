@@ -12,10 +12,11 @@ using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using System.Linq;
 
 namespace crds_angular.Controllers.API
 {
-    public class UserController : MPAuth
+    public class UserController : ImpersonateAuthBaseController
     {
         private readonly IAccountService _accountService;
         private readonly IContactRepository _contactRepository;
@@ -71,18 +72,19 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult Get(string username)
         {
-            return Authorized(token =>
+            return Authorized(authDTO =>
             {
                 try
-                {                    
+                {
                     int userid = _userRepository.GetUserIdByUsername(username);
                     MpUser user = _userRepository.GetUserByRecordId(userid);
                     var userRoles = _userRepository.GetUserRoles(userid);
                     MpMyContact contact = _contactRepository.GetContactByUserRecordId(user.UserRecordId);
+                    string accessToken = Request.Headers.GetValues("Authorization").FirstOrDefault();
 
                     var r = new LoginReturn
                     {
-                        userToken = token,
+                        userToken = accessToken,
                         userTokenExp = "",
                         refreshToken = "",
                         userId = contact.Contact_ID,

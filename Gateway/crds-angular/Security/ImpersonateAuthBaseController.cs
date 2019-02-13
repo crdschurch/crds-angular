@@ -53,7 +53,27 @@ namespace crds_angular.Security
         /// <returns>An IHttpActionResult from the lambda expression that was executed.</returns>
         protected IHttpActionResult Authorized(Func<AuthDTO, IHttpActionResult> actionWhenAuthorized, Func<IHttpActionResult> actionWhenNotAuthorized)
         {
-            string accessToken = Request.Headers.GetValues("Authorization").FirstOrDefault();
+            string accessToken;
+            IEnumerable<string> accessTokens;
+            Request.Headers.TryGetValues("Authorization", out accessTokens);
+            accessToken = accessTokens == null ? string.Empty : accessTokens.FirstOrDefault();
+            bool authTokenCloseToExpiry = _authTokenExpiryService.IsAuthtokenCloseToExpiry(Request.Headers);
+
+            IEnumerable<string> refreshTokens;
+            Request.Headers.TryGetValues("RefreshToken", out refreshTokens);
+            string refreshToken = refreshTokens == null ? null : refreshTokens.FirstOrDefault();
+
+            bool shouldGetNewAccessToken = authTokenCloseToExpiry && (refreshToken != null);
+
+            if (shouldGetNewAccessToken) // Check if request is an mp token with an mp refresh token, if so we may need to refresh
+            {
+                var authData = AuthenticationRepository.RefreshToken(refreshToken);
+                if (authData != null)
+                {
+                    accessToken = authData.AccessToken;
+                    refreshToken = authData.RefreshToken;
+                }
+            }
 
             AuthDTO auth;
             try
@@ -76,78 +96,45 @@ namespace crds_angular.Security
                 return actionWhenNotAuthorized();
             }
 
+            IEnumerable<string> impersonateUserIds;
+            Request.Headers.TryGetValues("ImpersonateUserId", out impersonateUserIds);
+            bool impersonate = (impersonateUserIds != null) && impersonateUserIds.Any();
+
             //If its an mp token we need to perform the token refresh logic:
             if (auth.Authentication.Provider == "mp")
             {
-                return RefreshTokensAndHandleImpersonate(actionWhenAuthorized, actionWhenNotAuthorized, auth);
+                IHttpActionResult result = null;
+                if (impersonate)
+                {
+                    if (shouldGetNewAccessToken)
+                    {
+                        result =
+                        new HttpAuthResult(
+                            _userImpersonationService.WithImpersonation(auth, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(auth)),
+                            accessToken,
+                            refreshToken);
+                    }
+                    else
+                    {
+                        result = _userImpersonationService.WithImpersonation(auth, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(auth));
+                    }
+                }
+                else
+                {
+                    if (shouldGetNewAccessToken)
+                    {
+                        result = new HttpAuthResult(actionWhenAuthorized(auth), accessToken, refreshToken);
+                    }
+                    else
+                    {
+                        result = actionWhenAuthorized(auth);
+                    }
+                }
+                return result;
             }
             else // Okta for now but could be another provider in the future
             {
                 return actionWhenAuthorized(auth);
-            }
-
-            
-        }
-
-        private IHttpActionResult RefreshTokensAndHandleImpersonate(Func<AuthDTO, IHttpActionResult> actionWhenAuthorized, 
-            Func<IHttpActionResult> actionWhenNotAuthorized,
-            AuthDTO authDTO)
-        {
-            try
-            {
-                IEnumerable<string> refreshTokens;
-                IEnumerable<string> impersonateUserIds;
-                bool impersonate = false;
-                var authorized = "";
-
-                if (Request.Headers.TryGetValues("ImpersonateUserId", out impersonateUserIds) && impersonateUserIds.Any())
-                {
-                    impersonate = true;
-                }
-
-                bool authTokenCloseToExpiry = _authTokenExpiryService.IsAuthtokenCloseToExpiry(Request.Headers);
-                bool isRefreshTokenPresent =
-                    Request.Headers.TryGetValues("RefreshToken", out refreshTokens) && refreshTokens.Any();
-
-                HttpRequestHeaders headers = Request.Headers;
-
-                if (authTokenCloseToExpiry && isRefreshTokenPresent)
-                {
-                    var authData = AuthenticationRepository.RefreshToken(refreshTokens.FirstOrDefault());
-                    if (authData != null)
-                    {
-                        authorized = authData.AccessToken;
-                        var refreshToken = authData.RefreshToken;
-                        IHttpActionResult result = null;
-                        if (impersonate)
-                        {
-                            result =
-                                new HttpAuthResult(
-                                    _userImpersonationService.WithImpersonation(authorized, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO)),
-                                    authorized,
-                                    refreshToken);
-                        }
-                        else
-                        {
-                            result = new HttpAuthResult(actionWhenAuthorized(authDTO), authorized, refreshToken);
-                        }
-                        return result;
-                    }
-                }
-
-                
-                if (impersonate)
-                {
-                    return _userImpersonationService.WithImpersonation(authorized, impersonateUserIds.FirstOrDefault(), () => actionWhenAuthorized(authDTO));
-                }
-                else
-                {
-                    return actionWhenAuthorized(authDTO);
-                }
-            }
-            catch (System.InvalidOperationException e)
-            {
-                return actionWhenNotAuthorized();
             }
         }
     }

@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using crds_angular.Models.Crossroads.Attribute;
-using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Services.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
-using MinistryPlatform.Translation.Repositories;
 using MpAttribute = MinistryPlatform.Translation.Models.MpAttribute;
 using MPInterfaces = MinistryPlatform.Translation.Repositories.Interfaces;
 
@@ -32,13 +29,13 @@ namespace crds_angular.Services
             _mpAttributeService = mpAttributeService;
         }
 
-        public ObjectAllAttributesDTO GetObjectAttributes(string token, int objectId, MpObjectAttributeConfiguration configuration)
+        public ObjectAllAttributesDTO GetObjectAttributes(int objectId, MpObjectAttributeConfiguration configuration)
         {
             var mpAttributes = _mpAttributeService.GetAttributes(null);
-            return GetObjectAttributes(token, objectId, configuration, mpAttributes);
+            return GetObjectAttributes(objectId, configuration, mpAttributes);
         }
 
-        public ObjectAllAttributesDTO GetObjectAttributes(string token, int objectId, MpObjectAttributeConfiguration configuration, List<MpAttribute> mpAttributes)
+        public ObjectAllAttributesDTO GetObjectAttributes(int objectId, MpObjectAttributeConfiguration configuration, List<MpAttribute> mpAttributes)
         {
             var mpObjectAttributes = _mpObjectAttributeService.GetCurrentObjectAttributes(_apiUserService.GetDefaultApiClientToken(), objectId, configuration);
 

@@ -12,8 +12,10 @@ namespace crds_angular.Services.Interfaces
     public interface IServeService
     {
         List<int> GetUpdatedOpportunities(string token, SaveRsvpDto dto, Func<MpParticipant, MpEvent, Boolean> saveFunc = null);
+        List<FamilyMember> GetImmediateFamilyParticipants(int contactId);
         List<FamilyMember> GetImmediateFamilyParticipants(string token);
         DateTime GetLastServingDate(int opportunityId, string token);
+        List<QualifiedServerDto> GetQualifiedServers(int groupId, int opportunityId, int contactId);
         List<QualifiedServerDto> GetQualifiedServers(int groupId, int opportunityId, string token);
         List<ServingDay> GetServingDays(string token, int contactId, long from, long to);
         Capacity OpportunityCapacity(int opportunityId, int eventId, int? minNeeded, int? maxNeeded);
