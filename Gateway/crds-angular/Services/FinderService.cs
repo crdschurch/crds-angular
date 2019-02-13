@@ -3,6 +3,7 @@ using AutoMapper;
 using crds_angular.Exceptions;
 using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Crossroads;
+using crds_angular.Models.Crossroads.Attribute;
 using crds_angular.Models.Crossroads.Groups;
 using crds_angular.Models.Finder;
 using crds_angular.Services.Analytics;
@@ -292,8 +293,8 @@ namespace crds_angular.Services
 
         public PinDto GetPinDetailsForGroup(int groupId, GeoCoordinate originCoords)
         {
-            var g = _groupRepository.getGroupDetails(groupId);
-            return (ConvertMpGroupToPinDTO(g));
+            var group = _groupService.GetGroupDetailsWithAttributes(groupId);
+            return (ConvertGroupDTOToPinDTO(group));
         }
 
         public PersonDTO GetPerson(int participantId)
@@ -735,9 +736,10 @@ namespace crds_angular.Services
             }
         }
 
-        private PinDto ConvertMpGroupToPinDTO(MpGroup mpGroup)
+        private PinDto ConvertGroupDTOToPinDTO(GroupDTO mpGroup)
         {
-            var contact = _contactRepository.GetContactById(Convert.ToInt32(mpGroup.PrimaryContact));
+            var contactId = _contactRepository.GetActiveContactIdByEmail(mpGroup.PrimaryContactEmail);
+            var contact = _contactRepository.GetContactById(contactId);
 
             var pin = new PinDto
             {
@@ -745,15 +747,15 @@ namespace crds_angular.Services
                 PinType = PinType.SMALL_GROUP,
                 FirstName = contact.First_Name != null ? contact.First_Name : null,
                 LastName = contact.Last_Name != null ? contact.Last_Name : null,
-                SiteName = null,
+                SiteName = mpGroup.Congregation,
                 Contact_ID = contact.Contact_ID,
                 Household_ID = contact.Household_ID,
                 Address = new AddressDTO
                 {
-                    AddressID = mpGroup.Address.Address_ID != null ? mpGroup.Address.Address_ID : (int?)null,
+                    AddressID = mpGroup.Address.AddressID != null ? mpGroup.Address.AddressID : (int?)null,
                     City = mpGroup.Address.City != null ? mpGroup.Address.City : null,
                     State = mpGroup.Address.State != null ? mpGroup.Address.City : null,
-                    PostalCode = mpGroup.Address.Postal_Code != null ? mpGroup.Address.Postal_Code : null,
+                    PostalCode = mpGroup.Address.PostalCode != null ? mpGroup.Address.PostalCode : null,
                     Latitude = mpGroup.Address.Latitude != null ? mpGroup.Address.Latitude : (double?)null,
                     Longitude = mpGroup.Address.Longitude != null ? mpGroup.Address.Longitude : (double?)null,
                 }
@@ -762,7 +764,7 @@ namespace crds_angular.Services
             pin.Gathering = new FinderGroupDto
             {
                 GroupId = mpGroup.GroupId,
-                GroupName = mpGroup.Name ?? null,
+                GroupName = mpGroup.GroupName ?? null,
                 GroupDescription = mpGroup.GroupDescription ?? null,
                 PrimaryContactEmail = mpGroup.PrimaryContactEmail ?? null,
                 Address = pin.Address,
@@ -772,17 +774,47 @@ namespace crds_angular.Services
                 MeetingDay = mpGroup.MeetingDay,
                 MeetingTime = mpGroup.MeetingTime,
                 MeetingFrequency = mpGroup.MeetingFrequency,
-                GroupType = mpGroup.GroupTypeName,
-                VirtualGroup = (bool)mpGroup.AvailableOnline && mpGroup.OffsiteMeetingAddressId != null,
+                GroupType = GetGroupTypeFromAttribute(mpGroup.SingleAttributes),
+                VirtualGroup = (bool)mpGroup.AvailableOnline && mpGroup.Address != null,
                 PrimaryContactFirstName = contact.First_Name != null ? contact.First_Name : null,
                 PrimaryContactLastName = contact.Last_Name != null ? contact.Last_Name : null,
                 PrimaryContactCongregation =  null,
-                // GroupAgesRangeList = hit.Fields.ContainsKey("groupagerange") ? hit.Fields["groupagerange"].Where(s => !String.IsNullOrEmpty(s)).Select(x => x.Trim()).ToList() : null,
-                // GroupCategoriesList = hit.Fields.ContainsKey("groupcategory") ? hit.Fields["groupcategory"].Where(s => !String.IsNullOrEmpty(s)).Select(x => x.Trim()).ToList() : null,
+                GroupAgesRangeList = GetStringListFromAttribute(mpGroup.AttributeTypes, 91),
+                GroupCategoriesList = GetStringListFromAttribute(mpGroup.AttributeTypes, 90),
                 AvailableOnline = mpGroup.AvailableOnline,
                 StartDate = mpGroup.StartDate
             };
             return pin;
+        }
+
+        private string GetGroupTypeFromAttribute(Dictionary<int, ObjectSingleAttributeDTO> s)
+        {
+            var returnString = "";
+            ObjectSingleAttributeDTO grouptype;
+            if (s.TryGetValue(73, out grouptype) && grouptype.Value != null)
+            {
+                // grouptype is now equal to the value
+                var x = grouptype.Value;
+                returnString =  x.Name ;
+            }
+            return returnString;
+        }
+
+        private List<string> GetStringListFromAttribute(Dictionary<int, ObjectAttributeTypeDTO> t, int attributeId)
+        {
+            var itemList = new List<string>();
+            ObjectAttributeTypeDTO attributes;
+            if (t.TryGetValue(attributeId, out attributes))
+            {
+                foreach (var a in attributes.Attributes)
+                {
+                    if (a.Selected)
+                    {
+                        itemList.Add(a.Name);
+                    }
+                }
+            }
+            return itemList;
         }
 
         private List<PinDto> ConvertFromAwsSearchResponse(SearchResponse response)
