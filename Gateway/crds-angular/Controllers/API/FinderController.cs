@@ -531,11 +531,11 @@ namespace crds_angular.Controllers.API
                 throw new HttpResponseException(dataError.HttpResponseMessage);
             }
 
-            return Authorized(token =>
+            return Authorized(authDto =>
             {
                 try
                 {
-                    _finderService.AddUserDirectlyToGroup(person, groupId, roleId);
+                    _finderService.AddUserDirectlyToGroup(person, groupId, roleId, authDto.UserInfo.Mp.ContactId);
                     return Ok();
                 }
                 catch (DuplicateGroupParticipantException)

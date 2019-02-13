@@ -545,15 +545,15 @@ namespace crds_angular.Services
             return pins;
         }
 
-        public void AddUserDirectlyToGroup( User user, int groupid, int roleId)
+        public void AddUserDirectlyToGroup( User userBeingAdded, int groupid, int roleId, int leaderContactId)
         {
 
             //check to see if user exists in MP. Exclude Guest Giver and Deceased status
-            var contactId = _contactRepository.GetActiveContactIdByEmail(user.email);
+            var contactId = _contactRepository.GetActiveContactIdByEmail(userBeingAdded.email);
             if (contactId == 0)
             {
-                user.password = System.Web.Security.Membership.GeneratePassword(25, 10);
-                contactId = _accountService.RegisterPersonWithoutUserAccount(user);
+                userBeingAdded.password = System.Web.Security.Membership.GeneratePassword(25, 10);
+                contactId = _accountService.RegisterPersonWithoutUserAccount(userBeingAdded);
             }
 
             var groupParticipant = _groupService.GetGroupParticipants(groupid, false).FirstOrDefault(p => p.ContactId == contactId);
@@ -561,10 +561,10 @@ namespace crds_angular.Services
             // groupParticipant == null then participant not in group
             if (groupParticipant == null)
             {
-                SendEmailToAddedUser(contactId, user, groupid);
+                SendEmailToAddedUser(leaderContactId, userBeingAdded, groupid);
                 _groupService.addContactToGroup(groupid, contactId, roleId);
                 //send leader email
-                SendAddEmailToGroupLeaders(user, groupid);
+                SendAddEmailToGroupLeaders(userBeingAdded, groupid);
             }
             else
             {
@@ -1361,11 +1361,11 @@ namespace crds_angular.Services
             }
         }
 
-        private void SendEmailToAddedUser(int contactId, User user, int groupid)
+        private void SendEmailToAddedUser(int contactIdOfLeader, User user, int groupid)
         {
             var emailTemplateId = _configurationWrapper.GetConfigIntValue("GroupsAddParticipantEmailNotificationTemplateId");
             var emailTemplate = _communicationRepository.GetTemplate(emailTemplateId);
-            var leaderContactId = contactId;
+            var leaderContactId = contactIdOfLeader;
             var leaderContact = _contactRepository.GetContactById(leaderContactId);
             var leaderEmail = leaderContact.Email_Address;
             var userEmail = user.email;
@@ -1428,7 +1428,7 @@ namespace crds_angular.Services
             {
                 CommunicationTypeId = _connectCommunicationTypeInviteToSmallGroup,
                 ToContactId = newMemberContactId,
-                FromContactId = contactId,
+                FromContactId = contactIdOfLeader,
                 CommunicationStatusId = _configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusNA"),
                 GroupId = groupid,
 
