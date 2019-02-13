@@ -910,7 +910,7 @@ namespace crds_angular.test.Services
                 email = "ae@g.com"
             };
 
-            var token = "abc";
+            var leaderContactId = 999;
             var gatheringId = 12345;
             var emailTemplate = new MpMessageTemplate
             {
@@ -922,6 +922,7 @@ namespace crds_angular.test.Services
 
             var leaderContact = new MpMyContact
             {
+                Contact_ID = 999,
                 Email_Address = "in@g.com",
                 First_Name = "albert",
                 Last_Name = "Einstein"
@@ -994,7 +995,7 @@ namespace crds_angular.test.Services
 
             _groupService.Setup(x => x.GetGroupParticipantsWithoutAttributes(It.IsAny<int>())).Returns(gpleaderlist);
 
-            _fixture.AddUserDirectlyToGroup(  person, gatheringId, _memberRoleId);
+            _fixture.AddUserDirectlyToGroup(  person, gatheringId, _memberRoleId, leaderContactId);
             _communicationRepository.Verify(x => x.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false),Times.Exactly(4));
 
         }
