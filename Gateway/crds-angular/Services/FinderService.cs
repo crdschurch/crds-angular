@@ -540,7 +540,7 @@ namespace crds_angular.Services
             return pins;
         }
 
-        public void AddUserDirectlyToGroup( User user, int groupid, int roleId)
+        public void AddUserDirectlyToGroup( User userBeingAdded, int groupid, int roleId, int leaderContactId)
         {
 
             //check to see if user exists in MP. Exclude Guest Giver and Deceased status
