@@ -738,8 +738,8 @@ namespace crds_angular.Services
 
         private PinDto ConvertGroupDTOToPinDTO(GroupDTO mpGroup)
         {
-            var contactId = _contactRepository.GetActiveContactIdByEmail(mpGroup.PrimaryContactEmail);
-            var contact = _contactRepository.GetContactById(contactId);
+           
+            var contact = _contactRepository.GetContactById(mpGroup.ContactId);
 
             var pin = new PinDto
             {
