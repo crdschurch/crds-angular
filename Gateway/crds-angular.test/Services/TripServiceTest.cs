@@ -18,6 +18,7 @@ using IDonationRepository = MinistryPlatform.Translation.Repositories.Interfaces
 using IEventRepository = MinistryPlatform.Translation.Repositories.Interfaces.IEventRepository;
 using IGroupRepository = MinistryPlatform.Translation.Repositories.Interfaces.IGroupRepository;
 using ICampaignRepository = MinistryPlatform.Translation.Repositories.Interfaces.ICampaignRepository;
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.test.Services
 {
@@ -136,16 +137,17 @@ namespace crds_angular.test.Services
         [Test]
         public void ShouldGetMyTrips()
         {
-            const string token = "faker";
+            AuthDTO token = fakeAuthDTO(1234, "example@example.com");
+            const string apiToken = "apiToken";
             var mockFamily = new List<FamilyMember> { new FamilyMember { ContactId = 12345 }, new FamilyMember { ContactId = 98765 } };
-            _serveService.Setup(m => m.GetImmediateFamilyParticipants(token)).Returns(mockFamily);
+            _serveService.Setup(m => m.GetImmediateFamilyParticipants(token.UserInfo.Mp.ContactId)).Returns(mockFamily);
 
-            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _configurationWrapper.Setup(m => m.GetConfigIntValue(It.IsAny<string>())).Returns(10);
             _donationService.Setup(m => m.GetMyTripDistributions(It.IsAny<int>())).Returns(MockTripDonationsResponse());
             _eventParticipantService.Setup(m => m.TripParticipants(It.IsAny<string>())).Returns(mockTripParticipants());
             _pledgeService.Setup(m => m.GetPledgeByCampaignAndDonor(It.IsAny<int>(), It.IsAny<int>())).Returns(mockPledge());
-            _tripRepository.Setup(m => m.GetTripDocuments(It.IsAny<int>(), token)).Returns(new List<MpEventParticipantDocument>());
+            _tripRepository.Setup(m => m.GetTripDocuments(It.IsAny<int>(), apiToken)).Returns(new List<MpEventParticipantDocument>());
             var myTrips = _fixture.GetMyTrips(token);
 
             _serveService.VerifyAll();
@@ -160,16 +162,18 @@ namespace crds_angular.test.Services
         [Test]
         public void FundraisingDaysLeftShouldNotBeNegative()
         {
-            const string token = "faker";
-            var mockFamily = new List<FamilyMember> { new FamilyMember { ContactId = 12345 } };
-            _serveService.Setup(m => m.GetImmediateFamilyParticipants(token)).Returns(mockFamily);
 
-            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
+            AuthDTO token = fakeAuthDTO(1234, "example@example.com");
+            const string apiToken = "apiToken";
+            var mockFamily = new List<FamilyMember> { new FamilyMember { ContactId = 12345 } };
+            _serveService.Setup(m => m.GetImmediateFamilyParticipants(token.UserInfo.Mp.ContactId)).Returns(mockFamily);
+
+            _apiUserReposity.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _configurationWrapper.Setup(m => m.GetConfigIntValue(It.IsAny<string>())).Returns(10);
             _donationService.Setup(m => m.GetMyTripDistributions(It.IsAny<int>())).Returns(MockFundingPastTripDonationsResponse());
             _eventParticipantService.Setup(m => m.TripParticipants(It.IsAny<string>())).Returns(mockTripParticipants());
             _pledgeService.Setup(m => m.GetPledgeByCampaignAndDonor(It.IsAny<int>(), It.IsAny<int>())).Returns(mockPledge());
-            _tripRepository.Setup(m => m.GetTripDocuments(It.IsAny<int>(), token)).Returns(new List<MpEventParticipantDocument>());
+            _tripRepository.Setup(m => m.GetTripDocuments(It.IsAny<int>(), apiToken)).Returns(new List<MpEventParticipantDocument>());
             var myTrips = _fixture.GetMyTrips(token);
 
             Assert.IsNotNull(myTrips);
@@ -983,6 +987,17 @@ namespace crds_angular.test.Services
                     DonationAmount = 1000
                 }
             };
+        }
+
+        private AuthDTO fakeAuthDTO(int contactId, string emailAddress)
+        {
+            AuthDTO token = new AuthDTO();
+            token.UserInfo = new UserInfo();
+            token.UserInfo.Mp = new MpUserInfo();
+            token.UserInfo.Mp.ContactId = contactId;
+            token.UserInfo.Mp.Email = emailAddress;
+
+            return token;
         }
 
         private static List<MpTripParticipant> MockMpSearchResponse()
