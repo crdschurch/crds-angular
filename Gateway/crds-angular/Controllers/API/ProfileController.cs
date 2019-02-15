@@ -98,7 +98,10 @@ namespace crds_angular.Controllers.API
                     //TODO: Move this security logic to MP, if for some reason we absulutly can't then centerlize all security logic that exists in the gateway
                     Person person = null;
                     bool requestedContactIdIsSameAsTokenContactId = authDTO.UserInfo.Mp.ContactId == contactId;
-                    bool canImpersonate = authDTO.UserInfo.Mp.CanImpersonate.Value;
+
+                    bool canImpersonate = authDTO.UserInfo.Mp.CanImpersonate.HasValue ?
+                      authDTO.UserInfo.Mp.CanImpersonate.Value :
+                      false;
 
                     if (requestedContactIdIsSameAsTokenContactId) // This is not an impersonation case
                     {
