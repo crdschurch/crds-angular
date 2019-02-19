@@ -749,8 +749,12 @@ namespace crds_angular.Services
                 LastName = contact.Last_Name != null ? contact.Last_Name : null,
                 SiteName = mpGroup.Congregation,
                 Contact_ID = contact.Contact_ID,
-                Household_ID = contact.Household_ID,
-                Address = new AddressDTO
+                Household_ID = contact.Household_ID
+            };
+
+            if (mpGroup.Address != null)
+            {
+                pin.Address = new AddressDTO
                 {
                     AddressID = mpGroup.Address.AddressID != null ? mpGroup.Address.AddressID : (int?)null,
                     City = mpGroup.Address.City != null ? mpGroup.Address.City : null,
@@ -758,8 +762,8 @@ namespace crds_angular.Services
                     PostalCode = mpGroup.Address.PostalCode != null ? mpGroup.Address.PostalCode : null,
                     Latitude = mpGroup.Address.Latitude != null ? mpGroup.Address.Latitude : (double?)null,
                     Longitude = mpGroup.Address.Longitude != null ? mpGroup.Address.Longitude : (double?)null,
-                }
-            };
+                };
+            }
 
             pin.Gathering = new FinderGroupDto
             {
