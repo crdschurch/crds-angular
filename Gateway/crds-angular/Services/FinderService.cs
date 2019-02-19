@@ -779,7 +779,7 @@ namespace crds_angular.Services
                 MeetingTime = mpGroup.MeetingTime,
                 MeetingFrequency = mpGroup.MeetingFrequency,
                 GroupType = GetGroupTypeFromAttribute(mpGroup.SingleAttributes),
-                VirtualGroup = (bool)mpGroup.AvailableOnline && mpGroup.Address != null,
+                VirtualGroup = (bool)mpGroup.AvailableOnline && mpGroup.Address == null,
                 PrimaryContactFirstName = contact.First_Name != null ? contact.First_Name : null,
                 PrimaryContactLastName = contact.Last_Name != null ? contact.Last_Name : null,
                 PrimaryContactCongregation =  null,
