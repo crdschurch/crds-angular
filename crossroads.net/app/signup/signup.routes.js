@@ -46,14 +46,14 @@
         CmsInfo: function($q, Page, SignupService, Group, $stateParams) {
           var deferred = $q.defer();
           var link = addTrailingSlashIfNecessary($stateParams.link);
-          Page.get({url: link}).$promise.then(function(data) {
-            if (data.pages.length === 0) {
+          Page.get({url: link}).then(function(data) {
+            if (data.items.length === 0) {
               deferred.reject();
             }
 
             SignupService.cmsInfo = data;
 
-            Group.Detail.get({groupId: data.pages[0].group}).$promise.then(function(group) {
+            Group.Detail.get({groupId: data.items[0].fields.group}).$promise.then(function(group) {
                 SignupService.group = group;
                 deferred.resolve();
               },

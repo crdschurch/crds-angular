@@ -47,7 +47,7 @@
         CmsInfo: function(Page) {
           return Page.get({
             url: '/volunteer-application/kids-club/'
-          }).$promise;
+          });
         }
       }
     })

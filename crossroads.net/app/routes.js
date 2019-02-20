@@ -193,7 +193,7 @@
             var link = addTrailingSlashIfNecessary($stateParams.link);
             return Page.get({
               url: link
-            }).$promise;
+            });
           }]
         }
       })
@@ -228,7 +228,7 @@
 
                 Page.get({
                   url: cmsPath
-                }).$promise.then(function (cmsInfo) {
+                }).then(function (cmsInfo) {
                   deferred.resolve({
                     contact, cmsInfo
                   });

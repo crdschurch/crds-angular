@@ -85,7 +85,7 @@
     }
 
     function pageInfo(cmsInfo) {
-      return cmsInfo.pages[0];
+      return cmsInfo.pages[0].fields;
     }
 
     function showBlock(blockName) {

@@ -110,6 +110,7 @@
     $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
       console.error('$stateChangeError: ' + error);
       console.error(error);
+      
 
       //TODO: put the 'toState' in the session if we want to redirect to that page
       vm.resolving = false;

@@ -46,7 +46,7 @@ describe('KC Applicant Tool', function(){
 
   it('should get the have the correct page info', function(){
     $httpBackend.flush();
-    expect(controller.pageInfo).toBe(mockPageInfo.pages[0]);
+    expect(controller.pageInfo).toBe(mockPageInfo.items[0].fields);
   });
 
   it('should query for a response', function(){
