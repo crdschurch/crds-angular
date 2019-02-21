@@ -13,17 +13,17 @@ namespace crds_angular.Services.Interfaces
 
     {
         void SendRequestForRsvp();
-        List<FamilyMember> MyChildren(string token);
+        List<FamilyMember> MyChildren(int contactId);
         void SaveRsvp(ChildcareRsvpDto saveRsvp);
-        void CreateChildcareRequest(ChildcareRequestDto request, String token);
-        void ApproveChildcareRequest(int childcareRequestId, ChildcareRequestDto childcareRequest, string token);
-        MpChildcareRequest GetChildcareRequestForReview(int childcareRequestId, string token);
-        void RejectChildcareRequest(int requestId, ChildcareRequestDto childcareRequest, string token);
-        ChildcareDashboardDto GetChildcareDashboard(Person person, HouseHoldData houseHoldData);
+        void CreateChildcareRequest(ChildcareRequestDto request);
+        void ApproveChildcareRequest(int childcareRequestId, ChildcareRequestDto childcareRequest);
+        MpChildcareRequest GetChildcareRequestForReview(int childcareRequestId);
+        void RejectChildcareRequest(int requestId, ChildcareRequestDto childcareRequest);
+        ChildcareDashboardDto GetChildcareDashboard(int contactId, int householdId, HouseHoldData houseHoldData);
         void CancelRsvp(ChildcareRsvpDto cancelRsvp);
         HouseHoldData GetHeadsOfHousehold(int contactId, int householdId);
         void SendChildcareCancellationNotification();
-        void UpdateChildcareRequest(ChildcareRequestDto request, string token);
+        void UpdateChildcareRequest(ChildcareRequestDto request);
         List<ChildCareDate> UpdateAvailableChildCareDates(List<ChildCareDate> currentDates, DateTime dateToAdd, bool hasBeenCancelled);
         void SendChildcareReminders();
         MpCommunication SetupChilcareReminderCommunication(MpContact recipient, Dictionary<string, object> mergeData);

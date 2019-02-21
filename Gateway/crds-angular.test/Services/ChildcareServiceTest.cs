@@ -83,12 +83,12 @@ namespace crds_angular.test.Services
             var mockDateTime = new DateTime(2015, 5, 29);
             _dateTimeWrapper.Setup(m => m.Today).Returns(mockDateTime);
 
-            _serveService.Setup(m => m.GetImmediateFamilyParticipants(It.IsAny<string>())).Returns(MockFamily());
+            _serveService.Setup(m => m.GetImmediateFamilyParticipants(It.IsAny<int>())).Returns(MockFamily());
 
             _configurationWrapper.Setup(m => m.GetConfigIntValue("MaxAgeWithoutGrade")).Returns(8);
             _configurationWrapper.Setup(m => m.GetConfigIntValue("MaxGradeForChildcare")).Returns(5);
 
-            var x = _fixture.MyChildren("fake-token");
+            var x = _fixture.MyChildren(123);
 
             _serveService.VerifyAll();
             Assert.AreEqual(2, x.Count);

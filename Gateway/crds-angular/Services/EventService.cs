@@ -19,6 +19,7 @@ using IEventService = crds_angular.Services.Interfaces.IEventService;
 using IGroupRepository = MinistryPlatform.Translation.Repositories.Interfaces.IGroupRepository;
 using Participant = MinistryPlatform.Translation.Models.MpParticipant;
 using TranslationEventService = MinistryPlatform.Translation.Repositories.Interfaces.IEventRepository;
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.Services
 {
@@ -818,10 +819,9 @@ namespace crds_angular.Services
             public bool ChildcareRequested { get; set; }
         }
 
-        public MpEvent GetMyChildcareEvent(int parentEventId, string token)
+        public MpEvent GetMyChildcareEvent(int parentEventId, AuthDTO token)
         {
-            var participantRecord = _participantService.GetParticipantRecord(token);
-            if (!_eventService.EventHasParticipant(parentEventId, participantRecord.ParticipantId))
+            if (!_eventService.EventHasParticipant(parentEventId, token.UserInfo.Mp.ParticipantId.GetValueOrDefault()))
             {
                 return null;
             }
