@@ -1468,7 +1468,7 @@ namespace crds_angular.Services
                 {"Group_Meeting_Time", formatedMeetingTime},
                 {"Group_Meeting_Frequency", formatedMeetingFrequency},
                 {"Group_Meeting_Location", groupLocation == null || groupLocation.AddressLine1 == null ? "Online" : $"{groupLocation.AddressLine1}\n{groupLocation.AddressLine2}\n{groupLocation.City}\n{groupLocation.State}\n{groupLocation.PostalCode}" },
-                {"Leader_Phone", $"{leaderContact.Home_Phone}\n{leaderContact.Mobile_Phone}" }
+                {"Leader_Phone", $"{leaderContact.Mobile_Phone}" }
             };
 
             var fromContact = new MpContact
