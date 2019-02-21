@@ -243,6 +243,7 @@
     <None Include="..\crds-angular\MinistryPlatform.config">
       <Link>MinistryPlatform.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TransformOnBuild>true</TransformOnBuild>
     </None>
     <None Include="..\crds-angular\MinistryPlatform.Debug.config">
       <Link>MinistryPlatform.Debug.config</Link>
