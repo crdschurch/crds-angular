@@ -461,55 +461,63 @@ namespace crds_angular.Services
         {
             var dict = new Dictionary<string, string[]>();
 
-            // get grouptype
-            ObjectSingleAttributeDTO grouptype;
-            if (s.TryGetValue(73, out grouptype))
+            try
             {
-                // grouptype is now equal to the value
-                var x = grouptype.Value;
-                dict.Add("GroupType", new string[] { x.Name });
-            }
-
-            // get age groups
-            ObjectAttributeTypeDTO agegroup;
-            if (t.TryGetValue(91, out agegroup))
-            {
-                // roll through the age group. add selected to the dictionary
-                var ageGroups = new List<string>();
-                foreach (var a in agegroup.Attributes)
+                // get grouptype
+                ObjectSingleAttributeDTO grouptype;
+                if (s.TryGetValue(73, out grouptype) && grouptype.Value != null)
                 {
-                    if (a.Selected)
+                    // grouptype is now equal to the value
+                    var x = grouptype.Value;
+                    dict.Add("GroupType", new string[] { x.Name });
+                }
+
+                // get age groups
+                ObjectAttributeTypeDTO agegroup;
+                if (t.TryGetValue(91, out agegroup))
+                {
+                    // roll through the age group. add selected to the dictionary
+                    var ageGroups = new List<string>();
+                    foreach (var a in agegroup.Attributes)
                     {
-                        ageGroups.Add(a.Name);
+                        if (a.Selected)
+                        {
+                            ageGroups.Add(a.Name);
+                        }
+                    }
+
+                    // add to the dict
+                    if (ageGroups.Count > 0)
+                    {
+                        dict.Add("AgeGroups", ageGroups.ToArray());
                     }
                 }
 
-                // add to the dict
-                if (ageGroups.Count > 0)
+                // get group categories
+                ObjectAttributeTypeDTO groupcategory;
+                if (t.TryGetValue(90, out groupcategory))
                 {
-                    dict.Add("AgeGroups", ageGroups.ToArray());
-                }
-            }
-
-            // get group categories
-            ObjectAttributeTypeDTO groupcategory;
-            if (t.TryGetValue(90, out groupcategory))
-            {
-                // roll through the age group. add selected to the dictionary
-                var categories = new List<string>();
-                foreach (var a in groupcategory.Attributes)
-                {
-                    if (a.Selected)
+                    // roll through the age group. add selected to the dictionary
+                    var categories = new List<string>();
+                    foreach (var a in groupcategory.Attributes)
                     {
-                        categories.Add(a.Category);
+                        if (a.Selected)
+                        {
+                            categories.Add(a.Category);
+                        }
+                    }
+
+                    // add to the dict
+                    if (categories.Count > 0)
+                    {
+                        dict.Add("Categories", categories.ToArray());
                     }
                 }
-
-                // add to the dict
-                if (categories.Count > 0)
-                {
-                    dict.Add("Categories", categories.ToArray());
-                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Problem processing metadata in BuildGroupAttributeDictionary");
+                Console.WriteLine(e.Message);
             }
 
             return dict;

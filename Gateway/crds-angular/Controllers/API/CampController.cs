@@ -13,7 +13,7 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class CampController : MPAuth
+    public class CampController : ImpersonateAuthBaseController
     {
         private readonly ICampService _campService;
 
@@ -323,7 +323,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _campService.SendCampConfirmationEmail(eventId, invoiceId, paymentId, token);
+                    _campService.SendCampConfirmationEmail(eventId, invoiceId, paymentId);
                     _campService.SetCamperAsRegistered(eventId, contactId);
                     return Ok();
                 }
@@ -346,7 +346,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var emergencyContacts = _campService.GetCamperEmergencyContactInfo(eventId, contactId, token);
+                    var emergencyContacts = _campService.GetCamperEmergencyContactInfo(eventId, contactId);
                     return Ok(emergencyContacts);
                 }
 

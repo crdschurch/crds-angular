@@ -152,7 +152,7 @@ namespace crds_angular.test.Services
         [ExpectedException(typeof(GroupNotFoundForParticipantException))]
         public void TestGetMyGroupInfoGroupNotFound()
         {
-            _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser("abc", 2)).Returns(new List<GroupDTO>());
+            _groupService.Setup(mocked => mocked.GetGroupByIdForAuthenticatedUser(123, 2)).Returns(new List<GroupDTO>());
             _fixture.GetMyGroupInfo(123, 2);
         }
 
@@ -1060,10 +1060,10 @@ namespace crds_angular.test.Services
             groups.Add(group1);
 
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MpCommunication>(), false)).Returns(1);
-            _participantRepository.Setup(m => m.GetParticipantRecord(token)).Returns(groupParticipantDTO);
-            _groupService.Setup(m => m.GetGroupByIdForAuthenticatedUser(token, 1)).Returns(groups);
+            _participantRepository.Setup(m => m.GetParticipant(It.IsAny<int>())).Returns(groupParticipantDTO);
+            _groupService.Setup(m => m.GetGroupByIdForAuthenticatedUser(123, 1)).Returns(groups);
 
-            _fixture.SendAllGroupParticipantsEmail(token, 1, 123, "aaa", "bbb");
+            _fixture.SendAllGroupParticipantsEmail(123, 1, 123, "aaa", "bbb");
             _communicationRepository.VerifyAll();
         }
 
@@ -1125,10 +1125,10 @@ namespace crds_angular.test.Services
             groups.Add(group1);
 
             _communicationRepository.Setup(m => m.SendMessage(It.Is<MpCommunication>(email => email.ToContacts.Count() == expectedToContactsCount), false)).Returns(1);
-            _participantRepository.Setup(m => m.GetParticipantRecord(token)).Returns(groupParticipantDTO);
-            _groupService.Setup(m => m.GetGroupByIdForAuthenticatedUser(token, 1)).Returns(groups);
+            _participantRepository.Setup(m => m.GetParticipant(It.IsAny<int>())).Returns(groupParticipantDTO);
+            _groupService.Setup(m => m.GetGroupByIdForAuthenticatedUser(123, 1)).Returns(groups);
 
-            _fixture.SendAllGroupParticipantsEmail(token, 1, 123, "aaa", "bbb");
+            _fixture.SendAllGroupParticipantsEmail(123, 1, 123, "aaa", "bbb");
             _communicationRepository.VerifyAll();
         }
 
