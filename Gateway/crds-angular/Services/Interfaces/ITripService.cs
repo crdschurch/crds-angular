@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using crds_angular.Models.Crossroads.Trip;
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.Services.Interfaces
 {
@@ -7,12 +8,12 @@ namespace crds_angular.Services.Interfaces
     {
         TripFormResponseDto GetFormResponses(int selectionId, int selectionCount, int recordId);
         List<TripGroupDto> GetGroupsByEventId(int eventId);
-        MyTripsDto GetMyTrips(string token);
+        MyTripsDto GetMyTrips(AuthDTO token);
         List<TripParticipantDto> Search(string search);
         TripCampaignDto GetTripCampaign(int pledgeCampaignId);
-        List<FamilyMemberTripDto> GetFamilyMembers(int pledgeId, string token);       
-        int GeneratePrivateInvite(PrivateInviteDto dto, string token);
-        bool ValidatePrivateInvite(int pledgeCampaignId, string guid, string token);
+        List<FamilyMemberTripDto> GetFamilyMembers(int pledgeId, AuthDTO token);       
+        int GeneratePrivateInvite(PrivateInviteDto dto);
+        bool ValidatePrivateInvite(int pledgeCampaignId, string guid, AuthDTO token);
         int SaveApplication(TripApplicationDto dto);
         TripParticipantPledgeDto CreateTripParticipant(int contactId, int pledgeCampaignId);
         TripParticipantPledgeDto GetCampaignPledgeInfo(int contactId, int pledgeCampaignId);
