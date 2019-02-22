@@ -8,7 +8,7 @@ module.exports = {
       __CROSSROADS_API_TOKEN__: JSON.stringify(process.env.CROSSROADS_API_TOKEN || ''),
       __APP_SERVER_ENDPOINT__: JSON.stringify(process.env.CRDS_APP_SERVER_ENDPOINT || 'https://int.crossroads.net/'),
       __GATEWAY_CLIENT_ENDPOINT__: JSON.stringify(process.env.CRDS_GATEWAY_CLIENT_ENDPOINT || 'https://int.crossroads.net/proxy/gateway/'),
-      __CMS_CLIENT_ENDPOINT__: JSON.stringify(process.env.CRDS_CMS_CLIENT_ENDPOINT || 'https://content.crossroads.net/'),
+      __CMS_CLIENT_ENDPOINT__: JSON.stringify(process.env.CRDS_CMS_CLIENT_ENDPOINT || 'https://contentint.crossroads.net/'),
       __CONTENTFUL_CLIENT_ENDPOINT__: JSON.stringify(process.env.CRDS_CMS_CLIENT_ENDPOINT || 'https://cdn.contentful.com/'),
       __CONTENTFUL_SPACE_ID__: JSON.stringify(process.env.CONTENTFUL_SPACE_ID),
       __CONTENTFUL_ENV__: JSON.stringify(process.env.CONTENTFUL_ENV),
