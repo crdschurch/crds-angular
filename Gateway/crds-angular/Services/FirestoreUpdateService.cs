@@ -319,7 +319,8 @@ namespace crds_angular.Services
                     return true;
                 }
 
-                var url = group.ParticipantId != null ? SendProfilePhotoToFirestore((int)group.ParticipantId) : "";
+                var participantId = _groupService.GetPrimaryContactParticipantId(groupid);
+                var url = SendProfilePhotoToFirestore(participantId);
                 Console.WriteLine($"Small Group image url: {url}");
 
                 // create the pin object
