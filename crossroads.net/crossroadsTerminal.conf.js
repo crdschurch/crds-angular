@@ -34,6 +34,7 @@ module.exports = function crdsTermConf(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'node_modules/es6-shim/es6-shim.js',
       { pattern: 'node_modules/babel-polyfill/browser.js', instrument: false },
       'https://js.stripe.com/v2/',
       './node_modules/phantomjs-polyfill/bind-polyfill.js',
