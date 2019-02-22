@@ -58,23 +58,59 @@
       waitListInd: false
     },
     cmsInfo: {
-      pages: [{
-        className: 'OnetimeEventSignupPage',
-        content: '<p>Content</p>',
-        existingMember: '<p>You\'ve already signed up.</p>',
-        full: '<p>Thanks for your interest but this group is currently full.</p>',
-        group: '109085',
-        id: 395,
-        link: '/sign-up/fi101-oakley/',
-        pageType: 'OnetimeEventSignupPage',
-        parent: 28,
-        success: '<p>Thanks for signing up! An email will be sent to each person registered ' +
-          'who has a valid email in our system.</p>',
-        title: 'FI101 Oakley',
-        waitList: '<p>Please signup for the waiting list below.</p>',
-        waitSuccess: '<p>Thanks for signing up for the wait list! An email will be sent to ' +
-          'each person registered who has a valid'
-      }]
-    }
+      "sys": {
+          "type": "Array"
+      },
+      "total": 1,
+      "skip": 0,
+      "limit": 100,
+      "items": [
+          {
+              "sys": {
+                  "space": {
+                      "sys": {
+                          "type": "Link",
+                          "linkType": "Space",
+                          "id": "y3a9myzsdjan"
+                      }
+                  },
+                  "id": "3RBtH7N42HQkmCuptgx4O4",
+                  "type": "Entry",
+                  "createdAt": "2019-02-20T20:09:30.338Z",
+                  "updatedAt": "2019-02-20T20:09:30.338Z",
+                  "environment": {
+                      "sys": {
+                          "id": "int",
+                          "type": "Link",
+                          "linkType": "Environment"
+                      }
+                  },
+                  "revision": 1,
+                  "contentType": {
+                      "sys": {
+                          "type": "Link",
+                          "linkType": "ContentType",
+                          "id": "sign_up_form"
+                      }
+                  },
+                  "locale": "en-US"
+              },
+              "fields": {
+                  "title": "Going Deeper Spring 2011",
+                  "link": "/sign-up/2001881/",
+                  "content": "<p class=\"noPspace\">Please complete the information below to sign up.</p>",
+                  "className": "CommunityGroupSignupPage",
+                  "pageType": "CommunityGroupSignupPage",
+                  "opportunity": null,
+                  "group": 168431,
+                  "existingMember": "<p class=\"noPspace\">Oops. It looks like you’ve already signed up for this group. Check the email address you provided for a confirmation. If you have any questions, email <a title=\"CG email\" href=\"http://www.crossroads.net/mysend/131\">Erin McIntire</a> or call 513.731.7400 x1562.</p>",
+                  "success": "<p class=\"noPspace\">Thanks for signing up for Going Deeper.</p>\n<p class=\"noPspace\"> </p>\n<p class=\"noPspace\">You’ll receive registration confirmation via email at the address you specified with some specifics about the group and any necessary pre-work, if applicable.</p>",
+                  "waitList": "",
+                  "waitSuccess": "",
+                  "full": ""
+              }
+          }
+      ]
+  }
   };
 })();
