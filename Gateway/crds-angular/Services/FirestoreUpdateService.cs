@@ -319,9 +319,12 @@ namespace crds_angular.Services
                     return true;
                 }
 
+                var url = group.ParticipantId != null ? SendProfilePhotoToFirestore((int)group.ParticipantId) : "";
+                Console.WriteLine($"Small Group image url: {url}");
+
                 // create the pin object
                 MapPin pin = new MapPin(group.GroupDescription, group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), 
-                    groupid.ToString(), geohash, "", BuildGroupAttributeDictionary(s, t));
+                    groupid.ToString(), geohash, url, BuildGroupAttributeDictionary(s, t));
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
