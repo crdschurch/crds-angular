@@ -17,6 +17,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      { pattern: 'node_modules/babel-polyfill/browser.js', instrument: false },
       'https://js.stripe.com/v2/',
       './node_modules/phantomjs-polyfill/bind-polyfill.js',
       './node_modules/angular/angular.js',
