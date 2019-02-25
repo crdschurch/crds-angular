@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
   var CONSTANTS = require('../../constants');
   var moment = require('moment');
@@ -66,20 +66,21 @@
 
     function activate() {
       var link = (_.endsWith($stateParams.link, '/') === false) ? $stateParams.link + '/' : $stateParams.link;
-      var pageRequest = Page.get({url: link}, function() {
-        if (pageRequest.pages.length > 0) {
-          vm.signupPage = pageRequest.pages[0];
+
+      Page.get({ url: link }).then(function (pageRequest) {
+        if (pageRequest.items.length > 0) {
+          vm.signupPage = pageRequest.items[0].fields;
           vm.groupId = vm.signupPage.group;
           vm.groupDetails = Group.Detail.get({
             groupId: vm.groupId
-          }).$promise.then(function(response) {
+          }).$promise.then(function (response) {
             vm.response = response.SignUpFamilyMembers;
             vm.groupEvents = response.events;
-            vm.childCareEvents = _.find(vm.groupEvents, function(i) {
+            vm.childCareEvents = _.find(vm.groupEvents, function (i) {
               return (i.eventType == CONSTANTS.EVENTS.EVENT_TYPES.CHILDCARE && moment(i.startDate).isAfter(now));
             });
 
-            if(vm.childCareEvents !== undefined){
+            if (vm.childCareEvents !== undefined) {
               vm.childCareAvailable = true;
               vm.childCareNeeded = true;
             }
@@ -105,11 +106,11 @@
               var originalMembers = vm.response;
               vm.groupDetails = Group.Detail.get({
                 groupId: vm.groupId
-              }).$promise.then(function(response) {
+              }).$promise.then(function (response) {
                 var familyMembers = response.SignUpFamilyMembers;
-                _.forEach(familyMembers, function(member) {
+                _.forEach(familyMembers, function (member) {
                   if (!member.userInGroup) {
-                    var m = _.find(originalMembers, function(i) {
+                    var m = _.find(originalMembers, function (i) {
                       return i.participantId === member.participantId;
                     });
 
@@ -129,8 +130,8 @@
               // this is the case where the group is full and
               // there is NO waitlist and at least one of your family IS a participant
             } else if (response.groupFullInd &&
-                      !response.waitListInd &&
-                      vm.atLeastOneParticipant) {
+              !response.waitListInd &&
+              vm.atLeastOneParticipant) {
               vm.waitListCase = false;
               vm.showFull = true;
               vm.showContent = true;
@@ -156,15 +157,7 @@
             }
           });
         } else {
-          var notFoundRequest = Page.get({
-            url: 'page-not-found'
-          }, function() {
-            if (notFoundRequest.pages.length > 0) {
-              vm.content = notFoundRequest.pages[0].content;
-            } else {
-              vm.content = '404 Content not found';
-            }
-          });
+          $state.go('content', { link: '/server-error/' });
         }
       });
     }
@@ -193,7 +186,7 @@
     }
 
     function childCareChange(changedRecord) {
-      _.forEach(vm.response, function(found) {
+      _.forEach(vm.response, function (found) {
         if (found.participantId === changedRecord.participantId) {
           found.childCareNeeded = changedRecord.value;
         }
@@ -241,8 +234,8 @@
       var flag = false;
       for (var i = 0; i < vm.response.length; i++) {
         if (!vm.response[i].userInGroup &&
-            vm.response[i].newAdd !== undefined &&
-            vm.response[i].newAdd !== '') {
+          vm.response[i].newAdd !== undefined &&
+          vm.response[i].newAdd !== '') {
           flag = true;
           break;
         }
@@ -262,7 +255,7 @@
       //Add Person to group
       Group.Participant.save({
         groupId: vm.groupId
-      }, participantArray.partId).$promise.then(function() {
+      }, participantArray.partId).$promise.then(function () {
         if (vm.waitListCase) {
           $rootScope.$emit('notify', $rootScope.MESSAGES.successfullWaitlistSignup);
         } else {
@@ -275,14 +268,14 @@
         vm.showWaitSuccess = true;
         vm.saving = false;
 
-      }, function(error) {
+      }, function (error) {
         // 422 indicates an HTTP "Unprocessable Entity", in this case meaning Group is Full
         // http://tools.ietf.org/html/rfc4918#section-11.2
         if (error.status === 422) {
           vm.groupDetails = Group.Detail.get({
-              groupId: vm.groupId
-          }).$promise.then(function(res) {
-            if(res.waitListInd) {
+            groupId: vm.groupId
+          }).$promise.then(function (res) {
+            if (res.waitListInd) {
               $rootScope.$emit('notify', $rootScope.MESSAGES.notEnoughRoomError);
               vm.waitListCase = true;
               vm.showWaitList = true;

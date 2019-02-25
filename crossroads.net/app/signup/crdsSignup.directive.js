@@ -12,7 +12,7 @@
       restrict: 'E',
       scope: {},
       controller: crdsSignupController,
-      controllerAs: 'signup',
+    controllerAs: 'signup',
       bindToController: true,
       templateUrl: 'signup/signup.html'
     };
@@ -29,11 +29,11 @@
       vm.showOnetimeEvent = showOnetimeEvent;
 
       function showCommunityGroups() {
-        return vm.signupService.cmsInfo.pages[0].className === constants.CMS.PAGENAMES.COMMUNITYGROUPS;
+        return vm.signupService.cmsInfo.items[0].fields.className === constants.CMS.PAGENAMES.COMMUNITYGROUPS;
       }
 
       function showOnetimeEvent() {
-        return vm.signupService.cmsInfo.pages[0].className === constants.CMS.PAGENAMES.ONETIMEEVENTS;
+        return vm.signupService.cmsInfo.items[0].fields.className === constants.CMS.PAGENAMES.ONETIMEEVENTS;
       }
 
     }
