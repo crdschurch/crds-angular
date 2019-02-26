@@ -72,9 +72,9 @@ namespace crds_angular.Services
             _childcareGroupType = _configurationWrapper.GetConfigIntValue("ChildcareGroupType");
         }
 
-        public List<FamilyMember> MyChildren(string token)
+        public List<FamilyMember> MyChildren(int contactId)
         {
-            var family = _serveService.GetImmediateFamilyParticipants(token);
+            var family = _serveService.GetImmediateFamilyParticipants(contactId);
             var myChildren = new List<FamilyMember>();
 
             foreach (var member in family)
@@ -138,8 +138,9 @@ namespace crds_angular.Services
             }
         }
 
-        public void CreateChildcareRequest(ChildcareRequestDto request, String token)
+        public void CreateChildcareRequest(ChildcareRequestDto request)
         {
+            var token = _apiUserService.GetDefaultApiClientToken();
             var mpRequest = request.ToMPChildcareRequest();
             var childcareRequestId = _childcareRequestService.CreateChildcareRequest(mpRequest);
             _childcareRequestService.CreateChildcareRequestDates(childcareRequestId, mpRequest, token);
@@ -155,8 +156,9 @@ namespace crds_angular.Services
 
         }
 
-        public void UpdateChildcareRequest(ChildcareRequestDto request, string token)
+        public void UpdateChildcareRequest(ChildcareRequestDto request)
         {
+            var token = _apiUserService.GetDefaultApiClientToken();
             var mpRequest = request.ToMPChildcareRequest();
             _childcareRequestService.UpdateChildcareRequest(mpRequest);
             //delete the current childcare request dates
@@ -177,11 +179,11 @@ namespace crds_angular.Services
         }
 
         // TODO: Should we merge childcareRequestId into the childcareRequestDto?
-        public void ApproveChildcareRequest(int childcareRequestId, ChildcareRequestDto childcareRequest, string token)
+        public void ApproveChildcareRequest(int childcareRequestId, ChildcareRequestDto childcareRequest)
         {
             try
             {
-                var request = GetChildcareRequestForReview(childcareRequestId, token);
+                var request = GetChildcareRequestForReview(childcareRequestId);
                 var datesFromRequest = _childcareRequestService.GetChildcareRequestDates(childcareRequestId);
                 var requestedDates = childcareRequest.DatesList.Select(date => GetChildcareDateFromList(datesFromRequest, date)).ToList();
                 if (requestedDates.Count == 0)
@@ -209,14 +211,14 @@ namespace crds_angular.Services
                     var currentGroups = _eventService.GetGroupsForEvent(eventId).Select((g) => g.GroupId).ToList();
                     if (!currentGroups.Contains(request.GroupId))
                     {
-                        _eventService.CreateEventGroup(eventGroup, token);
+                        _eventService.CreateEventGroup(eventGroup, _apiUserService.GetDefaultApiClientToken());
                     }
                 }
 
                 var requestStatusId = GetApprovalStatus(datesFromRequest, requestedDates);
                 _childcareRequestService.DecisionChildcareRequest(childcareRequestId, requestStatusId, childcareRequest.ToMPChildcareRequest());
                 var templateId = GetApprovalEmailTemplate(requestStatusId);
-                SendChildcareRequestDecisionNotification(childcareRequestId, requestedDates, childcareRequest, templateId, token);
+                SendChildcareRequestDecisionNotification(childcareRequestId, requestedDates, childcareRequest, templateId);
             }
             catch (EventMissingException ex)
             {
@@ -345,7 +347,7 @@ namespace crds_angular.Services
             return _configurationWrapper.GetConfigIntValue("ChildcareRequestApproved");
         }
 
-        public void RejectChildcareRequest(int childcareRequestId, ChildcareRequestDto childcareRequest, string token)
+        public void RejectChildcareRequest(int childcareRequestId, ChildcareRequestDto childcareRequest)
         {
             try
             {
@@ -358,7 +360,7 @@ namespace crds_angular.Services
 
                 _childcareRequestService.DecisionChildcareRequest(childcareRequestId, _configurationWrapper.GetConfigIntValue("ChildcareRequestRejected"), childcareRequest.ToMPChildcareRequest());
                 var templateId = _configurationWrapper.GetConfigIntValue("ChildcareRequestRejectionNotificationTemplate");
-                SendChildcareRequestDecisionNotification(childcareRequestId, childcareDates, childcareRequest, templateId, token);
+                SendChildcareRequestDecisionNotification(childcareRequestId, childcareDates, childcareRequest, templateId);
             }
             catch (Exception ex)
             {
@@ -368,7 +370,7 @@ namespace crds_angular.Services
         }
 
         //TODO: SPLIT OUT INTO SMALLER METHODS AND WRITE TESTS!!!!!!!!!!!!!
-        public ChildcareDashboardDto GetChildcareDashboard(Person person, HouseHoldData householdData)
+        public ChildcareDashboardDto GetChildcareDashboard(int contactId, int householdId, HouseHoldData householdData)
         {
 
             var dashboard = new ChildcareDashboardDto();
@@ -376,9 +378,9 @@ namespace crds_angular.Services
 
             // Add members of other household(s)
             // Doesn't this really belong in the getHouseholds method?
-            householdData.AllMembers.AddRange(_contactService.GetOtherHouseholdMembers(person.HouseholdId));
+            householdData.AllMembers.AddRange(_contactService.GetOtherHouseholdMembers(householdId));
 
-            var dashboardData = _childcareRepository.GetChildcareDashboard(person.ContactId);
+            var dashboardData = _childcareRepository.GetChildcareDashboard(contactId);
             foreach (var childcareDashboard in dashboardData)
             {
                 // Add the Date if it doesn't already exist in the dashboard
@@ -462,14 +464,7 @@ namespace crds_angular.Services
             return new HouseHoldData() {AllMembers = household, HeadsOfHousehold = houseHeads};
         }
 
-        private bool IsChildRsvpd(int contactId, GroupDTO ccEventGroup, string token)
-        {
-            var participant = _participantService.GetParticipant(contactId);
-            var childGroups = _groupService.GetGroupsByTypeForParticipant(participant.ParticipantId, _childcareGroupType);
-            return childGroups.Any(c => c.GroupId == ccEventGroup.GroupId);
-        }
-
-        public MpChildcareRequest GetChildcareRequestForReview(int childcareRequestId, string token)
+        public MpChildcareRequest GetChildcareRequestForReview(int childcareRequestId)
         {
             try
             {
@@ -482,9 +477,9 @@ namespace crds_angular.Services
             return null;
         }
 
-        private void SendChildcareRequestDecisionNotification(int requestId, List<MpChildcareRequestDate> childcareRequestDates, ChildcareRequestDto childcareRequest, int templateId, String token)
+        private void SendChildcareRequestDecisionNotification(int requestId, List<MpChildcareRequestDate> childcareRequestDates, ChildcareRequestDto childcareRequest, int templateId)
         {
-            var childcareRequestEmail = _childcareRequestService.GetChildcareRequest(requestId, token);;
+            var childcareRequestEmail = _childcareRequestService.GetChildcareRequest(requestId, _apiUserService.GetDefaultApiClientToken());;
             var template = _communicationService.GetTemplate(templateId);
 
             var decisionNotes = childcareRequest.DecisionNotes ?? "N/A";
