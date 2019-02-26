@@ -43,9 +43,9 @@
       resolve: {
         loggedin: crds_utilities.checkLoggedin,
         MPTools: 'MPTools',
-        Page: 'Page',
-        CmsInfo: function(Page) {
-          return Page.get({
+        SignUpForm: 'SignUpForm',
+        CmsInfo: function(SignUpForm) {
+          return SignUpForm.get({
             url: '/volunteer-application/kids-club/'
           });
         }

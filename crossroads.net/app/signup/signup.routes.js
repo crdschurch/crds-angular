@@ -23,7 +23,7 @@
       resolve: {
         loggedin: crds_utilities.checkLoggedin,
         $stateParams: '$stateParams',
-        Page: 'Page',
+        SignUpForm: 'SignUpForm',
         SignupService: 'SignupService',
         $q: '$q',
         Group: 'Group',
@@ -43,10 +43,10 @@
           }).promise;
         },
 
-        CmsInfo: function($q, Page, SignupService, Group, $stateParams) {
+        CmsInfo: function($q, SignUpForm, SignupService, Group, $stateParams) {
           var deferred = $q.defer();
           var link = addTrailingSlashIfNecessary($stateParams.link);
-          Page.get({url: link}).then(function(data) {
+          SignUpForm.get({url: link}).then(function(data) {
             if (data.items.length === 0) {
               deferred.reject();
             }

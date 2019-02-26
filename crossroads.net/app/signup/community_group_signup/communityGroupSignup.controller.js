@@ -13,7 +13,7 @@
     'Group',
     '$log',
     '$stateParams',
-    'Page',
+    'SignUpForm',
     '$modal',
     'ChildCare',
     'Session'
@@ -26,7 +26,7 @@
     Group,
     $log,
     $stateParams,
-    Page,
+    SignUpForm,
     $modal,
     ChildCare,
     Session) {
@@ -67,7 +67,7 @@
     function activate() {
       var link = (_.endsWith($stateParams.link, '/') === false) ? $stateParams.link + '/' : $stateParams.link;
 
-      Page.get({ url: link }).then(function (pageRequest) {
+      SignUpForm.get({ url: link }).then(function (pageRequest) {
         if (pageRequest.items.length > 0) {
           vm.signupPage = pageRequest.items[0].fields;
           vm.groupId = vm.signupPage.group;

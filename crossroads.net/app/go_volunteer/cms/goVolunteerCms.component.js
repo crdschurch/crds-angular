@@ -13,7 +13,7 @@
       controller: function() {
         var vm = this;
         if (GoVolunteerService.cmsInfo && GoVolunteerService.cmsInfo.pages.length > 0) {
-          vm.content = GoVolunteerService.cmsInfo.pages[0].fields.content;
+          vm.content = GoVolunteerService.cmsInfo.items[0].fields.content;
         } 
       },
       controllerAs: 'cms',
