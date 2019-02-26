@@ -19,7 +19,7 @@
       var vm = this;
 
       // this has to be set first
-      vm.cmsInfo = GoVolunteerService.cmsInfo.pages[0].fields;
+      vm.cmsInfo = GoVolunteerService.cmsInfo.items[0].fields;
 
       vm.city = $stateParams.city;
       vm.content = content;

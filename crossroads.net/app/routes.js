@@ -189,62 +189,12 @@
         },
         resolve: {
           loggedin: crds_utilities.checkLoggedin,
-          CmsInfo: ['Page', '$stateParams', function (Page, $stateParams) {
+          CmsInfo: ['SignUpForm', '$stateParams', function (SignUpForm, $stateParams) {
             var link = addTrailingSlashIfNecessary($stateParams.link);
-            return Page.get({
+            return SignUpForm.get({
               url: link
             });
           }]
-        }
-      })
-      .state('volunteer-application', {
-        parent: 'noSideBar',
-        url: '/volunteer-application/:appType/:id',
-        controller: 'VolunteerApplicationController as volunteer',
-        templateUrl: 'volunteer_application/volunteerApplicationForm.html',
-        data: {
-          isProtected: true,
-          meta: {
-            title: 'Volunteer Signup',
-            description: ''
-          }
-        },
-        resolve: {
-          loggedin: crds_utilities.checkLoggedin,
-          Page: 'Page',
-          PageInfo: ['$q', 'Profile', 'Page', '$stateParams', function ($q, Profile, Page, $stateParams) {
-            var deferred = $q.defer();
-            var contactId = $stateParams.id;
-
-            Profile.Person.get({
-              contactId: contactId
-            }).$promise.then(
-              function (contact) {
-                var age = contact.age;
-                var cmsPath = '/volunteer-application/adult-applicant-form/';
-                if ((age >= 10) && (age <= 15)) {
-                  cmsPath = '/volunteer-application/student-applicant-form/';
-                }
-
-                Page.get({
-                  url: cmsPath
-                }).then(function (cmsInfo) {
-                  deferred.resolve({
-                    contact, cmsInfo
-                  });
-                }
-                );
-              });
-
-            return deferred.promise;
-          }],
-
-          Volunteer: 'VolunteerService',
-          Family: function (Volunteer) {
-            return Volunteer.Family.query({
-              contactId: crds_utilities.getCookie('userId')
-            }).$promise;
-          }
         }
       })
       .state('leaveyourmark', {
