@@ -156,7 +156,7 @@ namespace crds_angular.Services
                                     break;
                             }  
                         }
-                        SetRecordProcessedFlag(mapAuditRecord, updateStatus);
+                        SetRecordProcessedStatusFlag(mapAuditRecord, updateStatus);
                     }
                     recordList = _finderRepository.GetMapAuditRecords();
                 }
@@ -167,14 +167,13 @@ namespace crds_angular.Services
             }
         }
 
-        private void SetRecordProcessedFlag(MpMapAudit mapAuditRecord, bool success)
+        private void SetRecordProcessedStatusFlag(MpMapAudit mapAuditRecord, bool success)
         {
-            if (success)
-            {
-                mapAuditRecord.processed = true;
-                mapAuditRecord.dateProcessed = DateTime.Now;
-                _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
-            }
+            mapAuditRecord.processStatus = success ? "SUCCESS" : "FAILURE";
+            mapAuditRecord.processed = true;
+            mapAuditRecord.dateProcessed = DateTime.Now;
+            _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
+            
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
