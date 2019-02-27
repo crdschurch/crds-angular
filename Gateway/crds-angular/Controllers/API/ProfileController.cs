@@ -103,7 +103,7 @@ namespace crds_angular.Controllers.API
                       authDTO.UserInfo.Mp.CanImpersonate.Value :
                       false;
 
-                    if (family.Where(f => f.ContactId == contactId).ToList().Count > 0) // This is not an impersonation case
+                    if (family.Where(f => f.ContactId == authDTO.UserInfo.Mp.ContactId).ToList().Count > 0) // This is not an impersonation case
                     {
                         person = _personService.GetPerson(contactId);
                     }
