@@ -66,7 +66,7 @@ END
 
 GO
 
-ALTER TABLE [dbo].[Groups] ENABLE TRIGGER [crds_tr_Small_Group_To_Firestore]
+ALTER TABLE [dbo].[Groups] ENABLE TRIGGER [crds_tr_Small_Group_To_Firestore_UPDATE]
 GO
 
 
