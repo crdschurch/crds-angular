@@ -21,7 +21,7 @@ using log4net;
 
 namespace crds_angular.Controllers.API
 {
-    public class TripApplicationController : MPAuth
+    public class TripApplicationController : ImpersonateAuthBaseController
     {
         private readonly ITripService _tripService;
         private readonly IMessageFactory _messageFactory;

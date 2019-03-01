@@ -18,7 +18,7 @@ using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.Controllers.API
 {
-    public class TripController : MPAuth
+    public class TripController : ImpersonateAuthBaseController
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(DonationController));
 
@@ -141,7 +141,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _tripService.GeneratePrivateInvite(dto, token);
+                    _tripService.GeneratePrivateInvite(dto);
                     return Ok();
                 }
                 catch (Exception exception)
@@ -241,8 +241,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var contactId = _contactRepository.GetContactId(token);
-                    var contact = _contactRepository.GetSimpleContact(contactId).Wait();
+                    var contact = _contactRepository.GetSimpleContact(token.UserInfo.Mp.ContactId).Wait();
                     return Ok(contact);
                 }
                 catch (Exception e)
