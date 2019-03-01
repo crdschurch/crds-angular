@@ -1,11 +1,11 @@
 R_Donor_Email,R_Donation_Amount,R_Donation_Date,R_Payment_Type_Id,R_Donation_Status_Id,R_Receipted,R_Program_Name,Congregation_Id,Required if this is a soft credit donation →,Soft_Credit_Donor_Email,Required if this is a donation to a pledge→,Pledge_Owner_Email,Optional→,Non-Cash_Asset_Type_Id,Anonymous,Processed,Processor_Id,Status_Date,Status_Notes,Donation_Notes,Transaction_Code,Batch_Name,Item_Number,Tester notes
 mpcrds+auto+wilmaflintstone@gmail.com,250,9/3/2017,2,2,1,Ministry Fund,5,,,,,,,0,1,,9/3/2017,,,,,,Donation made last year
-mpcrds+auto+2@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) Ministry Fund Two Batches,,
-mpcrds+12@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) Ministry Fund Two Batches,,
-mpcrds+tremplay.richard@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) Ministry Fund Two Batches,,
-mpcrds+auto+2@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) Ministry Fund Two Batches,,
-mpcrds+12@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) Ministry Fund Two Batches,,
-mpcrds+tremplay.richard@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) Ministry Fund Two Batches,,
+mpcrds+auto+2@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+12@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+tremplay.richard@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+auto+2@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+12@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+tremplay.richard@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
 mpcrds+auto+wilmaflintstone@gmail.com,150,1/3/2018,4,2,1,Ministry Fund,5,,,,,,,0,1,,1/3/2018,,,ch_16odS5Eldv5NE53si5NDZzoN,,,Credit Card donation
 mpcrds+auto+wilmaflintstone@gmail.com,200,1/3/2018,5,2,1,Beans and Rice Week,5,,,,,,,0,1,,1/9/2018,,,,,,ACH donation with bank data but no Stripe transaciton id. This mirrors migrated bank transactions.
 mpcrds+auto+wilmaflintstone@gmail.com,555,1/4/2018,4,2,1,Ministry Fund,5,,,,,,,0,1,,1/4/2018,,,ch_16ngVCEldv5NE53s9ZK1bq1Z,,,Credit Card donation we'll do a partial refund on
@@ -39,5 +39,5 @@ mpcrds+auto+2@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,
 mpcrds+12@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) Ministry Fund,,
 mpcrds+tremplay.richard@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) Ministry Fund,,
 mpcrds+auto+2@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) Ministry Fund,,
-mpcrds+12@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) Ministry Fund Two Batches,,
-mpcrds+tremplay.richard@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) Ministry Fund Two Batches,,
+mpcrds+12@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
+mpcrds+tremplay.richard@gmail.com,50,8/30/2017,4,2,0,Ministry Fund,1,,,,,,,,,,9/1/2017,,,,(auto) General Giving Two Batches,,
