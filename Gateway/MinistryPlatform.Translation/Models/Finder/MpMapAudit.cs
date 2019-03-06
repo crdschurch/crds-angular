@@ -25,6 +25,9 @@ namespace MinistryPlatform.Translation.Models.Finder
 
         [JsonProperty(PropertyName = "PinType")]
         public string pinType { get; set; }
+
+        [JsonProperty(PropertyName = "ProcessStatus")]
+        public string processStatus { get; set; }
     }
     
 }

@@ -334,6 +334,7 @@
     <Compile Include="controllers\WaiverControllerTest.cs" />
     <Compile Include="DataAccess\EzScanCheckScannerDaoTest.cs" />
     <Compile Include="Exceptions\GroupParticipantRemovalExceptionTest.cs" />
+    <Compile Include="Models\Crossroads\AuthHelpers.cs" />
     <Compile Include="Services\AuthTokenExpiryServiceTest.cs" />
     <Compile Include="Services\AwsCloudsearchServiceTest.cs" />
     <Compile Include="Services\AwsTimeHelperTest.cs" />

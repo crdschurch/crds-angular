@@ -21,9 +21,11 @@
   CRDS_STREAMSPOT_PLAYER_ID = '2887fba1'
   HEADER_CONTENTBLOCK_TITLE = 'sharedGlobalHeader'
   CRDS_APP_CLIENT_ENDPOINT = '/'
+  CONTENTFUL_ENV = 'int'
 
 [context.production.environment]
   IN_MAESTRO = '0'
+  CONTENTFUL_ENV = 'master'
   CRDS_ENV = 'prod'
   CRDS_COOKIE_DOMAIN = '.crossroads.net'
   CROSSROADS_API_TOKEN = 'd3f9a2f7-7dad-44ba-bfb5-58185af9f840'
@@ -52,6 +54,7 @@
 [context.release.environment]
   IN_MAESTRO = '0'
   CRDS_ENV = 'demo'
+  CONTENTFUL_ENV = 'demo'
   CRDS_COOKIE_DOMAIN = '.crossroads.net'
   CROSSROADS_API_TOKEN = '9a3f6689-679e-425a-a3b5-ee7b73665ebb'
   CRDS_APP_SERVER_ENDPOINT = 'https://demo.crossroads.net/'

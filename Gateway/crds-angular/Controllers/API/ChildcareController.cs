@@ -19,7 +19,7 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class ChildcareController : MPAuth
+    public class ChildcareController : ImpersonateAuthBaseController
     {
         private readonly IChildcareService _childcareService;
         private readonly IEventService _eventService;
@@ -111,7 +111,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    return Ok(_childcareService.MyChildren(token));
+                    return Ok(_childcareService.MyChildren(token.UserInfo.Mp.ContactId));
                 }
                 catch (Exception e)
                 {
@@ -137,7 +137,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _childcareService.CreateChildcareRequest(request, token);
+                    _childcareService.CreateChildcareRequest(request);
                     return Ok();
                 }
                 catch (Exception e)
@@ -165,7 +165,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _childcareService.UpdateChildcareRequest(request, token);
+                    _childcareService.UpdateChildcareRequest(request);
                     return Ok();
                 }
                 catch (Exception e)
@@ -193,7 +193,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _childcareService.ApproveChildcareRequest(requestId, childcareRequest, token);
+                    _childcareService.ApproveChildcareRequest(requestId, childcareRequest);
                     return Ok();
                 }
                 catch (EventMissingException e)
@@ -244,7 +244,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _childcareService.RejectChildcareRequest(requestId, childcareRequest, token);
+                    _childcareService.RejectChildcareRequest(requestId, childcareRequest);
                     return Ok();
                 }
                 catch (Exception e)
@@ -266,7 +266,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    return Ok(_childcareService.GetChildcareRequestForReview(requestId, token));
+                    return Ok(_childcareService.GetChildcareRequestForReview(requestId));
                 }
                 catch (Exception e)
                 {
@@ -284,12 +284,10 @@ namespace crds_angular.Controllers.API
         {
             return Authorized(token =>
             {
-                // Get contactId of token
-                var person = _personService.GetLoggedInUserProfile(token);
                 try
                 {
-                    var householdInfo = _childcareService.GetHeadsOfHousehold(person.ContactId, person.HouseholdId);
-                    return Ok(_childcareService.GetChildcareDashboard(person, householdInfo));
+                    var householdInfo = _childcareService.GetHeadsOfHousehold(token.UserInfo.Mp.ContactId, token.UserInfo.Mp.HouseholdId.GetValueOrDefault());
+                    return Ok(_childcareService.GetChildcareDashboard(token.UserInfo.Mp.ContactId, token.UserInfo.Mp.HouseholdId.GetValueOrDefault(), householdInfo));
                 }
                 catch (NotHeadOfHouseholdException notHead)
                 {

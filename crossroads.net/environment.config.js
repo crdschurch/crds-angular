@@ -3,12 +3,16 @@ module.exports = {
   get() {
     return {
       __IN_MAESTRO__: JSON.stringify(process.env.IN_MAESTRO || '0'),
-      __CRDS_ENV__: JSON.stringify((process.env.CRDS_ENV === 'prod' ? '' : process.env.CRDS_ENV) || ''),
+      __CRDS_ENV__: JSON.stringify(process.env.CRDS_ENV || 'int'),
       __COOKIE_DOMAIN__: JSON.stringify(process.env.CRDS_COOKIE_DOMAIN || ''),
       __CROSSROADS_API_TOKEN__: JSON.stringify(process.env.CROSSROADS_API_TOKEN || ''),
       __APP_SERVER_ENDPOINT__: JSON.stringify(process.env.CRDS_APP_SERVER_ENDPOINT || 'https://int.crossroads.net/'),
       __GATEWAY_CLIENT_ENDPOINT__: JSON.stringify(process.env.CRDS_GATEWAY_CLIENT_ENDPOINT || 'https://int.crossroads.net/proxy/gateway/'),
       __CMS_CLIENT_ENDPOINT__: JSON.stringify(process.env.CRDS_CMS_CLIENT_ENDPOINT || 'https://contentint.crossroads.net/'),
+      __CONTENTFUL_CLIENT_ENDPOINT__: JSON.stringify(process.env.CRDS_CMS_CLIENT_ENDPOINT || 'https://cdn.contentful.com/'),
+      __CONTENTFUL_SPACE_ID__: JSON.stringify(process.env.CONTENTFUL_SPACE_ID),
+      __CONTENTFUL_ENV__: JSON.stringify(process.env.CONTENTFUL_ENV),
+      __CONTENTFUL_ACCESS_TOKEN__: JSON.stringify(process.env.CONTENTFUL_ACCESS_TOKEN),
       __SERVICES_CLIENT_ENDPOINT__: JSON.stringify(process.env.CRDS_SERVICES_CLIENT_ENDPOINT || 'https://gatewayint.crossroads.net'),
       __GOOGLE_API_KEY__: JSON.stringify(process.env.CRDS_GOOGLE_API_KEY || 'AIzaSyArKsBK97N0Wi-69x10OL7Sx57Fwlmu6Cs'),
       __STRIPE_PUBKEY__: JSON.stringify(process.env.CRDS_STRIPE_PUBKEY || 'pk_test_U8U15gSZFM4AQtPDLHYnKWqH'),

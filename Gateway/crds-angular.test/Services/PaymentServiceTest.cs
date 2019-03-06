@@ -18,6 +18,7 @@ using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
 using Crossroads.Web.Auth.Models;
+using crds_angular.test.Models.Crossroads;
 
 namespace crds_angular.test.Services
 {
@@ -85,7 +86,7 @@ namespace crds_angular.test.Services
             const int invoiceId = 3389753;
             const int contactId = 123;
             const string emailAddress = "help_me@usa.com";
-            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
             const string apiToken = "apiToken";
             StripeCharge charge = new StripeCharge()
             {
@@ -119,7 +120,7 @@ namespace crds_angular.test.Services
             const int invoiceId = 3389753;
             const int contactId = 12323354;
             const string emailAddress = "help_me@usa.com";
-            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
             const string apiToken = "apiToken";
             StripeCharge charge = new StripeCharge()
             {
@@ -152,7 +153,7 @@ namespace crds_angular.test.Services
             const int invoiceId = 3389753;
             const int contactId = 12323354;
             const string emailAddress = "help_me@usa.com";
-            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
             const string apiToken = "apiToken";
             
             var invoice = fakeInvoice(invoiceId, contactId, 500.00M);
@@ -395,7 +396,7 @@ namespace crds_angular.test.Services
         {
             const int payerId = 3333;
             const string emailAddress = "help_me@usa.com";
-            AuthDTO token = fakeAuthDTO(payerId, emailAddress);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(payerId, 23, emailAddress);
             const string apiToken = "apiToken";          
             const int invoiceId = 89989;
 
@@ -412,7 +413,7 @@ namespace crds_angular.test.Services
         {
             const int contactId = 12323354;
             const string emailAddress = "help_me@usa.com";
-            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
             const string apiToken = "apiToken";
             const int payerId = 3333;
             const int invoiceId = 89989;
@@ -433,7 +434,7 @@ namespace crds_angular.test.Services
             const string apiToken = "apiToken";
             const int contactId = 8484;
             const string emailAddress = "help_me@usa.com";
-            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
             const string baseUrl = "some url.com";
 
             const string eventTitle = "My Awesome Event";
@@ -497,7 +498,7 @@ namespace crds_angular.test.Services
             const int emailTemplateId = 555;
             const int contactId = 8484;
             const string emailAddress = "Lucille@bluth.com";
-            AuthDTO token = fakeAuthDTO(contactId, emailAddress);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
             const string apiToken = "apiToken";
             const string baseUrl = "some url.com";
 
@@ -675,17 +676,6 @@ namespace crds_angular.test.Services
           var noProgram = fakeProgram3(productId);
           int templateId2 = noProgram == null ? defaultInvoicePaymentTemplate : noProgram.CommunicationTemplateId ?? defaultInvoicePaymentTemplate;
           Assert.AreEqual(templateId2, defaultInvoicePaymentTemplate);
-        }
-
-        private AuthDTO fakeAuthDTO(int contactId, string emailAddress)
-        {
-            AuthDTO token = new AuthDTO();
-            token.UserInfo = new UserInfo();
-            token.UserInfo.Mp = new MpUserInfo();
-            token.UserInfo.Mp.ContactId = contactId;
-            token.UserInfo.Mp.Email = emailAddress;
-
-            return token;
         }
 
         private static List<MpPayment> fakePayments(int payerId, decimal paymentTotal, int paymentIdOfOne = 34525, int paymentStatus = 0)

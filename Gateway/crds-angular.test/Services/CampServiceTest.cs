@@ -19,6 +19,7 @@ using MinistryPlatform.Translation.Models.Payments;
 using MinistryPlatform.Translation.Models.Product;
 using Crossroads.Web.Common.Security;
 using Crossroads.Web.Auth.Models;
+using crds_angular.test.Models.Crossroads;
 
 namespace crds_angular.test.Services
 {
@@ -103,7 +104,7 @@ namespace crds_angular.test.Services
         {
             var apiToken = "apiToken";
             var myContactId = 2187211;
-            var token = fakeAuthDTO(myContactId, 23);
+            var token = AuthHelpers.fakeAuthDTO(myContactId, 23);
             var signedUpDate = DateTime.Now;
             var eventId = 5433;
             var myContact = getFakeContact(myContactId);
@@ -219,7 +220,7 @@ namespace crds_angular.test.Services
             {
                 EventParticipantId = newEventparticipantId
             };
-            AuthDTO token = fakeAuthDTO(newContactId, household.Household_ID);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(newContactId, household.Household_ID);
 
             _contactService.Setup(m => m.CreateContact(It.IsAny<MpContact>())).Returns(contact);
             _participantRepository.Setup(m => m.GetParticipant(newContactId)).Returns(participant);
@@ -291,7 +292,7 @@ namespace crds_angular.test.Services
                 Name = "mASON"
             };
 
-            AuthDTO token = fakeAuthDTO(contactId, household.Household_ID);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, household.Household_ID);
 
             _congregationRepository.Setup(m => m.GetCongregationById(campReservation.CrossroadsSite)).Returns(congregation);
             _contactService.Setup(m => m.UpdateContact(contactId, It.IsAny<Dictionary<string, object>>()));
@@ -356,7 +357,7 @@ namespace crds_angular.test.Services
             {
                 Name = "mASON"
             };
-            AuthDTO token = fakeAuthDTO(contactId, household.Household_ID);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, household.Household_ID);
 
             _congregationRepository.Setup(m => m.GetCongregationById(campReservation.CrossroadsSite)).Returns(congregation);
             _contactService.Setup(m => m.UpdateContact(contactId, It.IsAny<Dictionary<string, object>>()));
@@ -390,7 +391,7 @@ namespace crds_angular.test.Services
             var eventId = 5433;
             var myContact = getFakeContact(myContactId);
             var eventParticipant = new MpEventParticipant();
-            AuthDTO token = fakeAuthDTO(myContactId);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(myContactId);
 
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact));
             _contactService.Setup(m => m.GetOtherHouseholdMembers(myContact.Household_ID)).Returns(new List<MpHouseholdMember>());
@@ -414,7 +415,7 @@ namespace crds_angular.test.Services
             const int eventId = 5433;
             var myContact = getFakeContact(myContactId);
             var eventParticipant = new MpEventParticipant();
-            AuthDTO token = fakeAuthDTO(myContactId);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(myContactId);
 
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact, false, "Adult Child"));            
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
@@ -438,7 +439,7 @@ namespace crds_angular.test.Services
             const int eventId = 5433;
             var myContact = getFakeContact(myContactId);
             var eventParticipant = new MpEventParticipant();
-            AuthDTO token = fakeAuthDTO(myContactId);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(myContactId);
 
             _contactService.Setup(m => m.GetHouseholdFamilyMembers(myContact.Household_ID)).Returns(getFakeHouseholdMembers(myContact, false));
             _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
@@ -461,7 +462,7 @@ namespace crds_angular.test.Services
             const int myContactId = 2187211;
             const int eventId = 5433;
             var myContact = getFakeContact(myContactId);
-            AuthDTO token = fakeAuthDTO(myContactId);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(myContactId);
 
             var signedUpOn = DateTime.Now;
             var eventParticipant = new MpEventParticipant
@@ -491,7 +492,7 @@ namespace crds_angular.test.Services
             const int eventId = 5433;
             const int interestedStatus = 456;
             var myContact = getFakeContact(myContactId);
-            AuthDTO token = fakeAuthDTO(myContactId);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(myContactId);
 
             var signedUpOn = DateTime.Now;
             var eventParticipant = new MpEventParticipant
@@ -532,7 +533,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 999999,
                 Household_ID = 77777
             };
-            AuthDTO token = fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
 
             var myHousehold = new List<MpHouseholdMember>
             {
@@ -574,7 +575,7 @@ namespace crds_angular.test.Services
             var myContactId = 2187211;
             var eventId = 1234;
             var myContact = getFakeContact(myContactId);
-            AuthDTO token = fakeAuthDTO(myContactId);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(myContactId);
 
             // Get a family list with only me in it i.e. no family
             var family = getFakeHouseholdMembers(myContact).Where(member => member.ContactId == myContactId).ToList();
@@ -594,7 +595,7 @@ namespace crds_angular.test.Services
             const string apiToken = "apiToken";
             const int myContactId = 2187211;
             var myContact = getFakeContact(myContactId);
-            AuthDTO token = fakeAuthDTO(myContactId);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(myContactId);
             const string campType = "Camp";
             var product = new MpProduct
             {
@@ -691,7 +692,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 999999,
                 Household_ID = 77777
             };
-            AuthDTO token = fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
 
             var myHousehold = new List<MpHouseholdMember>
             {
@@ -763,7 +764,7 @@ namespace crds_angular.test.Services
                     ContactId = contactId
                 }
             };
-            AuthDTO token = fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
 
             var otherHousehold = new List<MpHouseholdMember>
             {
@@ -824,7 +825,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 999999,
                 Household_ID = 77777
             };
-            AuthDTO token = fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(myContact.Contact_ID, myContact.Household_ID);
 
             var myHousehold = new List<MpHouseholdMember>
             {
@@ -872,7 +873,7 @@ namespace crds_angular.test.Services
             const int eventId = 1289;
             const int contactId = 123; // this is set in the getFakeHouseholdMembers() method
             const int loggedInContactId = 6767;
-            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(loggedInContactId, 23);
             const string apiToken = "apiToken";
 
             var me = getFakeContact(loggedInContactId);
@@ -909,7 +910,7 @@ namespace crds_angular.test.Services
             const int eventId = 1289;
             const int contactId = 123; // this is set in the getFakeHouseholdMembers() method
             const int loggedInContactId = 6767;
-            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(loggedInContactId, 23);
             const string apiToken = "apiToken";
 
             var me = getFakeContact(loggedInContactId);
@@ -967,7 +968,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 56789,
                 Household_ID = 10000
             };
-            AuthDTO token = fakeAuthDTO(loggedInContact.Contact_ID, loggedInContact.Household_ID);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(loggedInContact.Contact_ID, loggedInContact.Household_ID);
 
             var householdfamily = new List<MpHouseholdMember>
             {
@@ -1032,7 +1033,7 @@ namespace crds_angular.test.Services
                 Contact_ID = 56789,
                 Household_ID = 10000
             };
-            AuthDTO token = fakeAuthDTO(loggedInContact.Contact_ID, loggedInContact.Household_ID);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(loggedInContact.Contact_ID, loggedInContact.Household_ID);
 
             var householdfamily = new List<MpHouseholdMember>
             {
@@ -1120,7 +1121,7 @@ namespace crds_angular.test.Services
             var mpInvoiceResult = new Result<MpInvoiceDetail>(true, new MpInvoiceDetail() { InvoiceId = 1234 });
             var mpoptionlist = new List<MpProductOptionPrice>() {mpprodoption1, mpprodoption2};
             const int contactid = 12345;
-            AuthDTO token = fakeAuthDTO(contactid);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactid);
 
             _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpevent);
             _productRepository.Setup(m => m.GetProductForEvent(eventId)).Returns(product);
@@ -1184,7 +1185,7 @@ namespace crds_angular.test.Services
         var mpInvoiceResult = new Result<MpInvoiceDetail>(false, "No invoice");
         var mpoptionlist = new List<MpProductOptionPrice>() { mpprodoption1, mpprodoption2 };
         const int contactid = 12345;
-        AuthDTO token = fakeAuthDTO(contactid);
+        AuthDTO token = AuthHelpers.fakeAuthDTO(contactid);
 
             _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpevent);
         _productRepository.Setup(m => m.GetProductForEvent(eventId)).Returns(product);
@@ -1209,7 +1210,7 @@ namespace crds_angular.test.Services
             const int contactId = 67676;
             const int templateId = 12345;
             const string baseUrl = "localhost:3000";
-            AuthDTO token = fakeAuthDTO(contactId);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId);
 
             var startDate = DateTime.Now;
             var endDate = new DateTime(2017, 8, 20); 
@@ -1255,7 +1256,7 @@ namespace crds_angular.test.Services
             var eventEndDate = DateTime.Now.AddDays(191);            
 
             var myContact = getFakeContact(loggedInContactId);
-            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(loggedInContactId, 23);
             var myFamily = getFakeHouseholdMembers(myContact);
             var campDto = FactoryGirl.NET.FactoryGirl.Build<CampProductDTO>(m => m.ContactId = myFamily.FirstOrDefault().ContactId);
             var participant = FactoryGirl.NET.FactoryGirl.Build<MpParticipant>(m =>
@@ -1333,7 +1334,7 @@ namespace crds_angular.test.Services
             var eventEndDate = DateTime.Now.AddDays(191);
 
             var myContact = getFakeContact(loggedInContactId);
-            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(loggedInContactId, 23);
             var myFamily = getFakeHouseholdMembers(myContact);
             var campDto = FactoryGirl.NET.FactoryGirl.Build<CampProductDTO>(m => m.ContactId = myFamily.FirstOrDefault().ContactId);
             var participant = FactoryGirl.NET.FactoryGirl.Build<MpParticipant>(m =>
@@ -1412,7 +1413,7 @@ namespace crds_angular.test.Services
             var eventEndDate = DateTime.Now.AddDays(191);
 
             var myContact = getFakeContact(loggedInContactId);
-            AuthDTO token = fakeAuthDTO(loggedInContactId, 23);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(loggedInContactId, 23);
             var myFamily = getFakeHouseholdMembers(myContact);
             var campDto = FactoryGirl.NET.FactoryGirl.Build<CampProductDTO>(m => m.ContactId = myFamily.FirstOrDefault().ContactId);
             var participant = FactoryGirl.NET.FactoryGirl.Build<MpParticipant>(m =>
@@ -1526,17 +1527,6 @@ namespace crds_angular.test.Services
 
         }
 
-        private AuthDTO fakeAuthDTO(int contactId, int householdId=23, string emailAddress="")
-        {
-            AuthDTO token = new AuthDTO();
-            token.UserInfo = new UserInfo();
-            token.UserInfo.Mp = new MpUserInfo();
-            token.UserInfo.Mp.ContactId = contactId;
-            token.UserInfo.Mp.HouseholdId = new int?(householdId);
-            token.UserInfo.Mp.Email = emailAddress;
-
-            return token;
-        }
         private List<MpHouseholdMember> getFakeHouseholdMembers(MpMyContact me, bool isHead = true, string positionIfNotHead = null)
         {
             return new List<MpHouseholdMember>
