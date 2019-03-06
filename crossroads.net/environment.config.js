@@ -3,7 +3,7 @@ module.exports = {
   get() {
     return {
       __IN_MAESTRO__: JSON.stringify(process.env.IN_MAESTRO || '0'),
-      __CRDS_ENV__: JSON.stringify(process.env.CRDS_ENV || 'int'),
+      __CRDS_ENV__: JSON.stringify((process.env.CRDS_ENV === 'prod' ? '' : process.env.CRDS_ENV) || ''),
       __COOKIE_DOMAIN__: JSON.stringify(process.env.CRDS_COOKIE_DOMAIN || ''),
       __CROSSROADS_API_TOKEN__: JSON.stringify(process.env.CROSSROADS_API_TOKEN || ''),
       __APP_SERVER_ENDPOINT__: JSON.stringify(process.env.CRDS_APP_SERVER_ENDPOINT || 'https://int.crossroads.net/'),
