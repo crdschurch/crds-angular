@@ -758,7 +758,7 @@ namespace crds_angular.Services
                 {
                     AddressID = mpGroup.Address.AddressID != null ? mpGroup.Address.AddressID : (int?)null,
                     City = mpGroup.Address.City != null ? mpGroup.Address.City : null,
-                    State = mpGroup.Address.State != null ? mpGroup.Address.City : null,
+                    State = mpGroup.Address.State != null ? mpGroup.Address.State : null,
                     PostalCode = mpGroup.Address.PostalCode != null ? mpGroup.Address.PostalCode : null,
                     Latitude = mpGroup.Address.Latitude != null ? mpGroup.Address.Latitude : (double?)null,
                     Longitude = mpGroup.Address.Longitude != null ? mpGroup.Address.Longitude : (double?)null,
