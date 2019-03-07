@@ -170,7 +170,7 @@ BEGIN
 
 	WHERE C.Domain_ID = @Domain_ID 
 		AND C.Participant_Record = ISNULL(@ParticipantID,C.Participant_Record)
-		AND EXISTS (SELECT MAX(_Setup_Date) FROM Event_Participants EP 
+		AND EXISTS (SELECT 1 FROM Event_Participants EP 
 			WHERE EP.Event_ID = @EventID AND EP.Participant_ID = C.Participant_Record
 			AND EP.Participation_Status_ID = 2)
 
