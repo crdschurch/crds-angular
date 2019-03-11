@@ -41,7 +41,7 @@ describe('Signup Component', function() {
   });
 
   it('should show the community group signup', function() {
-    SignupService.cmsInfo.items[0].fields.className = CONSTANTS.CMS.PAGENAMES.COMMUNITYGROUPS;
+    SignupService.cmsInfo.items[0].fields.pageType = CONSTANTS.CMS.PAGENAMES.COMMUNITYGROUPS;
     expect(isolated.signup.showCommunityGroups()).toBe(true);
   });
 
