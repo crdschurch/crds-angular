@@ -25,8 +25,8 @@
 
 [context.production.environment]
   IN_MAESTRO = '0'
-  CRDS_ENV = ''
   CONTENTFUL_ENV = 'master'
+  CRDS_ENV = 'prod'
   CRDS_COOKIE_DOMAIN = '.crossroads.net'
   CROSSROADS_API_TOKEN = 'd3f9a2f7-7dad-44ba-bfb5-58185af9f840'
   CRDS_APP_SERVER_ENDPOINT = 'https://www.crossroads.net/'
