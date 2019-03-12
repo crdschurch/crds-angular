@@ -1740,6 +1740,42 @@ namespace crds_angular.Services
             //accept or deny the inquiry
             ApproveDenyGroupInquiry(accept, inquiry);
         }
+
+        public List<MyDTO> GetMyListForPinType(int contactId, int pintypeId)
+        {
+            var myList = new List<MyDTO>();
+            switch (pintypeId)
+            {
+                case PinTypeConstants.PIN_PERSON:
+                    // return the participant
+                    var participantId = GetParticipantIdFromContact(contactId);
+                    myList.Add(new MyDTO { InternalId = participantId, PinTypeId = pintypeId });
+                    break;
+                case PinTypeConstants.PIN_GROUP:
+                    // return 
+                    break;
+                case PinTypeConstants.PIN_SITE:
+                    // what do we return here
+                    break;
+                case PinTypeConstants.PIN_ONLINEGROUP:
+                    
+                    break;
+            }
+
+
+            var m1 = new MyDTO
+            {
+                InternalId = 222,
+                PinTypeId = 8
+            };
+            var m2 = new MyDTO
+            {
+                InternalId = 333,
+                PinTypeId = 8
+            };
+
+            return myList;
+        }
     }
 }
 
