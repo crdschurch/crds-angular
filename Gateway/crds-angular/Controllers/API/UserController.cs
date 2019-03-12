@@ -50,6 +50,7 @@ namespace crds_angular.Controllers.API
             {
                 var userRecord = _accountService.RegisterPerson(user, householdSourceId);
                 var contact_Id = _contactRepository.GetContactIdByEmail(user.email);
+                userRecord.contactId = contact_Id;
 
                 _analyticsService.Track(contact_Id.ToString(), "SignedUp");
                 return Ok(userRecord);
