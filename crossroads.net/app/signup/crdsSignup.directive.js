@@ -29,11 +29,11 @@
       vm.showOnetimeEvent = showOnetimeEvent;
 
       function showCommunityGroups() {
-        return vm.signupService.cmsInfo.items[0].fields.className === constants.CMS.PAGENAMES.COMMUNITYGROUPS;
+        return vm.signupService.cmsInfo.items[0].fields.pageType === constants.CMS.PAGENAMES.COMMUNITYGROUPS;
       }
 
       function showOnetimeEvent() {
-        return vm.signupService.cmsInfo.items[0].fields.className === constants.CMS.PAGENAMES.ONETIMEEVENTS;
+        return vm.signupService.cmsInfo.items[0].fields.pageType === constants.CMS.PAGENAMES.ONETIMEEVENTS;
       }
 
     }
