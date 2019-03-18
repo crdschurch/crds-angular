@@ -87,7 +87,7 @@
     },
     CMS: {
       PAGENAMES: {
-        COMMUNITYGROUPS: 'CommunityGroupSignupPage',
+        COMMUNITYGROUPS: 'OnsiteGroupSignupPage',
         ONETIMEEVENTS: 'OnetimeEventSignupPage'
       },
       FORM_BUILDER: {

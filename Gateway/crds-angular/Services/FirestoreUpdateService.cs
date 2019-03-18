@@ -16,6 +16,7 @@ using NGeoHash.Portable;
 using System.Collections.Generic;
 using System.Linq;
 using crds_angular.Models.Crossroads.Attribute;
+using crds_angular.Models.Finder;
 
 namespace crds_angular.Services
 {
@@ -38,10 +39,7 @@ namespace crds_angular.Services
 
         private readonly Random _random = new Random(DateTime.Now.Millisecond);
 
-        private const int PIN_PERSON = 1;
-        private const int PIN_GROUP = 2;
-        private const int PIN_SITE = 3;
-        private const int PIN_ONLINEGROUP = 4;
+        
 
         public FirestoreUpdateService(IImageService imageService, 
                                       IConfigurationWrapper configurationWrapper, 
@@ -142,16 +140,16 @@ namespace crds_angular.Services
                         {
                             switch (Convert.ToInt32(mapAuditRecord.pinType))
                             {
-                                case PIN_PERSON:
+                                case PinTypeConstants.PIN_PERSON:
                                     updateStatus = await PersonPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
                                     break;
-                                case PIN_GROUP:
+                                case PinTypeConstants.PIN_GROUP:
                                     updateStatus = await GroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
                                     break;
-                                case PIN_SITE:
+                                case PinTypeConstants.PIN_SITE:
                                     updateStatus = await SitePinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
                                     break;
-                                case PIN_ONLINEGROUP:
+                                case PinTypeConstants.PIN_ONLINEGROUP:
                                     updateStatus = await OnlineGroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
                                     break;
                             }  
