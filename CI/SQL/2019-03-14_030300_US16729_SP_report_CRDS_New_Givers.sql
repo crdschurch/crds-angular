@@ -2,16 +2,15 @@ USE [MinistryPlatform]
 GO
 
 /****** Object:  StoredProcedure [dbo].[report_CRDS_New_Givers]    Script Date: 3/14/2019 3:02:30 PM ******/
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'report_CRDS_New_Givers')
 DROP PROCEDURE [dbo].[report_CRDS_New_Givers]
 GO
 
-/****** Object:  StoredProcedure [dbo].[report_CRDS_New_Givers]    Script Date: 3/14/2019 3:02:30 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-
 
 /*
 USE [MinistryPlatform]
