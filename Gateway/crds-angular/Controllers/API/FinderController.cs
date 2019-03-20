@@ -96,6 +96,24 @@ namespace crds_angular.Controllers.API
             }
         }
 
+        [ResponseType(typeof(MyDTO[]))]
+        [VersionedRoute(template: "map20/myresultsforpintype/{contactId}/{pintypeId}", minimumVersion: "1.0.0")]
+        [Route("map20/myresultsforpintype/{contactId}/{pintypeId}")]
+        [HttpGet]
+        public IHttpActionResult GetMyResultsForPintype([FromUri]int contactId, [FromUri]int pintypeId)
+        {
+            try
+            {
+                List<MyDTO> myList = _finderService.GetMyListForPinType(contactId, pintypeId);
+                return Ok(myList.ToArray());
+            }
+            catch (Exception ex)
+            {
+                var apiError = new ApiErrorDto("GetMyResultsForPintype Failed", ex);
+                throw new HttpResponseException(apiError.HttpResponseMessage);
+            }
+        }
+
         [RequiresAuthorization]
         [VersionedRoute(template: "map20/sayhitoparticipant/{toParticipantId}", minimumVersion: "1.0.0")]
         [Route("map20/sayhitoparticipant/{toParticipantId}")]

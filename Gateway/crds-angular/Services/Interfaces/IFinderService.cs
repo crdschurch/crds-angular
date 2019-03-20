@@ -49,5 +49,6 @@ namespace crds_angular.Services.Interfaces
         void SaveMe(int contactId, MeDTO medto);
         void SayHiToParticipant(int fromContactId, int toParticipantId, string message);
         void UpdatePersonPhotoInFirebaseIfOnMap(int contactid);
+        List<MyDTO> GetMyListForPinType(int contactId, int pintypeId);
     }
 }
