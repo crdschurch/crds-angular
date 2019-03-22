@@ -4,7 +4,10 @@ using Crossroads.Utilities.Interfaces;
 using log4net;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
+using Twilio.Clients;
 using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Exceptions;
 
 namespace crds_angular.Services
 {
@@ -13,23 +16,31 @@ namespace crds_angular.Services
         public ILog _logger = LogManager.GetLogger(typeof(TwilioService));
 
         private readonly string _fromPhoneNumber;
-        private readonly TwilioRestClient _twilio;
 
         public TwilioService(IConfigurationWrapper configurationWrapper)
         {
             var accountSid = configurationWrapper.GetConfigValue("TwilioAccountSid");
             var authToken = configurationWrapper.GetEnvironmentVarAsString("TWILIO_AUTH_TOKEN");
             _fromPhoneNumber = configurationWrapper.GetConfigValue("TwilioFromPhoneNumber");
-            _twilio = new TwilioRestClient(accountSid, authToken);
+            TwilioClient.Init(accountSid, authToken);
         }
 
         public void SendTextMessage(string toPhoneNumber, string body)
         {
             _logger.Debug("Sending text message to "+ toPhoneNumber);
-            var message = _twilio.SendMessage(_fromPhoneNumber, toPhoneNumber, body);
-            if (message.RestException != null)
+
+            try
             {
-                _logger.Error(message.RestException.Message);
+                Console.WriteLine(body);
+                var message = MessageResource.Create(
+                    from: new Twilio.Types.PhoneNumber(_fromPhoneNumber),
+                    to: new Twilio.Types.PhoneNumber(toPhoneNumber),
+                    body: body
+                );
+            }
+            catch (ApiException e)
+            {
+                _logger.Error($"Twilio Error {e.Code} - {e.MoreInfo}");
             }
         }
 
