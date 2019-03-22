@@ -16,6 +16,7 @@ using NGeoHash.Portable;
 using System.Collections.Generic;
 using System.Linq;
 using crds_angular.Models.Crossroads.Attribute;
+using crds_angular.Models.Finder;
 
 namespace crds_angular.Services
 {
@@ -38,10 +39,7 @@ namespace crds_angular.Services
 
         private readonly Random _random = new Random(DateTime.Now.Millisecond);
 
-        private const int PIN_PERSON = 1;
-        private const int PIN_GROUP = 2;
-        private const int PIN_SITE = 3;
-        private const int PIN_ONLINEGROUP = 4;
+        
 
         public FirestoreUpdateService(IImageService imageService, 
                                       IConfigurationWrapper configurationWrapper, 
@@ -142,21 +140,21 @@ namespace crds_angular.Services
                         {
                             switch (Convert.ToInt32(mapAuditRecord.pinType))
                             {
-                                case PIN_PERSON:
+                                case PinTypeConstants.PIN_PERSON:
                                     updateStatus = await PersonPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
                                     break;
-                                case PIN_GROUP:
+                                case PinTypeConstants.PIN_GROUP:
                                     updateStatus = await GroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
                                     break;
-                                case PIN_SITE:
+                                case PinTypeConstants.PIN_SITE:
                                     updateStatus = await SitePinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
                                     break;
-                                case PIN_ONLINEGROUP:
+                                case PinTypeConstants.PIN_ONLINEGROUP:
                                     updateStatus = await OnlineGroupPinToFirestoreAsync(mapAuditRecord.ParticipantId, mapAuditRecord.showOnMap, mapAuditRecord.pinType);
                                     break;
                             }  
                         }
-                        SetRecordProcessedFlag(mapAuditRecord, updateStatus);
+                        SetRecordProcessedStatusFlag(mapAuditRecord, updateStatus);
                     }
                     recordList = _finderRepository.GetMapAuditRecords();
                 }
@@ -167,14 +165,13 @@ namespace crds_angular.Services
             }
         }
 
-        private void SetRecordProcessedFlag(MpMapAudit mapAuditRecord, bool success)
+        private void SetRecordProcessedStatusFlag(MpMapAudit mapAuditRecord, bool success)
         {
-            if (success)
-            {
-                mapAuditRecord.processed = true;
-                mapAuditRecord.dateProcessed = DateTime.Now;
-                _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
-            }
+            mapAuditRecord.processStatus = success ? "SUCCESS" : "FAILURE";
+            mapAuditRecord.processed = true;
+            mapAuditRecord.dateProcessed = DateTime.Now;
+            _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
+            
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -266,7 +263,7 @@ namespace crds_angular.Services
         private async Task<bool> AddGroupPinToFirestoreAsync(int groupid, string pinType)
         {
             var apiToken = _apiUserRepository.GetDefaultApiClientToken();
-            var address = new AddressDTO();
+   
             try
             {
                 //var group = _groupRepository.getGroupDetails(groupid);
@@ -278,47 +275,19 @@ namespace crds_angular.Services
                 if (group.Address.AddressID == null)
                 {
                     // Something with no address should not go on a map	
-                    return true;
+                    return false;
                 }
 
                 var addrFromDB = _addressRepository.GetAddressById(apiToken, (int)group.Address.AddressID);
-                // if there is no lat/lon lets give one last attempt at geocoding
-                if (address.Latitude == null || address.Longitude == null || address.Latitude == 0 || address.Longitude == 0)
+                // if we have no location we will not add to firestore.	
+                if (addrFromDB.Latitude == null || addrFromDB.Longitude == null || addrFromDB.Latitude == 0 || addrFromDB.Longitude == 0)
                 {
-                    var geo = _addressGeocodingService.GetGeoCoordinates(Mapper.Map<AddressDTO>(addrFromDB));
-                    if (geo.Latitude != 0 && geo.Longitude != 0)
-                    {
-                        addrFromDB.Latitude = geo.Latitude;
-                        addrFromDB.Longitude = geo.Longitude;
-                        _addressRepository.Update(addrFromDB);
-                    }
+                    return false;
                 }
-
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Address_ID = {addrFromDB.Address_ID}");
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Address_Line_1 = {addrFromDB.Address_Line_1}");
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.City = {addrFromDB.City}");
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.State = {addrFromDB.State}");
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Latitude = {addrFromDB.Latitude}");
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - addrFromDB.Longitude = {addrFromDB.Longitude}");
-
-                address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(addrFromDB));
+                                
+                var address = this.RandomizeLatLong(Mapper.Map<AddressDTO>(addrFromDB));
                 var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
-                _logger.Info("FIRESTORE: After Map");
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.Address_ID = {address.AddressID}");
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.Address_Line_1 = {address.AddressLine1}");
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.City = {address.City}");
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.State = {address.State}");
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.Latitude = {address.Latitude}");
-                _logger.Info($"FIRESTORE: AddGroupPinToFirestoreAsync - address.Longitude = {address.Longitude}");
-
-                // if we are at 0,0 we should fail.	
-                if (address.Latitude == null ||
-                   address.Longitude == null ||
-                   (address.Latitude == 0 && address.Longitude == 0))
-                {
-                    return true;
-                }
-
+                
                 var participantId = _groupService.GetPrimaryContactParticipantId(groupid);
                 var url = SendProfilePhotoToFirestore(participantId);
                 Console.WriteLine($"Small Group image url: {url}");

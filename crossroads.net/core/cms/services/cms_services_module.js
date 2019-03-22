@@ -40,7 +40,7 @@ cms_services_module.factory('SignUpForm', function ($location) {
         var params = {
             limit: 1,
             'content_type': 'sign_up_form',
-            'fields.link': state.url
+            'fields.slug': state.url
         };
 
         return contentfulClient.getEntries(params);

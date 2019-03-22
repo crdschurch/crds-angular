@@ -1,5 +1,5 @@
 R_Donor_Display_Name,Donor_Email,R_Donation_Amount,R_Donation_Date,R_Payment_Type_Id,R_Donation_Status_Id,R_Receipted,R_Program_Name,Congregation_Id,Required if this is a soft credit donation →,Soft_Credit_Donor_Email,Required if this is a donation to a pledge→,Pledge_Owner_Email,Optional→,Non-Cash_Asset_Type_Id,Anonymous,Processed,Processor_Id,Status_Date,Status_Notes,Donation_Notes,Transaction_Code,Batch_Name,Item_Number,Tester notes
-Fidelity Charitable Gift Fund ,,1500,09/03/2017,5,2,1,General Giving ,5,,mpcrds+tifalockhart@gmail.com,,,,,0,,,09/03/2017,,,,,,Fidelity makes a soft credit donation on behalf of Tifa
-Fidelity Charitable Gift Fund ,,2500,02/02/2018,5,2,1,General Giving ,5,,mpcrds+tifalockhart@gmail.com,,,,,0,,,02/02/2018,,,,,,Fidelity makes a soft credit donation on behalf of Tifa
-Fidelity Charitable Gift Fund ,,1500,09/03/2017,5,2,1,General Giving ,5,,mpcrds+auto+wilmaflintstone@gmail.com,,,,,0,,,09/03/2017,,,,,,Fidelity makes a soft credit donation on behalf of Wilma
-Fidelity Charitable Gift Fund ,,2500,02/02/2018,5,2,1,General Giving ,5,,mpcrds+auto+wilmaflintstone@gmail.com,,,,,0,,,02/02/2018,,,,,,Fidelity makes a soft credit donation on behalf of Wilma
+Fidelity Charitable Gift Fund ,,1500,09/03/2017,5,2,1,Ministry Fund ,5,,mpcrds+tifalockhart@gmail.com,,,,,0,,,09/03/2017,,,,,,Fidelity makes a soft credit donation on behalf of Tifa
+Fidelity Charitable Gift Fund ,,2500,02/02/2018,5,2,1,Ministry Fund ,5,,mpcrds+tifalockhart@gmail.com,,,,,0,,,02/02/2018,,,,,,Fidelity makes a soft credit donation on behalf of Tifa
+Fidelity Charitable Gift Fund ,,1500,09/03/2017,5,2,1,Ministry Fund ,5,,mpcrds+auto+wilmaflintstone@gmail.com,,,,,0,,,09/03/2017,,,,,,Fidelity makes a soft credit donation on behalf of Wilma
+Fidelity Charitable Gift Fund ,,2500,02/02/2018,5,2,1,Ministry Fund ,5,,mpcrds+auto+wilmaflintstone@gmail.com,,,,,0,,,02/02/2018,,,,,,Fidelity makes a soft credit donation on behalf of Wilma

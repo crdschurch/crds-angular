@@ -470,6 +470,7 @@
     <Compile Include="Models\Finder\HostRequestDto.cs" />
     <Compile Include="Models\Finder\MapBoundingBox.cs" />
     <Compile Include="Models\Finder\MeDTO.cs" />
+    <Compile Include="Models\Finder\MyDTO.cs" />
     <Compile Include="Models\Finder\PersonDTO.cs" />
     <Compile Include="Models\Finder\PinSearchParams.cs" />
     <Compile Include="Models\Finder\PinSearchResultsDto.cs" />
@@ -545,6 +546,7 @@
     <Compile Include="Models\Crossroads\TextCommunicationDTO.cs" />
     <Compile Include="Models\Crossroads\Trip\TripParticipantPledgeDto.cs" />
     <Compile Include="Models\Finder\GroupParticipantRemovalDto.cs" />
+    <Compile Include="Models\Finder\PinTypes.cs" />
     <Compile Include="Models\HouseHoldData.cs" />
     <Compile Include="Models\Json\EventCopyRequest.cs" />
     <Compile Include="Models\Json\PasswordReset.cs" />

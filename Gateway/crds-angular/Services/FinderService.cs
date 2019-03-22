@@ -758,7 +758,7 @@ namespace crds_angular.Services
                 {
                     AddressID = mpGroup.Address.AddressID != null ? mpGroup.Address.AddressID : (int?)null,
                     City = mpGroup.Address.City != null ? mpGroup.Address.City : null,
-                    State = mpGroup.Address.State != null ? mpGroup.Address.City : null,
+                    State = mpGroup.Address.State != null ? mpGroup.Address.State : null,
                     PostalCode = mpGroup.Address.PostalCode != null ? mpGroup.Address.PostalCode : null,
                     Latitude = mpGroup.Address.Latitude != null ? mpGroup.Address.Latitude : (double?)null,
                     Longitude = mpGroup.Address.Longitude != null ? mpGroup.Address.Longitude : (double?)null,
@@ -775,9 +775,11 @@ namespace crds_angular.Services
                 ContactId = pin.Contact_ID.Value,
                 MinistryId = _spritualGrowthMinistryId,
                 KidsWelcome = mpGroup.KidsWelcome,
-                MeetingDay = mpGroup.MeetingDay,
-                MeetingTime = mpGroup.MeetingTime,
-                MeetingFrequency = mpGroup.MeetingFrequency,
+                MeetingDay = _lookupService.GetMeetingDayFromId(mpGroup.MeetingDayId),
+                MeetingDayId = mpGroup.MeetingDayId,
+                MeetingTime = mpGroup.MeetingTime == null ? "Flexible time" : String.Format("{0:t}", DateTimeOffset.Parse(mpGroup.MeetingTime).LocalDateTime),
+                MeetingFrequency = mpGroup.MeetingFrequencyID == null ? "Flexible frequency" : getMeetingFrequency((int)mpGroup.MeetingFrequencyID),
+                MeetingFrequencyID = mpGroup.MeetingFrequencyID,
                 GroupType = GetGroupTypeFromAttribute(mpGroup.SingleAttributes),
                 VirtualGroup = (bool)mpGroup.AvailableOnline && mpGroup.Address == null,
                 PrimaryContactFirstName = contact.First_Name != null ? contact.First_Name : null,
@@ -1737,6 +1739,65 @@ namespace crds_angular.Services
             var inquiry = _groupToolService.GetGroupInquiryForContactId(groupId, contactId);
             //accept or deny the inquiry
             ApproveDenyGroupInquiry(accept, inquiry);
+        }
+
+        public List<MyDTO> GetMyListForPinType(int contactId, int pintypeId)
+        {
+            var myList = new List<MyDTO>();
+            var participantId = GetParticipantIdFromContact(contactId);
+            switch (pintypeId)
+            {
+                case PinTypeConstants.PIN_PERSON:
+                    // return the participant
+                    myList.Add(new MyDTO { InternalId = participantId, PinTypeId = pintypeId });
+                    break;
+                case PinTypeConstants.PIN_GROUP:
+                    myList = GetMyListForGroup(participantId, pintypeId);
+                    break;
+                case PinTypeConstants.PIN_SITE:
+                    // what do we return here
+                    break;
+                case PinTypeConstants.PIN_ONLINEGROUP:
+                    myList = GetMyListForGroup(participantId, pintypeId);
+                    break;
+            }
+            return myList;
+        }
+
+        private List<MyDTO> GetMyListForGroup(int participantId, int pintypeId)
+        {
+            var myDtoList = new List<MyDTO>();
+            
+            var groupsByType = _groupRepository.GetGroupsForParticipantByTypeOrID(participantId, null, new int[] { 1});
+
+            if (groupsByType == null)
+            {
+                return myDtoList; 
+            }
+
+            if (groupsByType.Count == 0)
+            {
+                return myDtoList;
+            }
+
+            switch (pintypeId)
+            {
+                case PinTypeConstants.PIN_GROUP:
+                    // in home groups
+                    groupsByType = groupsByType.Where(c => c.AvailableOnline == true && (c.Address != null && c.Address.Address_ID != 0)).ToList();
+                    break;
+               
+                case PinTypeConstants.PIN_ONLINEGROUP:
+                    // online groups
+                    groupsByType = groupsByType.Where(c => c.AvailableOnline == true && (c.Address == null || c.Address.Address_ID ==0)).ToList();
+                    break;
+            }
+           
+            foreach(MpGroup g in groupsByType)
+            {
+                myDtoList.Add(new MyDTO { InternalId = g.GroupId, PinTypeId = pintypeId });
+            }
+            return myDtoList;
         }
     }
 }

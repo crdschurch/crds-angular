@@ -86,7 +86,12 @@ namespace MinistryPlatform.Translation.Repositories
             try
             {
                 var token = _apiUserRepository.GetDefaultApiClientToken();
-                var dict = new Dictionary<string, object> { { "AuditID", auditRec.AuditId }, { "Processed", auditRec.processed }, { "DateProcessed", auditRec.dateProcessed } };
+                var dict = new Dictionary<string, object> {
+                    { "AuditID", auditRec.AuditId },
+                    { "Processed", auditRec.processed },
+                    { "DateProcessed", auditRec.dateProcessed },
+                    { "ProcessStatus", auditRec.processStatus }
+                };
                 var update = new List<Dictionary<string, object>> { dict };
                 _ministryPlatformRest.UsingAuthenticationToken(token).Put("cr_MapAudit", update);
             }
