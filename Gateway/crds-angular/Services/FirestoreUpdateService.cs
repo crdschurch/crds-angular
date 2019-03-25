@@ -588,8 +588,15 @@ namespace crds_angular.Services
             return staticText2;
         }
 
-        private string buildLocationServiceTimesString(int congregationid)
+        private string buildLocationAddressString(int congregationid)
         {
+            var locationString = "";
+            var c = _congregationRepository.GetCongregationById(congregationid);
+            var bob= _locationRepository.GetAllCrossroadsLocations().Where(x => x.LocationId == c.LocationId).First();
+            if(bob != null)
+            {
+                locationString = $"{bob.Address.AddressLine1}, {bob.Address.City}, {bob.Address.State} {bob.Address.PostalCode}";
+            }
             return "";
         }
 
