@@ -25,12 +25,19 @@ namespace crds_angular.Models.Map
         public string imageUrl { get; set; }
 
         [FirestoreProperty]
+        public string statictext1 { get; set; }
+
+        [FirestoreProperty]
+        public string statictext2 { get; set; }
+
+        [FirestoreProperty]
         public Dictionary<string, string[]> meta { get; set; }
 
         public MapPin() { }
 
         // map pins that should have an address
-        public MapPin(string desc, string pinname, double latitude, double longitude, int pintype, string internalid, string geohash, string imageurl, Dictionary<string, string[]> filtermetadata)
+        public MapPin(string desc, string pinname, double latitude, double longitude, int pintype, string internalid, string geohash, 
+                      string imageurl, Dictionary<string, string[]> filtermetadata, string statictext1, string statictext2)
         {
             this.description = desc;
             this.name = pinname;
@@ -38,6 +45,8 @@ namespace crds_angular.Models.Map
             this.internalId = internalid;
             this.imageUrl = imageurl;
             this.meta = filtermetadata;
+            this.statictext1 = statictext1;
+            this.statictext2 = statictext2;
 
             var coord = new MapCoordinates
             {
@@ -56,7 +65,7 @@ namespace crds_angular.Models.Map
         }
 
         //map pins with no address
-        public MapPin(string desc, string pinname, int pintype, string internalid, string imageurl, Dictionary<string, string[]> filtermetadata)
+        public MapPin(string desc, string pinname, int pintype, string internalid, string imageurl, Dictionary<string, string[]> filtermetadata, string statictext1, string statictext2)
         {
             this.description = desc;
             this.name = pinname;
@@ -64,6 +73,8 @@ namespace crds_angular.Models.Map
             this.internalId = internalid;
             this.imageUrl = imageurl;
             this.meta = filtermetadata;
+            this.statictext1 = statictext1;
+            this.statictext2 = statictext2;
         }
     }
 }

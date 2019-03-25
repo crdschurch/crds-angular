@@ -220,7 +220,8 @@ namespace crds_angular.Services
                 var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
 
                 // create the pin object
-                MapPin pin = new MapPin(congregation.Name, congregation.Name, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), congregationid.ToString(), geohash, "", null);
+                MapPin pin = new MapPin(congregation.Name, congregation.Name, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, 
+                    Convert.ToInt32(pinType), congregationid.ToString(), geohash, "", null, BuildStaticText1(pinType,congregationid), BuildStaticText2(pinType,congregationid));
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
@@ -294,7 +295,7 @@ namespace crds_angular.Services
 
                 // create the pin object
                 MapPin pin = new MapPin(group.GroupDescription, group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), 
-                    groupid.ToString(), geohash, url, BuildGroupAttributeDictionary(s, t));
+                    groupid.ToString(), geohash, url, BuildGroupAttributeDictionary(s, t), BuildStaticText1(pinType, groupid), BuildStaticText2(pinType, groupid));
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
@@ -359,7 +360,8 @@ namespace crds_angular.Services
                 var url = SendProfilePhotoToFirestore(participantid);
 
                 // create the pin object
-                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), participantid.ToString(), geohash, url, null);
+                MapPin pin = new MapPin("", contact.Nickname + " " + contact.Last_Name.ToCharArray()[0], address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, 
+                    Convert.ToInt32(pinType), participantid.ToString(), geohash, url, null, BuildStaticText1(pinType, participantid), BuildStaticText2(pinType, participantid));
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
@@ -411,7 +413,8 @@ namespace crds_angular.Services
                 var t = group.AttributeTypes;
 
                 // create the pin object
-                MapPin pin = new MapPin(group.GroupDescription, group.GroupName, Convert.ToInt32(pinType), groupid.ToString(), "", BuildGroupAttributeDictionary(s,t));
+                MapPin pin = new MapPin(group.GroupDescription, group.GroupName, Convert.ToInt32(pinType), groupid.ToString(), "", 
+                                        BuildGroupAttributeDictionary(s,t), BuildStaticText1(pinType, groupid), BuildStaticText2(pinType, groupid));
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
@@ -541,6 +544,117 @@ namespace crds_angular.Services
             address.Longitude = newLong;
 
             return address;
+        }
+
+        private string BuildStaticText1(string pinType, int id)
+        {
+            string staticText1 = "";
+            switch (Convert.ToInt32(pinType))
+            {
+                case PinTypeConstants.PIN_PERSON:
+                    staticText1 = buildPersonAddressString(id);
+                    break;
+                case PinTypeConstants.PIN_GROUP:
+                    staticText1 = buildGroupTimeString(id);
+                    break;
+                case PinTypeConstants.PIN_SITE:
+                    staticText1 = "staticText1 PIN_SITE";
+                    break;
+                case PinTypeConstants.PIN_ONLINEGROUP:
+                    staticText1 = buildGroupTimeString(id);
+                    break;
+            }
+            return staticText1;
+        }
+
+        private string BuildStaticText2(string pinType, int id)
+        {
+            string staticText2 = "";
+            switch (Convert.ToInt32(pinType))
+            {
+                case PinTypeConstants.PIN_PERSON:
+                    staticText2 = "";
+                    break;
+                case PinTypeConstants.PIN_GROUP:
+                    staticText2 = buildGroupAttrString(id);
+                    break;
+                case PinTypeConstants.PIN_SITE:
+                    staticText2 = "";
+                    break;
+                case PinTypeConstants.PIN_ONLINEGROUP:
+                    staticText2 = buildGroupAttrString(id);
+                    break;
+            }
+            return staticText2;
+        }
+
+        private string buildLocationServiceTimesString(int congregationid)
+        {
+            _locationRepository.
+        }
+
+        private string buildPersonAddressString(int participantid)
+        {
+            var contact = _contactRepository.GetContactByParticipantId(participantid);
+            return $"{contact.City}, {contact.State} {contact.Postal_Code}";
+        }
+
+        private string buildGroupTimeString(int groupid)
+        {
+            var group = _groupService.GetGroupDetailsWithAttributes(groupid);
+
+            return $"{group.MeetingFrequency} {group.MeetingDay} at {group.MeetingTime}";
+        }
+
+        private string buildGroupAttrString(int groupid)
+        {
+            var group = _groupService.GetGroupDetailsWithAttributes(groupid);
+            var s = group.SingleAttributes;
+            var t = group.AttributeTypes;
+            string attrString="";
+
+            // get grouptype
+            ObjectSingleAttributeDTO grouptype;
+            if (s.TryGetValue(73, out grouptype) && grouptype.Value != null)
+            {
+                attrString = $"{grouptype.Value.Name} |";
+            }
+
+            // get age groups
+            ObjectAttributeTypeDTO agegroup;
+            if (t.TryGetValue(91, out agegroup))
+            {
+                var grouptext = "";
+                // roll through the age group. add selected to the dictionary
+                var ageGroups = new List<string>();
+                foreach (var a in agegroup.Attributes)
+                {
+                    if (a.Selected)
+                    {
+                        grouptext = $"{grouptext} {a.Name}";
+                    }
+                }
+                attrString = $"{attrString} {grouptext}";
+            }
+
+            // get group categories
+            ObjectAttributeTypeDTO groupcategory;
+            if (t.TryGetValue(90, out groupcategory))
+            {
+                var categoryText = "";
+                // roll through the age group. add selected to the dictionary
+                var categories = new List<string>();
+                foreach (var a in groupcategory.Attributes)
+                {
+                    if (a.Selected)
+                    {
+                        categoryText = $"{categoryText} {a.Name}";
+                    }
+                }
+                attrString = $"{attrString} {categoryText}";
+            }
+
+            return attrString;
         }
     }
 }
