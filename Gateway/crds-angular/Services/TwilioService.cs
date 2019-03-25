@@ -31,7 +31,6 @@ namespace crds_angular.Services
 
             try
             {
-                Console.WriteLine(body);
                 var message = MessageResource.Create(
                     from: new Twilio.Types.PhoneNumber(_fromPhoneNumber),
                     to: new Twilio.Types.PhoneNumber(toPhoneNumber),
