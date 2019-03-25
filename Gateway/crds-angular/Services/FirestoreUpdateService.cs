@@ -590,7 +590,7 @@ namespace crds_angular.Services
 
         private string buildLocationServiceTimesString(int congregationid)
         {
-            _locationRepository.
+            return "";
         }
 
         private string buildPersonAddressString(int participantid)
