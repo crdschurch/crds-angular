@@ -27,7 +27,6 @@
   require('./components/btnLoading.directive');
   require('./components/svgIcon.directive');
   require('./components/preloader');
-  require('./components/volunteer_applications');
   require('./components/loadingButton');
   require('./components/emailBox');
   require('./components/stayLoggedInModal');

@@ -1,4 +1,11 @@
 var cms_services_module = angular.module('crossroads.core');
+const contentful = require('contentful');
+
+var contentfulClient = contentful.createClient({
+    space: __CONTENTFUL_SPACE_ID__,
+    accessToken: __CONTENTFUL_ACCESS_TOKEN__,
+    environment: __CONTENTFUL_ENV__
+});
 
 cms_services_module.factory('SiteConfig', function ($resource) {
     return $resource(__CMS_CLIENT_ENDPOINT__ + 'api/SiteConfig/:id', { id: '@_id' }, { cache: true });
@@ -26,6 +33,19 @@ cms_services_module.factory('SystemPage', function ($resource, $q) {
     return {
         get: get
     }
+});
+
+cms_services_module.factory('SignUpForm', function ($location) {
+    var get = function (state) {
+        var params = {
+            limit: 1,
+            'content_type': 'sign_up_form',
+            'fields.slug': state.url
+        };
+
+        return contentfulClient.getEntries(params);
+    }
+    return { get: get }
 });
 
 cms_services_module.factory('Page', function ($resource, $location) {

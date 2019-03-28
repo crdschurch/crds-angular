@@ -33,15 +33,15 @@ function buildLink(city, org, state, stateParams) {
   return base;
 }
 
-export function CmsInfo(Page, $state, $stateParams, GoVolunteerService, $q, $window) {
+export function CmsInfo(SignUpForm, $state, $stateParams, GoVolunteerService, $q, $window) {
   const goService = GoVolunteerService;
   const city = $stateParams.city || 'cincinnati';
   $window.sessionStorage.setItem('go-volunteer.city', city);
   const organization = $stateParams.organizations || undefined;
   const link = buildLink(city, organization, $state, $stateParams);
   const deferred = $q.defer();
-  const page = Page.get({ url: link });
-  page.$promise.then((data) => {
+  const page = SignUpForm.get({ url: link });
+  page.then((data) => {
     goService.cmsInfo = data;
     deferred.resolve();
   }, () => {

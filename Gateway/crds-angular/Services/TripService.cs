@@ -16,6 +16,7 @@ using IDonorRepository = MinistryPlatform.Translation.Repositories.Interfaces.ID
 using IGroupRepository = MinistryPlatform.Translation.Repositories.Interfaces.IGroupRepository;
 using PledgeCampaign = crds_angular.Models.Crossroads.Stewardship.PledgeCampaign;
 using Newtonsoft.Json;
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.Services
 {
@@ -195,9 +196,9 @@ namespace crds_angular.Services
             return resp;
         }
 
-        public List<FamilyMemberTripDto> GetFamilyMembers(int pledgeId, string token)
+        public List<FamilyMemberTripDto> GetFamilyMembers(int pledgeId, AuthDTO token)
         {
-            var family = _serveService.GetImmediateFamilyParticipants(token);
+            var family = _serveService.GetImmediateFamilyParticipants(token.UserInfo.Mp.ContactId);
             var fam = new List<FamilyMemberTripDto>();
             foreach (var f in family)
             {
@@ -297,9 +298,9 @@ namespace crds_angular.Services
             return participants.Values.Where(x => x.Trips.Count > 0).OrderBy(o => o.Lastname).ThenBy(o => o.Nickname).ToList();
         }
 
-        public MyTripsDto GetMyTrips(string token)
+        public MyTripsDto GetMyTrips(AuthDTO token)
         {
-            var family = _serveService.GetImmediateFamilyParticipants(token);
+            var family = _serveService.GetImmediateFamilyParticipants(token.UserInfo.Mp.ContactId);
             var familyTrips = new MyTripsDto();
 
             foreach (var member in family)
@@ -461,8 +462,9 @@ namespace crds_angular.Services
             _communicationService.SendMessage(communication);
         }
 
-        public int GeneratePrivateInvite(PrivateInviteDto dto, string token)
+        public int GeneratePrivateInvite(PrivateInviteDto dto)
         {
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var invite = _privateInviteService.Create(dto.PledgeCampaignId, dto.EmailAddress, dto.RecipientName, token);
             var communication = PrivateInviteCommunication(invite);
             _communicationService.SendMessage(communication);
@@ -504,10 +506,9 @@ namespace crds_angular.Services
             return mergeData;
         }
 
-        public bool ValidatePrivateInvite(int pledgeCampaignId, string guid, string token)
+        public bool ValidatePrivateInvite(int pledgeCampaignId, string guid, AuthDTO token)
         {
-            var person = _personService.GetLoggedInUserProfile(token);
-            return _privateInviteService.PrivateInviteValid(pledgeCampaignId, guid, person.EmailAddress);
+            return _privateInviteService.PrivateInviteValid(pledgeCampaignId, guid, token.UserInfo.Mp.Email);
         }
 
         public int SaveApplication(TripApplicationDto dto)

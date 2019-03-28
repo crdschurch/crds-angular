@@ -1,3 +1,3 @@
 R_Donor_Email,R_Donation_Amount,R_Donation_Date,R_Payment_Type_Id,R_Donation_Status_Id,R_Receipted,R_Distribution1_Amount,R_Distribution1_Program_Name,R_Distribution2_Amount,R_Distribution2_Program_Name,Congregation_Id,Non-Cash_Asset_Type_Id,Anonymous,Processed,Processor_Id,Status_Date,Status_Notes,Donation_Notes,Transaction_Code,Batch_Name,Item_Number,Tester notes
-mpcrds+auto+wilmaflintstone@gmail.com,2000,1/6/2018,6,2,0,1000,General Giving,1000,(t) Test Pledge Program+Auto1,5,1,,,,1/6/2018,,,,,,
-mpcrds+tifalockhart@gmail.com,2000,1/6/2018,6,2,0,1000,General Giving,1000,(t) Test Pledge Program1,5,1,,,,1/6/2018,,,,,,
+mpcrds+auto+wilmaflintstone@gmail.com,2000,1/6/2018,6,2,0,1000,Ministry Fund,1000,(t) Test Pledge Program+Auto1,5,1,,,,1/6/2018,,,,,,
+mpcrds+tifalockhart@gmail.com,2000,1/6/2018,6,2,0,1000,Ministry Fund,1000,(t) Test Pledge Program1,5,1,,,,1/6/2018,,,,,,

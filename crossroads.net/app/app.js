@@ -37,6 +37,5 @@ require('./invoices/invoices.module');
   require('./corkboard');
   require('./signup');
   require('./volunteer_signup');
-  require('./volunteer_application');
   require('./leaveyourmark');
 })();
