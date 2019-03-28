@@ -334,7 +334,7 @@ namespace crds_angular.Services
                 var pledge = _mpPledgeService.GetPledgeByCampaignAndDonor(trip.CampaignId, trip.DonorId);
                 if (pledge == null)
                 {
-                    throw new ApplicationException(string.Format("Pledge not found for {0},{1}", trip.CampaignId, trip.DonorId));
+                    throw new ApplicationException(string.Format("Pledge not found for CampaignId={0}, DonorId={1}, contactId={2}", trip.CampaignId, trip.DonorId, contactId));
                 }
                 if (pledge.PledgeStatusId != AppSetting("PledgeStatusDiscontinued"))
                 {
