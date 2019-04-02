@@ -561,7 +561,7 @@ namespace crds_angular.Services
                     staticText1 = buildGroupTimeString(id);
                     break;
                 case PinTypeConstants.PIN_SITE:
-                    staticText1 = "staticText1 PIN_SITE";
+                    staticText1 = buildLocationAddressString(id);
                     break;
                 case PinTypeConstants.PIN_ONLINEGROUP:
                     staticText1 = buildGroupTimeString(id);
@@ -613,7 +613,7 @@ namespace crds_angular.Services
         {
             var group = _groupService.GetGroupDetailsWithAttributes(groupid);
 
-            return $"{group.MeetingFrequency} {_lookupService.GetMeetingDayFromId(group.MeetingDayId)} at {group.MeetingTime}";
+            return $"{_lookupService.GetMeetingFrequencyFromId(group.MeetingFrequencyID)} {_lookupService.GetMeetingDayFromId(group.MeetingDayId)} at {group.MeetingTime}";
         }
 
         private string buildGroupAttrString(int groupid)

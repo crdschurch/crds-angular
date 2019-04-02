@@ -133,6 +133,12 @@ namespace MinistryPlatform.Translation.Repositories
             return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("MeetingDay"), token);
         }
 
+        public List<Dictionary<string, object>> MeetingFrequencies(string token)
+        {
+            token = ApiLogonIfNotAuthenticated(token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("MeetingFrequency"), token);
+        }
+
         public List<Dictionary<string, object>> Ministries(string token)
         {
             token = ApiLogonIfNotAuthenticated(token);
