@@ -33,6 +33,7 @@ namespace crds_angular.Services
         private readonly IAddressGeocodingService _addressGeocodingService;
         private readonly ICongregationRepository _congregationRepository;
         private readonly ILocationService _locationRepository;
+        private readonly ILookupService _lookupService;
 
         private readonly string _googleStorageBucketId;
         private readonly string _firestoreProjectId;
@@ -50,7 +51,8 @@ namespace crds_angular.Services
                                       IGroupService groupService,
                                       IAddressGeocodingService addressGeocodingService,
                                       ICongregationRepository congregationRepository,
-                                      ILocationService locationRepository)
+                                      ILocationService locationRepository,
+                                      ILookupService lookupService)
         {
             // dependencies
             _imageService = imageService;
@@ -63,6 +65,7 @@ namespace crds_angular.Services
             _addressGeocodingService = addressGeocodingService;
             _congregationRepository = congregationRepository;
             _locationRepository = locationRepository;
+            _lookupService = lookupService;
             //constants
             _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
             _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
@@ -610,7 +613,7 @@ namespace crds_angular.Services
         {
             var group = _groupService.GetGroupDetailsWithAttributes(groupid);
 
-            return $"{group.MeetingFrequency} {group.MeetingDay} at {group.MeetingTime}";
+            return $"{group.MeetingFrequency} {_lookupService.GetMeetingDayFromId(group.MeetingDayId)} at {group.MeetingTime}";
         }
 
         private string buildGroupAttrString(int groupid)
