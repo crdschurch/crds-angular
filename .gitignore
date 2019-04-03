@@ -50,6 +50,7 @@ dlldata.c
 *_p.c
 *_i.h
 *.ilk
+*.lnk
 *.meta
 *.obj
 *.pch
