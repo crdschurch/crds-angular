@@ -157,7 +157,10 @@
             }
           });
         } else {
-          $state.go('content', { link: '/server-error/' });
+          const queryParams = $location.search();
+          link = removeTrailingSlashIfNecessary($stateParams.link);
+          const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
+          $window.location.replace(`${link}${queryParamsString}`);
         }
       });
     }

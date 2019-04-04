@@ -14,8 +14,8 @@ cms_services_module.factory('SiteConfig', function ($resource, $q) {
 
         return $q(function (resolve, reject) {
             SiteConfigQuery.then(function (response) {
-                var page = response;
-                resolve(page);
+                var siteConfig = response;
+                resolve(siteConfig);
             }).catch(function (response) {
                 reject(response);
             });
@@ -62,6 +62,18 @@ cms_services_module.factory('SignUpForm', function ($location) {
     }
     return { get: get }
 });
+
+// cms_services_module.factory('Page', function ($q) {
+//     var get = function () {
+//         return $q(function (resolve, reject) {
+//             null;
+//         })
+//     }
+
+//     return {
+//         get: get
+//     }
+// });
 
 cms_services_module.factory('Page', function ($resource, $location) {
     let cache = true;
