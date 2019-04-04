@@ -63,30 +63,18 @@ cms_services_module.factory('SignUpForm', function ($location) {
     return { get: get }
 });
 
-// cms_services_module.factory('Page', function ($q) {
-//     var get = function () {
-//         return $q(function (resolve, reject) {
-//             null;
-//         })
-//     }
-
-//     return {
-//         get: get
-//     }
-// });
-
-cms_services_module.factory('Page', function ($resource, $location) {
-    let cache = true;
-    let params = {};
-
-    const stageParam = $location.search().stage;
-    if (stageParam) {
-        params.stage = stageParam;
-        cache = false;
+cms_services_module.factory('Page', function ($q) {
+    var get = function () {
+        return $q(function (resolve, reject) {
+            null;
+        })
     }
 
-    return $resource(__CMS_CLIENT_ENDPOINT__ + 'api/Page?link=:url', params, { cache });
+    return {
+        get: get
+    }
 });
+
 
 cms_services_module.factory('PageById', function ($resource, $location) {
     var stageParam = $location.search()['stage'];
