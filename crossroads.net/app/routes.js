@@ -48,8 +48,8 @@
           }],
 
           SiteConfig: ['SiteConfig', 'ContentSiteConfigService', function (SiteConfig, ContentSiteConfigService) {
-            return SiteConfig.get({ id: 1 }).$promise.then(function (result) {
-              ContentSiteConfigService.siteconfig = result.siteConfig;
+            return SiteConfig.get().then(function (result) {
+              ContentSiteConfigService.siteconfig = result;
             }
             );
           }]

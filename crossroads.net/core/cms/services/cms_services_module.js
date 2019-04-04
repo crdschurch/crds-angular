@@ -7,10 +7,25 @@ var contentfulClient = contentful.createClient({
     environment: __CONTENTFUL_ENV__
 });
 
-cms_services_module.factory('SiteConfig', function ($resource) {
-    return $resource(__CMS_CLIENT_ENDPOINT__ + 'api/SiteConfig/:id', { id: '@_id' }, { cache: true });
-});
+cms_services_module.factory('SiteConfig', function ($resource, $q) {
+    var get = function () {
+        var SiteconfigResource = $resource('/siteConfig.json', { cache: true });
+        var SiteConfigQuery = SiteconfigResource.get().$promise;
 
+        return $q(function (resolve, reject) {
+            SiteConfigQuery.then(function (response) {
+                var page = response;
+                resolve(page);
+            }).catch(function (response) {
+                reject(response);
+            });
+        })
+    }
+
+    return {
+        get: get
+    }
+});
 cms_services_module.factory('ContentBlock', function ($resource) {
     return $resource(__CMS_CLIENT_ENDPOINT__ + 'api/contentblock/:id', { id: '@_id' }, { cache: true });
 });
