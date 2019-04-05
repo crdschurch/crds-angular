@@ -561,7 +561,7 @@ namespace crds_angular.Services
                     staticText1 = BuildGroupTimeString(id);
                     break;
                 case PinTypeConstants.PIN_SITE:
-                    staticText1 = BuildLocationAddressString(id);
+                    staticText1 = "";
                     break;
                 case PinTypeConstants.PIN_ONLINEGROUP:
                     staticText1 = BuildGroupTimeString(id);
@@ -582,7 +582,7 @@ namespace crds_angular.Services
                     staticText2 = BuildGroupAttrString(id);
                     break;
                 case PinTypeConstants.PIN_SITE:
-                    staticText2 = "";
+                    staticText2 = BuildLocationAddressString(id);
                     break;
                 case PinTypeConstants.PIN_ONLINEGROUP:
                     staticText2 = BuildGroupAttrString(id);
@@ -600,7 +600,7 @@ namespace crds_angular.Services
             {
                 locationString = $"{location.Address.AddressLine1}\r\n{location.Address.City}, {location.Address.State} {location.Address.PostalCode}";
             }
-            return "";
+            return locationString;
         }
 
         private string BuildPersonAddressString(int participantid)
