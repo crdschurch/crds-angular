@@ -157,10 +157,7 @@
             }
           });
         } else {
-          const queryParams = $location.search();
-          link = removeTrailingSlashIfNecessary($stateParams.link);
-          const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
-          $window.location.replace(`${link}${queryParamsString}`);
+          $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
         }
       });
     }
