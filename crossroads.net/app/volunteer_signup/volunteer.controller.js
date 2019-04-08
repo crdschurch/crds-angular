@@ -39,10 +39,10 @@
             allSignedUp();
             vm.viewReady = true;
           }, function(err){
-            $state.go('content', {link:'/server-error/'});
+            $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
           });
       } else {
-        $state.go('content', {link:'/server-error/'});
+        $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
       }
     }
 
