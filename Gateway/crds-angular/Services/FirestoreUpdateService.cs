@@ -612,11 +612,11 @@ namespace crds_angular.Services
         private string BuildGroupTimeString(int groupid)
         {
             var group = _groupService.GetGroupDetailsWithAttributes(groupid);
-            if(group.MeetingFrequencyID == null || group.MeetingDayId == null )
+            if(group.MeetingFrequencyID == null || group.MeetingDayId == null || group.MeetingTime == null)
             {
                 return "Flexible Meeting Time";
             }
-            return $"{_lookupService.GetMeetingFrequencyFromId(group.MeetingFrequencyID)} on {_lookupService.GetMeetingDayFromId(group.MeetingDayId)} @ {group.MeetingTime}";
+            return $"{_lookupService.GetMeetingFrequencyFromId(group.MeetingFrequencyID)} on {_lookupService.GetMeetingDayFromId(group.MeetingDayId)} @ {DateTime.Parse(group.MeetingTime).ToString("hh:mm tt")}";
         }
 
         private string BuildGroupAttrString(int groupid)
