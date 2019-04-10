@@ -216,9 +216,6 @@
           <QueryParameter Name="@PageID">
             <Value>=Parameters!PageID.Value</Value>
           </QueryParameter>
-          <QueryParameter Name="@GroupTypeID">
-            <Value>=Parameters!GroupTypeID.Value</Value>
-          </QueryParameter>
           <QueryParameter Name="@Congregation">
             <Value>=JOIN(Parameters!Congregation.Value,",")</Value>
           </QueryParameter>
@@ -2251,5 +2248,6 @@ ys3LyczKxMfFRU1DRU5ERU5ERExCUllSur27/v/9/v7+/////////v/9///+/////v7+////////////
   <Language>en-US</Language>
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>http://mp-int-db-azimg:8880/Reportserver</rd:ReportServerUrl>
   <rd:ReportID>6835654f-3954-4c4b-bf4b-64ce086231e9</rd:ReportID>
 </Report>

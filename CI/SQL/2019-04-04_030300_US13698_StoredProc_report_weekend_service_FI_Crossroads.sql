@@ -1,21 +1,13 @@
 USE [MinistryPlatform]
 GO
 
-/****** Object:  StoredProcedure [dbo].[report_weekend_service_FI_Crossroads]    Script Date: 4/4/2019 1:05:52 PM ******/
-DROP PROCEDURE [dbo].[report_weekend_service_FI_Crossroads]
-GO
+-- =======================================================================================
+-- Author:      Shakila Rajaiah
+-- Create date: 4/5/19
+-- Description: This stored proc generates a list of volunteers to serve with the FI teams
+-- =======================================================================================
 
-/****** Object:  StoredProcedure [dbo].[report_weekend_service_FI_Crossroads]    Script Date: 4/4/2019 1:05:52 PM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-
-
-
-CREATE PROCEDURE [dbo].[report_weekend_service_FI_Crossroads](
+CREATE OR ALTER PROCEDURE [dbo].[report_weekend_service_FI_Crossroads](
 	@DomainID VARCHAR(40)
 	,@UserID VARCHAR(40)
 	,@PageID INT
@@ -30,40 +22,19 @@ CREATE PROCEDURE [dbo].[report_weekend_service_FI_Crossroads](
 AS 
 BEGIN
 
-/*
---To TEST
-USE [MinistryPlatform]
-GO
-DECLARE	@return_value int
-EXEC	@return_value = [dbo].[report_weekend_service_FI_Crossroads]
-		@DomainID = N'0FDE7F32-37E3-4E0B-B020-622E0EBD6BF0', 
---1777452E-E1D0-4447-8A3B-A00D7F1543E8
-		@UserID = N'DDADDBCB-8823-4F06-9250-6B245FA82755',
-		@PageID = 309,
-		@FromDate = N'2018-09-01',
-		@ToDate = N'2018-10-03',
-		@Congregation = N'1,7',
-		@NumOfColumns = 6,
-		@NumOfRows = 26,
-		@Groups = N'169680,166990, 166994'
-
-SELECT	'Return Value' = @return_value
-GO
-*/
-
 /**** Get Congregations ****/
-CREATE TABLE #Congregations (Congregation_ID INT)
-INSERT  #Congregations (Congregation_ID)
-        SELECT CAST(Item AS INT) FROM dp_Split(@Congregation, ',')
+CREATE TABLE #Congregations (Congregation_ID INT, Congregation_Name NVARCHAR(75))
+INSERT  #Congregations (Congregation_ID, Congregation_Name)
+        SELECT CAST(Item AS INT), Con.Congregation_Name FROM dp_Split(@Congregation, ',') SC INNER JOIN Congregations Con ON CAST(Item AS INT) = Con.Congregation_ID
 		UNION
-		SELECT Congregation_ID FROM Congregations WHERE ISNULL(@Congregation,'0') = '0'
+		SELECT Congregation_ID, Congregation_Name FROM Congregations WHERE ISNULL(@Congregation,'0') = '0'
 
-/**** Get Groups ****/
-CREATE TABLE #G (Group_ID INT, Group_Name NVARCHAR(75),Group_Sort_Order INT)
-INSERT  #G (Group_ID,Group_Name,Group_Sort_Order)
+/**** Get Groups for First Impressions ****/
+CREATE TABLE #GroupsFI (Group_ID INT, Group_Name NVARCHAR(75),Group_Sort_Order INT)
+INSERT  #GroupsFI (Group_ID,Group_Name,Group_Sort_Order)
         SELECT CAST(Item AS INT),G.Group_Name,G.KC_Sort_Order FROM dp_Split(@Groups, ',') SG INNER JOIN Groups G ON CAST(Item AS INT) = G.Group_ID
-		UNION
-		SELECT Group_ID,Group_Name, KC_Sort_Order FROM Groups WHERE ISNULL(@Groups,'0') = '0' 
+	UNION
+	SELECT Group_ID,Group_Name, KC_Sort_Order FROM Groups WHERE ISNULL(@Groups,'0') = '0' 
 
 SELECT E.Event_ID
 	, E.Event_Title
@@ -85,7 +56,7 @@ SELECT E.Event_ID
     , O.Shift_End
     , O.Room
     , G.Group_ID
-    , Con.Congregation_Name
+    , Cong.Congregation_Name
 	, R.Response_ID
 	, R.Response_Date
 	, RowNum = ROW_NUMBER() OVER (PARTITION BY O.Opportunity_ID, E.Event_ID ORDER BY E.Event_ID,R.Response_Date)
@@ -95,21 +66,19 @@ SELECT E.Event_ID
 	, RowGroupMax = CAST (0 AS INT)
 	, ISNULL(G.Group_Sort_Order,999) AS Sort_Order
 INTO #ReportData
-  FROM #G G
+  FROM #GroupsFI G
   INNER JOIN Opportunities O ON G.Group_ID = O.Add_to_Group AND O.Group_Role_ID IN (16,22)
   INNER JOIN Event_Types ET ON O.Event_Type_ID = ET.Event_Type_ID
   INNER JOIN Events E ON E.Event_Type_ID = ET.Event_Type_ID
   INNER JOIN #Congregations Cong ON Cong.Congregation_ID = E.Congregation_ID
-  INNER JOIN Congregations Con ON Cong.Congregation_ID = Con.Congregation_ID
   LEFT JOIN Responses R ON R.Opportunity_ID = O.Opportunity_ID AND R.Event_ID = E.Event_ID AND R.response_result_id=1
   LEFT JOIN Participants P ON P.Participant_ID = R.Participant_ID
   LEFT JOIN Contacts C ON C.Contact_ID = P.Contact_ID  
-WHERE CAST(Event_Start_Date AS DATE) BETWEEN CAST(@FromDate AS DATE) AND CAST(@ToDate AS DATE)
-				
+WHERE CAST(Event_Start_Date AS DATE) BETWEEN CAST(@FromDate AS DATE) AND CAST(@ToDate AS DATE)			
   ORDER BY E.Event_Start_Date, O.Opportunity_Title, C.Last_Name 
- 
-  --ADD PLACEHOLDER FOR NO VOLUNTEER
-  
+
+
+--ADD PLACEHOLDER IF THERE ARE NO VOLUNTEERS 
 SELECT NumPosToAdd = Max_Needed - ISNULL((SELECT MAX(RowNum) FROM #ReportData RD WHERE #ReportData.Opportunity_ID = RD.Opportunity_ID AND #ReportData.Event_ID = RD.Event_ID),0)
 	, Event_ID
 	, Event_Title
@@ -120,13 +89,13 @@ SELECT NumPosToAdd = Max_Needed - ISNULL((SELECT MAX(RowNum) FROM #ReportData RD
 	, Opportunity_Title
 	, Program_ID
 	, Opportunity_ID
-    , Max_Needed
-    , Min_Needed
-    , Shift_Start
-    , Shift_End
-    , Room
-    , Group_ID
-    , Congregation_Name
+    	, Max_Needed
+    	, Min_Needed
+    	, Shift_Start
+    	, Shift_End
+    	, Room
+    	, Group_ID
+    	, Congregation_Name
 	, Sort_Order
 INTO #AddPos
 FROM #ReportData 
@@ -140,19 +109,19 @@ GROUP BY  Event_ID
 	, Opportunity_Title
 	, Program_ID
 	, Opportunity_ID
-    , Max_Needed
-    , Min_Needed
-    , Shift_Start
-    , Shift_End
-    , Room
-    , Group_ID
-    , Congregation_Name
+        , Max_Needed
+        , Min_Needed
+        , Shift_Start
+        , Shift_End
+        , Room
+        , Group_ID
+        , Congregation_Name
 	, Sort_Order
 
-DECLARE @i INT = 1
-		,@NumPos INT = (SELECT MAX(NumPosToAdd) from #AddPos)+1
+DECLARE @CurrPos INT = 1
+		,@MaxPos INT = (SELECT MAX(NumPosToAdd) from #AddPos)+1
 
-WHILE @i < @NumPos
+WHILE   @CurrPos < @MaxPos
 BEGIN
  INSERT INTO #ReportData
 			(Event_ID
@@ -206,17 +175,16 @@ BEGIN
 			, Congregation_Name
 			, 0
 			, NULL
-			, (Max_Needed + 1) - @i
+			, (Max_Needed + 1) - @CurrPos
 			, 'MAX'
 			, 0
 			, Sort_Order
 		FROM #AddPos
-		WHERE NumPosToAdd >= @i
+		WHERE NumPosToAdd >= @CurrPos
 
- SET @i= @i + 1
+ SET @CurrPos= @CurrPos + 1
+
 END	
-
-
 
   UPDATE RD
   SET Position = 'MIN'
@@ -236,8 +204,9 @@ END
 							AND #ReportData.Event_ID = RD.Event_ID
 							AND #ReportData.Sort_Order = RD.Sort_Order
 
+--get the total rows for the group
   SELECT *
-  INTO #TempData
+  INTO #TotalRowsForGroup
   FROM (
 			SELECT Congregation_Name
 			  ,Event_Type_ID
@@ -253,17 +222,16 @@ END
 			  ,MAX(Opportunity_Title) AS Opportunity_Title 
 			  FROM #ReportData 
 			  GROUP BY Congregation_Name, Event_Type_ID, Event_Type, Event_Title, Event_Start_Date, Event_ID, GroupRow, Group_Name, Sort_Order, DisplayColumn	 
-       ) AS X
+       ) AS TRG
 
-  
   SELECT *
-  INTO #TempData2
+  INTO #GroupRowMax
   FROM (
 			SELECT Congregation_Name, Event_Start_Date, GroupRow
 			  ,MAX(TotalRowsForGroup) AS GroupRowMax --+1 is for the group name
-			  FROM #TempData
+			  FROM #TotalRowsForGroup
 			  GROUP BY Congregation_Name, Event_Start_Date, GroupRow		 
-       ) AS Y
+       ) AS GRM
 
   SELECT *
   INTO #FillerCount
@@ -272,15 +240,17 @@ END
 			  ,TD.GroupRow, TD.Sort_Order, TD.DisplayColumn, TD.Group_Name, TD.Opportunity_Title 			 
 			  ,(TD2.GroupRowMax- TD.TotalRowsForGroup) AS NumPosToAdd
 			  ,TD2.GroupRowMax
-	    	  FROM #TempData TD
-			  JOIN #TempData2 TD2 ON TD.Event_Start_Date = TD2.Event_Start_Date AND TD.GroupRow = TD2.GroupRow AND TD.Congregation_Name = TD2.Congregation_Name	 
-       ) AS Z
+	    	  FROM #TotalRowsForGroup TD
+			  JOIN #GroupRowMax TD2 ON TD.Event_Start_Date = TD2.Event_Start_Date AND TD.GroupRow = TD2.GroupRow AND TD.Congregation_Name = TD2.Congregation_Name	 
+       ) AS FC
+
 
  --Add the filler to line it up
- DECLARE @j INT = 1
-		,@NumPosFiller INT = (SELECT MAX(NumPosToAdd) from #FillerCount)
+ DECLARE @FilCount INT = 1
+		,@MaxPosFiller INT = (SELECT MAX(NumPosToAdd) from #FillerCount)
 
-WHILE @j <= @NumPosFiller
+
+WHILE @FilCount <= @MaxPosFiller
 BEGIN
  INSERT INTO #ReportData
 			( Congregation_Name
@@ -309,7 +279,7 @@ BEGIN
 			, Event_Title
 			, Group_Name
 			, Opportunity_Title			
-			, (GroupRowMax - NumPosToAdd + @j)
+			, (GroupRowMax - NumPosToAdd + @FilCount)
 			, 'FIL'
 			, DisplayColumn
 			, Sort_Order
@@ -317,9 +287,9 @@ BEGIN
 			, 0
 			, 0
 		FROM #FillerCount
-		WHERE NumPosToAdd >= @j
+		WHERE NumPosToAdd >= @FilCount
 
- SET @j= @j + 1
+ SET @FilCount= @FilCount + 1
 END
 
   
@@ -356,11 +326,11 @@ END
 	ORDER BY Event_Type, Event_Start_Date, Sort_Order, DisplayColumn, Group_Name, Opportunity_Title, RowNum
 
     DROP TABLE #Congregations
-	DROP TABLE #G
+	DROP TABLE #GroupsFI
 	DROP TABLE #AddPos
 	DROP TABLE #ReportData
-	DROP TABLE #TempData 
-    DROP TABLE #TempData2
+	DROP TABLE #TotalRowsForGroup
+    DROP TABLE #GroupRowMax
 	DROP TABLE #FillerCount
 END
 

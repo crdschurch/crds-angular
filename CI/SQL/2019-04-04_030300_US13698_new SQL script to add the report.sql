@@ -19,7 +19,7 @@ BEGIN
    	  @REPORT_ID
    	 ,N'Weekend Service - FI Report'
    	 ,N'Generate a list of volunteers to serve with the FI Teams.'
-   	 ,N'/Crossroads/Weekend Service Crossroads_FI_report-server'
+   	 ,N'/Crossroads/Weekend Service Crossroads_FI'
    	 ,0
    	 ,0
    	 ,1
