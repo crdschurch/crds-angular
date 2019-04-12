@@ -50,10 +50,8 @@ namespace crds_angular.Services
             });
         }
 
-        public IObservable<WaiverDTO> EventWaivers(int eventId, string token)
+        public IObservable<WaiverDTO> EventWaivers(int eventId, int contactId)
         {
-            var contactId = _authenticationRepository.GetContactId(token);
-
             var waivers = _waiverRepository.GetEventWaivers(eventId).Select(w => new WaiverDTO
             {
                 WaiverId = w.WaiverId,
@@ -105,9 +103,8 @@ namespace crds_angular.Services
             });
         }
 
-        public IObservable<ContactInvitation> CreateWaiverInvitation(int waiverId, int eventParticipantId, string token)
-        {           
-            var contactId = _authenticationRepository.GetContactId(token);
+        public IObservable<ContactInvitation> CreateWaiverInvitation(int waiverId, int eventParticipantId, int contactId)
+        {
             return _contactRepository.GetSimpleContact(contactId).SelectMany(con =>
             {
                return _waiverRepository.CreateEventParticipantWaiver(waiverId, eventParticipantId, contactId).SelectMany(eventParticipantWaiver =>
