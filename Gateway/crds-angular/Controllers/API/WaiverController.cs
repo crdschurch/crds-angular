@@ -15,7 +15,7 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class WaiverController : MPAuth
+    public class WaiverController : ImpersonateAuthBaseController
     {
         private IAuthTokenExpiryService _authTokenExpiryService;
         public readonly IWaiverService _waiverService;
@@ -39,7 +39,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var waivers = _waiverService.EventWaivers(eventId, token).ToList().Wait();
+                    var waivers = _waiverService.EventWaivers(eventId, token.UserInfo.Mp.ContactId).ToList().Wait();
                     return Ok(waivers);
                 }
                 catch (Exception e)
@@ -78,7 +78,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _waiverService.CreateWaiverInvitation(waiverId, eventParticipantId, token).Select(invite => _waiverService.SendAcceptanceEmail(invite).Subscribe()).Wait();                   
+                    _waiverService.CreateWaiverInvitation(waiverId, eventParticipantId, token.UserInfo.Mp.ContactId).Select(invite => _waiverService.SendAcceptanceEmail(invite).Subscribe()).Wait();                   
                     return Ok();
                 }
                 catch (Exception e)

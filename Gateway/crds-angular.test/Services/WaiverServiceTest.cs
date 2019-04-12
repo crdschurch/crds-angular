@@ -72,15 +72,13 @@ namespace crds_angular.test.Services
         {
             const int eventId = 2345;
             const int myContactId = 56778;
-            const string token = "mytoken";
 
             var partWaiver1 = MpEventParticpantWaiver(true, myContactId, 34);               
             var partWaiver2 = MpEventParticpantWaiver(true, myContactId, 35);
             var eventWaiver1 = MpEventWaiver(34);
             var eventWaiver2 = MpEventWaiver(35);
             var eventWaiver3 = MpEventWaiver(33);
-
-            _authenticationRepository.Setup(m => m.GetContactId(token)).Returns(myContactId);
+            
             _waiverRepository.Setup(m => m.GetEventParticipantWaiversByContact(eventId, myContactId)).Returns(Observable.Create<MpEventParticipantWaiver>(observer =>
             {
                 observer.OnNext(partWaiver2);
@@ -98,7 +96,7 @@ namespace crds_angular.test.Services
                 return Disposable.Empty;
             }));
 
-            var result = await _fixture.EventWaivers(eventId, token).ToList();
+            var result = await _fixture.EventWaivers(eventId, myContactId).ToList();
 
             var waiverResult1 = result.Single(ew => ew.WaiverId == 34);
             Assert.IsNotNull(waiverResult1);
@@ -143,14 +141,12 @@ namespace crds_angular.test.Services
         [Test]
         public async Task ShouldCreateWaiverInvitation()
         {
-            const string token = "mytoken";
             const int myContactId = 56778;
             const int eventParticipantId = 9908;
             const int eventParticipantWaiverId = 89;
             const int waiverId = 888;
             const int waiverInvitiationTypeId = 4343;
             _configurationWrapper.Setup(m => m.GetConfigIntValue("WaiverInvitationType")).Returns(waiverInvitiationTypeId);
-            _authenticationRepository.Setup(m => m.GetContactId(token)).Returns(myContactId);
             _contactRepository.Setup(m => m.GetSimpleContact(myContactId)).Returns(Observable.Return(new MpSimpleContact
             {
                 ContactId = myContactId, 
@@ -181,7 +177,7 @@ namespace crds_angular.test.Services
             
             
 
-            var result = await _fixture.CreateWaiverInvitation(waiverId, eventParticipantId, token);
+            var result = await _fixture.CreateWaiverInvitation(waiverId, eventParticipantId, myContactId);
             Assert.AreEqual(999999, result.Invitation.InvitationId);
         }
 

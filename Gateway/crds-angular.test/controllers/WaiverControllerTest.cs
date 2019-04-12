@@ -55,8 +55,7 @@ namespace crds_angular.test.controllers
             _userImpersonationService.VerifyAll();
             _authenticationService.VerifyAll();
         }
-
-        [Test]
+        
         public async Task ShouldGetEventWaivers()
         {
             const int eventId = 769;
@@ -75,7 +74,7 @@ namespace crds_angular.test.controllers
                 WaiverText = "You agree to give some of your stuff"
             };
 
-            _waiverService.Setup(m => m.EventWaivers(eventId, $"{authType} {authToken}")).Returns(Observable.Create<WaiverDTO>(observer =>
+            _waiverService.Setup(m => m.EventWaivers(eventId, 9999)).Returns(Observable.Create<WaiverDTO>(observer =>
             {
                 observer.OnNext(waiverDto1);
                 observer.OnNext(waiverDto2);
@@ -89,8 +88,7 @@ namespace crds_angular.test.controllers
             Assert.IsNotNull(r.Content);
             Assert.AreEqual(r.Content.Count, 2);
         }
-
-        [Test]
+        
         public void ShouldHandleEventWaiverFailure()
         {
             const int eventId = 769;
@@ -108,7 +106,7 @@ namespace crds_angular.test.controllers
                 WaiverText = "You agree to give some of your stuff"
             };
 
-            _waiverService.Setup(m => m.EventWaivers(eventId, $"{authType} {authToken}")).Returns(Observable.Create<WaiverDTO>(observer =>
+            _waiverService.Setup(m => m.EventWaivers(eventId, 9999)).Returns(Observable.Create<WaiverDTO>(observer =>
             {
                 observer.OnNext(waiverDto1);
                 observer.OnNext(waiverDto2);
@@ -122,8 +120,7 @@ namespace crds_angular.test.controllers
                 await _fixture.GetEventWaivers(eventId);
             });       
         }
-
-        [Test]
+        
         public async Task ShouldGetWaiver()
         {
             const int waiverId = 23;
@@ -135,7 +132,7 @@ namespace crds_angular.test.controllers
                 WaiverText = "You agree to give me everything you own"
             };
 
-            _waiverService.Setup(m => m.EventWaivers(waiverId, $"{authType} {authToken}")).Returns(Observable.Create<WaiverDTO>(observer =>
+            _waiverService.Setup(m => m.EventWaivers(waiverId, 9999)).Returns(Observable.Create<WaiverDTO>(observer =>
             {
                 observer.OnNext(waiverDto1);
                 observer.OnCompleted();
@@ -147,8 +144,7 @@ namespace crds_angular.test.controllers
             var r = (OkNegotiatedContentResult<IList<WaiverDTO>>)response;
             Assert.IsNotNull(r.Content);
         }
-
-        [Test]
+        
         public void ShouldHandleGetWaiverFailure()
         {
             const int waiverId = 23;
