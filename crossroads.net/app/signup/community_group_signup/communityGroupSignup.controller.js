@@ -157,7 +157,7 @@
             }
           });
         } else {
-          $state.go('content', { link: '/server-error/' });
+          $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
         }
       });
     }

@@ -33,6 +33,7 @@ namespace crds_angular.Services
         private readonly IAddressGeocodingService _addressGeocodingService;
         private readonly ICongregationRepository _congregationRepository;
         private readonly ILocationService _locationRepository;
+        private readonly ILookupService _lookupService;
 
         private readonly string _googleStorageBucketId;
         private readonly string _firestoreProjectId;
@@ -50,7 +51,8 @@ namespace crds_angular.Services
                                       IGroupService groupService,
                                       IAddressGeocodingService addressGeocodingService,
                                       ICongregationRepository congregationRepository,
-                                      ILocationService locationRepository)
+                                      ILocationService locationRepository,
+                                      ILookupService lookupService)
         {
             // dependencies
             _imageService = imageService;
@@ -63,6 +65,7 @@ namespace crds_angular.Services
             _addressGeocodingService = addressGeocodingService;
             _congregationRepository = congregationRepository;
             _locationRepository = locationRepository;
+            _lookupService = lookupService;
             //constants
             _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
             _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
@@ -220,7 +223,7 @@ namespace crds_angular.Services
                 var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
 
                 // create the pin object
-                MapPin pin = new MapPin(congregation.Name, congregation.Name, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, 
+                MapPin pin = new MapPin("", congregation.Name, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, 
                     Convert.ToInt32(pinType), congregationid.ToString(), geohash, "", null, BuildStaticText1(pinType,congregationid), BuildStaticText2(pinType,congregationid));
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
@@ -294,7 +297,7 @@ namespace crds_angular.Services
                 Console.WriteLine($"Small Group image url: {url}");
 
                 // create the pin object
-                MapPin pin = new MapPin(group.GroupDescription, group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), 
+                MapPin pin = new MapPin(RemoveHtmlTags(group.GroupDescription), group.GroupName, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, Convert.ToInt32(pinType), 
                     groupid.ToString(), geohash, url, BuildGroupAttributeDictionary(s, t), BuildStaticText1(pinType, groupid), BuildStaticText2(pinType, groupid));
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
@@ -413,7 +416,7 @@ namespace crds_angular.Services
                 var t = group.AttributeTypes;
 
                 // create the pin object
-                MapPin pin = new MapPin(group.GroupDescription, group.GroupName, Convert.ToInt32(pinType), groupid.ToString(), "", 
+                MapPin pin = new MapPin(RemoveHtmlTags(group.GroupDescription), group.GroupName, Convert.ToInt32(pinType), groupid.ToString(), "", 
                                         BuildGroupAttributeDictionary(s,t), BuildStaticText1(pinType, groupid), BuildStaticText2(pinType, groupid));
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
@@ -552,16 +555,16 @@ namespace crds_angular.Services
             switch (Convert.ToInt32(pinType))
             {
                 case PinTypeConstants.PIN_PERSON:
-                    staticText1 = buildPersonAddressString(id);
+                    staticText1 = "";
                     break;
                 case PinTypeConstants.PIN_GROUP:
-                    staticText1 = buildGroupTimeString(id);
+                    staticText1 = BuildGroupTimeString(id);
                     break;
                 case PinTypeConstants.PIN_SITE:
-                    staticText1 = "staticText1 PIN_SITE";
+                    staticText1 = "";
                     break;
                 case PinTypeConstants.PIN_ONLINEGROUP:
-                    staticText1 = buildGroupTimeString(id);
+                    staticText1 = BuildGroupTimeString(id);
                     break;
             }
             return staticText1;
@@ -573,47 +576,50 @@ namespace crds_angular.Services
             switch (Convert.ToInt32(pinType))
             {
                 case PinTypeConstants.PIN_PERSON:
-                    staticText2 = "";
+                    staticText2 = BuildPersonAddressString(id);
                     break;
                 case PinTypeConstants.PIN_GROUP:
-                    staticText2 = buildGroupAttrString(id);
+                    staticText2 = BuildGroupAttrString(id);
                     break;
                 case PinTypeConstants.PIN_SITE:
-                    staticText2 = "";
+                    staticText2 = BuildLocationAddressString(id);
                     break;
                 case PinTypeConstants.PIN_ONLINEGROUP:
-                    staticText2 = buildGroupAttrString(id);
+                    staticText2 = BuildGroupAttrString(id);
                     break;
             }
             return staticText2;
         }
 
-        private string buildLocationAddressString(int congregationid)
+        private string BuildLocationAddressString(int congregationid)
         {
             var locationString = "";
-            var c = _congregationRepository.GetCongregationById(congregationid);
-            var bob= _locationRepository.GetAllCrossroadsLocations().Where(x => x.LocationId == c.LocationId).First();
-            if(bob != null)
+            var congregation = _congregationRepository.GetCongregationById(congregationid);
+            var location = _locationRepository.GetAllCrossroadsLocations().Where(x => x.LocationId == congregation.LocationId).First();
+            if(location != null)
             {
-                locationString = $"{bob.Address.AddressLine1}, {bob.Address.City}, {bob.Address.State} {bob.Address.PostalCode}";
+                locationString = $"{location.Address.AddressLine1}\r\n{location.Address.City}, {location.Address.State} {location.Address.PostalCode}";
             }
-            return "";
+            return locationString;
         }
 
-        private string buildPersonAddressString(int participantid)
+        private string BuildPersonAddressString(int participantid)
         {
             var contact = _contactRepository.GetContactByParticipantId(participantid);
             return $"{contact.City}, {contact.State} {contact.Postal_Code}";
         }
 
-        private string buildGroupTimeString(int groupid)
+        private string BuildGroupTimeString(int groupid)
         {
             var group = _groupService.GetGroupDetailsWithAttributes(groupid);
-
-            return $"{group.MeetingFrequency} {group.MeetingDay} at {group.MeetingTime}";
+            if(group.MeetingFrequencyID == null || group.MeetingDayId == null || group.MeetingTime == null)
+            {
+                return "Flexible Meeting Time";
+            }
+            return $"{_lookupService.GetMeetingFrequencyFromId(group.MeetingFrequencyID)} on {_lookupService.GetMeetingDayFromId(group.MeetingDayId)} @ {DateTime.Parse(group.MeetingTime).ToString("hh:mm tt")}";
         }
 
-        private string buildGroupAttrString(int groupid)
+        private string BuildGroupAttrString(int groupid)
         {
             var group = _groupService.GetGroupDetailsWithAttributes(groupid);
             var s = group.SingleAttributes;
@@ -624,24 +630,24 @@ namespace crds_angular.Services
             ObjectSingleAttributeDTO grouptype;
             if (s.TryGetValue(73, out grouptype) && grouptype.Value != null)
             {
-                attrString = $"{grouptype.Value.Name} |";
+                attrString = $"{grouptype.Value.Name} | ";
             }
 
             // get age groups
             ObjectAttributeTypeDTO agegroup;
             if (t.TryGetValue(91, out agegroup))
             {
-                var grouptext = "";
+                var grouptext = "Ages";
                 // roll through the age group. add selected to the dictionary
                 var ageGroups = new List<string>();
                 foreach (var a in agegroup.Attributes)
                 {
                     if (a.Selected)
                     {
-                        grouptext = $"{grouptext} {a.Name}";
+                        grouptext = $"{grouptext} {a.Name},";
                     }
                 }
-                attrString = $"{attrString} {grouptext}";
+                attrString = $"{attrString} {grouptext.TrimEnd(',')} | ";
             }
 
             // get group categories
@@ -655,13 +661,19 @@ namespace crds_angular.Services
                 {
                     if (a.Selected)
                     {
-                        categoryText = $"{categoryText} {a.Name}";
+                        categoryText = $"{categoryText} {a.Category}";
                     }
                 }
                 attrString = $"{attrString} {categoryText}";
             }
 
             return attrString;
+        }
+
+        private string RemoveHtmlTags(string input)
+        {
+            System.Text.RegularExpressions.Regex rx = new System.Text.RegularExpressions.Regex("<[^>]*>");
+            return rx.Replace(input, "");
         }
     }
 }

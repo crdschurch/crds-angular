@@ -73,7 +73,7 @@
                 });
               }
               else {
-                promise = Page.get({ url: link }).$promise;
+                redirectToMaestro()
               }
 
               var childPromise = promise.then(function (originalPromise) {
