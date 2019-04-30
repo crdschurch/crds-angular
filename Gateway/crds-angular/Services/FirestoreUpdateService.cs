@@ -420,7 +420,7 @@ namespace crds_angular.Services
                 Console.WriteLine($"Online Group image url: {url}");
 
                 // create the pin object
-                MapPin pin = new MapPin(RemoveHtmlTags(group.GroupDescription), group.GroupName, Convert.ToInt32(pinType), groupid.ToString(), "", url,
+                MapPin pin = new MapPin(RemoveHtmlTags(group.GroupDescription), group.GroupName, Convert.ToInt32(pinType), groupid.ToString(), url,
                                         BuildGroupAttributeDictionary(s,t), BuildStaticText1(pinType, groupid), BuildStaticText2(pinType, groupid));
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
