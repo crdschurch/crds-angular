@@ -414,9 +414,13 @@ namespace crds_angular.Services
                 var group = _groupService.GetGroupDetailsWithAttributes(groupid);
                 var s = group.SingleAttributes;
                 var t = group.AttributeTypes;
+                
+                var participantId = _groupService.GetPrimaryContactParticipantId(groupid);
+                var url = SendProfilePhotoToFirestore(participantId);
+                Console.WriteLine($"Online Group image url: {url}");
 
                 // create the pin object
-                MapPin pin = new MapPin(RemoveHtmlTags(group.GroupDescription), group.GroupName, Convert.ToInt32(pinType), groupid.ToString(), "", 
+                MapPin pin = new MapPin(RemoveHtmlTags(group.GroupDescription), group.GroupName, Convert.ToInt32(pinType), groupid.ToString(), "", url,
                                         BuildGroupAttributeDictionary(s,t), BuildStaticText1(pinType, groupid), BuildStaticText2(pinType, groupid));
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
