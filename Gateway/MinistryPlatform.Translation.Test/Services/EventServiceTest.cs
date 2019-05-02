@@ -29,8 +29,9 @@ namespace MinistryPlatform.Translation.Test.Services
             _configWrapper = new Mock<IConfigurationWrapper>(MockBehavior.Strict);
             _groupService = new Mock<IGroupRepository>(MockBehavior.Strict);
             _eventParticipantRepository = new Mock<IEventParticipantRepository>(MockBehavior.Strict);
+            _apiUserService = new Mock<IApiUserRepository>();
 
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
+        _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupsByEventId")).Returns(2221);
             _configWrapper.Setup(m => m.GetConfigIntValue("EventsBySite")).Returns(2222);
@@ -40,7 +41,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 ExpiresIn = 123
             });
 
-            _fixture = new EventRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _groupService.Object, _ministryPlatformRestService.Object, _eventParticipantRepository.Object);
+            _fixture = new EventRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _groupService.Object, _ministryPlatformRestService.Object, _eventParticipantRepository.Object, _apiUserService.Object);
         }
 
         private EventRepository _fixture;
@@ -51,6 +52,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IConfigurationWrapper> _configWrapper;
         private Mock<IGroupRepository> _groupService;
         private Mock<IEventParticipantRepository> _eventParticipantRepository;
+        private Mock<IApiUserRepository> _apiUserService;
         private const int EventParticipantPageId = 281;
         private const int EventParticipantStatusDefaultId = 2;
         private const int EventsPageId = 308;
@@ -322,7 +324,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var eventGroups = GetMockedEventGroups(new System.Random(DateTime.Now.Millisecond).Next(10));
 
             _ministryPlatformService.Setup(m => m.GetPageViewRecords(eventGroupPageViewId, token, searchString, "", 0)).Returns(eventGroups);
-            var result = _fixture.GetEventGroupsForEvent(eventId, token);
+            var result = _fixture.GetEventGroupsForEvent(eventId);
             _ministryPlatformService.VerifyAll();
 
             Assert.IsNotNull(result);
@@ -352,7 +354,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var searchString = ",,\"" + site + "\",,False," + currentDateTime.ToShortDateString() + "," + currentDateTime.ToShortDateString(); // search string needs to match
 
             _ministryPlatformService.Setup(m => m.GetPageViewRecords(2222, token, searchString, "", 0)).Returns(GetMockedEvents(3));
-            _fixture.GetEventsBySite(site, token, currentDateTime, currentDateTime);
+            _fixture.GetEventsBySite(site, currentDateTime, currentDateTime);
             _ministryPlatformService.VerifyAll();
         }
 
@@ -365,7 +367,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var searchString = ",,\"" + site + "\",,True,"; // search string needs to match
 
             _ministryPlatformService.Setup(m => m.GetPageViewRecords(2222, token, searchString, "", 0)).Returns(GetMockedEvents(3));
-            _fixture.GetEventTemplatesBySite(site, token);
+            _fixture.GetEventTemplatesBySite(site);
             _ministryPlatformService.VerifyAll();
         }
 
@@ -387,7 +389,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 _ministryPlatformService.Setup(m => m.DeleteSelectionRecords(selectionId, token));
                 _ministryPlatformService.Setup(m => m.DeleteSelection(selectionId, token));
 
-                _fixture.DeleteEventGroupsForEvent(eventId, token);
+                _fixture.DeleteEventGroupsForEvent(eventId);
                 _ministryPlatformService.VerifyAll();
             }).QuickCheckThrowOnFailure();
         }

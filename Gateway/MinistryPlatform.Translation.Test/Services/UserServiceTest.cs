@@ -26,6 +26,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IConfigurationWrapper> _configurationWrapper;
         private Mock<IMinistryPlatformService> _ministryPlatformService;
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;
+        private Mock<IApiUserRepository> _apiUserService;
 
         [SetUp]
         public void SetUp()
@@ -34,6 +35,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _configurationWrapper = new Mock<IConfigurationWrapper>();
             _ministryPlatformService = new Mock<IMinistryPlatformService>(MockBehavior.Strict);
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>(MockBehavior.Strict);
+            _apiUserService = new Mock<IApiUserRepository>();
 
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("UsersApiLookupPageView")).Returns(102030);
             _authenticationService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
@@ -42,7 +44,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 ExpiresIn = 123
             });
 
-            _fixture = new UserRepository(_authenticationService.Object, _configurationWrapper.Object, _ministryPlatformService.Object, _ministryPlatformRest.Object);
+            _fixture = new UserRepository(_authenticationService.Object, _configurationWrapper.Object, _ministryPlatformService.Object, _ministryPlatformRest.Object, _apiUserService.Object);
         }
 
         [Test]

@@ -18,7 +18,6 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
         private readonly int _autoStartedTaskPageViewId;
-        private readonly IApiUserRepository _apiUserService;
         private readonly int _roomReservationPageID;
         public const string GetRejectedRoomReservationsStoredProc = "cr_GetRejectedRoomReservations";
 
@@ -27,12 +26,11 @@ namespace MinistryPlatform.Translation.Repositories
                                 IConfigurationWrapper configurationWrapper, 
                                 IMinistryPlatformService ministryPlatformService, 
                                 IMinistryPlatformRestRepository ministryPlatformRestRepository,
-                                IApiUserRepository apiUserService) :
-            base(authenticationService, configurationWrapper)
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRestRepository;
-            _apiUserService = apiUserService;
             _autoStartedTaskPageViewId = _configurationWrapper.GetConfigIntValue("TasksNeedingAutoStarted");
             _roomReservationPageID = _configurationWrapper.GetConfigIntValue("RoomReservationPageId");
         }

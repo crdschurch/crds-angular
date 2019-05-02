@@ -244,7 +244,6 @@ namespace crds_angular.test.Services
             };
             _eventParticipantService.Setup(mocked => mocked.GetEventParticipants(123, 11)).Returns(p[0]);
             _eventParticipantService.Setup(mocked => mocked.GetEventParticipants(123, 22)).Returns(p[1]);
-            _eventService.Setup(mocked => mocked.GetEventGroupsForEventAPILogin(123)).Returns(g);
             _groupService.Setup(mocked => mocked.getGroupDetails(g[0].GroupId)).Returns(new MpGroup());
 
 
@@ -370,7 +369,6 @@ namespace crds_angular.test.Services
             };
             _equipmentService.Setup(mocked => mocked.GetEquipmentReservations(123, r[0].RoomId)).Returns(q[0]);
             _equipmentService.Setup(mocked => mocked.GetEquipmentReservations(123, r[1].RoomId)).Returns(q[1]);
-            _eventService.Setup(mocked => mocked.GetEventGroupsForEventAPILogin(123)).Returns(g);
             _groupService.Setup(mocked => mocked.getGroupDetails(g[0].GroupId)).Returns(new MpGroup());
 
             var response = _fixture.GetEventReservation(123);
@@ -495,7 +493,6 @@ namespace crds_angular.test.Services
             _roomService.Setup(mockyMock => mockyMock.GetRoomReservations(1)).Returns(roomReservationReturn);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 1)).Returns(equipmentForRoom1);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 2)).Returns(new List<MpEquipmentReservationDto>());
-            _eventService.Setup(mock => mock.GetEventGroupsForEventAPILogin(1)).Returns(new List<MpEventGroup>());
             _eventService.Setup(mock => mock.UpdateEvent(It.IsAny<MpEventReservationDto>()));
             _roomService.Setup(mock => mock.UpdateRoomReservation(It.IsAny<MpRoomReservationDto>()));
             _equipmentService.Setup(mock => mock.UpdateEquipmentReservation(It.IsAny<MpEquipmentReservationDto>()));
@@ -565,7 +562,6 @@ namespace crds_angular.test.Services
             _roomService.Setup(mockyMock => mockyMock.GetRoomReservations(1)).Returns(roomReservationReturn);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 1)).Returns(equipmentForRoom1);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 2)).Returns(new List<MpEquipmentReservationDto>());
-            _eventService.Setup(mock => mock.GetEventGroupsForEventAPILogin(1)).Returns(new List<MpEventGroup>());
             _eventService.Setup(mock => mock.UpdateEvent(It.IsAny<MpEventReservationDto>()));
             _roomService.Setup(mock => mock.UpdateRoomReservation(It.IsAny<MpRoomReservationDto>()));
             _equipmentService.Setup(mock => mock.UpdateEquipmentReservation(It.IsAny<MpEquipmentReservationDto>()));
@@ -633,7 +629,6 @@ namespace crds_angular.test.Services
             _roomService.Setup(mockyMock => mockyMock.GetRoomReservations(1)).Returns(roomReservationReturn);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 3)).Returns(equipmentForRoom1);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 4)).Returns(new List<MpEquipmentReservationDto>());
-            _eventService.Setup(mock => mock.GetEventGroupsForEventAPILogin(1)).Returns(new List<MpEventGroup>());
             _eventService.Setup(mock => mock.UpdateEvent(It.IsAny<MpEventReservationDto>()));
             _roomService.Setup(mock => mock.UpdateRoomReservation(It.IsAny<MpRoomReservationDto>()));
             _equipmentService.Setup(mock => mock.UpdateEquipmentReservation(It.IsAny<MpEquipmentReservationDto>()));
@@ -706,7 +701,6 @@ namespace crds_angular.test.Services
             _roomService.Setup(mockyMock => mockyMock.GetRoomReservations(1)).Returns(roomReservationReturn);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 1)).Returns(equipmentForRoom1);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 2)).Returns(new List<MpEquipmentReservationDto>());
-            _eventService.Setup(mock => mock.GetEventGroupsForEventAPILogin(1)).Returns(new List<MpEventGroup>());
             _eventService.Setup(mock => mock.UpdateEvent(It.IsAny<MpEventReservationDto>()));
             _roomService.Setup(mock => mock.UpdateRoomReservation(It.IsAny<MpRoomReservationDto>()));
             _equipmentService.Setup(mock => mock.UpdateEquipmentReservation(It.IsAny<MpEquipmentReservationDto>()));
@@ -811,11 +805,10 @@ namespace crds_angular.test.Services
             _roomService.Setup(mockyMock => mockyMock.GetRoomReservations(1)).Returns(roomReservationReturn);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 1)).Returns(equipmentForRoom1);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 2)).Returns(new List<MpEquipmentReservationDto>());
-            _eventService.Setup(mock => mock.GetEventGroupsForEventAPILogin(1)).Returns(mpEventGroupData);
             _eventService.Setup(mock => mock.UpdateEvent(It.IsAny<MpEventReservationDto>()));
             _roomService.Setup(mock => mock.UpdateRoomReservation(It.IsAny<MpRoomReservationDto>()));
             _equipmentService.Setup(mock => mock.UpdateEquipmentReservation(It.IsAny<MpEquipmentReservationDto>()));
-            _eventService.Setup(mock => mock.DeleteEventGroupsForEvent(1, "ABC", 272727));
+            _eventService.Setup(mock => mock.DeleteEventGroupsForEvent(1, 272727));
             _groupService.Setup(mock => mock.EndDateGroup(42, null, null));
             _groupService.Setup(mock => mock.getGroupDetails(42)).Returns(mpGroup);
 
@@ -824,7 +817,7 @@ namespace crds_angular.test.Services
             _equipmentService.Verify(m => m.UpdateEquipmentReservation(It.IsAny<MpEquipmentReservationDto>()), Times.Exactly(2));
             _roomService.Verify(m => m.UpdateRoomReservation(It.IsAny<MpRoomReservationDto>()), Times.Exactly(2));
             _eventService.Verify(m => m.UpdateEvent(It.IsAny<MpEventReservationDto>()), Times.Once);
-            _eventService.Verify(m => m.DeleteEventGroupsForEvent(1, "ABC", 272727), Times.Once);
+            _eventService.Verify(m => m.DeleteEventGroupsForEvent(1, 272727), Times.Once);
             _groupService.Verify(m => m.EndDateGroup(42, null, null), Times.Once);
         }
 
@@ -916,7 +909,6 @@ namespace crds_angular.test.Services
             _roomService.Setup(mockyMock => mockyMock.GetRoomReservations(1)).Returns(roomReservationReturn);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 1)).Returns(equipmentForRoom1);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 2)).Returns(new List<MpEquipmentReservationDto>());
-            _eventService.Setup(mock => mock.GetEventGroupsForEventAPILogin(1)).Returns(mpEventGroupData);
             _eventService.Setup(mock => mock.UpdateEvent(It.IsAny<MpEventReservationDto>()));
             _roomService.Setup(mock => mock.UpdateRoomReservation(It.IsAny<MpRoomReservationDto>()));
             _equipmentService.Setup(mock => mock.UpdateEquipmentReservation(It.IsAny<MpEquipmentReservationDto>()));
@@ -930,7 +922,6 @@ namespace crds_angular.test.Services
             _eventService.Verify(m => m.UpdateEvent(It.IsAny<MpEventReservationDto>()), Times.Once);
             _groupService.Verify(m => m.getGroupDetails(42), Times.Once);
             _groupService.Verify(m => m.UpdateGroup(It.IsAny<MpGroup>()), Times.Once);
-            _eventService.Verify(m => m.GetEventGroupsForEventAPILogin(1), Times.Exactly(2));
 
         }
 

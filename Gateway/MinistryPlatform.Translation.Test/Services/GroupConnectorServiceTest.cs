@@ -21,6 +21,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IAuthenticationRepository> _authService;
         private GroupConnectorRepository _fixture;
         private Mock<IConfigurationWrapper> _configuration;
+        private Mock<IApiUserRepository> _apiUserService;
 
         [SetUp]
         public void SetUp()
@@ -29,8 +30,9 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository = new Mock<IMinistryPlatformRestRepository>();
             _authService = new Mock<IAuthenticationRepository>();
             _configuration = new Mock<IConfigurationWrapper>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
-            _configuration.Setup(mocked => mocked.GetConfigIntValue("GroupConnectorPageId")).Returns(467);
+        _configuration.Setup(mocked => mocked.GetConfigIntValue("GroupConnectorPageId")).Returns(467);
             _configuration.Setup(mocked => mocked.GetConfigValue("GroupConnectorRegistrationPageId")).Returns("GroupConnectorRegistrationPageId");
             _configuration.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configuration.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
@@ -39,7 +41,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 AccessToken = "ABC",
                 ExpiresIn = 123
             });
-            _fixture = new GroupConnectorRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authService.Object, _configuration.Object);
+            _fixture = new GroupConnectorRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authService.Object, _configuration.Object, _apiUserService.Object);
             
         }
 

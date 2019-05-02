@@ -19,6 +19,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private InvitationRepository _fixture;
         private Mock<IMinistryPlatformService> _ministryPlatformService;
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;
+        private Mock<IApiUserRepository> _apiUserService;
 
         private const int InvitationPageId = 123;
 
@@ -27,6 +28,7 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
+            _apiUserService = new Mock<IApiUserRepository>();
             var config = new Mock<IConfigurationWrapper>(MockBehavior.Strict);
             var auth = new Mock<IAuthenticationRepository>(MockBehavior.Strict);
 
@@ -40,7 +42,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 ExpiresIn = 123
             });
 
-            _fixture = new InvitationRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, config.Object, auth.Object);
+            _fixture = new InvitationRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, config.Object, auth.Object, _apiUserService.Object);
         }
 
         [Test]

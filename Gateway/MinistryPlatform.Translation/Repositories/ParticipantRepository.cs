@@ -15,15 +15,18 @@ namespace MinistryPlatform.Translation.Repositories
     {
         public const string UpdateHuddleGroupParticipantStatusProc = "crds_Huddle_Participant_Status_Refresh";
         private readonly IMinistryPlatformService _ministryPlatformService;
-		private readonly IApiUserRepository _apiUserRepository;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
 
-        public ParticipantRepository(IApiUserRepository apiUserRepository, IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IAuthenticationRepository authenticationService , IConfigurationWrapper configurationWrapper)
-            : base(authenticationService, configurationWrapper)
+        public ParticipantRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IMinistryPlatformRestRepository ministryPlatformRestRepository,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             this._ministryPlatformService = ministryPlatformService;
             this._ministryPlatformRestRepository = ministryPlatformRestRepository;
-			this._apiUserRepository = apiUserRepository;
         }
 
         public int CreateParticipantRecord(int contactId)

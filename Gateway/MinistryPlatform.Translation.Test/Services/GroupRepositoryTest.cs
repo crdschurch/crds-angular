@@ -28,6 +28,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IContentBlockService> _contentBlockService;
         private Mock<IAddressRepository> _addressRepository;
         private Mock<IObjectAttributeRepository> _objectAttributeRepository;
+        private Mock<IApiUserRepository> _apiUserService;
         private readonly int _groupsParticipantsPageId = 298;
         private readonly int _groupsParticipantsSubPage = 88;
         private readonly int _groupsPageId = 322;
@@ -46,7 +47,9 @@ namespace MinistryPlatform.Translation.Test.Services
             _contentBlockService = new Mock<IContentBlockService>();
             _addressRepository = new Mock<IAddressRepository>();
             _objectAttributeRepository = new Mock<IObjectAttributeRepository>();
-            _fixture = new GroupRepository(_ministryPlatformService.Object, _ministryPlatformRestService.Object, _configWrapper.Object, _authService.Object, _communicationService.Object, _contactService.Object, _contentBlockService.Object, _addressRepository.Object, _objectAttributeRepository.Object);
+            _apiUserService = new Mock<IApiUserRepository>();
+        _fixture = new GroupRepository(_ministryPlatformService.Object, _ministryPlatformRestService.Object, _configWrapper.Object, _authService.Object, _communicationService.Object, _contactService.Object, _contentBlockService.Object, _addressRepository.Object, _objectAttributeRepository.Object, _apiUserService.Object
+            );
 
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");

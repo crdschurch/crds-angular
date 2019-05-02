@@ -106,7 +106,7 @@ namespace crds_angular.Services
 
                 dto.Rooms = PopulateRoomReservations(eventId, includeEquipment, includeParticipants);
 
-                var groups = _eventService.GetEventGroupsForEventAPILogin(eventId);
+                var groups = _eventService.GetEventGroupsForEvent(eventId);
 
                 if (groups.Any(childcareGroups => childcareGroups.GroupTypeId == childcareGroupTypeID))
                 {
@@ -224,7 +224,7 @@ namespace crds_angular.Services
             //if it use to be a childcare event, but isn't anymore, remove the group
             if (wasChildcare && !isChildcare)
             {
-                _eventService.DeleteEventGroupsForEvent(eventId, token, childcareGroupTypeID);
+                _eventService.DeleteEventGroupsForEvent(eventId, childcareGroupTypeID);
                 _groupService.EndDateGroup(oldEventDetails.Group.GroupId, null, null);
             }
             //now is a childcare event but was not before so add a group
@@ -237,7 +237,7 @@ namespace crds_angular.Services
             //it was and still is a childcare event
             else if (wasChildcare && isChildcare)
             {
-                var group = _eventService.GetEventGroupsForEventAPILogin(eventId).FirstOrDefault(i => i.GroupTypeId == childcareGroupTypeID);
+                var group = _eventService.GetEventGroupsForEvent(eventId).FirstOrDefault(i => i.GroupTypeId == childcareGroupTypeID);
 
                 eventReservation.Group.GroupId = group.GroupId;
                 eventReservation.Group.CongregationId = eventReservation.CongregationId;
@@ -492,7 +492,7 @@ namespace crds_angular.Services
             return _eventService.GetEvent(eventId);
         }
 
-        public void RegisterForEvent(EventRsvpDto eventDto, string token)
+        public void RegisterForEvent(EventRsvpDto eventDto, AuthDTO token)
         {
             var defaultGroupRoleId = AppSetting("Group_Role_Default_ID");
             var today = DateTime.Today;
@@ -735,7 +735,7 @@ namespace crds_angular.Services
             return el.Build();
         }
 
-        private void SendRsvpMessage(List<RegisterEventObj> saved, string token)
+        private void SendRsvpMessage(List<RegisterEventObj> saved, AuthDTO token)
         {
             var evnt = _eventService.GetEvent(saved.First().EventId);
             var childcareRequested = saved.Any(s => s.ChildcareRequested);
@@ -846,15 +846,15 @@ namespace crds_angular.Services
             return childcareEvents.First();
         }
 
-        public bool CopyEventSetup(int eventTemplateId, int eventId, string token)
+        public bool CopyEventSetup(int eventTemplateId, int eventId)
         {
             // event groups and event rooms need to be removed before adding new ones
-            _eventService.DeleteEventGroupsForEvent(eventId, token);
-            _roomService.DeleteEventRoomsForEvent(eventId, token);
+            _eventService.DeleteEventGroupsForEvent(eventId);
+            _roomService.DeleteEventRoomsForEvent(eventId);
 
             // get event rooms (room reservation DTOs) and event groups for the template
             var eventRooms = _roomService.GetRoomReservations(eventTemplateId);
-            var eventGroups = _eventService.GetEventGroupsForEvent(eventTemplateId, token);
+            var eventGroups = _eventService.GetEventGroupsForEvent(eventTemplateId);
 
             // step 2 - create new room reservations and assign event groups to them
             foreach (var eventRoom in eventRooms)
@@ -888,16 +888,16 @@ namespace crds_angular.Services
             return true;
         }
 
-        public List<MpEvent> GetEventsBySite(string site, string token, DateTime startDate, DateTime endDate)
+        public List<MpEvent> GetEventsBySite(string site, DateTime startDate, DateTime endDate)
         {
-            var eventTemplates = _eventService.GetEventsBySite(site, token, startDate, endDate);
+            var eventTemplates = _eventService.GetEventsBySite(site, startDate, endDate);
 
             return eventTemplates;
         }
 
-        public List<MpEvent> GetEventTemplatesBySite(string site, string token)
+        public List<MpEvent> GetEventTemplatesBySite(string site)
         {
-            var eventTemplates = _eventService.GetEventTemplatesBySite(site, token);
+            var eventTemplates = _eventService.GetEventTemplatesBySite(site);
 
             return eventTemplates;
         }

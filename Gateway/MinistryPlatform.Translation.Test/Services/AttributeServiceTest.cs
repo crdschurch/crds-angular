@@ -46,7 +46,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _ministryPlatformRestService.Setup(mocked => mocked.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
 
-            _fixture = new AttributeRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _apiUserService.Object, _ministryPlatformRestService.Object);
+            _fixture = new AttributeRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _ministryPlatformRestService.Object, _apiUserService.Object);
         }
 
         [Test]

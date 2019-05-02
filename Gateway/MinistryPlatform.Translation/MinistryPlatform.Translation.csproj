@@ -189,6 +189,7 @@
     <Compile Include="Exceptions\PaymentNotFoundException.cs" />
     <Compile Include="Exceptions\PledgeCampaignNotFoundException.cs" />
     <Compile Include="Extensions\JsonUnmappedDataExtensions.cs" />
+    <Compile Include="Models\MpEventRooms.cs" />
     <Compile Include="Models\DTO\MpBaseDto.cs" />
     <Compile Include="Models\DTO\MpPledgeCampaignSummaryDto.cs" />
     <Compile Include="Models\EventReservations\MpRoomReservationRejectionDto.cs" />

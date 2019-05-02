@@ -8,6 +8,7 @@ using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using Crossroads.Web.Common.MinistryPlatform;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -19,8 +20,12 @@ namespace MinistryPlatform.Translation.Repositories
 
         private readonly int _signupToServeRemindersId;
 
-        public ResponseRepository(IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper, IMinistryPlatformService ministryPlatformService)
-            : base(authenticationService, configurationWrapper)
+        public ResponseRepository(
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IMinistryPlatformService ministryPlatformService,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _authenticationService = authenticationService;
             _configurationWrapper = configurationWrapper;

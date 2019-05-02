@@ -20,6 +20,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRestRepository;
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
+        private Mock<IApiUserRepository> _apiUserService;
         private IPledgeRepository _fixture;
 
         [SetUp]
@@ -31,6 +32,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository = new Mock<IMinistryPlatformRestRepository>();
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
@@ -42,7 +44,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _configWrapper.Setup(m => m.GetConfigIntValue("Pledges")).Returns(mockPledgesPageId);
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("MyHouseholdPledges")).Returns(525);
 
-            _fixture = new PledgeRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authService.Object, _configWrapper.Object);
+            _fixture = new PledgeRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authService.Object, _configWrapper.Object, _apiUserService.Object);
         }
 
         [Test]

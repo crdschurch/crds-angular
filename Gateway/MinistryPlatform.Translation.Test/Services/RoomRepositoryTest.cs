@@ -23,6 +23,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
         private Mock<IConfigurationWrapper> _config;
         private Mock<IAuthenticationRepository> _authenticationService;
+        private Mock<IApiUserRepository> _apiUserService;
 
         private RoomRepository _fixture;
         public const string GetRoomsProcName = "api_crds_GetReservedAndAvailableRoomsByLocation";
@@ -34,6 +35,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _config = new Mock<IConfigurationWrapper>();
             _authenticationService = new Mock<IAuthenticationRepository>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("abc")).Returns(_ministryPlatformRestRepository.Object);
 
@@ -43,7 +45,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 ExpiresIn = 123
             });
 
-            _fixture = new RoomRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authenticationService.Object, _config.Object);
+            _fixture = new RoomRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authenticationService.Object, _config.Object, _apiUserService.Object);
         }
 
         [Test]
@@ -156,7 +158,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 _ministryPlatformService.Setup(m => m.DeleteSelectionRecords(selectionId, token));
                 _ministryPlatformService.Setup(m => m.DeleteSelection(selectionId, token));
 
-                _fixture.DeleteEventRoomsForEvent(eventId, token);
+                _fixture.DeleteEventRoomsForEvent(eventId);
                 _ministryPlatformService.VerifyAll();
             }).QuickCheckThrowOnFailure();
         }

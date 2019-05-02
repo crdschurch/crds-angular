@@ -4,6 +4,7 @@ using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
+using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
@@ -20,6 +21,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("SignupToServeReminders")).Returns(2203);
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
@@ -30,13 +32,14 @@ namespace MinistryPlatform.Translation.Test.Services
                 ExpiresIn = 123
             });
 
-            _fixture = new ResponseRepository(_authService.Object, _configWrapper.Object, _ministryPlatformService.Object);
+            _fixture = new ResponseRepository(_authService.Object, _configWrapper.Object, _ministryPlatformService.Object, _apiUserService.Object);
         }
 
         private ResponseRepository _fixture;
         private Mock<IMinistryPlatformService> _ministryPlatformService;
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
+        private Mock<IApiUserRepository> _apiUserService;
 
         private readonly int EventParticipantPageId = 281;
         private readonly int EventParticipantStatusDefaultID = 2;
