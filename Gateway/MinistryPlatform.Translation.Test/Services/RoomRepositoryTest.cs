@@ -150,13 +150,11 @@ namespace MinistryPlatform.Translation.Test.Services
                 var eventRooms = GetMockedEventRooms(3);
 
                 _ministryPlatformService.Setup(m => m.GetPageViewRecords(It.IsAny<string>(), It.IsAny<string>(), searchString, "", 0)).Returns(eventRooms);
+                _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns(token);
 
                 var eventRoomIds = Conversions.BuildIntArrayFromKeyValue(eventRooms, "Event_Room_ID").ToArray();
 
-                _ministryPlatformService.Setup(m => m.CreateSelection(It.IsAny<SelectionDescription>(), token)).Returns(selectionId);
-                _ministryPlatformService.Setup(m => m.AddToSelection(selectionId, eventRoomIds, token));
-                _ministryPlatformService.Setup(m => m.DeleteSelectionRecords(selectionId, token));
-                _ministryPlatformService.Setup(m => m.DeleteSelection(selectionId, token));
+                _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRestRepository.Object);
 
                 _fixture.DeleteEventRoomsForEvent(eventId);
                 _ministryPlatformService.VerifyAll();

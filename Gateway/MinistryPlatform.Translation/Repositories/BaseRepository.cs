@@ -13,7 +13,7 @@ namespace MinistryPlatform.Translation.Repositories
     {
         protected readonly IAuthenticationRepository _authenticationService;
         protected readonly IConfigurationWrapper _configurationWrapper;
-        protected readonly IApiUserRepository _apiUserRepositor;
+        protected readonly IApiUserRepository _apiUserRepository;
 
         public BaseRepository(
             IAuthenticationRepository authenticationService,
@@ -22,7 +22,7 @@ namespace MinistryPlatform.Translation.Repositories
         {
             this._authenticationService = authenticationService;
             this._configurationWrapper = configurationWrapper;
-            this._apiUserRepositor = apiUserRepository;
+            this._apiUserRepository = apiUserRepository;
         }
 
         protected static int AppSettings(string pageKey)
@@ -42,7 +42,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         protected string ApiLogin()
         {
-            return this._apiUserRepositor.GetDefaultApiClientToken();
+            return this._apiUserRepository.GetDefaultApiClientToken();
         }
 
 

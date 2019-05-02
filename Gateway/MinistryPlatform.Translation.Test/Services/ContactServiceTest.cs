@@ -227,7 +227,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var dob = new DateTime().ToString();
             const string mobile = "5554441111";
 
-
+            _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("ABC");
             _ministryPlatformService.Setup(
                 mocked => mocked.CreateRecord(292, It.IsAny<Dictionary<string, object>>(), "ABC", false))
                 .Returns(123);
