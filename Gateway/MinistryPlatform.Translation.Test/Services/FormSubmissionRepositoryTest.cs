@@ -75,7 +75,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             var searchString = $"Contact_ID={formResponse.ContactId} AND Form_ID={formResponse.FormId} AND Event_ID={formResponse.EventId}";
-            const string selectColumns = "Form_Response_ID";
+            const string selectColumns = "Form_Response_ID"; _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns(apiToken);
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MpFormResponse>(It.IsAny<string>(), It.IsAny<string>(), null, true)).Returns(( string filter, string column, string orderby, bool distinct) =>
             {
@@ -94,7 +94,6 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _ministryPlatformService.VerifyAll();
       
-            _authenticationRepository.VerifyAll();
             _ministryPlatformRestRepository.VerifyAll();
 
             Assert.AreEqual(recordId, result);
@@ -142,7 +141,6 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _ministryPlatformService.VerifyAll();
 
-            _authenticationRepository.VerifyAll();
             _ministryPlatformRestRepository.VerifyAll();
 
             Assert.AreEqual(recordId, result);
@@ -190,7 +188,6 @@ namespace MinistryPlatform.Translation.Test.Services
             var result = _fixture.SubmitFormResponse(formResponse);
 
             _ministryPlatformService.VerifyAll();
-            _authenticationRepository.VerifyAll();
             _ministryPlatformRestRepository.VerifyAll();
 
             Assert.AreEqual(recordId, result);
@@ -237,7 +234,6 @@ namespace MinistryPlatform.Translation.Test.Services
             var result = _fixture.SubmitFormResponse(formResponse);
 
             _ministryPlatformService.VerifyAll();
-            _authenticationRepository.VerifyAll();
             _ministryPlatformRestRepository.VerifyAll();
 
             Assert.AreEqual(recordId, result);
@@ -283,7 +279,6 @@ namespace MinistryPlatform.Translation.Test.Services
             var result = _fixture.SubmitFormResponse(formResponse);
 
             _ministryPlatformService.VerifyAll();
-            _authenticationRepository.VerifyAll();
             _ministryPlatformRestRepository.VerifyAll();
 
             Assert.AreEqual(recordId, result);

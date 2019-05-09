@@ -495,7 +495,7 @@ namespace crds_angular.test.Services
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 1)).Returns(equipmentForRoom1);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 2)).Returns(new List<MpEquipmentReservationDto>());
             _eventService.Setup(mock => mock.UpdateEvent(It.IsAny<MpEventReservationDto>()));
-            _eventService.Setup(mocked => mocked.GetEventGroupsForEvent(123)).Returns(new List<MpEventGroup>());
+            _eventService.Setup(mocked => mocked.GetEventGroupsForEvent(1)).Returns(new List<MpEventGroup>());
             _roomService.Setup(mock => mock.UpdateRoomReservation(It.IsAny<MpRoomReservationDto>()));
             _equipmentService.Setup(mock => mock.UpdateEquipmentReservation(It.IsAny<MpEquipmentReservationDto>()));
 
@@ -562,7 +562,7 @@ namespace crds_angular.test.Services
 
             _eventService.Setup(mock => mock.GetEvent(1)).Returns(oldEventData);
             _roomService.Setup(mockyMock => mockyMock.GetRoomReservations(1)).Returns(roomReservationReturn);
-            _eventService.Setup(mocked => mocked.GetEventGroupsForEvent(123)).Returns(new List<MpEventGroup>());
+            _eventService.Setup(mocked => mocked.GetEventGroupsForEvent(1)).Returns(new List<MpEventGroup>());
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 1)).Returns(equipmentForRoom1);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 2)).Returns(new List<MpEquipmentReservationDto>());
             _eventService.Setup(mock => mock.UpdateEvent(It.IsAny<MpEventReservationDto>()));
@@ -703,7 +703,7 @@ namespace crds_angular.test.Services
 
             _eventService.Setup(mock => mock.GetEvent(1)).Returns(oldEventData);
             _roomService.Setup(mockyMock => mockyMock.GetRoomReservations(1)).Returns(roomReservationReturn);
-            _eventService.Setup(mocked => mocked.GetEventGroupsForEvent(123)).Returns(new List<MpEventGroup>());
+            _eventService.Setup(mocked => mocked.GetEventGroupsForEvent(1)).Returns(new List<MpEventGroup>());
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 1)).Returns(equipmentForRoom1);
             _equipmentService.Setup(mock => mock.GetEquipmentReservations(1, 2)).Returns(new List<MpEquipmentReservationDto>());
             _eventService.Setup(mock => mock.UpdateEvent(It.IsAny<MpEventReservationDto>()));
