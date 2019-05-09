@@ -1784,12 +1784,12 @@ namespace crds_angular.Services
             {
                 case PinTypeConstants.PIN_GROUP:
                     // in home groups
-                    groupsByType = groupsByType.Where(c => c.AvailableOnline == true && (c.Address != null && c.Address.Address_ID != 0)).ToList();
+                    groupsByType = groupsByType.Where(c => (c.Address != null && c.Address.Address_ID != 0)).ToList();
                     break;
                
                 case PinTypeConstants.PIN_ONLINEGROUP:
                     // online groups
-                    groupsByType = groupsByType.Where(c => c.AvailableOnline == true && (c.Address == null || c.Address.Address_ID ==0)).ToList();
+                    groupsByType = groupsByType.Where(c => (c.Address == null || c.Address.Address_ID ==0)).ToList();
                     break;
             }
            
