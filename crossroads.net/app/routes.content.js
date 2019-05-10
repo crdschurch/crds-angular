@@ -15,7 +15,7 @@
     $httpProvider,
     $urlMatcherFactory,
     $locationProvider) {
-
+    
     crds_utilities.preventRouteTypeUrlEncoding($urlMatcherFactory, 'contentRouteType', /^\/.*/);
 
     $stateProvider
@@ -39,17 +39,14 @@
               $httpParamSerializer,
               $window,
               $cookies) {
+            
               var promise;
               var redirectFlag = false;
               var link = $stateParams.link;
-
-              if(Session.isActive() && link === "/" ) {
-                link = getPersonalizedContentPath(link);
-              }
-
+                
               link = addTrailingSlashIfNecessary(link);
 
-              function redirectToMaestro() {
+              function redirectToCrdsNet() {
                 const queryParams = $location.search();
                 link = removeTrailingSlashIfNecessary($stateParams.link);
                 const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
@@ -73,7 +70,7 @@
                 });
               }
               else {
-                redirectToMaestro()
+                redirectToCrdsNet()
               }
 
               var childPromise = promise.then(function (originalPromise) {
@@ -93,13 +90,13 @@
                     $state.go(ContentPageService.page.angularRoute);
                     return;
                   } else if (ContentPageService.page.requiresAngular === '0' && __IN_MAESTRO__ === '1') {
-                    redirectToMaestro();
+                    redirectToCrdsNet();
                     return;
                   }
                   return originalPromise;
                 }
 
-                redirectToMaestro();
+                redirectToCrdsNet();
 
               });
 
@@ -148,7 +145,10 @@
                   var firstSentence = content.match(/[^.]*/)[0] + '.';
                   metaDescription = firstSentence;
                 }
-
+                
+                console.log(
+                  'fun'
+                )
                 $rootScope.meta = {
                   title: ContentPageService.page.title,
                   description: metaDescription,
@@ -219,9 +219,4 @@
 
     return link;
   }
-
-  function getPersonalizedContentPath(link) {
-    return "/personalized" + link;
-  }
-
 })();

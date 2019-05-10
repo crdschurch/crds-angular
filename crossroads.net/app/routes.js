@@ -49,7 +49,6 @@
 
           SiteConfig: ['SiteConfig', 'ContentSiteConfigService', function (SiteConfig, ContentSiteConfigService) {
             return SiteConfig.get().then(function (result) {
-              console.log(ContentSiteConfigService);
               ContentSiteConfigService.siteconfig = result;
             }
             );
