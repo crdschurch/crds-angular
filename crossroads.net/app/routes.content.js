@@ -46,7 +46,7 @@
                 
               link = addTrailingSlashIfNecessary(link);
 
-              function redirectToCrdsNet() {
+              function redirectOutsideAngular() {
                 const queryParams = $location.search();
                 link = removeTrailingSlashIfNecessary($stateParams.link);
                 const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
@@ -70,7 +70,7 @@
                 });
               }
               else {
-                redirectToCrdsNet()
+                redirectOutsideAngular()
               }
 
               var childPromise = promise.then(function (originalPromise) {
@@ -90,13 +90,13 @@
                     $state.go(ContentPageService.page.angularRoute);
                     return;
                   } else if (ContentPageService.page.requiresAngular === '0' && __IN_MAESTRO__ === '1') {
-                    redirectToCrdsNet();
+                    redirectOutsideAngular();
                     return;
                   }
                   return originalPromise;
                 }
 
-                redirectToCrdsNet();
+                redirectOutsideAngular();
 
               });
 
@@ -145,10 +145,7 @@
                   var firstSentence = content.match(/[^.]*/)[0] + '.';
                   metaDescription = firstSentence;
                 }
-                
-                console.log(
-                  'fun'
-                )
+              
                 $rootScope.meta = {
                   title: ContentPageService.page.title,
                   description: metaDescription,
