@@ -10,7 +10,7 @@
   function TripRoutes($stateProvider, $urlMatcherFactory) {
 
     $urlMatcherFactory.strictMode(false);
-
+  
     $stateProvider
       .state('tripsearch', {
         parent: 'noSideBar',
@@ -20,7 +20,7 @@
         data: {
           meta: {
             title: 'Trip Search',
-            description: ''
+            description: 'Search Crossroads Trips'
           }
         }
       })
