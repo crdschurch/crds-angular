@@ -15,6 +15,7 @@
     ContentPageService,
     Impersonate
   ) {
+
     function setupMetaData() {
       const title = ContentSiteConfigService.getTitle();
       const titleSuffix = ` | ${title}`;
@@ -22,13 +23,20 @@
       if ($rootScope.meta.title.indexOf(titleSuffix, $rootScope.meta.title.length - titleSuffix.length) === -1) {
         $rootScope.meta.title += titleSuffix;
       }
+      
       $rootScope.meta.url = $location.absUrl();
+
       if (!$rootScope.meta.statusCode) {
         $rootScope.meta.statusCode = '200';
       }
+      
+      if ($rootScope.meta.image && $rootScope.meta.image.url) {
+        $rootScope.meta.image.filename = $rootScope.meta.image.url;
+      }
+
       if (!$rootScope.meta.image || $rootScope.meta.image.filename === '/assets/') {
         $rootScope.meta.image = {
-          filename: 'http://crds-cms-uploads.imgix.net/content/images/cr-social-sharing-still-bg.jpg'
+          filename: 'https://crds-cms-uploads.imgix.net/content/images/cr-social-sharing-still-bg.jpg'
         };
       }
     }

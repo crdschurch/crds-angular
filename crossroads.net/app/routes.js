@@ -33,8 +33,8 @@
                     $state.next.data = {};
                   }
 
-                  $rootScope.doRenderLegacyStyles = (typeof systemPage.legacyStyles !== 'undefined'
-                    ? Boolean(parseInt(systemPage.legacyStyles))
+                  $rootScope.doRenderLegacyStyles = (typeof systemPage.legacy_styles !== 'undefined'
+                    ? Boolean(parseInt(systemPage.legacy_styles))
                     : true); // revert to value set on route
 
                   $state.params.bodyClasses = [];
@@ -49,7 +49,6 @@
 
           SiteConfig: ['SiteConfig', 'ContentSiteConfigService', function (SiteConfig, ContentSiteConfigService) {
             return SiteConfig.get().then(function (result) {
-              console.log(ContentSiteConfigService);
               ContentSiteConfigService.siteconfig = result;
             }
             );
