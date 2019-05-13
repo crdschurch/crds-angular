@@ -31,13 +31,16 @@ namespace crds_angular.Models.Map
         public string belowDescription { get; set; }
 
         [FirestoreProperty]
+        public bool availableOnline { get; set; }
+
+        [FirestoreProperty]
         public Dictionary<string, string[]> meta { get; set; }
 
         public MapPin() { }
 
         // map pins that should have an address
-        public MapPin(string desc, string pinname, double latitude, double longitude, int pintype, string internalid, string geohash, 
-                      string imageurl, Dictionary<string, string[]> filtermetadata, string aboveHeading, string belowDescription)
+        public MapPin(string desc, string pinname, double latitude, double longitude, int pintype, string internalid, string geohash,
+                      string imageurl, Dictionary<string, string[]> filtermetadata, string aboveHeading, string belowDescription, bool availableOnline)
         {
             this.description = desc;
             this.name = pinname;
@@ -47,6 +50,7 @@ namespace crds_angular.Models.Map
             this.meta = filtermetadata;
             this.aboveHeading = aboveHeading;
             this.belowDescription = belowDescription;
+            this.availableOnline = availableOnline;
 
             var coord = new MapCoordinates
             {
@@ -65,7 +69,7 @@ namespace crds_angular.Models.Map
         }
 
         //map pins with no address
-        public MapPin(string desc, string pinname, int pintype, string internalid, string imageurl, Dictionary<string, string[]> filtermetadata, string aboveHeading, string belowDescription)
+        public MapPin(string desc, string pinname, int pintype, string internalid, string imageurl, Dictionary<string, string[]> filtermetadata, string aboveHeading, string belowDescription, bool availableOnline)
         {
             this.description = desc;
             this.name = pinname;
@@ -75,6 +79,7 @@ namespace crds_angular.Models.Map
             this.meta = filtermetadata;
             this.aboveHeading = aboveHeading;
             this.belowDescription = belowDescription;
+            this.availableOnline = availableOnline;
         }
     }
 }
