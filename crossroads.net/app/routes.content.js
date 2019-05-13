@@ -15,7 +15,7 @@
     $httpProvider,
     $urlMatcherFactory,
     $locationProvider) {
-
+    
     crds_utilities.preventRouteTypeUrlEncoding($urlMatcherFactory, 'contentRouteType', /^\/.*/);
 
     $stateProvider
@@ -39,17 +39,14 @@
               $httpParamSerializer,
               $window,
               $cookies) {
+            
               var promise;
               var redirectFlag = false;
               var link = $stateParams.link;
-
-              if(Session.isActive() && link === "/" ) {
-                link = getPersonalizedContentPath(link);
-              }
-
+                
               link = addTrailingSlashIfNecessary(link);
 
-              function redirectToMaestro() {
+              function redirectOutsideAngular() {
                 const queryParams = $location.search();
                 link = removeTrailingSlashIfNecessary($stateParams.link);
                 const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
@@ -73,7 +70,7 @@
                 });
               }
               else {
-                redirectToMaestro()
+                redirectOutsideAngular()
               }
 
               var childPromise = promise.then(function (originalPromise) {
@@ -93,13 +90,13 @@
                     $state.go(ContentPageService.page.angularRoute);
                     return;
                   } else if (ContentPageService.page.requiresAngular === '0' && __IN_MAESTRO__ === '1') {
-                    redirectToMaestro();
+                    redirectOutsideAngular();
                     return;
                   }
                   return originalPromise;
                 }
 
-                redirectToMaestro();
+                redirectOutsideAngular();
 
               });
 
@@ -148,7 +145,7 @@
                   var firstSentence = content.match(/[^.]*/)[0] + '.';
                   metaDescription = firstSentence;
                 }
-
+              
                 $rootScope.meta = {
                   title: ContentPageService.page.title,
                   description: metaDescription,
@@ -219,9 +216,4 @@
 
     return link;
   }
-
-  function getPersonalizedContentPath(link) {
-    return "/personalized" + link;
-  }
-
 })();
