@@ -23,12 +23,14 @@
       if ($rootScope.meta.title.indexOf(titleSuffix, $rootScope.meta.title.length - titleSuffix.length) === -1) {
         $rootScope.meta.title += titleSuffix;
       }
+      
       $rootScope.meta.url = $location.absUrl();
+
       if (!$rootScope.meta.statusCode) {
         $rootScope.meta.statusCode = '200';
       }
-
-      if ($rootScope.meta.image.url) {
+      console.log($rootScope.meta);
+      if ($rootScope.meta.image && $rootScope.meta.image.url) {
         $rootScope.meta.image.filename = $rootScope.meta.image.url;
       }
 
