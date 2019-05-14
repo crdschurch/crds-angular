@@ -447,8 +447,9 @@ namespace crds_angular.Services
             try
             {
                 // get grouptype
+                int grouptypeCategoryAttributeID = 73;
                 ObjectSingleAttributeDTO grouptype;
-                if (s.TryGetValue(73, out grouptype) && grouptype.Value != null)
+                if (s.TryGetValue(grouptypeCategoryAttributeID, out grouptype) && grouptype.Value != null)
                 {
                     // grouptype is now equal to the value
                     var x = grouptype.Value;
@@ -456,8 +457,9 @@ namespace crds_angular.Services
                 }
 
                 // get age groups
+                int agegroupAttributeID = 91;
                 ObjectAttributeTypeDTO agegroup;
-                if (t.TryGetValue(91, out agegroup))
+                if (t.TryGetValue(agegroupAttributeID, out agegroup))
                 {
                     // roll through the age group. add selected to the dictionary
                     var ageGroups = new List<string>();
@@ -477,10 +479,11 @@ namespace crds_angular.Services
                 }
 
                 // get group categories
+                int groupCategoryAttributeID = 90;
                 ObjectAttributeTypeDTO groupcategory;
-                if (t.TryGetValue(90, out groupcategory))
+                if (t.TryGetValue(groupCategoryAttributeID, out groupcategory))
                 {
-                    // roll through the age group. add selected to the dictionary
+                    // roll through the group categories. add selected to the dictionary
                     var categories = new List<string>();
                     foreach (var a in groupcategory.Attributes)
                     {
