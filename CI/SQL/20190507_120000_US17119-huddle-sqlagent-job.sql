@@ -29,7 +29,7 @@ EXEC msdb.dbo.sp_add_jobschedule
 	@job_name = @JOBNAME, -- Job name
 	@name = @SCHEDULENAME,  -- Schedule name
 	@freq_type = 4, -- Daily
-	@freq_interval = 4, 
+	@freq_interval = 1, 
 	@active_start_time = 020000 -- 2:00 AM
 END
 
