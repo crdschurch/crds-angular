@@ -1788,7 +1788,7 @@ namespace crds_angular.Services
                     break;
                
                 case PinTypeConstants.PIN_ONLINEGROUP:
-                    // online groups
+                    // online group
                     groupsByType = groupsByType.Where(c => (c.Address == null || c.Address.Address_ID == 0)).ToList();
                     break;
             }
