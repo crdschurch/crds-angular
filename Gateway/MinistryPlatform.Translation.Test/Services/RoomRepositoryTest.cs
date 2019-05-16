@@ -169,6 +169,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"@LocationId", string.Join(",", 1)}
             };
             _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("ABC");
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.GetFromStoredProc<MpRoom>(GetRoomsProcName, parms)).Returns(returnList);
 
             var result = _fixture.GetRoomsByLocationId(1, date, date);
