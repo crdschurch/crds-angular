@@ -37,7 +37,7 @@ cms_services_module.factory('SystemPage', function ($resource, $q) {
 
         return $q(function (resolve, reject) {
             SystemPagesQuery.then(function (response) {
-                var page = response.systemPages.filter(page => page.stateName == state.state)[0];
+                var page = response.systemPages.filter(page => page.state_name == state.state)[0];
                 resolve(page);
             }).catch(function (response) {
                 reject(response);
