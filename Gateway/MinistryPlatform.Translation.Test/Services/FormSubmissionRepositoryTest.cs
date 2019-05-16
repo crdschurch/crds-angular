@@ -124,7 +124,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var searchString = $"Contact_ID={formResponse.ContactId} AND Form_ID={formResponse.FormId} AND Event_ID={formResponse.EventId}";
             const string selectColumns = "Form_Response_ID";
-            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRestRepository.Object);
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MpFormResponse>(It.IsAny<string>(), It.IsAny<string>(), null, true)).Returns((string filter, string column, string orderby, bool distinct) =>
             {
                 Assert.AreEqual(searchString, filter);
@@ -135,7 +135,7 @@ namespace MinistryPlatform.Translation.Test.Services
                     formResponse
                 };
             });
-            _ministryPlatformService.Setup(m => m.UpdateRecord(It.IsAny<int>(), It.IsAny<Dictionary<string, object>>(), apiToken));
+            _ministryPlatformService.Setup(m => m.UpdateRecord(It.IsAny<int>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()));
 
             var result = _fixture.SubmitFormResponse(formResponse);
 
@@ -172,7 +172,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var searchString = $"Contact_ID={formResponse.ContactId} AND Form_ID={formResponse.FormId} AND Event_ID={formResponse.EventId} AND Pledge_Campaign_ID={formResponse.PledgeCampaignId}";
             const string selectColumns = "Form_Response_ID";
-            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRestRepository.Object);
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MpFormResponse>(It.IsAny<string>(), It.IsAny<string>(), null, true)).Returns((string filter, string column, string orderby, bool distinct) =>
             {
                 Assert.AreEqual(searchString, filter);
@@ -183,7 +183,7 @@ namespace MinistryPlatform.Translation.Test.Services
                     formResponse
                 };
             });
-            _ministryPlatformService.Setup(m => m.UpdateRecord(It.IsAny<int>(), It.IsAny<Dictionary<string, object>>(), apiToken));
+            _ministryPlatformService.Setup(m => m.UpdateRecord(It.IsAny<int>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()));
 
             var result = _fixture.SubmitFormResponse(formResponse);
 
@@ -218,7 +218,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var searchString = $"Contact_ID={formResponse.ContactId} AND Form_ID={formResponse.FormId} AND Pledge_Campaign_ID={formResponse.PledgeCampaignId}";
             const string selectColumns = "Form_Response_ID";
-            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRestRepository.Object);
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MpFormResponse>(It.IsAny<string>(), It.IsAny<string>(), null, true)).Returns((string filter, string column, string orderby, bool distinct) =>
             {
                 Assert.AreEqual(searchString, filter);
@@ -229,7 +229,7 @@ namespace MinistryPlatform.Translation.Test.Services
                     formResponse
                 };
             });
-            _ministryPlatformService.Setup(m => m.UpdateRecord(It.IsAny<int>(), It.IsAny<Dictionary<string, object>>(), apiToken));
+            _ministryPlatformService.Setup(m => m.UpdateRecord(It.IsAny<int>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()));
 
             var result = _fixture.SubmitFormResponse(formResponse);
 
@@ -263,7 +263,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var searchString = $"Contact_ID={formResponse.ContactId} AND Form_ID={formResponse.FormId}";
             const string selectColumns = "Form_Response_ID";
-            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRestRepository.Object);
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MpFormResponse>(It.IsAny<string>(), It.IsAny<string>(), null, true)).Returns((string filter, string column, string orderby, bool distinct) =>
             {
                 Assert.AreEqual(searchString, filter);
@@ -274,7 +274,7 @@ namespace MinistryPlatform.Translation.Test.Services
                     formResponse
                 };
             });
-            _ministryPlatformService.Setup(m => m.UpdateRecord(It.IsAny<int>(), It.IsAny<Dictionary<string, object>>(), apiToken));
+            _ministryPlatformService.Setup(m => m.UpdateRecord(It.IsAny<int>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()));
 
             var result = _fixture.SubmitFormResponse(formResponse);
 

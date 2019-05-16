@@ -193,9 +193,9 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"@EndDate", string.Join(",", date)},
                 {"@LocationId", string.Join(",", 1)}
             };
-
+            _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("ABC");
             _ministryPlatformRestRepository.Setup(m => m.GetFromStoredProc<MpRoom>(GetRoomsProcName, parms)).Returns((List<List<MpRoom>>) null);
-
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRestRepository.Object);
             var result = _fixture.GetRoomsByLocationId(1, date, date);
             Assert.IsNull(result);
         }

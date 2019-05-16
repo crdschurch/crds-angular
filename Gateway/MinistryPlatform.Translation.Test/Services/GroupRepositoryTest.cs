@@ -51,8 +51,6 @@ namespace MinistryPlatform.Translation.Test.Services
         _fixture = new GroupRepository(_ministryPlatformService.Object, _ministryPlatformRestService.Object, _configWrapper.Object, _authService.Object, _communicationService.Object, _contactService.Object, _contentBlockService.Object, _addressRepository.Object, _objectAttributeRepository.Object, _apiUserService.Object
             );
 
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(AuthenticateResponse());
         }
 
@@ -79,7 +77,7 @@ namespace MinistryPlatform.Translation.Test.Services
                     mocked.UpdateSubRecord(groupInquiriesSubPage,
                                            It.Is<Dictionary<string, object>>(
                                                d => d["Group_Inquiry_ID"].Equals(inquiryId) && d["Placed"].Equals(approved) && d["Group_ID"].Equals(groupId)),
-                                           AuthenticateResponse().AccessToken)).Verifiable();
+                                           It.IsAny<string>())).Verifiable();
             _fixture.UpdateGroupInquiry(groupId, inquiryId, approved);
             _configWrapper.VerifyAll();
             _ministryPlatformService.VerifyAll();
@@ -107,7 +105,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var participants = new List<MpGroupParticipant>{participant};
 
             _ministryPlatformRestService.Setup(mocked => mocked.PostWithReturn<MpGroupParticipant, MpGroupParticipant>(It.IsAny<List<MpGroupParticipant>>() )).Returns(participants);
-            _ministryPlatformRestService.Setup(mocked => mocked.UsingAuthenticationToken(ApiToken)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(mocked => mocked.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
 
             var groupParticipantId = _fixture.AddParticipantToGroup(123, 456, 789, false, false, startDate, endDate);
             Assert.AreEqual(2, groupParticipantId);
@@ -159,7 +157,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             _ministryPlatformRestService.Setup(mocked => mocked.Search<MpGroupParticipant, MpGroup>(It.IsAny<string>(), It.IsAny<string>(), (string) null, false)).Returns(groups);
-            _ministryPlatformRestService.Setup(mocked => mocked.UsingAuthenticationToken(token)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(mocked => mocked.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
 
             var result = _fixture.GetGroupsForParticipantByTypeOrID(participantId, token, groupTypeIds);
 
@@ -174,7 +172,7 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             const int groupId = 987654;
 
-            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(ApiToken)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
             _ministryPlatformRestService.Setup(m => m.GetFromStoredProc<MpEvent>("api_crds_Get_Events_For_Group", It.IsAny<Dictionary<string, object>>())).Returns((List<List<MpEvent>>)null);
 
             var groupEvents = _fixture.getAllEventsForGroup(groupId);
@@ -211,7 +209,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 new List<MpEvent> {mockEvent1, mockEvent2}
             };
 
-            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(ApiToken)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
             _ministryPlatformRestService.Setup(m => m.GetFromStoredProc<MpEvent>("api_crds_Get_Events_For_Group", It.IsAny<Dictionary<string, object>>())).Returns(mockResultSet);
 
             var events = _fixture.getAllEventsForGroup(groupId);
@@ -327,7 +325,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const int reasonEndedId = 1;
             DateTime endDate = DateTime.Now;
 
-            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(ApiToken)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
 
             _ministryPlatformRestService.Setup(
                 m => m.UpdateRecord("Groups", groupId, It.Is<Dictionary<string, object>>(
@@ -343,7 +341,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const int groupId = 1;
             const int reasonEndedId = 1;
 
-            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(ApiToken)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
 
             _ministryPlatformRestService.Setup(
                 m => m.UpdateRecord("Groups", groupId, It.Is<Dictionary<string, object>>(
@@ -360,7 +358,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const int groupId = 1;
             DateTime endDate = DateTime.Now;
 
-            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(ApiToken)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
 
             _ministryPlatformRestService.Setup(
                 m => m.UpdateRecord("Groups", groupId, It.Is<Dictionary<string, object>>(
@@ -376,7 +374,7 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             const int groupId = 1;
 
-            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(ApiToken)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
 
             _ministryPlatformRestService.Setup(
                 m => m.UpdateRecord("Groups", groupId, It.Is<Dictionary<string, object>>(
@@ -552,7 +550,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _configWrapper.Setup(m => m.GetConfigIntValue("AgeorGradeGroupType")).Returns(gradeGroupType);
 
-            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
             _ministryPlatformRestService.Setup(m => m.Search<MpGroupParticipant>(searchString, selectColumns, null, true)).Returns(participantList);
 
             Result<MpGroupParticipant> result = _fixture.GetGradeGroupForContact(contactId, apiToken);
@@ -578,7 +576,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _configWrapper.Setup(m => m.GetConfigIntValue("AgeorGradeGroupType")).Returns(gradeGroupType);
 
-            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
             _ministryPlatformRestService.Setup(m => m.Search<MpGroupParticipant>(searchString, selectColumns, null, true)).Returns(participantList);
 
             Result<MpGroupParticipant> result = _fixture.GetGradeGroupForContact(contactId, apiToken);
@@ -803,7 +801,7 @@ namespace MinistryPlatform.Translation.Test.Services
                     mocked.UpdateSubRecord(_groupsParticipantsPageId,
                                            It.Is<Dictionary<string, object>>(
                                                d => d["Participant_ID"].Equals(participants[0].ParticipantId) && d["Group_Participant_ID"].Equals(participants[0].GroupParticipantId) && d["Group_Role_ID"].Equals(participants[0].GroupRoleId) && d["Start_Date"].Equals(participants[0].StartDate)),
-                                           AuthenticateResponse().AccessToken)).Verifiable();
+                                           It.IsAny<string>())).Verifiable();
 
             
             var resp = _fixture.UpdateGroupParticipant(participants);
@@ -946,7 +944,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 }
             };
             _configWrapper.Setup(m => m.GetConfigValue("IsCampEligibleStoredProc")).Returns(storedProcName);
-            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(api_token)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
             _ministryPlatformRestService.Setup(m => m.GetFromStoredProc<MpStoredProcBool>(storedProcName, storedProcParams)).Returns(result);
             var actual = _fixture.IsMemberOfEventGroup(contactId, eventId, api_token);
             Assert.IsTrue(actual);
@@ -978,7 +976,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 }
             };
             _configWrapper.Setup(m => m.GetConfigValue("IsCampEligibleStoredProc")).Returns(storedProcName);
-            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(api_token)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
             _ministryPlatformRestService.Setup(m => m.GetFromStoredProc<MpStoredProcBool>(storedProcName, storedProcParams)).Returns(result);
             var actual = _fixture.IsMemberOfEventGroup(contactId, eventId, api_token);
             Assert.IsFalse(actual);
@@ -1001,7 +999,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var result = new List<List<MpStoredProcBool>>();
             _configWrapper.Setup(m => m.GetConfigValue("IsCampEligibleStoredProc")).Returns(storedProcName);
-            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(api_token)).Returns(_ministryPlatformRestService.Object);
+            _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
             _ministryPlatformRestService.Setup(m => m.GetFromStoredProc<MpStoredProcBool>(storedProcName, storedProcParams)).Returns(result);
             var actual = _fixture.IsMemberOfEventGroup(contactId, eventId, api_token);
             Assert.IsFalse(actual);

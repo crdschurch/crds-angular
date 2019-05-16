@@ -38,7 +38,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _configuration.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
-                AccessToken = "ABC",
+                AccessToken = It.IsAny<string>(),
                 ExpiresIn = 123
             });
             _fixture = new GroupConnectorRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authService.Object, _configuration.Object, _apiUserService.Object);
@@ -52,10 +52,10 @@ namespace MinistryPlatform.Translation.Test.Services
             const int expGroupConnectorId = 8888;
 
             _ministryPlatformService.Setup(
-              mocked => mocked.CreateRecord(467, It.IsAny<Dictionary<string, object>>(), "ABC", true))
+              mocked => mocked.CreateRecord(467, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true))
               .Returns(expGroupConnectorId);
             _ministryPlatformService.Setup(
-             mocked => mocked.CreateSubRecord("GroupConnectorRegistrationPageId", expGroupConnectorId, It.IsAny<Dictionary<string, object>>(), "ABC", true))
+             mocked => mocked.CreateSubRecord("GroupConnectorRegistrationPageId", expGroupConnectorId, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true))
              .Returns(123);
 
             var groupConnector = _fixture.CreateGroupConnector(registrationId, false);
@@ -69,7 +69,7 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             Exception ex = new Exception("GroupConnecotr creation failed");
             _ministryPlatformService.Setup(
-                mocked => mocked.CreateRecord(467, It.IsAny<Dictionary<string, object>>(), "ABC", true))
+                mocked => mocked.CreateRecord(467, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true))
                 .Throws(ex);
 
             try
@@ -91,7 +91,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const int groupConnectorId = 8888;
 
             _ministryPlatformService.Setup(
-              mocked => mocked.CreateSubRecord("GroupConnectorRegistrationPageId", groupConnectorId, It.IsAny<Dictionary<string, object>>(), "ABC", true))
+              mocked => mocked.CreateSubRecord("GroupConnectorRegistrationPageId", groupConnectorId, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true))
               .Returns(123);
 
 
@@ -108,7 +108,7 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             Exception ex = new Exception("GroupConnecotrRegistration creation failed");
             _ministryPlatformService.Setup(
-                mocked => mocked.CreateSubRecord("GroupConnectorRegistrationPageId",8888, It.IsAny<Dictionary<string, object>>(), "ABC", true))
+                mocked => mocked.CreateSubRecord("GroupConnectorRegistrationPageId",8888, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true))
                 .Throws(ex);
 
             try
