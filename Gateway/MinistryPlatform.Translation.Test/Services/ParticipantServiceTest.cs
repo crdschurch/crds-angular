@@ -125,7 +125,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             _mpServiceMock.Setup(
-                mocked => mocked.CreateRecord(355, It.IsAny<Dictionary<string,object>>(), "ABC", false))
+                mocked => mocked.CreateRecord(355, It.IsAny<Dictionary<string,object>>(), It.IsAny<string>(), false))
                 .Returns(123);
 
             var participant = _fixture.CreateParticipantRecord(contactId);

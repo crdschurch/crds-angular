@@ -44,7 +44,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 AccessToken = "totallylegittoken",
                 ExpiresIn = 123
             });
-            _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRest.Object);
+            _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRest.Object);
             _ministryPlatformRest.Setup(m => m.Search<MpProjectRegistration>(It.IsAny<string>(), It.IsAny<string>(), null, false)).Returns(MockRegistrations());
             
             var results = _fixture.GetRegistrantsForProject(projectId);

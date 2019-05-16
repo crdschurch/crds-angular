@@ -760,11 +760,11 @@ namespace MinistryPlatform.Translation.Test.Services
 
             };
            
-            _ministryPlatformService.Setup(mocked => mocked.CreateRecord(322, It.IsAny<Dictionary<string, object>>(), "ABC", true)).Returns(groupId);
+            _ministryPlatformService.Setup(mocked => mocked.CreateRecord(322, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true)).Returns(groupId);
 
             int resp =  _fixture.CreateGroup(newGroup);
 
-            _ministryPlatformService.Verify(mocked => mocked.CreateRecord(322, values, "ABC", true));
+            _ministryPlatformService.Verify(mocked => mocked.CreateRecord(322, values, It.IsAny<string>(), true));
          
             Assert.IsNotNull(resp);  
             Assert.AreEqual(groupId, resp);

@@ -370,7 +370,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             const string columns = "Contact_ID_Table.Contact_ID, Contact_ID_Table.Display_Name, Contact_ID_Table.Email_Address, Contact_ID_Table.First_Name, Contact_ID_Table.Last_Name";
             string filter = $"Attribute_ID IN (7088,9048) AND Start_Date <= GETDATE() AND (End_Date IS NULL OR End_Date > GETDATE())";
-
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("ABC");
             _ministryPlatformRest.Setup(m => m.Search<MpContactAttribute, Dictionary<string, object>>(filter, columns, "Display_Name", true)).Returns(returnData);
 
             var result = _fixture.PrimaryContacts();

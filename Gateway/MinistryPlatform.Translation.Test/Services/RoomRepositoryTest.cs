@@ -38,12 +38,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _apiUserService = new Mock<IApiUserRepository>();
 
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("abc")).Returns(_ministryPlatformRestRepository.Object);
-
-            _authenticationService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
-            {
-                AccessToken = "abc",
-                ExpiresIn = 123
-            });
+            
 
             _fixture = new RoomRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authenticationService.Object, _config.Object, _apiUserService.Object);
         }
@@ -107,7 +102,6 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var reservations = _fixture.GetRoomReservations(123);
             _ministryPlatformService.VerifyAll();
-            _authenticationService.VerifyAll();
             _config.VerifyAll();
 
             Assert.IsNotNull(reservations);

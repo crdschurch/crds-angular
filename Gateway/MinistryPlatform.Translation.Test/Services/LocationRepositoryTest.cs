@@ -60,7 +60,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             string token = "ABC";
             
-            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRestRepository.Object);
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MpLocation>(null, It.IsAny<string>(), null, false)).Returns(new List<MpLocation>() {_location1});
 
             var result =_fixture.GetLocations();

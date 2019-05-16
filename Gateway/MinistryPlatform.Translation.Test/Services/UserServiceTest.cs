@@ -40,7 +40,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("UsersApiLookupPageView")).Returns(102030);
             _authenticationService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
-                AccessToken = "ABC",
+                AccessToken = It.IsAny<string>(),
                 ExpiresIn = 123
             });
 
@@ -62,7 +62,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
                 }
             };
-            _ministryPlatformService.Setup(mocked => mocked.GetPageViewRecords(102030, "ABC", "\"me@here.com\",", string.Empty, 0)).Returns(mpResult);
+            _ministryPlatformService.Setup(mocked => mocked.GetPageViewRecords(102030, It.IsAny<string>(), "\"me@here.com\",", string.Empty, 0)).Returns(mpResult);
 
             var user = _fixture.GetByUserId("me@here.com");
             _authenticationService.VerifyAll();
@@ -90,7 +90,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 }
             };
 
-            _ministryPlatformService.Setup(mocked => mocked.GetSubpageViewRecords("User_Roles_With_ID", 987, "ABC", string.Empty, string.Empty, 0)).Returns(mpResult);
+            _ministryPlatformService.Setup(mocked => mocked.GetSubpageViewRecords("User_Roles_With_ID", 987, It.IsAny<string>(), string.Empty, string.Empty, 0)).Returns(mpResult);
 
             var roles = _fixture.GetUserRoles(987);
             Assert.IsNotNull(roles);
@@ -105,7 +105,7 @@ namespace MinistryPlatform.Translation.Test.Services
         public void TestGetUserByAuthenticationToken()
         {
             _ministryPlatformService.Setup(mocked => mocked.GetContactInfo("logged in")).Returns(new PlatformService.UserInfo() { UserId = 123 });
-            _ministryPlatformRest.Setup(mocked => mocked.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRest.Object);
+            _ministryPlatformRest.Setup(mocked => mocked.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRest.Object);
             _ministryPlatformRest.Setup(mocked => mocked.Get<MpUser>(123, It.IsAny<string>())).Returns(
                 new MpUser()
                 {
