@@ -65,7 +65,6 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformService.Setup(mocked => mocked.GetPageViewRecords(102030, It.IsAny<string>(), "\"me@here.com\",", string.Empty, 0)).Returns(mpResult);
 
             var user = _fixture.GetByUserId("me@here.com");
-            _authenticationService.VerifyAll();
             _ministryPlatformService.VerifyAll();
             Assert.IsNotNull(user);
             Assert.AreEqual("me@here.com", user.UserId);
@@ -118,7 +117,6 @@ namespace MinistryPlatform.Translation.Test.Services
             );
 
             var user = _fixture.GetByAuthenticationToken("logged in");
-            _authenticationService.VerifyAll();
             _ministryPlatformService.VerifyAll();
             Assert.IsNotNull(user);
             Assert.AreEqual("me@here.com", user.UserId);
