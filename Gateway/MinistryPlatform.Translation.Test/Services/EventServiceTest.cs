@@ -351,9 +351,8 @@ namespace MinistryPlatform.Translation.Test.Services
             //var eventsBySitePageViewId = _configWrapper.Object.GetConfigIntValue("EventsBySite");
             var currentDateTime = DateTime.Now;
             var site = "Oakley";
-            var token = "123";
-
             var searchString = ",,\"" + site + "\",,False," + currentDateTime.ToShortDateString() + "," + currentDateTime.ToShortDateString(); // search string needs to match
+            _ministryPlatformService.Setup(m => m.GetPageViewRecords(2222, It.IsAny<string>(), searchString, "", 0)).Returns(GetMockedEvents(3));
             
             _fixture.GetEventsBySite(site, currentDateTime, currentDateTime);
             _ministryPlatformService.VerifyAll();
@@ -363,11 +362,10 @@ namespace MinistryPlatform.Translation.Test.Services
         public void ShouldGetEventTemplatesBySite()
         {
             var site = "Oakley";
-            var token = "123";
 
             var searchString = ",,\"" + site + "\",,True,"; // search string needs to match
 
-            _ministryPlatformService.Setup(m => m.GetPageViewRecords(2222, token, searchString, "", 0)).Returns(GetMockedEvents(3));
+            _ministryPlatformService.Setup(m => m.GetPageViewRecords(2222, It.IsAny<string>(), searchString, "", 0)).Returns(GetMockedEvents(3));
             _fixture.GetEventTemplatesBySite(site);
             _ministryPlatformService.VerifyAll();
         }

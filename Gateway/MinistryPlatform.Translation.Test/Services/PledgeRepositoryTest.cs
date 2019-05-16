@@ -175,7 +175,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
             var mockPledges = new List<MpPledge> {mockPledge};
 
-            _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRestRepository.Object);
+            _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(
                 mocked =>
                     mocked.Search<MpPledge>(

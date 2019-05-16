@@ -256,7 +256,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var searchString = $"Event_ID = {eventId} AND Participant_ID_Table_Contact_ID_Table_Gender_ID_Table.Gender_ID = {genderId} AND (End_Date IS NULL OR End_Date >= GETDATE())";
             const string column = "Count(*)";
 
-            _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRest.Object);
+            _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRest.Object);
             _ministryPlatformRest.Setup(m => m.Search<int>("Event_Participants", searchString, column, null, false)).Returns(42);
 
             var result = _fixture.GetEventParticipantCountByGender(eventId, genderId);

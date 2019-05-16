@@ -441,6 +441,7 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             const int householdId = 999;
             var householdContacts = GetContactHouseholds(householdId);
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("ABC");
             _ministryPlatformRest.Setup(m => m.Search<MpContactHousehold>(It.IsAny<string>(), It.IsAny<List<string>>(), null, false)).Returns(householdContacts);
 
             var householdMembers = _fixture.GetOtherHouseholdMembers(householdId);

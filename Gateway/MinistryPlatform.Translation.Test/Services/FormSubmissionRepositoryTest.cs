@@ -295,7 +295,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var searchString = $"Form_ID={formId} AND Contact_ID={contactId} AND Event_ID={eventId}";
             var answersSearch = $"Form_Response_ID={responseId}";
 
-            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRestRepository.Object);
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MpFormResponse>(searchString, null as string, null as string, false)).Returns(new List<MpFormResponse> {new MpFormResponse {FormResponseId = responseId } });
             _ministryPlatformRestRepository.Setup(m => m.Search<MpFormAnswer>(answersSearch, null as string, null as string, false)).Returns(new List<MpFormAnswer>());
 
@@ -313,7 +313,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var searchString = $"Form_ID={formId} AND Contact_ID={contactId}";
             var answersSearch = $"Form_Response_ID={responseId}";
 
-            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRestRepository.Object);
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MpFormResponse>(searchString, null as string, null as string, false)).Returns(new List<MpFormResponse> { new MpFormResponse { FormResponseId = responseId } });
             _ministryPlatformRestRepository.Setup(m => m.Search<MpFormAnswer>(answersSearch, null as string, null as string, false)).Returns(new List<MpFormAnswer>());
 
