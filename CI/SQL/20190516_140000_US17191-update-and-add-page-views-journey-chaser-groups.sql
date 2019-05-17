@@ -5,6 +5,8 @@
 -- Date: 2019-05-16
 -------------------------------------------------
 
+USE [MinistryPlatform]
+GO
 
 UPDATE dp_Page_Views
 SET View_Title = 'Current Chaser Participants'
