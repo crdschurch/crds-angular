@@ -16,6 +16,7 @@ BEGIN
 		@step_name =@STEPNAME,  
 		@subsystem = N'TSQL',  
 		@command = @COMMAND,   
+		@database_name=N'MinistryPlatform', 
 		@retry_attempts = 2,  
 		@retry_interval = 5 ;  
 
@@ -24,7 +25,11 @@ BEGIN
 		@name = @SCHEDULENAME,  -- Schedule name
 		@freq_type = 4, -- Daily
 		@freq_interval = 1, 
-		@active_start_time = 020000 -- 2:00 AM
+		@active_start_time = 093500
+		--@active_start_time = 020000 -- 2:00 AM
+
+	EXEC dbo.sp_add_jobserver  --add job to the local server. The job won't run without this.
+		@job_name =@JOBNAME ;  
 END
 
 GO
