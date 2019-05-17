@@ -20,6 +20,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private readonly Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;
         private readonly Mock<IAuthenticationRepository> _authenticationRepository;
         private readonly Mock<IConfigurationWrapper> _configurationWrapper;
+        private Mock<IApiUserRepository> _apiUserService;
 
         private const string token = "totallylegittoken";
 
@@ -29,7 +30,8 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
             _authenticationRepository = new Mock<IAuthenticationRepository>();
             _configurationWrapper = new Mock<IConfigurationWrapper>();
-            _fixture = new RegistrationRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, _authenticationRepository.Object, _configurationWrapper.Object);
+            _apiUserService = new Mock<IApiUserRepository>();
+        _fixture = new RegistrationRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, _authenticationRepository.Object, _configurationWrapper.Object, _apiUserService.Object);
         }
 
         [Test]
@@ -42,7 +44,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 AccessToken = "totallylegittoken",
                 ExpiresIn = 123
             });
-            _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRest.Object);
+            _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRest.Object);
             _ministryPlatformRest.Setup(m => m.Search<MpProjectRegistration>(It.IsAny<string>(), It.IsAny<string>(), null, false)).Returns(MockRegistrations());
             
             var results = _fixture.GetRegistrantsForProject(projectId);

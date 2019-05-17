@@ -41,13 +41,14 @@ namespace MinistryPlatform.Translation.Repositories
                             IConfigurationWrapper configurationWrapper,
                             IGroupRepository groupService,
                             IMinistryPlatformRestRepository ministryPlatformRestRepository,
-                            IEventParticipantRepository eventParticipantRepository)
-            : base(authenticationService, configurationWrapper)
+                            IEventParticipantRepository eventParticipantRepository,
+                            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRestRepository;
             _groupService = groupService;
-            _eventParticipantRepository = eventParticipantRepository;           
+            _eventParticipantRepository = eventParticipantRepository;
         }
 
         public int CreateEvent(MpEventReservationDto eventReservationReservation)
@@ -448,26 +449,9 @@ namespace MinistryPlatform.Translation.Repositories
             return _groupService.GetGroupsForEvent(eventId);
         }
 
-        public List<MpEventGroup> GetEventGroupsForEventAPILogin(int eventId)
+        public List<MpEventGroup> GetEventGroupsForEvent(int eventId)
         {
-            return GetEventGroupsForEvent(eventId, ApiLogin());
-        }
-
-        public List<MpEventGroup> GetEventGroupsForEvent(int eventId, string token)
-        {
-            var searchString =  string.Format("\"{0}\",", eventId);
-            var records = _ministryPlatformService.GetPageViewRecords(_eventGroupsPageViewId, token, searchString);
-
-            return records?.Select(record => new MpEventGroup
-                                   {
-                                       EventGroupId = record.ToInt("Event_Group_ID"),
-                                       EventId = record.ToInt("Event_ID"),
-                                       GroupId = record.ToInt("Group_ID"),
-                                       RoomId = record.ToNullableInt("Room_ID"),
-                                       Closed = record.ToBool("Closed"),
-                                       EventRoomId = record.ToNullableInt("Event_Room_ID"),
-                                       GroupTypeId = record.ToInt("Group_Type_ID")
-                                   }).ToList();
+            return _ministryPlatformRestRepository.UsingAuthenticationToken(ApiLogin()).Search<MpEventGroup>($"Event_ID_Table.[Event_ID] = {eventId}");
         } 
 
         public List<MpEventGroup> GetEventGroupsForGroup(int groupId, string token)
@@ -490,17 +474,19 @@ namespace MinistryPlatform.Translation.Repositories
             }).ToList();
         }
 
-        public void DeleteEventGroup(MpEventGroup eventGroup, string token)
+        public void DeleteEventGroup(MpEventGroup eventGroup)
         {
-            _ministryPlatformService.DeleteRecord(_eventGroupsPageId, eventGroup.EventGroupId, null, token);
+            _ministryPlatformRestRepository.UsingAuthenticationToken(ApiLogin())
+                .Delete<MpEventGroup>(eventGroup.EventGroupId);
         }
 
-        public void DeleteEventGroupsForEvent(int eventId, string token, int? groupTypeID = null)
+        public void DeleteEventGroupsForEvent(int eventId, int? groupTypeID = null)
         {
             // get event group ids
+            // TODO: Should this groupTypeID filter be moved to the rest call?
             var discardedEventGroupIds = groupTypeID == null 
-                ? GetEventGroupsForEvent(eventId, token).Select(r => r.EventGroupId).ToArray() 
-                : GetEventGroupsForEvent(eventId, token).Where(r => r.GroupTypeId == groupTypeID).Select(r => r.EventGroupId).ToArray();
+                ? GetEventGroupsForEvent(eventId).Select(r => r.EventGroupId).ToArray() 
+                : GetEventGroupsForEvent(eventId).Where(r => r.GroupTypeId == groupTypeID).Select(r => r.EventGroupId).ToArray();
 
             // MP will throw an error if there are no elements to delete, so we need to exit the function before then
             if (discardedEventGroupIds.Length == 0)
@@ -508,24 +494,10 @@ namespace MinistryPlatform.Translation.Repositories
                 return;
             }
 
-            // create selection for event groups
-            SelectionDescription eventGroupSelDesc = new SelectionDescription();
-            eventGroupSelDesc.DisplayName = "DiscardedEventGroups " + DateTime.Now;
-            eventGroupSelDesc.Kind = SelectionKind.Normal;
-            eventGroupSelDesc.PageId = _eventGroupsPageId;
-            var eventGroupSelId = _ministryPlatformService.CreateSelection(eventGroupSelDesc, token);
-
-            // add events to selection
-            _ministryPlatformService.AddToSelection(eventGroupSelId, discardedEventGroupIds, token);
-
-            // delete the selection records
-            _ministryPlatformService.DeleteSelectionRecords(eventGroupSelId, token);
-
-            // delete the selection
-            _ministryPlatformService.DeleteSelection(eventGroupSelId, token);
+            _ministryPlatformRestRepository.UsingAuthenticationToken(ApiLogin()).Delete<MpEventGroup>(discardedEventGroupIds);
         }
 
-        public List<MpEvent> GetEventsBySite(string site, string token, DateTime startDate, DateTime endDate)
+        public List<MpEvent> GetEventsBySite(string site, DateTime startDate, DateTime endDate)
         {
             StringBuilder dateSearchString = new StringBuilder();
 
@@ -553,14 +525,14 @@ namespace MinistryPlatform.Translation.Repositories
 
             var searchString = string.Format(",,\"{0}\",,False,{1},{1}", site, dateSearchString);
 
-            return GetEventsData(token, searchString);
+            return GetEventsData(searchString);
         }
 
-        public List<MpEvent> GetEventTemplatesBySite(string site, string token)
+        public List<MpEvent> GetEventTemplatesBySite(string site)
         {
             var searchString = string.Format(",,\"{0}\",,True,", site);
 
-            return GetEventsData(token, searchString);
+            return GetEventsData(searchString);
         }
 
         public int CreateEventGroup(MpEventGroup eventGroup, string token = "")
@@ -613,10 +585,10 @@ namespace MinistryPlatform.Translation.Repositories
             }
         }
 
-        private List<MpEvent> GetEventsData(string token, string searchString)
+        private List<MpEvent> GetEventsData(string searchString)
         {
             var pageViewId = _configurationWrapper.GetConfigIntValue("EventsBySite");
-            var records = _ministryPlatformService.GetPageViewRecords(pageViewId, token, searchString);
+            var records = _ministryPlatformService.GetPageViewRecords(pageViewId, ApiLogin(), searchString);
 
             if (records == null || records.Count == 0)
             {

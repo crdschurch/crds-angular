@@ -13,6 +13,6 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         List<MpRoomReservationDto> GetRoomReservations(int eventId);
         void UpdateRoomReservation(MpRoomReservationDto roomReservation);
         void DeleteRoomReservation(MpRoomReservationDto roomReservation);
-        void DeleteEventRoomsForEvent(int eventId, string token);
+        void DeleteEventRoomsForEvent(int eventId);
     }
 }

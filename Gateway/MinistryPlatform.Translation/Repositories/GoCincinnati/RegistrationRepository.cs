@@ -16,8 +16,13 @@ namespace MinistryPlatform.Translation.Repositories.GoCincinnati
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
 
-        public RegistrationRepository(IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRest, IAuthenticationRepository authenticationService, IConfigurationWrapper configuration)
-            : base(authenticationService, configuration)
+        public RegistrationRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IMinistryPlatformRestRepository ministryPlatformRest,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configuration,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configuration, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRest;

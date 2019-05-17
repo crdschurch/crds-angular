@@ -9,6 +9,7 @@ using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Attribute = MinistryPlatform.Translation.Models.MpAttribute;
+using Crossroads.Web.Common.MinistryPlatform;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -16,8 +17,12 @@ namespace MinistryPlatform.Translation.Repositories
     {
         private readonly IMinistryPlatformService _ministryPlatformService;
             
-        public FormBuilderRepository(IMinistryPlatformService ministryPlatformService, IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper)
-            : base(authenticationService, configurationWrapper)
+        public FormBuilderRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
         }

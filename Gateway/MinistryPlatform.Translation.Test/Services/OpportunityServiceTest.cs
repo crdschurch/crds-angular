@@ -43,7 +43,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _apiUserService = new Mock<IApiUserRepository>();
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
 
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
+        _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _authenticationService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
@@ -55,8 +55,8 @@ namespace MinistryPlatform.Translation.Test.Services
                                                   _authenticationService.Object,
                                                   _configWrapper.Object,
                                                   _participantService.Object,
-                                                  _apiUserService.Object, 
-                                                  _ministryPlatformRest.Object);
+                                                  _ministryPlatformRest.Object,
+                                                  _apiUserService.Object);
         }
 
         [Test]

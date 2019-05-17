@@ -47,7 +47,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("abc")).Returns(_ministryPlatformRestRepository.Object);
 
-            _fixture = new FinderRepository(_config.Object, _ministryPlatformRestRepository.Object, _apiUserRepo.Object, _authenticationService.Object);
+            _fixture = new FinderRepository(_config.Object, _ministryPlatformRestRepository.Object, _authenticationService.Object, _apiUserRepo.Object);
         }
 
         [Test]

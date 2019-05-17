@@ -22,6 +22,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRestRepository;
         private Mock<IConfigurationWrapper> _configurationWrapper;
         private Mock<IAuthenticationRepository> _authenticationService;
+        private Mock<IApiUserRepository> _apiUserService;
 
 
         [SetUp]
@@ -30,8 +31,9 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository = new Mock<IMinistryPlatformRestRepository>();
             _authenticationService = new Mock<IAuthenticationRepository>();
             _configurationWrapper = new Mock<IConfigurationWrapper>();
-            
-            _fixture = new LocationRepository(_ministryPlatformRestRepository.Object,_authenticationService.Object,_configurationWrapper.Object);
+            _apiUserService = new Mock<IApiUserRepository>();
+
+        _fixture = new LocationRepository(_ministryPlatformRestRepository.Object,_authenticationService.Object,_configurationWrapper.Object, _apiUserService.Object);
 
             _authenticationService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
@@ -58,7 +60,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             string token = "ABC";
             
-            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRestRepository.Object);
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.Search<MpLocation>(null, It.IsAny<string>(), null, false)).Returns(new List<MpLocation>() {_location1});
 
             var result =_fixture.GetLocations();
