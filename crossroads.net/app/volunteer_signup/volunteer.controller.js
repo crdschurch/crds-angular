@@ -30,7 +30,7 @@
     ///////////////////////////////////////////
 
     function activate() {
-      if (CmsInfo.pages.length > 0) {
+      if (CmsInfo.items.length > 0) {
         ServeOpportunities.QualifiedServers.query({
             groupId: vm.pageInfo.group,
             opportunityId: vm.pageInfo.opportunity
@@ -39,10 +39,10 @@
             allSignedUp();
             vm.viewReady = true;
           }, function(err){
-            $state.go('content', {link:'/server-error/'});
+            $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
           });
       } else {
-        $state.go('content', {link:'/server-error/'});
+        $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
       }
     }
 
@@ -109,7 +109,7 @@
 
 
     function pageInfo(cmsInfo) {
-      return cmsInfo.pages[0];
+      return cmsInfo.items[0].fields;
     }
 
     function save(form) {

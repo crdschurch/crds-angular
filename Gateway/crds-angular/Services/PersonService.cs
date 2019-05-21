@@ -46,7 +46,7 @@ namespace crds_angular.Services
             _analyticsService = analyticsService;
         }
 
-        public void SetProfile(string token, Person person)
+        public void SetProfile( Person person)
         {
             var contactDictionary = getDictionary(person.GetContact());
             var householdDictionary = getDictionary(person.GetHousehold());
@@ -88,7 +88,7 @@ namespace crds_angular.Services
             // update the user values if the email and/or password has changed
             if (!(String.IsNullOrEmpty(person.NewPassword)) || (person.EmailAddress != person.OldEmail && person.OldEmail != null))
             {
-                var authData = _authenticationService.Authenticate(person.OldEmail, person.OldPassword);
+                var authData = _authenticationService.AuthenticateUser(person.OldEmail, person.OldPassword);
 
                 if (authData == null)
                 {
@@ -136,9 +136,9 @@ namespace crds_angular.Services
             person.HouseholdMembers = family;
 
             // TODO: Should this move to _contactService or should update move it's call out to this service?
-            var apiUser = _apiUserService.GetToken();
+            var apiUser = _apiUserService.GetDefaultApiClientToken();
             var configuration = MpObjectAttributeConfigurationFactory.Contact();
-            var attributesTypes = _objectAttributeService.GetObjectAttributes(apiUser, contactId, configuration);
+            var attributesTypes = _objectAttributeService.GetObjectAttributes(contactId, configuration);
             person.AttributeTypes = attributesTypes.MultiSelect;
             person.SingleAttributes = attributesTypes.SingleSelect;
 

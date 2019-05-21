@@ -16,6 +16,7 @@ using IDonorRepository = MinistryPlatform.Translation.Repositories.Interfaces.ID
 using IGroupRepository = MinistryPlatform.Translation.Repositories.Interfaces.IGroupRepository;
 using PledgeCampaign = crds_angular.Models.Crossroads.Stewardship.PledgeCampaign;
 using Newtonsoft.Json;
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.Services
 {
@@ -124,7 +125,7 @@ namespace crds_angular.Services
 
         public TripCampaignDto GetTripCampaign(int pledgeCampaignId)
         {
-            var token = _apiUserRepository.GetToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var campaign = _campaignService.GetPledgeCampaign(pledgeCampaignId, token);
             var response = new TripCampaignDto()
             {
@@ -195,9 +196,9 @@ namespace crds_angular.Services
             return resp;
         }
 
-        public List<FamilyMemberTripDto> GetFamilyMembers(int pledgeId, string token)
+        public List<FamilyMemberTripDto> GetFamilyMembers(int pledgeId, AuthDTO token)
         {
-            var family = _serveService.GetImmediateFamilyParticipants(token);
+            var family = _serveService.GetImmediateFamilyParticipants(token.UserInfo.Mp.ContactId);
             var fam = new List<FamilyMemberTripDto>();
             foreach (var f in family)
             {
@@ -297,9 +298,9 @@ namespace crds_angular.Services
             return participants.Values.Where(x => x.Trips.Count > 0).OrderBy(o => o.Lastname).ThenBy(o => o.Nickname).ToList();
         }
 
-        public MyTripsDto GetMyTrips(string token)
+        public MyTripsDto GetMyTrips(AuthDTO token)
         {
-            var family = _serveService.GetImmediateFamilyParticipants(token);
+            var family = _serveService.GetImmediateFamilyParticipants(token.UserInfo.Mp.ContactId);
             var familyTrips = new MyTripsDto();
 
             foreach (var member in family)
@@ -390,7 +391,7 @@ namespace crds_angular.Services
 
         public TripParticipantPledgeDto CreateTripParticipant(int contactId, int pledgeCampaignId)
         {
-            var token = _apiUserRepository.GetToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var result = _tripRepository.AddAsTripParticipant(contactId, pledgeCampaignId, token);
             if (!result.Status)
             {
@@ -461,8 +462,9 @@ namespace crds_angular.Services
             _communicationService.SendMessage(communication);
         }
 
-        public int GeneratePrivateInvite(PrivateInviteDto dto, string token)
+        public int GeneratePrivateInvite(PrivateInviteDto dto)
         {
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var invite = _privateInviteService.Create(dto.PledgeCampaignId, dto.EmailAddress, dto.RecipientName, token);
             var communication = PrivateInviteCommunication(invite);
             _communicationService.SendMessage(communication);
@@ -504,10 +506,9 @@ namespace crds_angular.Services
             return mergeData;
         }
 
-        public bool ValidatePrivateInvite(int pledgeCampaignId, string guid, string token)
+        public bool ValidatePrivateInvite(int pledgeCampaignId, string guid, AuthDTO token)
         {
-            var person = _personService.GetLoggedInUserProfile(token);
-            return _privateInviteService.PrivateInviteValid(pledgeCampaignId, guid, person.EmailAddress);
+            return _privateInviteService.PrivateInviteValid(pledgeCampaignId, guid, token.UserInfo.Mp.Email);
         }
 
         public int SaveApplication(TripApplicationDto dto)
@@ -744,7 +745,7 @@ namespace crds_angular.Services
 
         public bool GetIPromise(int eventParticipantId)
         {
-            var token = _apiUserRepository.GetToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var iPromiseDocId = _configurationWrapper.GetConfigIntValue("IPromiseDocumentId");
             var docs = _tripRepository.GetTripDocuments(eventParticipantId, token);
             return docs.Any(d => d.DocumentId == iPromiseDocId && d.Received);
@@ -752,7 +753,7 @@ namespace crds_angular.Services
 
         public TripDocument GetIPromiseDocument(int eventParticipantId)
         {
-            var token = _apiUserRepository.GetToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             var iPromiseDocId = _configurationWrapper.GetConfigIntValue("IPromiseDocumentId");
             var docs = _tripRepository.GetTripDocuments(eventParticipantId, token);
             return docs.Where(d => d.DocumentId == iPromiseDocId).Select(d => new TripDocument{ DocumentId = d.DocumentId, EventParticipantId = d.EventParticipantId, EventParticipantDocumentId = d.EventParticipantDocumentId, Received = d.Received, Notes = d.Notes, TripName = d.EventTitle}).FirstOrDefault();
@@ -760,7 +761,7 @@ namespace crds_angular.Services
 
         public void ReceiveIPromiseDocument(TripDocument iPromiseDoc)
         {
-            var token = _apiUserRepository.GetToken();
+            var token = _apiUserRepository.GetDefaultApiClientToken();
             _tripRepository.ReceiveTripDocument(new MpEventParticipantDocument
             {
                 DocumentId = iPromiseDoc.DocumentId,

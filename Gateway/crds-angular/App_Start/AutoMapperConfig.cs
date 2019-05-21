@@ -47,7 +47,6 @@ namespace crds_angular.App_Start
             Mapper.CreateMap<SpPinDto, PinDto>()
                 .ForMember(dest => dest.FirstName, opts => opts.MapFrom(src => src.First_Name))
                 .ForMember(dest => dest.LastName, opts => opts.MapFrom(src => src.Last_Name))
-                .ForMember(dest => dest.EmailAddress, opts => opts.MapFrom(src => src.Email_Address))
                 .ForMember(dest => dest.Contact_ID, opts => opts.MapFrom(src => src.Contact_ID))
                 .ForMember(dest => dest.Participant_ID, opts => opts.MapFrom(src => src.Participant_ID))
                 .ForMember(dest => dest.Host_Status_ID, opts => opts.MapFrom(src => src.Host_Status_ID))
@@ -70,6 +69,16 @@ namespace crds_angular.App_Start
                 .ForMember(dest => dest.Name, opts => opts.MapFrom(src => src.Name))
                 .ForMember(dest => dest.EventTypeId, opts => opts.MapFrom(src => src.EventTypeId))
                 .ForMember(dest => dest.Participants, opts => opts.MapFrom(src => src.Participants));
+
+            Mapper.CreateMap<MpCongregation, Congregation>()
+                .ForMember(dest => dest.CongregationId, opts => opts.MapFrom(src => src.CongregationId))
+                .ForMember(dest => dest.Name, opts => opts.MapFrom(src => src.Name))
+                .ForMember(dest => dest.LocationId, opts => opts.MapFrom(src => src.LocationId));
+
+            Mapper.CreateMap<Congregation, MpCongregation>()
+                .ForMember(dest => dest.CongregationId, opts => opts.MapFrom(src => src.CongregationId))
+                .ForMember(dest => dest.Name, opts => opts.MapFrom(src => src.Name))
+                .ForMember(dest => dest.LocationId, opts => opts.MapFrom(src => src.LocationId));
 
             Mapper.CreateMap<Invitation,MpInvitation > ()
                 .ForMember(dest => dest.SourceId, opts => opts.MapFrom(src => src.SourceId))
@@ -293,13 +302,17 @@ namespace crds_angular.App_Start
                 {
                     dest.Source = new DonationSourceDTO
                     {
-                        SourceType = (int)AccountType.Checking == src.AccountTypeID ? PaymentType.Bank : PaymentType.CreditCard,
+                        SourceType = (int)AccountType.Checking == src.AccountTypeID || (int)AccountType.Savings == src.AccountTypeID ? PaymentType.Bank : PaymentType.CreditCard,
                         AccountNumberLast4 = src.AccountNumberLast4,
-                        // Have to remove space to match to enum for things like American Express which needs to be AmericanExpress
-                        CardType = src.InstitutionName.Equals("Bank") ? (CreditCardType?) null : (CreditCardType)System.Enum.Parse(typeof(CreditCardType), Regex.Replace(src.InstitutionName, @"\s+", "")),
                         ProcessorAccountId = src.ProcessorAccountId,
                         PaymentProcessorId = src.ProcessorId
                     };
+                    try
+                    {
+                        // Have to remove space to match to enum for things like American Express which needs to be AmericanExpress
+                        dest.Source.CardType = (CreditCardType)System.Enum.Parse(typeof(CreditCardType), Regex.Replace(src.InstitutionName, @"\s+", ""));
+                    }
+                    catch { }
                 });
 
             Mapper.CreateMap<MpPledge, PledgeDto>()
@@ -366,7 +379,10 @@ namespace crds_angular.App_Start
             Mapper.CreateMap<MpAddress, AddressDTO>()
                 .ForMember(dest => dest.AddressLine1, opts => opts.MapFrom(src => src.Address_Line_1))
                 .ForMember(dest => dest.AddressLine2, opts => opts.MapFrom(src => src.Address_Line_2))
+                .ForMember(dest => dest.City, opts => opts.MapFrom(src => src.City))
+                .ForMember(dest => dest.State, opts => opts.MapFrom(src => src.State))
                 .ForMember(dest => dest.PostalCode, opts => opts.MapFrom(src => src.Postal_Code))
+                .ForMember(dest => dest.County, opts => opts.MapFrom(src => src.County))
                 .ForMember(dest => dest.ForeignCountry, opts => opts.MapFrom(src => src.Foreign_Country))
                 .ForMember(dest => dest.AddressID, opts => opts.MapFrom(src => src.Address_ID))
                 .ForMember(dest => dest.Longitude, opts => opts.MapFrom(src => src.Longitude))
@@ -375,7 +391,10 @@ namespace crds_angular.App_Start
             Mapper.CreateMap<AddressDTO, MpAddress>()
                 .ForMember(dest => dest.Address_Line_1, opts => opts.MapFrom(src => src.AddressLine1))
                 .ForMember(dest => dest.Address_Line_2, opts => opts.MapFrom(src => src.AddressLine2))
+                .ForMember(dest => dest.City, opts => opts.MapFrom(src => src.City))
+                .ForMember(dest => dest.State, opts => opts.MapFrom(src => src.State))
                 .ForMember(dest => dest.Postal_Code, opts => opts.MapFrom(src => src.PostalCode))
+                .ForMember(dest => dest.County, opts => opts.MapFrom(src => src.County))
                 .ForMember(dest => dest.Foreign_Country, opts => opts.MapFrom(src => src.ForeignCountry))
                 .ForMember(dest => dest.Address_ID, opts => opts.MapFrom(src => src.AddressID))
                 .ForMember(dest => dest.Longitude, opts => opts.MapFrom(src => src.Longitude))
@@ -429,7 +448,6 @@ namespace crds_angular.App_Start
             Mapper.CreateMap<PinDto, AwsConnectDto>()
                 .ForMember(dest => dest.FirstName, opts => opts.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.LastName, opts => opts.MapFrom(src => src.LastName))
-                .ForMember(dest => dest.EmailAddress, opts => opts.MapFrom(src => src.EmailAddress))
                 .ForMember(dest => dest.AddressId, opts => opts.MapFrom(src => src.Address.AddressID))
                 .ForMember(dest => dest.City, opts => opts.MapFrom(src => src.Address.City))
                 .ForMember(dest => dest.State, opts => opts.MapFrom(src => src.Address.State))

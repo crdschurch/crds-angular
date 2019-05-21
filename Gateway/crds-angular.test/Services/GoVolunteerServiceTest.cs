@@ -128,7 +128,6 @@ namespace crds_angular.test.Services
                                                                             It.IsAny<Dictionary<string, object>>())).Returns(communication);
             _commnuicationService.Setup(m => m.SendMessage(communication, false)).Returns(1);
             var success = _fixture.SendMail(registration);
-            _configurationWrapper.VerifyAll();
             _commnuicationService.VerifyAll();
             _contactService.VerifyAll();
             _groupConnectorService.VerifyAll();
@@ -178,8 +177,7 @@ namespace crds_angular.test.Services
             _commnuicationService.Setup(m => m.SendMessage(communication, false)).Returns(1);
                
                 
-            var success = _fixture.SendMail(registration);                
-            _configurationWrapper.VerifyAll();           
+            var success = _fixture.SendMail(registration);                     
             Assert.IsTrue(success);            
         }
 
@@ -193,8 +191,6 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(m => m.GetConfigIntValue("Children13To18")).Returns(registration.ChildAgeGroup[2].Id);
 
             var mergeData = _fixture.SetupMergeData(registration);
-
-            _configurationWrapper.VerifyAll();
 
             var styles = Styles();
 
@@ -245,8 +241,7 @@ namespace crds_angular.test.Services
 
             var mergeData = _fixture.SetupMergeData(registration);
 
-            _configurationWrapper.VerifyAll();
-
+       
             var styles = Styles();
 
             var listOfP = new List<HtmlElement>
@@ -414,8 +409,6 @@ namespace crds_angular.test.Services
 
             var mergeData = _fixture.SetupMergeData(registration);
 
-            _configurationWrapper.VerifyAll();
-
             var styles = Styles();
 
             var listOfP = new List<HtmlElement>
@@ -577,7 +570,7 @@ namespace crds_angular.test.Services
             var returnVal = new Ok<MpProject>(mpProject);
             var groupConnectorReturn = new Ok<MpGroupConnector>(mpGroupConnector);
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _projectRepository.Setup(m => m.GetProject(projectId, apiToken)).Returns(returnVal);
             _projectRepository.Setup(m => m.GetGroupConnector(projectId, apiToken)).Returns(groupConnectorReturn);
 
@@ -622,7 +615,7 @@ namespace crds_angular.test.Services
             var returnVal = new Ok<MpProject>(mpProject);
             var groupConnectorReturn = new Ok<MpGroupConnector>(mpGroupConnector);
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _projectRepository.Setup(m => m.GetProject(projectId, apiToken)).Returns(returnVal);
             _projectRepository.Setup(m => m.GetGroupConnector(projectId, apiToken)).Returns(groupConnectorReturn);
 
@@ -643,7 +636,7 @@ namespace crds_angular.test.Services
             
             var returnVal = new Err<MpProject>("Project not found!");
 
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _projectRepository.Setup(m => m.GetProject(projectId, apiToken)).Returns(returnVal);
 
             Assert.Throws<ApplicationException>(() =>
@@ -667,7 +660,7 @@ namespace crds_angular.test.Services
             const int numberOfChildren = 0;          
             var user = new MpUser() {};
             var registration = BuildRegistration(numberOfChildren);
-            _apiUserRepository.Setup(m => m.GetToken())
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken())
                 .Returns(apiToken);
             _groupConnectorService.Setup(m => m.GetGroupConnectorByProjectId(projectId, apiToken))
                 .Returns(new MpGroupConnector {Id = groupConnectorId});
@@ -690,7 +683,7 @@ namespace crds_angular.test.Services
                              Assert.AreEqual(registration.Self.EmailAddress, updatedUser.UserEmail);
                              Assert.AreEqual(registration.Self.LastName + ", " + registration.Self.FirstName, updatedUser.DisplayName);
                          });
-            _participantService.Setup(m => m.GetParticipantRecord(token))
+            _participantService.Setup(m => m.GetParticipantRecord(It.IsAny<string>()))
                 .Returns(new MpParticipant() {ParticipantId = participantId});
             _configurationWrapper.Setup(m => m.GetConfigIntValue("CrossroadsOrganizationId"))
                 .Returns(_crossroadsOrganizationId);
@@ -729,7 +722,7 @@ namespace crds_angular.test.Services
             var user = new MpUser() { };
             var registration = BuildRegistration();           
 
-            _apiUserRepository.Setup(m => m.GetToken())
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken())
                 .Returns(apiToken);
             _groupConnectorService.Setup(m => m.GetGroupConnectorByProjectId(projectId, apiToken))
                 .Returns(new MpGroupConnector { Id = groupConnectorId });
@@ -751,7 +744,7 @@ namespace crds_angular.test.Services
                     Assert.AreEqual(registration.Self.EmailAddress, updatedUser.UserEmail);
                     Assert.AreEqual(registration.Self.LastName + ", " + registration.Self.FirstName, updatedUser.DisplayName);
                 });
-            _participantService.Setup(m => m.GetParticipantRecord(token))
+            _participantService.Setup(m => m.GetParticipantRecord(It.IsAny<string>()))
                 .Returns(new MpParticipant() { ParticipantId = participantId });
 
             Assert.Throws<Exception>(() =>
@@ -759,7 +752,6 @@ namespace crds_angular.test.Services
                                          _fixture.CreateAnywhereRegistration(registration, projectId, token);
                                      });
             _apiUserRepository.VerifyAll();
-            _groupConnectorService.VerifyAll();
             _contactService.VerifyAll();
             _userService.VerifyAll();
             _participantService.VerifyAll();
@@ -814,7 +806,7 @@ namespace crds_angular.test.Services
             var user = new MpUser() { };
             var registration = BuildRegistration();            
 
-            _apiUserRepository.Setup(m => m.GetToken())
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken())
                 .Returns(apiToken);
             _groupConnectorService.Setup(m => m.GetGroupConnectorByProjectId(projectId, apiToken))
                 .Returns(new MpGroupConnector { Id = groupConnectorId });
@@ -831,7 +823,6 @@ namespace crds_angular.test.Services
                                                   });
 
             _apiUserRepository.VerifyAll();
-            _groupConnectorService.VerifyAll();
             _contactService.VerifyAll();
             _userService.VerifyAll();
             _participantService.VerifyAll();

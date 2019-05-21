@@ -13,10 +13,12 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'phantomjs-shim'],
 
     // list of files / patterns to load in the browser
     files: [
+      'node_modules/es6-shim/es6-shim.js',
+      { pattern: 'node_modules/babel-polyfill/browser.js', instrument: false },
       'https://js.stripe.com/v2/',
       './node_modules/phantomjs-polyfill/bind-polyfill.js',
       { pattern: 'spec/spec_index.js', watched: false },
@@ -123,6 +125,7 @@ module.exports = function(config) {
       require('karma-chrome-launcher'),
       require('karma-env-preprocessor'),
       require('karma-sourcemap-loader'),
+      require('karma-phantomjs-shim'),
     ]
   });
 };

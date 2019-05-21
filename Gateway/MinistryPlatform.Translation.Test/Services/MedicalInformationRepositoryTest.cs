@@ -25,7 +25,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _fixture = new MedicalInformationRepository(_ministryPlatformRestRepository.Object, _apiUserRepository.Object);
 
             const string token = "token";
-            _apiUserRepository.Setup(m => m.GetToken()).Returns(token);
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRestRepository.Object);
         }
 
@@ -35,7 +35,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var mockMeds = MockMedications();
             _ministryPlatformRestRepository.Setup(m => m.Post(new List<MpMedication> {mockMeds[1]}));
             _ministryPlatformRestRepository.Setup(m => m.Put(new List<MpMedication> {mockMeds[0]}));
-            _ministryPlatformRestRepository.Setup(m => m.Delete<MpMedication>(new List<int> { mockMeds[2].MedicalInformationMedicationId}));
+            _ministryPlatformRestRepository.Setup(m => m.Delete<MpMedication>(new List<int> { mockMeds[2].MedicalInformationMedicationId }));
 
             _fixture.UpdateOrCreateMedications(mockMeds);
 

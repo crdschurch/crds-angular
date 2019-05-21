@@ -22,8 +22,13 @@ namespace MinistryPlatform.Translation.Repositories.GoCincinnati
         private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
         private readonly string _apiToken;
 
-        public GroupConnectorRepository(IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IAuthenticationRepository authenticationService, IConfigurationWrapper configuration)
-            : base(authenticationService, configuration)
+        public GroupConnectorRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IMinistryPlatformRestRepository ministryPlatformRestRepository,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configuration,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configuration, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRestRepository;

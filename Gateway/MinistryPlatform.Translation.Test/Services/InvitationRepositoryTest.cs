@@ -19,6 +19,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private InvitationRepository _fixture;
         private Mock<IMinistryPlatformService> _ministryPlatformService;
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;
+        private Mock<IApiUserRepository> _apiUserService;
 
         private const int InvitationPageId = 123;
 
@@ -27,20 +28,21 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
+            _apiUserService = new Mock<IApiUserRepository>();
             var config = new Mock<IConfigurationWrapper>(MockBehavior.Strict);
             var auth = new Mock<IAuthenticationRepository>(MockBehavior.Strict);
 
             config.Setup(mocked => mocked.GetConfigIntValue("InvitationPageID")).Returns(InvitationPageId);
-            config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("api_user");
-            config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
+            config.Setup(mocked => mocked.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
+            config.Setup(mocked => mocked.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");
 
-            auth.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            auth.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
             });
 
-            _fixture = new InvitationRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, config.Object, auth.Object);
+            _fixture = new InvitationRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, config.Object, auth.Object, _apiUserService.Object);
         }
 
         [Test]

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Routing;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http.Results;
 using crds_angular.Services;
 using crds_angular.Models.Json;
@@ -26,6 +27,7 @@ namespace crds_angular.test.controllers
     {
         private AccountController accountController;
 
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IConfigurationWrapper> _configurationWrapper;
         private Mock<IAccountService> _accountService;
         private const string USERNAME = "testme";
@@ -39,11 +41,15 @@ namespace crds_angular.test.controllers
             _configurationWrapper = new Mock<IConfigurationWrapper>();
             _configurationWrapper.Setup(m => m.GetEnvironmentVarAsString("ApiUser")).Returns("mockApiUser");
             _configurationWrapper.Setup(m => m.GetEnvironmentVarAsString("ApiPassword")).Returns("mockApiPassword");
-                    
+
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _accountService = new Mock<IAccountService>();
             _accountService.Setup(m => m.ChangePassword(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
             
-            accountController = new AccountController(_accountService.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object);   
+            accountController = new AccountController(_authTokenExpiryService.Object, 
+                                                      _accountService.Object, 
+                                                      new Mock<IUserImpersonationService>().Object, 
+                                                      new Mock<IAuthenticationRepository>().Object);   
         }
 
         [Test]
@@ -58,7 +64,7 @@ namespace crds_angular.test.controllers
        
         public void ShouldReturnOk()
         {
-
+            _authTokenExpiryService.Setup(a => a.IsAuthtokenCloseToExpiry(It.IsAny<HttpRequestHeaders>())).Returns(true);
             // Set the cookie in the header
             var token = "Anything";
             HttpRequestMessage h = new HttpRequestMessage();

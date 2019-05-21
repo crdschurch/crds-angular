@@ -19,6 +19,8 @@ using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models;
 using RestSharp.Extensions;
 using log4net;
+using Constants = Crossroads.Utilities.Constants;
+using System.Text.RegularExpressions;
 
 namespace crds_angular.Services
 {
@@ -90,7 +92,7 @@ namespace crds_angular.Services
             }
             else if ("card_error".Equals(e.Type))
             {
-                if (e.Code != null && ("card_declined".Equals(e.Code) || e.Code.Matches("^incorrect") || e.Code.Matches("^invalid")))
+                if (e.Code != null && ("card_declined".Equals(e.Code) || Regex.Match(e.Code, "^incorrect").Success || Regex.Match(e.Code, "^invalid").Success))
                 {
                     e.GlobalMessage = GetContentBlock("paymentMethodDeclined");
                 }

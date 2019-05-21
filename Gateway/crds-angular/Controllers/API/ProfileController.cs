@@ -4,21 +4,17 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Description;
-using AutoMapper;
 using crds_angular.Exceptions;
 using crds_angular.Exceptions.Models;
 using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Models.Crossroads.Serve;
 using crds_angular.Security;
 using crds_angular.Services.Interfaces;
-using Crossroads.Utilities.Interfaces;
 using log4net;
-using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using IPersonService = crds_angular.Services.Interfaces.IPersonService;
 using IDonorService = crds_angular.Services.Interfaces.IDonorService;
 using Crossroads.ApiVersioning;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
 using Newtonsoft.Json;
@@ -26,7 +22,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace crds_angular.Controllers.API
 {
-    public class ProfileController : MPAuth
+    public class ProfileController : ImpersonateAuthBaseController
     {
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IPersonService _personService;
@@ -38,7 +34,17 @@ namespace crds_angular.Controllers.API
         private readonly IContactRelationshipRepository _contactRelationshipService;
         private readonly List<int> _allowedAdminGetProfileRoles;
 
-        public ProfileController(IPersonService personService, IServeService serveService, IUserImpersonationService impersonationService, IDonorService donorService, IAuthenticationRepository authenticationService, IUserRepository userService, IContactRelationshipRepository contactRelationshipService, IConfigurationWrapper config, IUserImpersonationService userImpersonationService) : base(userImpersonationService, authenticationService)
+        public ProfileController(IAuthTokenExpiryService authTokenExpiryService, 
+                                 IPersonService personService, 
+                                 IServeService serveService, 
+                                 IUserImpersonationService impersonationService, 
+                                 IDonorService donorService, 
+                                 IAuthenticationRepository authenticationService, 
+                                 IUserRepository userService, 
+                                 IContactRelationshipRepository contactRelationshipService, 
+                                 IConfigurationWrapper config, 
+                                 IUserImpersonationService userImpersonationService) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _personService = personService;
             _serveService = serveService;
@@ -57,14 +63,14 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult GetProfile([FromUri(Name = "impersonateDonorId")]int? impersonateDonorId = null)
         {
-            return Authorized(token =>
+            return Authorized(authDTO =>
             {
                 var impersonateUserId = impersonateDonorId == null ? string.Empty : _donorService.GetContactDonorForDonorId(impersonateDonorId.Value).Email;
                 try
                 {
                     var person = (impersonateDonorId != null)
-                        ? _impersonationService.WithImpersonation(token, impersonateUserId, () => _personService.GetLoggedInUserProfile(token))
-                        : _personService.GetLoggedInUserProfile(token);
+                        ? _impersonationService.WithImpersonation(authDTO, impersonateUserId, () => _personService.GetPerson(authDTO.UserInfo.Mp.ContactId))
+                        : _personService.GetPerson(authDTO.UserInfo.Mp.ContactId);
                     if (person == null)
                     {
                         return Unauthorized();
@@ -84,23 +90,37 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult GetProfile(int contactId)
         {
-            return Authorized(token =>
+            return Authorized(authDTO =>
             {
                 try
                 {
                     // does the logged in user have permission to view this contact?
                     //TODO: Move this security logic to MP, if for some reason we absulutly can't then centerlize all security logic that exists in the gateway
-                    var family = _serveService.GetImmediateFamilyParticipants(token);
+                    var family = _serveService.GetImmediateFamilyParticipants(authDTO.UserInfo.Mp.ContactId);
                     Person person = null;
-                    if (family.Where(f => f.ContactId == contactId).ToList().Count > 0)
-                    {
 
+                    bool canImpersonate = authDTO.UserInfo.Mp.CanImpersonate.HasValue ?
+                      authDTO.UserInfo.Mp.CanImpersonate.Value :
+                      false;
+
+                    if (family.Where(f => f.ContactId == contactId).ToList().Count > 0) // This is not an impersonation case
+                    {
                         person = _personService.GetPerson(contactId);
                     }
+                    else if (canImpersonate)
+                    {
+                        person = _personService.GetPerson(contactId);
+                    }
+                    else
+                    {
+                        return Unauthorized();
+                    }
+
                     if (person == null)
                     {
                         return Unauthorized();
                     }
+
                     return Ok(person);
                 }
                 catch (Exception e)
@@ -119,7 +139,7 @@ namespace crds_angular.Controllers.API
         {
             return Authorized(token =>
             {
-                var user = _userService.GetByAuthenticationToken(token);
+                var user = _userService.GetByUserId(token.UserInfo.Mp.UserId.ToString());
                 var roles = _userService.GetUserRoles(user.UserRecordId);
                 if (roles == null || !roles.Exists(r => _allowedAdminGetProfileRoles.Contains(r.Id)))
                 {
@@ -154,7 +174,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var family = _contactRelationshipService.GetMyImmediateFamilyRelationships(contactid, token);
+                    var family = _contactRelationshipService.GetMyImmediateFamilyRelationships(contactid);
                     var spouse = family.Where(f => f.Relationship_Id == 1).Select(s => new FamilyMember
                     {
                         Age = s.Age,
@@ -185,13 +205,14 @@ namespace crds_angular.Controllers.API
                 return Authorized(t =>
                 {
                     // does the logged in user have permission to view this contact?
-                    var family = _serveService.GetImmediateFamilyParticipants(t);
+                    var family = _serveService.GetImmediateFamilyParticipants(t.UserInfo.Mp.ContactId);
 
                     if (family.Where(f => f.ContactId == person.ContactId).ToList().Count > 0)
                     {
                         try
                         {
-                            _personService.SetProfile(t, person);
+                            
+                            _personService.SetProfile(person);
                             return this.Ok();
                         }
                         catch (Exception ex)

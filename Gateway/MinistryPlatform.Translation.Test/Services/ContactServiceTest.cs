@@ -43,48 +43,12 @@ namespace MinistryPlatform.Translation.Test.Services
             _configuration.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRest.Object);
 
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
             });
             _fixture = new ContactRepository(_ministryPlatformService.Object, _authService.Object, _configuration.Object, _ministryPlatformRest.Object, _apiUserService.Object);
-        }
-
-
-        [Test]
-        public void GetContactByParticipantId()
-        {
-            const int participantId = 99999;
-            var expectedContact = new MpMyContact
-            {
-                Contact_ID = 11111,
-                Email_Address = "andy@dalton.nfl",
-                Last_Name = "Dalton",
-                First_Name = "Andy"
-            };
-
-            var mockContactDictionary = new List<Dictionary<string, object>>
-            {
-                new Dictionary<string, object>
-                {
-                    {"Contact_ID", expectedContact.Contact_ID},
-                    {"Email_Address", expectedContact.Email_Address},
-                    {"First_Name", expectedContact.First_Name},
-                    {"Last_Name", expectedContact.Last_Name}
-                }
-            };
-            var searchString = participantId + ",";
-            _ministryPlatformService.Setup(m => m.GetPageViewRecords("ContactByParticipantId", It.IsAny<string>(), searchString, "", 0)).Returns(mockContactDictionary);
-
-            var returnedContact = _fixture.GetContactByParticipantId(participantId);
-
-            _ministryPlatformService.VerifyAll();
-
-            Assert.AreEqual(expectedContact.Contact_ID, returnedContact.Contact_ID);
-            Assert.AreEqual(expectedContact.Email_Address, returnedContact.Email_Address);
-            Assert.AreEqual(expectedContact.First_Name, returnedContact.First_Name);
-            Assert.AreEqual(expectedContact.Last_Name, returnedContact.Last_Name);
         }
 
         [Test]
@@ -263,7 +227,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var dob = new DateTime().ToString();
             const string mobile = "5554441111";
 
-
+            _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("ABC");
             _ministryPlatformService.Setup(
                 mocked => mocked.CreateRecord(292, It.IsAny<Dictionary<string, object>>(), "ABC", false))
                 .Returns(123);
@@ -406,7 +370,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             const string columns = "Contact_ID_Table.Contact_ID, Contact_ID_Table.Display_Name, Contact_ID_Table.Email_Address, Contact_ID_Table.First_Name, Contact_ID_Table.Last_Name";
             string filter = $"Attribute_ID IN (7088,9048) AND Start_Date <= GETDATE() AND (End_Date IS NULL OR End_Date > GETDATE())";
-
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("ABC");
             _ministryPlatformRest.Setup(m => m.Search<MpContactAttribute, Dictionary<string, object>>(filter, columns, "Display_Name", true)).Returns(returnData);
 
             var result = _fixture.PrimaryContacts();
@@ -477,6 +441,7 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             const int householdId = 999;
             var householdContacts = GetContactHouseholds(householdId);
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("ABC");
             _ministryPlatformRest.Setup(m => m.Search<MpContactHousehold>(It.IsAny<string>(), It.IsAny<List<string>>(), null, false)).Returns(householdContacts);
 
             var householdMembers = _fixture.GetOtherHouseholdMembers(householdId);

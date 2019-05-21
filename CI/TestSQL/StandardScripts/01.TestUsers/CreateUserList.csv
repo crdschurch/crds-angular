@@ -1,0 +1,85 @@
+first,last,email,description
+Anderson,Cooper,mpcrds+12@gmail.com,Registered Account - Existing ACH donor US1390
+Lisa,Strauss,mpcrds+15@gmail.com,Registered Account - Existing ACH donor for manual testing
+Phillip,Fry,mpcrds+32@gmail.com,Registered Account - This is a user that has ACH saved as payment data in stripe and should not change to credit card. 
+Gary,Gentry,mpcrds+16@gmail.com,Existing CC donor for manual testing
+CorkboardAdmin,CorkboardAdmin,mpcrds+cbadmin@gmail.com,Corkboard Admin account
+Denise,Kendricks,mpcrds+20@gmail.com,ACH account. Started as guest give account
+Rich,Theil-Test,rtheil+testing@crossroads.net,Rich's test account
+Wife,Theil-Test,rtheil+wife@crossroads.net,Rich's test wife
+Kid14,Theil-Test,rtheil+kid14@crossroads.net,Rich's test 14yr old
+Kid17,Theil-Test,rtheil+kid17@crossroads.net,Rich's Test 17yr old
+Dad,KidsClubAppFam,kidsclubdad@gmail.com,Kids Club App family Dad
+Mom,KidsClubAppFam,kidsclubmom@gmail.com,Kids Club App family Mom
+KidsClubKid14,KidsClubAppFam,kidsclubkid14@gmail.com,Kids club app family 14yr old
+KidsClubKid17,KidsClubAppFam,kidsclubkid17@gmail.com,Kids club app family 17yr old
+Cloud,Strife,mpcrds+cloudstrife@gmail.com,Trip and Giving History Family
+Tifa,Lockhart,mpcrds+tifalockhart@gmail.com,Trip and Giving History Family
+Marlene,Wallace,mpcrds+marlenewallace@gmail.com,Trip and Giving History Family
+Kathryn,Cradduck-Test,kcradduck+testing@crossroads.net,Kathryn's test account
+Husband,Cradduck-Test,kcradduck+husband@crossroads.net,Kathryn's test husband
+Kid14,Cradduck-Test,kcradduck+kid14@crossroads.net,Kathryn's test 14yr old
+Kid17,Cradduck-Test,kcradduck+kid17@crossroads.net,Kathryn's Test 17yr old
+Ron,Howard,mpcrds+8@gmail.com,user for CG
+Phoebe,Cates,mpcrds+6@gmail.com,user for CG
+husband,ECheckIn,mpcrds+echeckinhus@gmail.com,Echeckin ETL
+wife,ECheckIn,mpcrds+echeckinwif@gmail.com,ECheckin ETL
+Richard,Tremplay,mpcrds+tremplay.richard@gmail.com,Duplicate of Peter Parker Family. Leader of small group
+Mary,Tremplay,mpcrds+tremplay.mary@gmail.com,Duplicate of Peter Parker Family
+Johan,Tremplay,mpcrds+tremplay.johan@gmail.com,Tremplay child
+Josina,Tremplay,mpcrds+tremplay.Josina@gmail.com,Tremplay child
+Vincent,Brown,mpcrds+tremplay.vincent@gmail.com,Tremplay foster child
+Sophia,Bemmen,mpcrds+tremplay.sophia@gmail.com,Tremplay foster child
+George,Tremplay,mpcrds+tremplay.george@gmail.com,Tremplay legal ward
+Margaret,Ray,mpcrds+tremplay.margaret@gmail.com,Tremplay legal ward
+Julie,Skye,mpcrds+44@gmail.com,GO Cincinnati volunteer
+Drew,Karpyshyn,mpcrds+auto+1@gmail.com,(AUTOMATION) Existing ACH Donor
+Anakin,Skywalker,mpcrds+auto+husband@gmail.com,(AUTOMATION) Husband
+Padme,Amidala,mpcrds+auto+wife@gmail.com,(AUTOMATION) Wife
+Luke,Skywalker,mpcrds+auto+child1@gmail.com,(AUTOMATION) Child 1
+Leia,Organa,mpcrds+auto+child2@gmail.com,(AUTOMATION) Child 2
+Wilhuff,Tarkin,mpcrds+auto+3@gmail.com,(AUTOMATION) Go Cincinnati volunteer
+Fred,Flintstone,mpcrds+auto+fredflintstone@gmail.com,(AUTOMATION) Trip and Giving History Family
+Wilma,Flintstone,mpcrds+auto+wilmaflintstone@gmail.com,(AUTOMATION) Trip and Giving History Family
+Pebbles,Flintstone,mpcrds+auto+pebblesflintstone@gmail.com,(AUTOMATION) Trip and Giving History Family
+Barret,Wallace,mpcrds+auto+barretwallace@gmail.com,(AUTOMATION) Sign Up to Serve
+James,May,mpcrds+auto+captainslow@gmail.com, KC Admin
+Albert,Einstein,mpcrds+ae@gmail.com,Connect and group leader
+Nickoli,Tesla,mpcrds+nt@gmail.com,group participant
+Thomas,Edison,mpcrds+te@gmail.com,group participant
+Stephen,Hawking,mpcrds+sh@gmail.com,group participant and connect host
+Charles,Darwin,mpcrds+cd@gmail.com,group participant
+Mat,Cauthon,mpcrds+auto+matcauthon@gmail.com,Finder group leader
+Talmanes,Delovinde,mpcrds+auto+talmanesdelovinde@gmail.com,Finder group participant
+Nalesean,Aldiaya,mpcrds+auto+naleseanaldiaya@gmail.com,Finder group participant
+Steve,Austin,mpcrds+auto+stone+cold@gmail.com,Export GP
+Jean-Luc,Picard,mpcrds+picard@gmail.com,Groups Leader
+Lutenant,Data,mpcrds+data@gmail.com,Groups Leader
+Lutenant,Worf,mpcrds+worf@gmail.com,Groupss Leader
+William,Riker,mpcrds+riker@gmail.com,Groups Leader
+Deanna,Troi,mpcrds+troi@gmail.com,Groups approved apprentice
+Geordi,La Forge,mpcrds+laforge@gmail.com,Not approved apprentice
+Whoopi,Guinan,mpcrds+guinan@gmail.com,approved member
+Miles,OBrien,mpcrds+obrien@gmail.com,approved member
+Beverly,Crusher,mpcrds+crusher@gmail.com,not approved member
+Test,Subject,mpcrds+chell@aperture.com,default contact when creating test data
+Mike,Tester1,miketester1@yahoo.se,Map user
+Mike,Tester2,miketester2@yahoo.se,Map user
+Mike,Tester3,miketester3@yahoo.se,Map user
+Alicia,Keys,mpcrds+aliciakeys@gmail.com,MP Trip Tools user
+Glad,Os,mpcrds+auto+glados@gmail.com,(Automation) MP Event Tools user
+Sherlock,Holmes,mpcrds+sherlock@gmail.com,Groups Leader
+John,Watson,mpcrds+watson@gmail.com,approved member
+Load,Test,loadtest@gmail.com,(Automation/Load Test) basic load test user
+Isaac,Newton,mpcrds+newton@gmail.com,Connect Host
+Serve,UI,mpcrds+auto+verifyui@gmail.com,Sign Up To Serve
+I,Sign Up,mpcrds+auto+ISignUp@gmail.com,Sign Up To Serve
+UI,Leader,mpcrds+auto+uileader@gmail.com,Sign Up To Serve
+Member,Avalanche,mpcrds+auto+memberofavalanche@gmail.com,Sign Up To Serve
+No,Preferred Serving Time,mpcrds+auto+nopreferred@gmail.com,Sign Up To Serve
+Not,Active,mpcrds+auto+inactive@gmail.com,Sign Up To Serve
+Test,User,mpcrds+auto+deceased@gmail.com,Sign Up To Serve
+Childcare,Parent,mpcrds+auto+childcareparent@gmail.com,Childcare Parent
+Childcare,Child,mpcrds+auto+childcarechild@gmail.com,Childcare Child
+Batch,Master,mpcrds+auto+batchoperator@gmail.com,(automation) Batch operator
+Alicia,Keys Forms,mpcrds+auto+aliciakeys+forms@gmail.com,(automation) Form Maker user

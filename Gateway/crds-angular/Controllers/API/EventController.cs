@@ -16,13 +16,19 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class EventController : MPAuth
+    public class EventController : ImpersonateAuthBaseController
     {
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IApiUserRepository _apiUserService;
         private readonly IEventService _eventService;
 
-        public EventController(IMinistryPlatformService ministryPlatformService, IApiUserRepository apiUserService, IEventService eventService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public EventController(IAuthTokenExpiryService authTokenExpiryService, 
+                               IMinistryPlatformService ministryPlatformService, 
+                               IApiUserRepository apiUserService, 
+                               IEventService eventService, 
+                               IUserImpersonationService userImpersonationService, 
+                               IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             this._ministryPlatformService = ministryPlatformService;
             _eventService = eventService;
@@ -60,7 +66,7 @@ namespace crds_angular.Controllers.API
         [Route("events/{site}")]
         public IHttpActionResult Get(string site)
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
 
             var todaysEvents = _ministryPlatformService.GetRecordsDict("TodaysEventLocationRecords", token, site, "5 asc");//Why 5 you ask... Think Ministry
 
@@ -96,7 +102,7 @@ namespace crds_angular.Controllers.API
             return Authorized(token => {
                 try
                 {
-                    return Ok(_eventService.CopyEventSetup(request.EventTemplateId, request.EventId, token));
+                    return Ok(_eventService.CopyEventSetup(request.EventTemplateId, request.EventId));
                 }
                 catch (Exception e)
                 {
@@ -115,7 +121,7 @@ namespace crds_angular.Controllers.API
             return Authorized(token => {
                 try
                 {
-                    return Ok(_eventService.GetEventsBySite(site, token, startDate, endDate));
+                    return Ok(_eventService.GetEventsBySite(site, startDate, endDate));
                 }
                 catch (Exception e)
                 {
@@ -133,7 +139,7 @@ namespace crds_angular.Controllers.API
             return Authorized(token => {
                 try
                 {
-                    return Ok(_eventService.GetEventTemplatesBySite(site, token));
+                    return Ok(_eventService.GetEventTemplatesBySite(site));
                 }
                 catch (Exception e)
                 {

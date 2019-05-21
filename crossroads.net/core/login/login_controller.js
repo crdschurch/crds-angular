@@ -4,6 +4,10 @@
   module.exports = LoginController;
 
   LoginController.$inject = [
+    '$q',
+    '$http',
+    '$location',
+    '$cookies',
     '$scope',
     '$rootScope',
     'AUTH_EVENTS',
@@ -15,10 +19,15 @@
     '$timeout',
     'User',
     'ImageService',
+    'Impersonate',
     'AnalyticsService'
   ];
 
   function LoginController(
+    $q,
+    $http,
+    $location,
+    $cookies,
     $scope,
     $rootScope,
     AUTH_EVENTS,
@@ -30,12 +39,16 @@
     $timeout,
     User,
     ImageService,
+    Impersonate,
     AnalyticsService) {
 
     var vm = this;
     vm.path = ImageService.ProfileImageBaseURL + vm.contactId;
     vm.defaultImage = ImageService.DefaultProfileImage;
     vm.navigateToHome = navigateToHome;
+
+    $scope.isUserAlreadyLoggedInCheckRunning = true;
+    redirectUserToDestinationOrHomepageIfAlreadyLoggedIn();
 
     $scope.loginShow = false;
     $scope.newuser = User;
@@ -78,6 +91,26 @@
       });
     }
 
+    function redirectUserToDestinationOrHomepageIfAlreadyLoggedIn() {
+      let isUserLoggedInPromise =
+        crds_utilities.checkLoggedin($q, $timeout, $http, $location, $rootScope, $cookies, Session, Impersonate);
+
+      isUserLoggedInPromise.then(
+        () => { redirectToSpecifiedPageOrToHomepage(Session, $timeout); },
+        () => { $scope.isUserAlreadyLoggedInCheckRunning = false; }
+      );
+    }
+
+    function redirectToSpecifiedPageOrToHomepage(Session, $timeout) {
+      $timeout(function () {
+        if (Session.hasRedirectionInfo()) {
+          Session.redirectIfNeeded();
+        } else {
+          navigateToHome();
+        }
+      }, 500);
+    }
+
     $scope.login = function () {
 
       if ($scope.navlogin && $scope.navlogin.username) {
@@ -105,13 +138,7 @@
             // If the state name ends with login or register (like 'login' or 'give.one_time_login'),
             // either redirect to specified URL, or redirect to profile if URL is not specified.
             if (_.endsWith($state.current.name, 'login') || _.endsWith($state.current.name, 'register')) {
-              $timeout(function () {
-                if (Session.hasRedirectionInfo()) {
-                  Session.redirectIfNeeded();
-                } else {
-                  navigateToHome();
-                }
-              }, 500);
+              redirectToSpecifiedPageOrToHomepage(Session, $timeout);
             } else if ($scope.loginCallback) {
               $scope.processing = false;
               $scope.loginCallback();

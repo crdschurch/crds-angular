@@ -41,20 +41,4 @@ describe('Camps Family Select Tool', () => {
     familySelectController.$onInit();
     expect(log.debug).toHaveBeenCalled();
   });
-
-  it('should get the default cms block if no specific cms block exists', () => {
-    state.toParams = {
-      campId: 12
-    };
-    familySelectController.$onInit();
-    expect(familySelectController.cmsMessage).toBe('summer camp intro text');
-  });
-
-  it('should get the camp specific content block', () => {
-    state.toParams = {
-      campId: 123
-    };
-    familySelectController.$onInit();
-    expect(familySelectController.cmsMessage).toBe('success');
-  });
 });

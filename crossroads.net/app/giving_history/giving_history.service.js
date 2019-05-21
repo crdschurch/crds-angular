@@ -1,3 +1,4 @@
+// TODO: This is a deprecated file due to the Pushpay work and is no longer in use
 (function() {
   'use strict';
   module.exports = GivingHistoryService;

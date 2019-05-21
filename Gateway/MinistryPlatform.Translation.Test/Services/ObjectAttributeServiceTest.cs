@@ -31,13 +31,14 @@ namespace MinistryPlatform.Translation.Test.Services
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+        _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
             });
-            _fixture = new ObjectAttributeRepository(_authService.Object, _configWrapper.Object, _ministryPlatformService.Object, _ministryPlatformRest.Object);
+            _fixture = new ObjectAttributeRepository(_authService.Object, _configWrapper.Object, _ministryPlatformService.Object, _ministryPlatformRest.Object, _apiUserService.Object);
         }
 
         [Test]

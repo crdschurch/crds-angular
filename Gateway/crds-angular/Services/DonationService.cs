@@ -17,6 +17,7 @@ using MinistryPlatform.Translation.Models;
 using Newtonsoft.Json;
 using DonationStatus = crds_angular.Models.Crossroads.Stewardship.DonationStatus;
 using PaymentType = crds_angular.Models.Crossroads.Stewardship.PaymentType;
+using Constants = Crossroads.Utilities.Constants;
 
 namespace crds_angular.Services
 {
@@ -349,9 +350,9 @@ namespace crds_angular.Services
             return (Mapper.Map<MpDonationBatch, DonationBatchDTO>(_mpDonationRepository.GetDonationBatchByDepositId(depositId)));
         }
 
-        public List<DepositDTO> GetSelectedDonationBatches(int selectionId, string token)
+        public List<DepositDTO> GetSelectedDonationBatches(int selectionId)
         {
-            var selectedDeposits = _mpDonationRepository.GetSelectedDonationBatches(selectionId, token);
+            var selectedDeposits = _mpDonationRepository.GetSelectedDonationBatches(selectionId);
             var deposits = new List<DepositDTO>();
 
             foreach (var deposit in selectedDeposits)
@@ -387,30 +388,30 @@ namespace crds_angular.Services
         }
 
 
-        public List<GPExportDatumDTO> GetGpExport(int depositId, string token)
+        public List<GPExportDatumDTO> GetGpExport(int depositId)
         {
-            var gpExportData = _mpDonationRepository.GetGpExport(depositId, token);
+            var gpExportData = _mpDonationRepository.GetGpExport(depositId);
             return gpExportData.Select(Mapper.Map<MpGPExportDatum, GPExportDatumDTO>).ToList();
         }
 
-        public MemoryStream CreateGPExport(int selectionId, int depositId, string token)
+        public MemoryStream CreateGPExport(int selectionId, int depositId)
         {
-            var gpExport = GetGpExport(depositId, token);
+            var gpExport = GetGpExport(depositId);
             var stream = new MemoryStream();
             CSV.Create(gpExport, GPExportDatumDTO.Headers, stream, "\t");
-            UpdateDepositToExported(selectionId, depositId, token);
+            UpdateDepositToExported(selectionId, depositId);
 
             return stream;
         }
 
-        private void UpdateDepositToExported(int selectionId, int depositId, string token)
+        private void UpdateDepositToExported(int selectionId, int depositId)
         {
-            _mpDonationRepository.UpdateDepositToExported(selectionId, depositId, token);
+            _mpDonationRepository.UpdateDepositToExported(selectionId, depositId);
         }
 
-        public List<DepositDTO> GenerateGPExportFileNames(int selectionId, string token)
+        public List<DepositDTO> GenerateGPExportFileNames(int selectionId)
         {
-            var deposits = GetSelectedDonationBatches(selectionId, token);
+            var deposits = GetSelectedDonationBatches(selectionId);
 
             foreach (var deposit in deposits)
             {

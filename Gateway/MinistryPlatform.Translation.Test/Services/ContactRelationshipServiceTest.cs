@@ -5,6 +5,7 @@ using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
+using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
@@ -20,6 +21,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IMinistryPlatformService> _ministryPlatformService;
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
+        private Mock<IApiUserRepository> _apiUserService;
 
         private readonly int CONTACT_RELATIONSHIP_PAGE = 265;
         private readonly int CONTACT_RELATIONSHIP_ID = 110;
@@ -30,11 +32,12 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
-            _fixture = new ContactRelationshipRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object);
+            _apiUserService = new Mock<IApiUserRepository>();
+            _fixture = new ContactRelationshipRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _apiUserService.Object);
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
 
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
@@ -159,7 +162,7 @@ namespace MinistryPlatform.Translation.Test.Services
                                                  0))
                 .Returns(getSubpageViewRecordsResponse);
 
-            var family = _fixture.GetMyImmediateFamilyRelationships(contactId, token).ToList();
+            var family = _fixture.GetMyImmediateFamilyRelationships(contactId).ToList();
 
             _ministryPlatformService.VerifyAll();
 

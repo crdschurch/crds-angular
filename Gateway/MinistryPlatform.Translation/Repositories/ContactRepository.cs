@@ -13,6 +13,7 @@ using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using Crossroads.Web.Auth.Models;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -31,17 +32,20 @@ namespace MinistryPlatform.Translation.Repositories
 
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRest;
-        private readonly IApiUserRepository _apiUserRepository;
         private readonly int _participantsPageId;
         private readonly int _securityRolesSubPageId;
         
 
-        public ContactRepository(IMinistryPlatformService ministryPlatformService, IAuthenticationRepository authenticationService, IConfigurationWrapper configuration, IMinistryPlatformRestRepository ministryPlatformRest, IApiUserRepository apiUserRepository)
-            : base(authenticationService, configuration)
+        public ContactRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configuration,
+            IMinistryPlatformRestRepository ministryPlatformRest,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configuration, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRest = ministryPlatformRest;
-            _apiUserRepository = apiUserRepository;
 
             _householdsPageId = configuration.GetConfigIntValue("Households");
             _securityRolesSubPageId = configuration.GetConfigIntValue("SecurityRolesSubPageId");
@@ -138,22 +142,8 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpMyContact GetContactByParticipantId(int participantId)
         {
-            var token = ApiLogin();
-            var searchString = string.Format("{0},", participantId);
-            var contacts = _ministryPlatformService.GetPageViewRecords("ContactByParticipantId", token, searchString);
-            var c = contacts.SingleOrDefault();
-            if (c == null)
-            {
-                return null;
-            }
-            var contact = new MpMyContact
-            {
-                Contact_ID = c.ToInt("Contact_ID"),
-                Email_Address = c.ToString("Email_Address"),
-                Last_Name = c.ToString("Last_Name"),
-                First_Name = c.ToString("First_Name")
-            };
-            return contact;
+            var contactId = GetContactIdByParticipantId(participantId);
+            return GetContactById(contactId);
         }
 
         public string GetContactEmail(int contactId)
@@ -338,8 +328,13 @@ namespace MinistryPlatform.Translation.Repositories
                 Nickname = hm.Nickname,
             }).ToList();
             return householdMembers;
-        }      
+        }
+        public MpMyContact GetMyProfile(AuthDTO token)
+        {
+            return this.GetContactById(token.UserInfo.Mp.ContactId);
+        }
 
+        [Obsolete("Use GetMyProfile with an AuthDTO token")]
         public MpMyContact GetMyProfile(string token)
         {
             var recordsDict = _ministryPlatformService.GetRecordsDict("MyProfile", token);

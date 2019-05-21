@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -14,15 +13,19 @@ using crds_angular.Security;
 using crds_angular.Services.Interfaces;
 using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
-using ThirdParty.Json.LitJson;
 
 namespace crds_angular.Controllers.API
 {
-    public class GroupLeaderController : ReactiveMPAuth
+    public class GroupLeaderController : ImpersonateAuthBaseController
     {
+        private readonly IAuthTokenExpiryService _authTokenExpiryService;
         private readonly IGroupLeaderService _groupLeaderService;
 
-        public GroupLeaderController(IGroupLeaderService groupLeaderService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public GroupLeaderController(IAuthTokenExpiryService authTokenExpiryService,
+                                     IGroupLeaderService groupLeaderService, 
+                                     IUserImpersonationService userImpersonationService, 
+                                     IAuthenticationRepository authenticationRepository) 
+          : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _groupLeaderService = groupLeaderService;
         }
@@ -31,11 +34,11 @@ namespace crds_angular.Controllers.API
         [HttpPost]
         public async Task<IHttpActionResult> InterestedInGroupLeadership()
         {
-            return await Authorized(token =>
+            return Authorized(token =>
             {
                 try
                 {
-                    _groupLeaderService.SetInterested(token);
+                    _groupLeaderService.SetInterested(token.UserInfo.Mp.ContactId);
                     return Ok();
                 }
                 catch (Exception e)
@@ -52,11 +55,11 @@ namespace crds_angular.Controllers.API
         {
             if (ModelState.IsValid)
             {
-                return await Authorized(token =>
+                return Authorized(token =>
                 {
                     try
                     {                                                
-                        _groupLeaderService.SaveReferences(profile).Zip<int, IList<Unit>, int>(_groupLeaderService.SaveProfile(token, profile),
+                        _groupLeaderService.SaveReferences(profile).Zip<int, IList<Unit>, int>(_groupLeaderService.SaveProfile(token.UserInfo.Mp.ContactId, profile),
                                                      (int first, IList<Unit> second) => first).Wait();
                         
                         return Ok();
@@ -96,24 +99,15 @@ namespace crds_angular.Controllers.API
         {
             if (ModelState.IsValid)
             {
-                return await Authorized(token =>
+                return Authorized(token =>
                 {
                     try
                     {
                         _groupLeaderService.SaveSpiritualGrowth(spiritualGrowth)
-                            .Concat(_groupLeaderService.SetApplied(token)).Wait();
+                            .Concat(_groupLeaderService.SetApplied(token.UserInfo.Mp.ContactId)).Wait();
 
                         _groupLeaderService.GetApplicationData(spiritualGrowth.ContactId).Subscribe((res) =>
                         {
-                            if ((string)res["referenceContactId"] != "0")
-                            {
-                                _groupLeaderService.SendReferenceEmail(res).Subscribe(CancellationToken.None);
-                            }
-                            else
-                            {
-                                _groupLeaderService.SendNoReferenceEmail(res).Subscribe(CancellationToken.None);
-                            }
-
                             if (((string)res["studentLeaderRequest"]).ToUpper() == "TRUE")
                             {
                                 _groupLeaderService.SendStudentMinistryRequestEmail(res).Subscribe(CancellationToken.None);
@@ -137,11 +131,11 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<IHttpActionResult> GetLeaderStatus()
         {
-            return await Authorized(token =>
+            return Authorized(token =>
             {
                 try
                 {
-                    var status = _groupLeaderService.GetGroupLeaderStatus(token).Wait();
+                    var status = _groupLeaderService.GetGroupLeaderStatus(token.UserInfo.Mp.ContactId).Wait();
                     return Ok(new GroupLeaderStatusDTO
                     {
                         Status = status

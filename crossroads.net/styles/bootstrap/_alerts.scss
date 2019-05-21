@@ -6,6 +6,7 @@
 // Base styles
 // -------------------------
 
+.toast,
 .alert {
   padding: $alert-padding;
   margin-bottom: $line-height-computed;
@@ -37,9 +38,11 @@
 //
 // Expand the right padding and account for the close button's positioning.
 
+.toast-dismissable,
 .alert-dismissable, // The misspelled .alert-dismissable was deprecated in 3.2.0.
 .alert-dismissible {
   padding-right: ($alert-padding + 20);
+  position: relative;
 
   // Adjust close link position
   .close {
@@ -48,21 +51,34 @@
     right: -21px;
     color: inherit;
   }
+
+  .toast-close-button {
+    position: absolute;
+    right: 8px;
+    top: 2px;
+  }
 }
 
 // Alternate styles
 //
 // Generate contextual modifier classes for colorizing the alert.
 
+.toast-success,
 .alert-success {
   @include alert-variant($alert-success-bg, $alert-success-border, $alert-success-text);
 }
+
+.toast-info,
 .alert-info {
   @include alert-variant($alert-info-bg, $alert-info-border, $alert-info-text);
 }
+
+.toast-warning,
 .alert-warning {
   @include alert-variant($alert-warning-bg, $alert-warning-border, $alert-warning-text);
 }
+
+.toast-danger,
 .alert-danger {
   @include alert-variant($alert-danger-bg, $alert-danger-border, $alert-danger-text);
 }

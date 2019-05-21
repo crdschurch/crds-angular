@@ -52,7 +52,7 @@
       var query = $scope.searchString;
       switch (vm.type){
         case 'media':
-          filter = '(or type:\'Series\' type:\'Message\' type:\'Video\' type:\'Music\')';
+          filter = '(or type:\'Series\' type:\'Message\' type:\'Video\' type:\'Music\' type:\'MediaResource\')';
           break;
         case 'corkboard':
           filter = '(or type:\'NEED\' type:\'ITEM\' type:\'EVENT\' type:\'JOB\')';

@@ -36,26 +36,5 @@ describe('GivingYears Directive', function() {
           + ' on-change="onChange()"></div>';
       })
   );
-  describe('link function', function() {
-    var element;
-    beforeEach(function() {
-      element = $compile(angular.element(templateString))(scope);
-      scope.$digest();
-    });
 
-    it('should attach an updatedYear function onto isolate scope', function() {
-      var isolateScope = element.isolateScope();
-      expect(isolateScope.updatedYear).toBeDefined();
-      expect(isolateScope.updatedYear).toEqual(jasmine.any(Function));
-    });
-
-    it('should attach an updatedYear function that delegates to the callback, wrapped in a timeout', function() {
-      var isolateScope = element.isolateScope();
-      isolateScope.updatedYear();
-      expect(callback).not.toHaveBeenCalled();
-      $timeout.flush();
-      expect(callback).toHaveBeenCalled();
-    });
-
-  });
 });

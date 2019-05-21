@@ -110,10 +110,11 @@
     $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
       console.error('$stateChangeError: ' + error);
       console.error(error);
+      
 
       //TODO: put the 'toState' in the session if we want to redirect to that page
       vm.resolving = false;
-      $state.go('content', {link: '/server-error/'});
+      $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
     });
 
     //////////////////////////
@@ -143,19 +144,19 @@
     });
 
     $rootScope.$on('context', function(event, id) {
-      var contentBlocks = ContentBlock.get({
+      var contentblocks = ContentBlock.get({
         id: id
       }, function() {
-        return contentBlocks.ContentBlock.content;
+        return contentblocks.ContentBlock.content;
       });
     });
 
     var contentBlockRequest = ContentBlock.get('', function() {
-      mapContentBlocks(contentBlockRequest.contentBlocks);
+      mapContentBlocks(contentBlockRequest.contentblocks);
     });
 
-    function mapContentBlocks(contentBlocks) {
-      _.reduce(contentBlocks, function(messages, cb) {
+    function mapContentBlocks(contentblocks) {
+      _.reduce(contentblocks, function(messages, cb) {
         messages[cb.title] = cb;
         return (messages);
       }, MESSAGES);

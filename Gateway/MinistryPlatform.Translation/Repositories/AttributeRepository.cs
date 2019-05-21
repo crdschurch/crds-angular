@@ -16,19 +16,17 @@ namespace MinistryPlatform.Translation.Repositories
     {
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly int _attributesPageId = Convert.ToInt32(AppSettings("Attributes"));
-        private readonly IApiUserRepository _apiUserService;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRest;
 
         public AttributeRepository(IMinistryPlatformService ministryPlatformService,
                                    IAuthenticationRepository authenticationService,
                                    IConfigurationWrapper configurationWrapper,
-                                   IApiUserRepository apiUserService,
-                                   IMinistryPlatformRestRepository ministryPlatformRest)
-            : base(authenticationService, configurationWrapper)
+                                   IMinistryPlatformRestRepository ministryPlatformRest,
+                                   IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRest = ministryPlatformRest;
-            _apiUserService = apiUserService;
         }
         
         public List<MpAttribute> GetAttributes(int? attributeTypeId)
@@ -68,7 +66,7 @@ namespace MinistryPlatform.Translation.Repositories
             const string orderBy = "Attribute_Category_ID_table.Sort_Order";
             const bool distinct = true;
 
-            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpAttribute, MpAttributeCategory>(catSearch, catCols, orderBy, distinct);
+            return _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Search<MpAttribute, MpAttributeCategory>(catSearch, catCols, orderBy, distinct);
         }
 
         public MpAttribute GetOneAttributeByCategoryId(int categoryId)
@@ -77,7 +75,7 @@ namespace MinistryPlatform.Translation.Repositories
             atSearch += " AND (Attributes.Start_Date Is Null OR Attributes.Start_Date <= GetDate())";
             atSearch += " AND (Attributes.End_Date Is Null OR Attributes.End_Date >= GetDate())";
 
-            var ret = _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpAttribute>(atSearch, (string)null, (string)null, true);
+            var ret = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Search<MpAttribute>(atSearch, (string)null, (string)null, true);
             return ret.FirstOrDefault();
 
         }

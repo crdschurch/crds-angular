@@ -13,6 +13,7 @@ using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Product;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.Services
 {
@@ -106,7 +107,7 @@ namespace crds_angular.Services
             return campEventInfo;
         }
 
-        public ProductDTO GetCampProductDetails(int eventId, int camperContactId, string token)
+        public ProductDTO GetCampProductDetails(int eventId, int camperContactId, AuthDTO token)
         {
             var formId = _configurationWrapper.GetConfigIntValue("SummerCampFormID");
             var formFieldId = _configurationWrapper.GetConfigIntValue("SummerCampForm.FinancialAssistance");
@@ -133,19 +134,18 @@ namespace crds_angular.Services
             return campProductInfo;
         }
 
-        public List<CampFamilyMember> GetEligibleFamilyMembers(int eventId, string token)
+        public List<CampFamilyMember> GetEligibleFamilyMembers(int eventId, AuthDTO token)
         {
-            var apiToken = _apiUserRepository.GetToken();
-            var myContact = _contactRepository.GetMyProfile(token);
-            var family = _contactRepository.GetHouseholdFamilyMembers(myContact.Household_ID);
-            var me = family.Where(member => member.ContactId == myContact.Contact_ID).ToList();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
+            var family = _contactRepository.GetHouseholdFamilyMembers(token.UserInfo.Mp.HouseholdId.Value);
+            var me = family.Where(member => member.ContactId == token.UserInfo.Mp.ContactId).ToList();
 
             if ((me.First().HouseholdPosition == null || !me.First().HouseholdPosition.ToLower().StartsWith("head")) )
             {
                 return me.Select(member => NewCampFamilyMember(member, eventId, apiToken)).ToList();
             }
 
-            var otherFamily = _contactRepository.GetOtherHouseholdMembers(myContact.Household_ID);
+            var otherFamily = _contactRepository.GetOtherHouseholdMembers(token.UserInfo.Mp.HouseholdId.Value);
             family.AddRange(otherFamily);
             family = family.Where((member) => member.HouseholdPosition == "Minor Child").ToList();
             return family.Select(member => NewCampFamilyMember(member, eventId, apiToken)).ToList();
@@ -190,11 +190,10 @@ namespace crds_angular.Services
             };
         }
 
-        public void SaveCamperEmergencyContactInfo(List<CampEmergencyContactDTO> emergencyContacts, int eventId, int contactId, string token)
+        public void SaveCamperEmergencyContactInfo(List<CampEmergencyContactDTO> emergencyContacts, int eventId, int contactId, AuthDTO token)
         {
-            var loggedInContact = _contactRepository.GetMyProfile(token);
-            var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
-            family.AddRange(_contactRepository.GetOtherHouseholdMembers(loggedInContact.Household_ID));
+            var family = _contactRepository.GetHouseholdFamilyMembers(token.UserInfo.Mp.HouseholdId.Value);
+            family.AddRange(_contactRepository.GetOtherHouseholdMembers(token.UserInfo.Mp.HouseholdId.Value));
 
             if (family.Where(f => f.ContactId == contactId).ToList().Count <= 0)
             {
@@ -206,7 +205,7 @@ namespace crds_angular.Services
             var answers = new List<MpFormAnswer>();
             if (emergencyContacts.Count == 1)
             {
-                var existingEmergencyContacts = GetCamperEmergencyContactInfo(eventId, contactId, token);
+                var existingEmergencyContacts = GetCamperEmergencyContactInfo(eventId, contactId);
                 if (existingEmergencyContacts.Count > 1)
                 {
                     emergencyContacts.Add(new CampEmergencyContactDTO
@@ -270,7 +269,7 @@ namespace crds_angular.Services
             _formSubmissionRepository.SubmitFormResponse(formResponse);
         }
 
-        public CampReservationDTO SaveCampReservation(CampReservationDTO campReservation, int eventId, string token)
+        public CampReservationDTO SaveCampReservation(CampReservationDTO campReservation, int eventId, AuthDTO token)
         {
             var nickName = string.IsNullOrWhiteSpace(campReservation.PreferredName) ? campReservation.FirstName : campReservation.PreferredName;
             var contactId = Convert.ToInt32(campReservation.ContactId);
@@ -286,7 +285,7 @@ namespace crds_angular.Services
                 Gender = campReservation.Gender,
                 Nickname = nickName,
                 SchoolAttending = campReservation.SchoolAttending,
-                HouseholdId = (_contactRepository.GetMyProfile(token)).Household_ID,
+                HouseholdId = token.UserInfo.Mp.HouseholdId.Value,
                 HouseholdPositionId = 2
             };
 
@@ -323,7 +322,7 @@ namespace crds_angular.Services
             _objectAttributeService.SaveObjectAttributes(contactId, campReservation.AttributeTypes, campReservation.SingleAttributes, configuration);
 
             // Save students in selected grade group
-            var group = _groupRepository.GetGradeGroupForContact(contactId, _apiUserRepository.GetToken());
+            var group = _groupRepository.GetGradeGroupForContact(contactId, _apiUserRepository.GetDefaultApiClientToken());
 
             if (group.Status && group.Value.GroupId != campReservation.CurrentGrade)
             {
@@ -432,16 +431,15 @@ namespace crds_angular.Services
             _eventRepository.SetParticipantAsRegistered(eventId, participant.ParticipantId);
         }
 
-        public List<MyCampDTO> GetMyCampInfo(string token)
+        public List<MyCampDTO> GetMyCampInfo(AuthDTO token)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var campType = _configurationWrapper.GetConfigValue("CampEventTypeName");
 
             var dashboardData = new List<MyCampDTO>();
-
-            var loggedInContact = _contactRepository.GetMyProfile(token);
-            var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
-            family.AddRange(_contactRepository.GetOtherHouseholdMembers(loggedInContact.Household_ID));
+            
+            var family = _contactRepository.GetHouseholdFamilyMembers(token.UserInfo.Mp.HouseholdId.Value);
+            family.AddRange(_contactRepository.GetOtherHouseholdMembers(token.UserInfo.Mp.HouseholdId.Value));
 
             var cutoffDate = DateTime.Today.AddDays(-60);
 
@@ -492,25 +490,23 @@ namespace crds_angular.Services
             }).ToList();
         }
 
-        public void SaveWaivers(string token, int eventId, int contactId, List<CampWaiverResponseDTO> waivers)
+        public void SaveWaivers(AuthDTO token, int eventId, int contactId, List<CampWaiverResponseDTO> waivers)
         {
-            var loggedInContact = _contactRepository.GetMyProfile(token);
             var eventParticipantId = _eventParticipantRepository.GetEventParticipantByContactId(eventId, contactId);
             var waiverResponses = waivers.Select(waiver => new MpWaiverResponse()
             {
                 EventParticipantId = eventParticipantId,
                 WaiverId = waiver.WaiverId,
                 Accepted = waiver.WaiverAccepted,
-                SigneeContactId = loggedInContact.Contact_ID
+                SigneeContactId = token.UserInfo.Mp.ContactId
             }).ToList();
             _eventRepository.SetWaivers(waiverResponses);
         }
 
-        public void SaveInvoice(CampProductDTO campProductDto, string token)
-        {
-            var loggedInContact = _contactRepository.GetMyProfile(token);
-            var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
-            family.AddRange(_contactRepository.GetOtherHouseholdMembers(loggedInContact.Household_ID));
+        public void SaveInvoice(CampProductDTO campProductDto, AuthDTO token)
+        {   
+            var family = _contactRepository.GetHouseholdFamilyMembers(token.UserInfo.Mp.HouseholdId.Value);
+            family.AddRange(_contactRepository.GetOtherHouseholdMembers(token.UserInfo.Mp.HouseholdId.Value));
 
             if (family.Where(f => f.ContactId == campProductDto.ContactId).ToList().Count <= 0)
             {
@@ -553,16 +549,16 @@ namespace crds_angular.Services
             var invoiceDetail = _invoiceRepository.GetInvoiceDetailsForProductAndCamper(product.ProductId,campProductDto.ContactId, campProductDto.EventId);
             if (invoiceDetail.Status)
             {
-              _invoiceRepository.UpdateInvoiceAndDetail(invoiceDetail.Value.InvoiceId, product, productOptionPriceId, loggedInContact.Contact_ID, campProductDto.ContactId, eventParticipantId); 
+              _invoiceRepository.UpdateInvoiceAndDetail(invoiceDetail.Value.InvoiceId, product, productOptionPriceId, token.UserInfo.Mp.ContactId, campProductDto.ContactId, eventParticipantId); 
             }
             else
             {
-              _invoiceRepository.CreateInvoiceAndDetail(product.ProductId, productOptionPriceId, loggedInContact.Contact_ID, campProductDto.ContactId, eventParticipantId);
+              _invoiceRepository.CreateInvoiceAndDetail(product.ProductId, productOptionPriceId, token.UserInfo.Mp.ContactId, campProductDto.ContactId, eventParticipantId);
             }
             
         }
 
-        public bool SendCampConfirmationEmail(int eventId, int invoiceId, int paymentId, string token)
+        public bool SendCampConfirmationEmail(int eventId, int invoiceId, int paymentId)
         {
             var baseUrl = _configurationWrapper.GetConfigValue("BaseUrl");
             var templateId = _configurationWrapper.GetConfigIntValue("CampConfirmationEmailTemplate");
@@ -604,11 +600,10 @@ namespace crds_angular.Services
             }
         }
 
-        public void SaveCamperMedicalInfo(MedicalInfoDTO medicalInfo, int contactId, string token)
+        public void SaveCamperMedicalInfo(MedicalInfoDTO medicalInfo, int contactId, AuthDTO token)
         {
-            var loggedInContact = _contactRepository.GetMyProfile(token);
-            var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
-            family.AddRange(_contactRepository.GetOtherHouseholdMembers(loggedInContact.Household_ID));
+            var family = _contactRepository.GetHouseholdFamilyMembers(token.UserInfo.Mp.HouseholdId.Value);
+            family.AddRange(_contactRepository.GetOtherHouseholdMembers(token.UserInfo.Mp.HouseholdId.Value));
 
             if (family.Where(f => f.ContactId == contactId).ToList().Count <= 0)
             {
@@ -675,11 +670,10 @@ namespace crds_angular.Services
 
 
 
-        public MedicalInfoDTO GetCampMedicalInfo(int eventId, int contactId, string token)
+        public MedicalInfoDTO GetCampMedicalInfo(int eventId, int contactId, AuthDTO token)
         {
-            var loggedInContact = _contactRepository.GetMyProfile(token);
-            var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
-            family.AddRange(_contactRepository.GetOtherHouseholdMembers(loggedInContact.Household_ID));
+            var family = _contactRepository.GetHouseholdFamilyMembers(token.UserInfo.Mp.HouseholdId.Value);
+            family.AddRange(_contactRepository.GetOtherHouseholdMembers(token.UserInfo.Mp.HouseholdId.Value));
 
             if (family.Where(f => f.ContactId == contactId).ToList().Count <= 0)
             {
@@ -739,7 +733,7 @@ namespace crds_angular.Services
             return camperMedInfo;
         }
 
-        public List<CampEmergencyContactDTO> GetCamperEmergencyContactInfo(int eventId, int contactId, string token)
+        public List<CampEmergencyContactDTO> GetCamperEmergencyContactInfo(int eventId, int contactId)
         {
             var formId = _configurationWrapper.GetConfigIntValue("SummerCampFormID");
             var response = _formSubmissionRepository.GetFormResponse(formId, contactId, eventId);
@@ -767,11 +761,10 @@ namespace crds_angular.Services
             return emergencyContacts;
         }
 
-        public CampReservationDTO GetCamperInfo(string token, int eventId, int contactId)
+        public CampReservationDTO GetCamperInfo(AuthDTO token, int eventId, int contactId)
         {
-            var loggedInContact = _contactRepository.GetMyProfile(token);
-            var family = _contactRepository.GetHouseholdFamilyMembers(loggedInContact.Household_ID);
-            family.AddRange(_contactRepository.GetOtherHouseholdMembers(loggedInContact.Household_ID));
+            var family = _contactRepository.GetHouseholdFamilyMembers(token.UserInfo.Mp.HouseholdId.Value);
+            family.AddRange(_contactRepository.GetOtherHouseholdMembers(token.UserInfo.Mp.HouseholdId.Value));
 
             if (family.Where(f => f.ContactId == contactId).ToList().Count <= 0)
             {
@@ -779,7 +772,7 @@ namespace crds_angular.Services
             }
             var camperContact = _contactRepository.GetContactById(contactId);
 
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
 
             // get camper grade if they have one
             var groupResult = _groupRepository.GetGradeGroupForContact(contactId, apiToken);
@@ -797,7 +790,7 @@ namespace crds_angular.Services
                 ? new Err<MpCongregation>("Congregation not set")
                 : _congregationRepository.GetCongregationByName(crossroadsSite, apiToken);
             var configuration = MpObjectAttributeConfigurationFactory.Contact();
-            var attributesTypes = _objectAttributeService.GetObjectAttributes(apiToken, contactId, configuration);
+            var attributesTypes = _objectAttributeService.GetObjectAttributes(contactId, configuration);
 
             return new CampReservationDTO
             {

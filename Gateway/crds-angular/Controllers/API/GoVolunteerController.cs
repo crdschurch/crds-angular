@@ -28,7 +28,8 @@ namespace crds_angular.Controllers.API
         private readonly IOrganizationService _organizationService;
         private readonly IGoSkillsService _skillsService;
 
-        public GoVolunteerController(IOrganizationService organizationService,
+        public GoVolunteerController(IAuthTokenExpiryService authTokenExpiryService, 
+                                     IOrganizationService organizationService,
                                      IGroupConnectorService groupConnectorService,
                                      IGatewayLookupService gatewayLookupService,
                                      IGoSkillsService skillsService,
@@ -36,7 +37,8 @@ namespace crds_angular.Controllers.API
                                      IAttributeService attributeService,
                                      IConfigurationWrapper configurationWrapper,
                                      IUserImpersonationService userImpersonationService,
-                                     IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+                                     IAuthenticationRepository authenticationRepository)
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
 
         {
             _organizationService = organizationService;

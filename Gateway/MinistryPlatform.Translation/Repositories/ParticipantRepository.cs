@@ -13,11 +13,17 @@ namespace MinistryPlatform.Translation.Repositories
 {
     public class ParticipantRepository : BaseRepository, IParticipantRepository
     {
-        private IMinistryPlatformService _ministryPlatformService;
-        private IMinistryPlatformRestRepository _ministryPlatformRestRepository;
+        public const string UpdateHuddleGroupParticipantStatusProc = "crds_Huddle_Participant_Status_Refresh";
+        private readonly IMinistryPlatformService _ministryPlatformService;
+        private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
 
-        public ParticipantRepository(IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IAuthenticationRepository authenticationService , IConfigurationWrapper configurationWrapper)
-            : base(authenticationService, configurationWrapper)
+        public ParticipantRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IMinistryPlatformRestRepository ministryPlatformRestRepository,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             this._ministryPlatformService = ministryPlatformService;
             this._ministryPlatformRestRepository = ministryPlatformRestRepository;
@@ -35,8 +41,6 @@ namespace MinistryPlatform.Translation.Repositories
 
             return _ministryPlatformService.CreateRecord(pageId, participantDictionary, token);
         }
-
-        //Get Participant IDs of a contact
         public MpParticipant GetParticipantRecord(string token)
         {
             var results = _ministryPlatformService.GetRecordsDict("MyParticipantRecords", token);
@@ -71,6 +75,7 @@ namespace MinistryPlatform.Translation.Repositories
             return participant;
         }
 
+        //Get Participant IDs of a contact
         public MpParticipant GetParticipant(int contactId)
         {             
             try
@@ -89,7 +94,8 @@ namespace MinistryPlatform.Translation.Repositories
                     "Participants.Attendance_Start_Date",
                     "Participant_Type_ID_Table.Participant_Type",
                     "Group_Leader_Status_ID_Table.Group_Leader_Status_ID",
-                    "Host_Status_ID_Table.[Host_Status_ID]"
+                    "Host_Status_ID_Table.[Host_Status_ID]",
+                    "Show_On_Map"
                 };
                 var token = ApiLogin();
                 var participant = _ministryPlatformRestRepository.UsingAuthenticationToken(token).Search<MpParticipant>(searchString, columnList);
@@ -165,6 +171,12 @@ namespace MinistryPlatform.Translation.Repositories
                 throw new ApplicationException(
                     string.Format("GetParticipantResponses failed.  Participant Id: {0}", participantId), ex);
             }
+        }
+        public void UpdateHuddleGroupParticipantStatus()
+        {
+            var param = new Dictionary<string, object>(){};
+            var token = ApiLogin();
+            _ministryPlatformRestRepository.UsingAuthenticationToken(token).PostStoredProc(UpdateHuddleGroupParticipantStatusProc, param);
         }
     }
 }

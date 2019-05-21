@@ -1,7 +1,0 @@
-{
-  "globals": {
-    "__STREAMSPOT_ENDPOINT__": false,
-    "__STREAMSPOT_SSID__": false,
-    "__STREAMSPOT_API_KEY__": false
-  }
-}

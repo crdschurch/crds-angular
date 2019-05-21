@@ -21,7 +21,8 @@
 
     function OnetimeEventController() {
       var vm = this;
-      vm.pageInfo = vm.cmsInfo.pages[0];
+      //console.log('cmsInfo', vm.cmsInfo);
+      vm.pageInfo = vm.cmsInfo.items[0].fields;
       vm.family = _.filter(vm.family, function(f) {
         return (f.age >= vm.group.minAge) || (f.age === 0);
       });

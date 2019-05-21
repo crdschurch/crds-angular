@@ -7,20 +7,28 @@ using System.Reflection;
 using crds_angular.Services.Interfaces;
 using crds_angular.Util;
 using Crossroads.Web.Common.Security;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Net.Http.Headers;
 
 namespace crds_angular.Security
 {
+    [Obsolete("This base class has been replaced with ImpersonateAuthBaseController")]
     public class MPAuth : ApiController
     {
         protected readonly log4net.ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly IAuthTokenExpiryService _authTokenExpiryService;
         private readonly IUserImpersonationService _userImpersonationService;
         protected readonly IAuthenticationRepository AuthenticationRepository;
 
-        public MPAuth(IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository)
+        public MPAuth(IAuthTokenExpiryService authTokenExpiryService,
+                      IUserImpersonationService userImpersonationService, 
+                      IAuthenticationRepository authenticationRepository)
         {
-            _userImpersonationService = userImpersonationService;
-            AuthenticationRepository = authenticationRepository;
+          _authTokenExpiryService = authTokenExpiryService;
+          _userImpersonationService = userImpersonationService;
+          AuthenticationRepository = authenticationRepository;
         }
 
         /// <summary>
@@ -30,6 +38,7 @@ namespace crds_angular.Security
         /// </summary>
         /// <param name="doIt">A lambda expression to execute if the user is authenticated</param>
         /// <returns>An IHttpActionResult from the "doIt" expression, or UnauthorizedResult if the user is not authenticated.</returns>
+        [Obsolete("This method has been replaced with corresponding method in ImpersonateAuthBaseController")]
         protected IHttpActionResult Authorized(Func<string,IHttpActionResult> doIt )
         {
             return (Authorized(doIt, () => { return (Unauthorized()); }));
@@ -43,6 +52,7 @@ namespace crds_angular.Security
         /// <param name="actionWhenAuthorized">A lambda expression to execute if the user is authenticated</param>
         /// <param name="actionWhenNotAuthorized">A lambda expression to execute if the user is NOT authenticated</param>
         /// <returns>An IHttpActionResult from the lambda expression that was executed.</returns>
+        [Obsolete("This method has been replaced with corresponding method in ImpersonateAuthBaseController")]
         protected IHttpActionResult Authorized(Func<string, IHttpActionResult> actionWhenAuthorized, Func<IHttpActionResult> actionWhenNotAuthorized)
         {
             try
@@ -57,7 +67,13 @@ namespace crds_angular.Security
                     impersonate = true;
                 }
 
-                if (Request.Headers.TryGetValues("RefreshToken", out refreshTokens) && refreshTokens.Any())
+                bool authTokenCloseToExpiry = _authTokenExpiryService.IsAuthtokenCloseToExpiry(Request.Headers);  
+                bool isRefreshTokenPresent =
+                    Request.Headers.TryGetValues("RefreshToken", out refreshTokens) && refreshTokens.Any();
+
+        HttpRequestHeaders headers = Request.Headers;
+
+            if (authTokenCloseToExpiry && isRefreshTokenPresent)
                 {
                     var authData = AuthenticationRepository.RefreshToken(refreshTokens.FirstOrDefault());
                     if (authData != null)

@@ -5,6 +5,7 @@ using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using Crossroads.Web.Common.MinistryPlatform;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -12,7 +13,12 @@ namespace MinistryPlatform.Translation.Repositories
     {
         private readonly IMinistryPlatformService _ministryPlatformService;
 
-        public OrganizationRepository(IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper, IMinistryPlatformService ministryPlatformService) : base(authenticationService, configurationWrapper)
+        public OrganizationRepository(
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IMinistryPlatformService ministryPlatformService,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
         }

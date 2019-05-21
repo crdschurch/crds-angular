@@ -18,17 +18,17 @@ namespace crds_angular.Services
             _mpDonorService = mpDonorService;           
         }
 
-        public DonorStatementDTO GetDonorStatement(string token)
+        public DonorStatementDTO GetDonorStatement(int contactId)
         {            
-            var mpDonorStatement = _mpDonorService.GetDonorStatement(token);            
+            var mpDonorStatement = _mpDonorService.GetDonorStatement(contactId);            
             var donorStatement = Mapper.Map<MpDonorStatement, DonorStatementDTO>(mpDonorStatement);
             return donorStatement;
         }
 
-        public void SaveDonorStatement(string token, DonorStatementDTO donorStatement)
+        public void SaveDonorStatement(DonorStatementDTO donorStatement)
         {
             var mpDonorStatement = Mapper.Map<DonorStatementDTO, MpDonorStatement>(donorStatement);
-            _mpDonorService.UpdateDonorStatement(token, mpDonorStatement);
+            _mpDonorService.UpdateDonorStatement(mpDonorStatement);
         }
     }
 }

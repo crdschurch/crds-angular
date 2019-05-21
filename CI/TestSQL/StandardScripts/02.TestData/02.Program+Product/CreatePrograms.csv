@@ -1,0 +1,11 @@
+R_Program_Name,R_Contact_Email,R_Congregation_ID,R_Ministry_ID,R_Allow_Recurring_Giving,R_Start_Date,End_Date,Program_Type_ID,Communication_ID,Available_Online
+(t) Test Pledge Program1,mpcrds+chell@aperture.com,5,8,0,1/1/2019,12/31/2019,1,11402,1
+(t) Test Pledge Program2,mpcrds+chell@aperture.com,5,8,1,1/1/2019,12/31/2019,1,11402,1
+(t) Test Pledge Program+Auto1,mpcrds+chell@aperture.com,5,8,1,1/1/2019,12/31/2019,1,11402,1
+(t) Test Pledge Program+Auto2,mpcrds+chell@aperture.com,5,8,1,1/1/2019,12/31/2019,1,11402,1
+(t) GO Midgar 2018,mpcrds+chell@aperture.com,5,20,0,1/1/2019,12/31/2019,3,121611,
+(t+auto) GO Bedrock 2018,mpcrds+chell@aperture.com,5,20,0,1/1/2019,12/31/2019,3,121611,
+(t+auto) NOLA Trip,mpcrds+aliciakeys@gmail.com,5,20,0,1/1/2019,12/31/2019,3,121611,
+(t+auto) SA Trip,mpcrds+aliciakeys@gmail.com,5,20,0,1/1/2019,12/31/2019,3,121611,
+(t+auto) Camp Crystal Lake Program,mpcrds+aliciakeys@gmail.com,5,34,0,1/1/2019,12/31/2019,5,2022,
+(t+auto) Camp Anawanna Program,mpcrds+aliciakeys@gmail.com,5,34,0,1/1/2019,12/31/2019,5,2022,

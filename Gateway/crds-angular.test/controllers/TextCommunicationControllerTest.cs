@@ -25,6 +25,8 @@ namespace crds_angular.test.controllers
     public class TextCommunicationControllerTest
     {
         private TextCommunicationController _fixture;
+
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IMessageFactory> _messageFactory;
         private Mock<IMessageQueueFactory> _messageQueueFactory;
         private Mock<ITextCommunicationService> _textCommunicationService;
@@ -37,11 +39,18 @@ namespace crds_angular.test.controllers
             configuration.Setup(mocked => mocked.GetConfigValue("ScheduledJobsQueueName")).Returns("queue name");
             configuration.Setup(mocked => mocked.GetConfigIntValue("StreamReminderTemplate")).Returns(264567);
 
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _textCommunicationService = new Mock<ITextCommunicationService>();
             _messageFactory = new Mock<IMessageFactory>();
             _messageQueueFactory = new Mock<IMessageQueueFactory>();
             _messageQueue = new Mock<IMessageQueue>();
-            _fixture = new TextCommunicationController(_textCommunicationService.Object, configuration.Object, new Mock<IUserImpersonationService>().Object, new Mock<IAuthenticationRepository>().Object, _messageQueueFactory.Object, _messageFactory.Object, _messageQueue.Object);
+            _fixture = new TextCommunicationController(_authTokenExpiryService.Object, 
+                                                       _textCommunicationService.Object, 
+                                                       configuration.Object, 
+                                                       new Mock<IUserImpersonationService>().Object, 
+                                                       new Mock<IAuthenticationRepository>().Object, 
+                                                       _messageQueueFactory.Object, _messageFactory.Object, 
+                                                       _messageQueue.Object);
         }
 
         [Test]

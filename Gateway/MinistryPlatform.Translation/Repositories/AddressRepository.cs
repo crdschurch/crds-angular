@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
-using MinistryPlatform.Translation.Helpers;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -31,7 +28,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public int Create(MpAddress address)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
 
             var values = MapAddressDictionary(address);
 
@@ -42,7 +39,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public int Update(MpAddress address)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
 
             var updatedAddress = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Update(address);    
 
@@ -69,7 +66,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpAddress> FindMatches(MpAddress address)
         {
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
             var search = string.Format("{0}, {1}, {2}, {3}, {4}, {5}",
                                        AddQuotesIfNotEmpty(address.Address_Line_1),
                                        AddQuotesIfNotEmpty(address.Address_Line_2),
@@ -100,6 +97,30 @@ namespace MinistryPlatform.Translation.Repositories
             return addresses;
         }
 
+        public List<int> FindAddressIdsWithoutGeocode()
+        {
+            var filter = "Latitude IS NULL";
+            var columns = "Address_ID";
+            var orderBy = "Address_ID DESC";
+
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
+            var addresses = _ministryPlatformRestRepository
+                .UsingAuthenticationToken(apiToken)
+                .SearchTable<Dictionary<string, object>>("Addresses", filter, columns, orderBy);
+
+            return addresses.Select(r => r.ToInt("Address_ID") ).ToList();
+        }
+
+        public List<int> FindMapParticipantsAddressIdsWithoutGeocode()
+        {
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
+            var addresses = _ministryPlatformRestRepository
+                .UsingAuthenticationToken(apiToken)
+                .GetFromStoredProc<MpAddress>("crds_Get_Addressids_For_Map");
+
+            return addresses.FirstOrDefault().Select(r => r.Address_ID.Value).ToList(); ;
+        }
+
         private string AddQuotesIfNotEmpty(string input)
         {
             if (String.IsNullOrEmpty(input))
@@ -110,6 +131,12 @@ namespace MinistryPlatform.Translation.Repositories
             return string.Format("\"{0}\"", input);
         }
 
+        public MpAddress GetAddressById(int id)
+        {
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
+            return GetAddressById(apiToken, id);
+        }
+        
         public MpAddress GetAddressById(string token, int id)
         {
             var record = _ministryPlatformService.GetRecordDict(_addressPageId, id, token);
@@ -121,10 +148,12 @@ namespace MinistryPlatform.Translation.Repositories
                 Address_Line_2 = record.ToString("Address_Line_2"),
                 City = record.ToString("City"),
                 State = record.ToString("State/Region"),
-                Postal_Code = record.ToString("Postal_Code")
+                Postal_Code = record.ToString("Postal_Code"),
+                Latitude = Convert.ToDouble(record["Latitude"]),
+                Longitude = Convert.ToDouble(record["Longitude"])
             };
 
             return address;
         }
-}
+    }
 }

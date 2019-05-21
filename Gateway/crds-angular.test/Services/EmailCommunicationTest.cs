@@ -93,7 +93,7 @@ namespace crds_angular.test.Services
             _communicationService.Setup(m => m.SendMessage(It.IsAny<MpCommunication>(), false))
                 .Callback<MpCommunication, bool>((comm, token) => spiedComm = comm);
 
-            fixture.SendEmail(emailData, null);
+            fixture.SendEmail(emailData);
             _communicationService.Verify(m => m.SendMessage(It.IsAny<MpCommunication>(), false), Times.Once);
             Assert.AreEqual(JsonConvert.SerializeObject(expectedContact),JsonConvert.SerializeObject(spiedComm.ToContacts[0]));
 
@@ -137,7 +137,7 @@ namespace crds_angular.test.Services
             _communicationService.Setup(m => m.SendMessage(It.IsAny<MpCommunication>(), false))
                 .Callback<MpCommunication, bool>((comm, token) => spiedComm = comm);
             
-            fixture.SendEmail(emailData, null);
+            fixture.SendEmail(emailData);
             _communicationService.Verify(m => m.SendMessage(It.IsAny<MpCommunication>(), false), Times.Once);
             Assert.AreEqual(JsonConvert.SerializeObject(expectedContact), JsonConvert.SerializeObject(spiedComm.ToContacts[0]));
 
@@ -181,7 +181,7 @@ namespace crds_angular.test.Services
             _communicationService.Setup(m => m.SendMessage(It.IsAny<MpCommunication>(), false))
                 .Callback<MpCommunication, bool>((comm, token) => spiedComm = comm);
 
-            fixture.SendEmail(emailData, null);
+            fixture.SendEmail(emailData);
             _communicationService.Verify(m => m.SendMessage(It.IsAny<MpCommunication>(), false), Times.Once);
             Assert.AreEqual(JsonConvert.SerializeObject(expectedContact), JsonConvert.SerializeObject(spiedComm.ToContacts[0])); ;
 

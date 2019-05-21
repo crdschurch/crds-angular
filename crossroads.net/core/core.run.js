@@ -15,6 +15,7 @@
     ContentPageService,
     Impersonate
   ) {
+
     function setupMetaData() {
       const title = ContentSiteConfigService.getTitle();
       const titleSuffix = ` | ${title}`;
@@ -22,36 +23,54 @@
       if ($rootScope.meta.title.indexOf(titleSuffix, $rootScope.meta.title.length - titleSuffix.length) === -1) {
         $rootScope.meta.title += titleSuffix;
       }
+      
       $rootScope.meta.url = $location.absUrl();
+
       if (!$rootScope.meta.statusCode) {
         $rootScope.meta.statusCode = '200';
       }
+      
+      if ($rootScope.meta.image && $rootScope.meta.image.url) {
+        $rootScope.meta.image.filename = $rootScope.meta.image.url;
+      }
+
       if (!$rootScope.meta.image || $rootScope.meta.image.filename === '/assets/') {
         $rootScope.meta.image = {
-          filename: 'http://crds-cms-uploads.imgix.net/content/images/cr-social-sharing-still-bg.jpg'
+          filename: 'https://crds-cms-uploads.imgix.net/content/images/cr-social-sharing-still-bg.jpg'
         };
       }
     }
 
-    function setupHeader() {
+    function setupHeaderAndFooter() {
       svg4everybody();
       $('html, body').removeClass('noscroll');
       $('.collapse.in').removeClass('in');
       $('body:not(.modal-open) .modal-backdrop.fade').remove();
-      // header options
-      var options = {
-        el: '[data-header]',
+      
+      var sharedOptions = {
         cmsEndpoint: __CMS_CLIENT_ENDPOINT__,
         appEndpoint: __APP_CLIENT_ENDPOINT__,
         imgEndpoint: __IMG_ENDPOINT__,
         crdsCookiePrefix: __CRDS_ENV__,
-        contentBlockTitle: __HEADER_CONTENTBLOCK_TITLE__,
         contentBlockCategories: ['common']
       };
+      // header options
+      var headerOptions = {
+        el: '[data-header]'
+      };
+      Object.assign(headerOptions, sharedOptions);
+      // footer options
+      var footerOptions = {
+        el: '[data-footer]'
+      };
+      Object.assign(footerOptions, sharedOptions);
       setTimeout(() => {
         if ($('[data-header] [data-mobile-menu]').length == 0 &&
             $('[data-header]').length > 0) {
-          new CRDS.SharedHeader(options).render();
+          new CRDS.SharedHeader(headerOptions).render();
+        }
+        if ($('[data-footer]')){
+          new CRDS.SharedFooter(footerOptions);
         }
       }, 100);
     }
@@ -60,20 +79,23 @@
       const document = $injectedDocument[0];
       // work-around for displaying cr.net inside preview pane for CMS
       const domain = document.domain;
-      const parts = domain.split('.');
-      if (parts.length === 4) {
-        // possible ip address
-        const firstChar = parts[0].charAt(0);
-        if (firstChar >= '0' && firstChar <= '9') {
-          // ip address
-          document.domain = domain;
-          return;
+      if(!~domain.indexOf('netlify.com'))
+      {//Can't set a "top level domain", Netlify is considred "top level"
+        const parts = domain.split('.');
+        if (parts.length === 4) {
+          // possible ip address
+          const firstChar = parts[0].charAt(0);
+          if (firstChar >= '0' && firstChar <= '9') {
+            // ip address
+            document.domain = domain;
+            return;
+          }
         }
+        while (parts.length > 2) {
+          parts.shift();
+        }
+        document.domain = parts.join('.');
       }
-      while (parts.length > 2) {
-        parts.shift();
-      }
-      document.domain = parts.join('.');
     }
 
     Impersonate.clear();
@@ -122,7 +144,7 @@
         $rootScope.meta = toState.data.meta;
       }
       setupMetaData();
-      setupHeader();
+      setupHeaderAndFooter();
     });
   }
 

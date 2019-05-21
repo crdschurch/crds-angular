@@ -42,9 +42,9 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
 
         IList<string> GetEventTypesForGroup(int groupId, string token = null);
 
-        List<MpGroup> GetGroupsForParticipant(string token, int participantId);
+        List<MpGroup> GetGroupsForParticipant(int participantId);
 
-        List<MpGroup> GetGroupsByTypeForParticipant(string token, int participantId, int groupTypeId);
+        List<MpGroup> GetGroupsByTypeForParticipant(int participantId, int groupTypeId);
 
         void UpdateGroupRemainingCapacity(MpGroup group);
 

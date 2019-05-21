@@ -24,6 +24,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
+        private Mock<IApiUserRepository> _apiUserService;
 
         [SetUp]
         public void Setup()
@@ -33,8 +34,9 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+        _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
@@ -44,7 +46,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("api-password");
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("TripDestinationDocuments")).Returns(1234);
 
-            _fixture = new EventParticipantRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, _authService.Object, _configWrapper.Object);
+            _fixture = new EventParticipantRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, _authService.Object, _configWrapper.Object, _apiUserService.Object);
         }
 
         [Test]
@@ -98,7 +100,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             };
 
-            _ministryPlatformService.Setup(mocked => mocked.GetSubpageViewRecords("EventParticipantAssignedToRoomApiSubPageView", 123, "ABC", ",,,\"987\"", "", 0)).Returns(p);
+            _ministryPlatformService.Setup(mocked => mocked.GetSubpageViewRecords("EventParticipantAssignedToRoomApiSubPageView", 123, It.IsAny<string>(), ",,,\"987\"", "", 0)).Returns(p);
             var result = _fixture.GetEventParticipants(123, 987);
 
             _ministryPlatformService.VerifyAll();
@@ -254,7 +256,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var searchString = $"Event_ID = {eventId} AND Participant_ID_Table_Contact_ID_Table_Gender_ID_Table.Gender_ID = {genderId} AND (End_Date IS NULL OR End_Date >= GETDATE())";
             const string column = "Count(*)";
 
-            _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRest.Object);
+            _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRest.Object);
             _ministryPlatformRest.Setup(m => m.Search<int>("Event_Participants", searchString, column, null, false)).Returns(42);
 
             var result = _fixture.GetEventParticipantCountByGender(eventId, genderId);

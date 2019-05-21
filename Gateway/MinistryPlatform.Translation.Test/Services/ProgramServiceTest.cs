@@ -20,6 +20,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
+        private Mock<IApiUserRepository> _apiUserService;
 
         private const int OnlineGivingProgramsPageViewId = 1038;
         private const int ProgramsPageId = 375;
@@ -32,12 +33,13 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _configWrapper.Setup(m => m.GetConfigIntValue("OnlineGivingProgramsPageViewId")).Returns(OnlineGivingProgramsPageViewId);
             _configWrapper.Setup(m => m.GetConfigIntValue("Programs")).Returns(ProgramsPageId);
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
@@ -45,7 +47,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             AutoMapperConfig.RegisterMappings();
 
-            _fixture = new ProgramRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _ministryPlatformRest.Object);
+            _fixture = new ProgramRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _ministryPlatformRest.Object, _apiUserService.Object);
         }
 
         [Test]

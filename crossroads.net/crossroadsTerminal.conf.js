@@ -8,6 +8,7 @@ const KarmaMochaReporterPlugin = require('karma-mocha-reporter');
 const KarmaPhantomjsLauncherPlugin = require('karma-phantomjs-launcher');
 const KarmaEnvPreprocessorPlugin = require('karma-env-preprocessor');
 const KarmaSourcemapLoaderPlugin = require('karma-sourcemap-loader');
+const KarmaPhantomJSShim = require('karma-phantomjs-shim');
 /* eslint-enable */
 
 
@@ -29,10 +30,12 @@ module.exports = function crdsTermConf(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'phantomjs-shim'],
 
     // list of files / patterns to load in the browser
     files: [
+      'node_modules/es6-shim/es6-shim.js',
+      { pattern: 'node_modules/babel-polyfill/browser.js', instrument: false },
       'https://js.stripe.com/v2/',
       './node_modules/phantomjs-polyfill/bind-polyfill.js',
       { pattern: 'spec/spec_index.js', watched: false },
@@ -144,7 +147,8 @@ module.exports = function crdsTermConf(config) {
       KarmaMochaReporterPlugin,
       KarmaPhantomjsLauncherPlugin,
       KarmaEnvPreprocessorPlugin,
-      KarmaSourcemapLoaderPlugin
+      KarmaSourcemapLoaderPlugin,
+      KarmaPhantomJSShim
     ]
   });
 };

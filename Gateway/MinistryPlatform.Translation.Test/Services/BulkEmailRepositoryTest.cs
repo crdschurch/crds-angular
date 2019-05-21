@@ -6,6 +6,7 @@ using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
+using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
@@ -22,6 +23,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IMinistryPlatformService> _ministryPlatformService;
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
+        private Mock<IApiUserRepository> _apiUserService;
 
 
 
@@ -30,9 +32,10 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _authService = new Mock<IAuthenticationRepository>();
+            _apiUserService = new Mock<IApiUserRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
 
-            _fixture = new BulkEmailRepository(_authService.Object, _configWrapper.Object, _ministryPlatformService.Object);
+            _fixture = new BulkEmailRepository(_authService.Object, _configWrapper.Object, _ministryPlatformService.Object, _apiUserService.Object);
         }
 
         [Test]

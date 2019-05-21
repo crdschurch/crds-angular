@@ -215,7 +215,7 @@ namespace crds_angular.test.Services
             const int defaultContactEmailId = 1519180;
             
 
-            var token = _apiUserService.Setup(m => m.GetToken()).Returns(apiToken);
+            var token = _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns(apiToken);
             _responseService.Setup(m => m.GetServeReminders(apiToken)).Returns(fakeList);
             _contactService.Setup(m => m.GetContactById(defaultContactEmailId)).Returns(fakeGroupContact);
 
@@ -266,7 +266,7 @@ namespace crds_angular.test.Services
         {
             var contactId = 123456;
 
-            _contactRelationshipService.Setup(m => m.GetMyImmediateFamilyRelationships(contactId, It.IsAny<string>()))
+            _contactRelationshipService.Setup(m => m.GetMyImmediateFamilyRelationships(contactId))
                 .Returns(MockContactRelationships());
 
             _participantService.Setup(m => m.GetParticipant(It.IsAny<int>()))

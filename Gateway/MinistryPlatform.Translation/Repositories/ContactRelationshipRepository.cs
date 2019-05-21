@@ -8,6 +8,7 @@ using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using Crossroads.Web.Common.MinistryPlatform;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -17,17 +18,21 @@ namespace MinistryPlatform.Translation.Repositories
 
         private IMinistryPlatformService _ministryPlatformService;
 
-        public ContactRelationshipRepository(IMinistryPlatformService ministryPlatformService, IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper)
-            : base(authenticationService, configurationWrapper)
+        public ContactRelationshipRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             this._ministryPlatformService = ministryPlatformService;
         }
 
-        public IEnumerable<MpContactRelationship> GetMyImmediateFamilyRelationships(int contactId, string token)
+        public IEnumerable<MpContactRelationship> GetMyImmediateFamilyRelationships(int contactId)
         {
             var viewRecords = _ministryPlatformService.GetSubpageViewRecords("MyContactFamilyRelationshipViewId",
                                                                              contactId,
-                                                                             token);
+                                                                             ApiLogin());
 
             return viewRecords.Select(viewRecord => new MpContactRelationship
             {
@@ -64,11 +69,11 @@ namespace MinistryPlatform.Translation.Repositories
             }
         }
 
-        public IEnumerable<MpContactRelationship> GetMyCurrentRelationships(int contactId, string token)
+        public IEnumerable<MpContactRelationship> GetMyCurrentRelationships(int contactId, string param2)
         {
             var viewRecords = _ministryPlatformService.GetSubpageViewRecords(_getMyCurrentRelationships,
                                                                              contactId,
-                                                                             token);
+                                                                             ApiLogin());
 
             return viewRecords.Select(viewRecord => new MpContactRelationship
             {

@@ -20,8 +20,9 @@ namespace MinistryPlatform.Translation.Repositories
         public LookupRepository(IAuthenticationRepository authenticationService,
                                 IConfigurationWrapper configurationWrapper,
                                 IMinistryPlatformService ministryPlatformServiceImpl,
-                                IMinistryPlatformRestRepository ministryPlatformRest)
-            : base(authenticationService, configurationWrapper)
+                                IMinistryPlatformRestRepository ministryPlatformRest,
+                                IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformServiceImpl = ministryPlatformServiceImpl;
             _ministryPlatformRest = ministryPlatformRest;
@@ -131,6 +132,12 @@ namespace MinistryPlatform.Translation.Repositories
         {
             token = ApiLogonIfNotAuthenticated(token);
             return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("MeetingDay"), token);
+        }
+
+        public List<Dictionary<string, object>> MeetingFrequencies(string token)
+        {
+            token = ApiLogonIfNotAuthenticated(token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("MeetingFrequency"), token);
         }
 
         public List<Dictionary<string, object>> Ministries(string token)

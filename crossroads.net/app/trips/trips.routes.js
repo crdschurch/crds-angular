@@ -10,28 +10,21 @@
   function TripRoutes($stateProvider, $urlMatcherFactory) {
 
     $urlMatcherFactory.strictMode(false);
-
+  
     $stateProvider
       .state('tripsearch', {
         parent: 'noSideBar',
         url: '/trips/search',
         controller: 'TripSearchCtrl as tripSearch',
         templateUrl: 'tripsearch/tripsearch.html',
-        resolve: {
-          Page: 'Page',
-          CmsInfo: function(Page) {
-            return Page.get({
-              url: '/trips/search/'
-            }).$promise;
-          }
-        },
         data: {
           meta: {
             title: 'Trip Search',
-            description: ''
+            description: 'Search Crossroads Trips'
           }
         }
       })
+     
 
       .state('tripgiving', {
         parent: 'noSideBar',

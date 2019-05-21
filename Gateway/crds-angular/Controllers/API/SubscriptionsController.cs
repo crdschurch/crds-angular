@@ -11,12 +11,20 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class SubscriptionsController : MPAuth
+    public class SubscriptionsController : ImpersonateAuthBaseController
     {
         private readonly MPInterfaces.IContactRepository _contactRepository;
         private readonly ISubscriptionsService _subscriptionService;
+		
+	
 
-        public SubscriptionsController(ISubscriptionsService subscriptionService, IAuthenticationRepository authenticationService, IUserImpersonationService userImpersonationService, MPInterfaces.IContactRepository contactRepository) : base(userImpersonationService, authenticationService)
+        public SubscriptionsController(IAuthTokenExpiryService authTokenExpiryService, 
+                                       ISubscriptionsService subscriptionService, 
+                                       IAuthenticationRepository authenticationService, 
+                                       IUserImpersonationService userImpersonationService, 
+                                       MPInterfaces.IContactRepository contactRepository)
+			                           
+            : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _subscriptionService = subscriptionService;
             _contactRepository = contactRepository;
@@ -28,10 +36,10 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult Get()
         {
-            return (Authorized(token =>
+            return (Authorized(authDto =>
             {
-                var contactId = _contactRepository.GetContactId(token);
-                return (Ok(_subscriptionService.GetSubscriptions(contactId, token)));
+        
+              return (Ok(_subscriptionService.GetSubscriptions(authDto.UserInfo.Mp.ContactId)));
             }));
         }
 
@@ -40,10 +48,9 @@ namespace crds_angular.Controllers.API
         [HttpPost]
         public IHttpActionResult Post(Dictionary<string, object> subscription)
         {
-            return (Authorized(token =>
+            return (Authorized(authDto =>
             {
-                var contactId = _contactRepository.GetContactId(token);
-                var recordId = new {dp_RecordID = _subscriptionService.SetSubscriptions(subscription, contactId, token)};
+                var recordId = new {dp_RecordID = _subscriptionService.SetSubscriptions(subscription,authDto.UserInfo.Mp.ContactId)};
                 return this.Ok(recordId);
             }));
         }

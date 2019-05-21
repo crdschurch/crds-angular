@@ -16,7 +16,12 @@ namespace MinistryPlatform.Translation.Repositories
     {
         private readonly IMinistryPlatformRestRepository _ministryPlatformRestRepository;
 
-        public LocationRepository(IMinistryPlatformRestRepository ministryPlatformRestRepository, IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper) : base(authenticationService, configurationWrapper)
+        public LocationRepository(
+            IMinistryPlatformRestRepository ministryPlatformRestRepository,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformRestRepository = ministryPlatformRestRepository;
         }

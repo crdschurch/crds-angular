@@ -18,11 +18,15 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class OpportunityController : MPAuth
+    public class OpportunityController : ImpersonateAuthBaseController
     {
         private readonly IOpportunityRepository _opportunityService;
 
-        public OpportunityController(IOpportunityRepository opportunityService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public OpportunityController(IAuthTokenExpiryService authTokenExpiryService, 
+                                     IOpportunityRepository opportunityService, 
+                                     IUserImpersonationService userImpersonationService, 
+                                     IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _opportunityService = opportunityService;
         }
@@ -34,11 +38,11 @@ namespace crds_angular.Controllers.API
         {
             var comments = string.Format("Request on {0}", DateTime.Now.ToString(CultureInfo.CurrentCulture));
 
-            return Authorized(token =>
+            return Authorized(authDto =>
             {
                 try
                 {
-                    var id = _opportunityService.RespondToOpportunity(token, opportunityId, comments);
+                    var id = _opportunityService.RespondToOpportunity( opportunityId, comments, authDto.UserInfo.Mp.ContactId);
                     return Ok(id);
                 }
                 catch (Exception ex)
@@ -83,9 +87,10 @@ namespace crds_angular.Controllers.API
         public IHttpActionResult GetAllOpportunityDates(int opportunityId)
         {
             var oppDates = new List<long>();
-            return Authorized(token =>
-            {
-                var opportunities = _opportunityService.GetAllOpportunityDates(opportunityId, token);
+            return Authorized(authDto =>
+            { 
+			
+                var opportunities = _opportunityService.GetAllOpportunityDates(opportunityId);
                 oppDates.AddRange(opportunities.Select(opp => opp.ToUnixTime()));
                 return Ok(oppDates);
             });
@@ -98,10 +103,10 @@ namespace crds_angular.Controllers.API
         {
             return
                 Authorized(
-                    token =>
+                   authDto =>
                         Ok(new Dictionary<string, long>
                         {
-                            {"date", _opportunityService.GetLastOpportunityDate(opportunityId, token).ToUnixTime()}
+                            {"date", _opportunityService.GetLastOpportunityDate(opportunityId).ToUnixTime()}
                         }));
         }
 
@@ -110,9 +115,9 @@ namespace crds_angular.Controllers.API
         [Route("opportunity/getGroupParticipantsForOpportunity/{opportunityId}")]
         public IHttpActionResult GetGroupParticipantsForOpportunity(int opportunityId)
         {
-            return Authorized(token =>
+            return Authorized(authDto =>
             {
-                var group = _opportunityService.GetGroupParticipantsForOpportunity(opportunityId, token);
+                var group = _opportunityService.GetGroupParticipantsForOpportunity(opportunityId);
                 var oppGrp = Mapper.Map<MpGroup, OpportunityGroup>(group);
                 return Ok(oppGrp);
             });

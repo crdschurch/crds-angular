@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using crds_angular.Services.Interfaces;
 using crds_angular.Models.Crossroads.Campaign;
 using crds_angular.Util.Interfaces;
@@ -20,30 +21,36 @@ namespace crds_angular.Services
             _dateTimeWrapper = dateTimeWrapper;
         }
 
-        public PledgeCampaignSummaryDto GetSummary(int pledgeCampaignId)
+        public List<PledgeCampaignSummaryDto> GetSummary(int pledgeCampaignId)
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
             var campaignSummary = _campaignRepository.GetPledgeCampaignSummary(token, pledgeCampaignId);
+            var pledgeCampaignSummaries = new List<PledgeCampaignSummaryDto>();
 
-            int totalDays = DaysInRange(campaignSummary.StartDate, campaignSummary.EndDate);
-            int currentDay = DaysInRange(campaignSummary.StartDate, _dateTimeWrapper.Now);
-
-            // clip to end date
-            currentDay = Math.Min(currentDay, totalDays);
-
-            return new PledgeCampaignSummaryDto
+            foreach(var summary in campaignSummary)
             {
-                PledgeCampaignId = campaignSummary.PledgeCampaignId,
-                TotalGiven = campaignSummary.TotalGiven + campaignSummary.NoCommitmentAmount,
-                TotalCommitted = campaignSummary.TotalCommitted,
-                CurrentDays = currentDay,
-                TotalDays = totalDays,
-                NotStartedPercent = ToPercentage(campaignSummary.NotStartedCount, campaignSummary.TotalCount),
-                BehindPercent = ToPercentage(campaignSummary.BehindCount, campaignSummary.TotalCount),
-                OnPacePercent = ToPercentage(campaignSummary.OnPaceCount, campaignSummary.TotalCount),
-                AheadPercent = ToPercentage(campaignSummary.AheadCount, campaignSummary.TotalCount),
-                CompletedPercent = ToPercentage(campaignSummary.CompletedCount, campaignSummary.TotalCount),
-            };
+                int totalDays = DaysInRange(summary.StartDate, summary.EndDate);
+                int currentDay = DaysInRange(summary.StartDate, _dateTimeWrapper.Now);
+
+                // clip to end date
+                currentDay = Math.Min(currentDay, totalDays);
+                pledgeCampaignSummaries.Add(
+                    new PledgeCampaignSummaryDto
+                    {
+                        PledgeCampaignId = pledgeCampaignId,
+                        TotalGiven = summary.TotalGiven + summary.NoCommitmentAmount,
+                        TotalCommitted = summary.TotalCommitted,
+                        CurrentDays = currentDay,
+                        TotalDays = totalDays,
+                        NotStartedPercent = ToPercentage(summary.NotStartedCount, summary.TotalCount),
+                        BehindPercent = ToPercentage(summary.BehindCount, summary.TotalCount),
+                        OnPacePercent = ToPercentage(summary.OnPaceCount, summary.TotalCount),
+                        AheadPercent = ToPercentage(summary.AheadCount, summary.TotalCount),
+                        CompletedPercent = ToPercentage(summary.CompletedCount, summary.TotalCount),
+                    }
+                    );
+            }
+            return pledgeCampaignSummaries;
         }
 
         private int DaysInRange(DateTime startDate, DateTime endDate)

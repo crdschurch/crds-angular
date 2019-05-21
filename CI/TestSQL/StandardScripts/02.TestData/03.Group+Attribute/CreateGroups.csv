@@ -1,0 +1,25 @@
+R_Group_Name,R_Primary_Contact,R_Group_Type_ID,R_Ministry_ID,R_Congregation_ID,R_Start_Date,R_Child_Care_Available,Description,Enable_Waiting_List,Is_Primary_Contact_Host,Meeting_Day,Meeting_Time,Meeting_Frequency_ID,Available_Online,Target_Size,Deadline_Passed_Message_ID,IsPublic,IsBlogEnabled,IsWebEnabled
+(t+auto) Avalanche,mpcrds+chell@aperture.com,9,11,1,11/21/2015,0,Test data,,,,,,,0,,N,Y,Y
+(t) FI Oakley Coffee Team,mpcrds+chell@aperture.com,9,11,1,9/21/2004,0,Test data,,,,,,,0,,N,Y,Y
+(t+auto) GO Bedrock 2018,mpcrds+chell@aperture.com,6,20,5,1/1/2018,0,,,,,,,,,,,,
+(t+auto) GO Bedrock 2018 (Trip Participants),mpcrds+chell@aperture.com,6,20,5,1/1/2018,0,Child of (t+auto) GO Bedrock,,,,,,,,,,,
+(t) Fathers Oakley CG,mpcrds+chell@aperture.com,8,8,1,11/1/2015,0,,1,,,,,,4,58,,,
+(t) Fathers Oakley CG - Waitlist,mpcrds+chell@aperture.com,20,8,1,11/1/2015,0,,,,,,,,10,58,,,
+(t) KC Oakley Kindergarten,mpcrds+chell@aperture.com,9,2,1,9/21/2004,0,Test data,,,,,,,0,58,N,Y,Y
+(t) KC Oakley Nursery,mpcrds+chell@aperture.com,9,2,1,9/21/2004,0,Test data,,,,,,,0,58,N,Y,Y
+(t) GO Midgar 2018,mpcrds+chell@aperture.com,6,20,5,1/1/2018,0,,,,,,,,,,,,
+(t) GO Midgar 2018 (Trip Participants),mpcrds+chell@aperture.com,6,20,5,1/1/2018,0,,,,,,,,,,,,
+(t+auto) Serve Shinra Electric Power Company,mpcrds+chell@aperture.com,9,11,1,11/21/2015,0,Test data,,,,,,,0,,N,Y,Y
+(t) Superbowl Oakley Group,mpcrds+chell@aperture.com,1,8,1,11/1/2015,0,,,,,,,,,58,,,
+(t) KidsClub Oakley Group,mpcrds+chell@aperture.com,9,2,1,11/1/2015,0,,,,,,,,,58,,,
+(t) 1Time Mason Group with ChildCare,mpcrds+chell@aperture.com,8,2,6,11/1/2015,1,,,,,,,,,59,,,
+(t+auto) Band of the Red Hand,mpcrds+auto+matcauthon@gmail.com,1,8,1,11/1/2015,0,Finder group for automation,,1,Sunday,17:00:00,,1,,58,,,
+(t+auto) The Next Generation,mpcrds+picard@gmail.com,1,8,1,11/1/2015,0,Finder group for automation,,1,Sunday,17:00:00,1,1,,58,,,
+Albert E,mpcrds+ae@gmail.com,30,8,1,11/1/2015,0,Connect group for automation,,1,,,,1,,58,,,
+Stephen H,mpcrds+sh@gmail.com,30,8,1,11/1/2015,0,Connect group for automation,,1,,,,1,,58,,,
+(t+auto) Private Group,mpcrds+sherlock@gmail.com,1,8,1,11/1/2015,0,Finder group for automation,,1,Sunday,17:00:00,1,0,,58,,,
+Isaac N,mpcrds+newton@gmail.com,30,8,1,11/1/2015,0,Connect group for automation,,1,,,,1,,58,,,
+(t+auto) NOLA Trip,mpcrds+aliciakeys@gmail.com,6,20,5,1/1/2018,0,Automation Test Data,,,,,,,,,,,
+(t+auto) SA Trip,mpcrds+aliciakeys@gmail.com,6,20,5,1/1/2018,0,Automation Test Data,,,,,,,,,,,
+(t+auto) Verify UI,mpcrds+chell@aperture.com,9,11,1,11/21/2015,0,Test data,,,,,,,0,,N,Y,Y
+(t+auto) Parents Who Need Childcare,mpcrds+aliciakeys@gmail.com,1,8,1,1/1/2018,1,Automation Test Data,,0,Wednesday,17:00:00,1,,,,,,

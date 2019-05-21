@@ -32,7 +32,7 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _apiUserService = new Mock<IApiUserRepository>();
-            _apiUserService.Setup(m => m.GetToken()).Returns("useme");
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("useme");
             _configuration = new Mock<IConfigurationWrapper>();
             _ministryPlatformRepo = new Mock<IMinistryPlatformRestRepository>();
             _configuration.Setup(mocked => mocked.GetConfigIntValue("Addresses")).Returns(_addressPageId);

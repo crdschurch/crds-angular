@@ -86,7 +86,7 @@ namespace crds_angular.test.Services
                 }
             };
 
-            _mpApiUserRepository.Setup(mocked => mocked.GetToken()).Returns("yeah!");
+            _mpApiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _mpRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_mpRestRepository.Object);
             _mpRestRepository.Setup(mocked => mocked.Search<MpRestAttribute>(It.IsAny<string>(), It.IsAny<string>(), (string)null, false)).Returns(
                 new List<MpRestAttribute>()

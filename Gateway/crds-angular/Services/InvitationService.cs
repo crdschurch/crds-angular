@@ -74,7 +74,7 @@ namespace crds_angular.Services
             _baseUrl = configuration.GetConfigValue("BaseUrl");
         }
 
-        public Invitation CreateInvitation(Invitation dto, string token)
+        public Invitation CreateInvitation(Invitation dto, int contactId)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace crds_angular.Services
                 if (dto.InvitationType == _anywhereGatheringInvitationTypeId || dto.InvitationType == _groupInvitationType)
                 {
                     var group = _groupRepository.getGroupDetails(dto.SourceId);
-                    var leaderParticipantRecord = _participantRepository.GetParticipantRecord(token);
+                    var leaderParticipantRecord = _participantRepository.GetParticipant(contactId);
 
                     try
                     {
@@ -107,24 +107,24 @@ namespace crds_angular.Services
             }
         }
 
-        public void ValidateInvitation(Invitation dto, string token)
+        public void ValidateInvitation(Invitation dto, int contactId)
         {
             if (dto.InvitationType == _groupInvitationType)
             {
-                ValidateGroupInvitation(dto, token);
+                ValidateGroupInvitation(dto, contactId);
             } else if (dto.InvitationType == _tripInvitationType)
             {
-                ValidateTripInvitation(dto, token);
+                ValidateTripInvitation(dto, contactId);
             } else if (dto.InvitationType == _anywhereGatheringInvitationTypeId)
             {
-                ValidateGroupInvitation(dto, token);
+                ValidateGroupInvitation(dto, contactId);
             }
 
         }
 
-        private void ValidateGroupInvitation(Invitation dto, string token)
+        private void ValidateGroupInvitation(Invitation dto, int contactId)
         {
-            var me = _participantRepository.GetParticipantRecord(token);
+            var me = _participantRepository.GetParticipant(contactId);
             if (me == null)
             {
                 throw new ValidationException("You must be a group leader to invite others to this group (participant not found)");
@@ -144,7 +144,7 @@ namespace crds_angular.Services
         }
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        private void ValidateTripInvitation(Invitation dto, string token)
+        private void ValidateTripInvitation(Invitation dto, int contactId)
         {
             // TODO Implement validation, make sure the token represents someone who is allowed to send this trip invitation
         }

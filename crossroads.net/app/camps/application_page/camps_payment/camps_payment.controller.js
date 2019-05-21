@@ -32,7 +32,7 @@ export default class CampPaymentController {
         this.returnUrl = 'https://demo.crossroads.net/camps';
         break;
       default:
-        this.returnUrl = 'https://crossroads.net/camps';
+        this.returnUrl = 'https://www.crossroads.net/camps';
         break;
     }
 
