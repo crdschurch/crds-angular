@@ -15,7 +15,7 @@
         </ng-messages>
       </div>
     </div>
-    <div class="form-group" ng-class="{'has-error': (itemForm.Description.$pristine || itemForm.Description.$invalid) && itemForm.$submitted }">
+    <div class="form-group" ng-class="{'has-error': (itemForm.Condition.$pristine || itemForm.Condition.$invalid) && itemForm.$submitted }">
       <label for="condition" class="col-sm-3 control-label required">Item Condition</label>
       <div class="col-sm-9">
         <select required class="form-control" ng-model="corkboardEdit.selectedItem.Condition" id="condition" name="Condition">

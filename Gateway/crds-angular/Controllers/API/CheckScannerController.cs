@@ -22,7 +22,7 @@ namespace crds_angular.Controllers.API
 {
     // TODO - Once Ez-Scan has been updated to send a client API key (US7764), remove the IgnoreClientApiKey attribute
     [IgnoreClientApiKey]
-    public class CheckScannerController : MPAuth
+    public class CheckScannerController : ImpersonateAuthBaseController
     {
         private readonly bool _asynchronous;
         private readonly IContactRepository _contactRepository;
@@ -34,7 +34,8 @@ namespace crds_angular.Controllers.API
 
         private readonly int _crossroadsFinanceClerkContactId;
 
-        public CheckScannerController(IConfigurationWrapper configuration,
+        public CheckScannerController(IAuthTokenExpiryService authTokenExpiryService,
+                                      IConfigurationWrapper configuration,
                                       ICheckScannerService checkScannerService,
                                       IAuthenticationRepository authenticationService,
                                       IContactRepository contactRepository,
@@ -42,7 +43,8 @@ namespace crds_angular.Controllers.API
                                       ICryptoProvider cryptoProvider,
                                       IUserImpersonationService userImpersonationService,
                                       IMessageQueueFactory messageQueueFactory = null,
-                                      IMessageFactory messageFactory = null) : base(userImpersonationService, authenticationService)
+                                      IMessageFactory messageFactory = null) 
+                                      : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _checkScannerService = checkScannerService;
             _contactRepository = contactRepository;
@@ -69,7 +71,7 @@ namespace crds_angular.Controllers.API
         [Route("checkscanner/batches")]
         public IHttpActionResult GetBatches([FromUri(Name = "onlyOpen")] bool onlyOpen = true)
         {
-            return (Authorized(token =>
+            return (Authorized(authDto =>
             {
                 var batches = _checkScannerService.GetBatches(onlyOpen);
                 return (Ok(batches));
@@ -81,7 +83,7 @@ namespace crds_angular.Controllers.API
         [Route("checkscanner/batches/{batchName}/checks")]
         public IHttpActionResult GetChecksForBatch(string batchName)
         {
-            return (Authorized(token =>
+            return (Authorized(authDto =>
             {
                 var checks = _checkScannerService.GetChecksForBatch(batchName);
                 return (Ok(checks));
@@ -94,7 +96,7 @@ namespace crds_angular.Controllers.API
         [HttpPost]
         public IHttpActionResult CreateDonationsForBatch([FromBody] CheckScannerBatch batch)
         {
-            return (Authorized(token =>
+            return (Authorized(authDto =>
             {
                 if (!_asynchronous)
                 {
@@ -129,14 +131,8 @@ namespace crds_angular.Controllers.API
         [HttpPost]
         public IHttpActionResult GetDonorForCheck([FromBody] CheckAccount checkAccount)
         {
-            return (Authorized(token =>
+            return (Authorized(authDto =>
             {
-                var authResult = CheckToken(token);
-                if (authResult != null)
-                {
-                    return (authResult);
-                }
-
                 var donorDetail = _checkScannerService.GetContactDonorForCheck(checkAccount.AccountNumber, checkAccount.RoutingNumber);
                 if (donorDetail == null)
                 {
@@ -144,19 +140,6 @@ namespace crds_angular.Controllers.API
                 }
                 return (Ok(donorDetail));
             }));
-        }
-
-        private RestHttpActionResult<ApiErrorDto>CheckToken(string token)
-        {
-            try
-            {
-                _contactRepository.GetContactId(token);
-                return (null);
-            }
-            catch (Exception e)
-            {
-                return(RestHttpActionResult<ApiErrorDto>.WithStatus(HttpStatusCode.Unauthorized, new ApiErrorDto("Could not authenticate to MinistryPlatform", e)));
-            }
         }
 
         /// <summary>
@@ -171,14 +154,8 @@ namespace crds_angular.Controllers.API
         [HttpPost]
         public IHttpActionResult CreateDonor([FromBody] CheckScannerCheck checkDetails)
         {
-            return (Authorized(token =>
+            return (Authorized(authDto =>
             {
-                var authResult = CheckToken(token);
-                if (authResult != null)
-                {
-                    return (authResult);
-                }
-
                 try
                 {
                     var result = _checkScannerService.CreateDonor(checkDetails);
@@ -199,7 +176,7 @@ namespace crds_angular.Controllers.API
         [Route("checkscanner/encrypt/{*value}")]
         public IHttpActionResult GetEncrypted(string value = "")
         {
-            return (Authorized(token =>
+            return (Authorized(authDto =>
             {
                 var encryptValue = _cryptoProvider.EncryptValueToString(value);
                 return (Ok(encryptValue));

@@ -16,7 +16,8 @@ using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.PlatformService;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
-using MinistryPlatform.Translation.Models.DTO; 
+using MinistryPlatform.Translation.Models.DTO;
+using Constants = Crossroads.Utilities.Constants;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -42,7 +43,6 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly IDonorRepository _donorService;
         private readonly ICommunicationRepository _communicationService;
         private readonly IPledgeRepository _pledgeService;
-        private readonly IApiUserRepository _apiUserRepository;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRest;
 
         private readonly int _donationStatusSucceeded;
@@ -50,8 +50,16 @@ namespace MinistryPlatform.Translation.Repositories
         private static readonly log4net.ILog log =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public DonationRepository(IMinistryPlatformService ministryPlatformService, IDonorRepository donorService, ICommunicationRepository communicationService, IPledgeRepository pledgeService, IConfigurationWrapper configuration, IAuthenticationRepository authenticationService, IApiUserRepository apiUserRepository, IMinistryPlatformRestRepository ministryPlatformRest)
-            : base(authenticationService, configuration)
+        public DonationRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IDonorRepository donorService,
+            ICommunicationRepository communicationService,
+            IPledgeRepository pledgeService,
+            IConfigurationWrapper configuration,
+            IAuthenticationRepository authenticationService,
+            IMinistryPlatformRestRepository ministryPlatformRest,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configuration, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _donorService = donorService;
@@ -73,7 +81,6 @@ namespace MinistryPlatform.Translation.Repositories
             _donationCommunicationsPageId = configuration.GetConfigIntValue("DonationCommunications");
             _messagesPageId = configuration.GetConfigIntValue("Messages");
             _donationDistributionsSubPage = configuration.GetConfigIntValue("DonationDistributionsApiSubPageView");
-            _apiUserRepository = apiUserRepository;
             _ministryPlatformRest = ministryPlatformRest;
         }
 
@@ -118,10 +125,9 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpDeposit GetDepositByProcessorTransferId(string processorTransferId)
         {
-            var apiToken = _apiUserRepository.GetToken();
             var searchString = $"Processor_Transfer_ID='{processorTransferId}'";
 
-            return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpDeposit>(searchString).ToList().FirstOrDefault();
+            return _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Search<MpDeposit>(searchString).ToList().FirstOrDefault();
         }
 
         public MpDonationBatch GetDonationBatch(int batchId)
@@ -144,9 +150,9 @@ namespace MinistryPlatform.Translation.Repositories
             }));
         }
 
-        public List<MpDeposit> GetSelectedDonationBatches(int selectionId, string token)
+        public List<MpDeposit> GetSelectedDonationBatches(int selectionId)
         {
-            var results = _ministryPlatformService.GetSelectionsForPageDict(_depositsPageId, selectionId, token);
+            var results = _ministryPlatformService.GetSelectionsForPageDict(_depositsPageId, selectionId, ApiLogin());
             var deposits = new List<MpDeposit>();
 
             foreach (var result in results)
@@ -427,8 +433,9 @@ namespace MinistryPlatform.Translation.Repositories
             return trips;
         }
 
-        public List<MpGPExportDatum> GetGpExport(int depositId, string token)
-        {                        
+        public List<MpGPExportDatum> GetGpExport(int depositId)
+        {
+            var token = ApiLogin();
             var gpExportDonationLevel = GetGpExportData(depositId, token);
             gpExportDonationLevel.AddRange(GetGPExportDataForPayments(depositId, token));
             
@@ -663,8 +670,9 @@ namespace MinistryPlatform.Translation.Repositories
             return _ministryPlatformRest.UsingAuthenticationToken(token).Get<MPGLAccountMapping>(processingFeeMapping);
         }
 
-        public void UpdateDepositToExported(int selectionId, int depositId, string token)
+        public void UpdateDepositToExported(int selectionId, int depositId)
         {
+            var token = ApiLogin();
             var paramaters = new Dictionary<string, object>
             {
                 {"Deposit_ID", depositId},
@@ -814,11 +822,10 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<int> GetPredefinedDonationAmounts()
         {
-            var apiToken = _apiUserRepository.GetToken();
             string tableName = "cr_Predefined_Donation_Amounts";
 
             List<PredefinedDonationAmountDTO> predefinedAmounts = _ministryPlatformRest
-                .UsingAuthenticationToken(apiToken)
+                .UsingAuthenticationToken(ApiLogin())
                 .Get<PredefinedDonationAmountDTO>(tableName, new Dictionary<string, object>());
 
             List<int> predefinedAmountValues;

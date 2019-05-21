@@ -6,14 +6,14 @@ namespace crds_angular.Services.Interfaces
 {
     public interface IObjectAttributeService
     {
-        ObjectAllAttributesDTO GetObjectAttributes(string token, int objectId, MpObjectAttributeConfiguration configuration);
-        ObjectAllAttributesDTO GetObjectAttributes(string token, int objectId, MpObjectAttributeConfiguration configuration, List<MpAttribute> mpAttributes);
+        ObjectAllAttributesDTO GetObjectAttributes(int objectId, MpObjectAttributeConfiguration configuration);
+        ObjectAllAttributesDTO GetObjectAttributes(int objectId, MpObjectAttributeConfiguration configuration, List<MpAttribute> mpAttributes);
 
         void SaveObjectAttributes(int objectId,
                                   Dictionary<int, ObjectAttributeTypeDTO> objectAttributes,
                                   Dictionary<int, ObjectSingleAttributeDTO> objectSingleAttributes,
                                   MpObjectAttributeConfiguration configuration);
 
-        void SaveObjectMultiAttribute(string token, int objectId, ObjectAttributeDTO objectAttribute, MpObjectAttributeConfiguration configuration, bool parallel=false);
+        void SaveObjectMultiAttribute(int objectId, ObjectAttributeDTO objectAttribute, MpObjectAttributeConfiguration configuration, bool parallel=false);
     }
 }

@@ -9,7 +9,10 @@ using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using CommandLine;
 using Crossroads.Utilities.Services;
-
+using Crossroads.Web.Common.Configuration;
+using System.Threading;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Crossroads.ScheduledDataUpdate
 {
@@ -23,9 +26,10 @@ namespace Crossroads.ScheduledDataUpdate
 
             TlsHelper.AllowTls12();
 
-            var unitySections = new [] { "crossroadsCommonUnity", "unity", "scheduledDataUnity" };
-
             var container = new UnityContainer();
+            CrossroadsWebCommonConfig.Register(container);
+
+            var unitySections = new[] { "unity", "scheduledDataUnity" };
             foreach (var sectionName in unitySections)
             {
                 var section = (UnityConfigurationSection)ConfigurationManager.GetSection(sectionName);
@@ -47,13 +51,28 @@ namespace Crossroads.ScheduledDataUpdate
         private readonly IGroupToolService _groupToolService;
         private readonly IAwsCloudsearchService _awsService;
         private readonly ICorkboardService _corkboardService;
+        private readonly IGroupService _groupService;
+        private readonly IFirestoreUpdateService _firestoreUpdateService;
+        private readonly IAddressService _addressService;
+        private readonly IFinderService _finderService;
 
-        public Program(ITaskService taskService, IGroupToolService groupToolService, IAwsCloudsearchService awsService, ICorkboardService corkboardService)
+        public Program(ITaskService taskService, 
+                       IGroupToolService groupToolService, 
+                       IAwsCloudsearchService awsService, 
+                       ICorkboardService corkboardService,
+                       IGroupService groupService,
+                       IFirestoreUpdateService firestoreUpdateService,
+                       IAddressService addressService,
+                       IFinderService finderService)
         {
             _taskService = taskService;
             _groupToolService = groupToolService;
             _awsService = awsService;
             _corkboardService = corkboardService;
+            _groupService = groupService;
+            _firestoreUpdateService = firestoreUpdateService;
+            _addressService = addressService;
+            _finderService = finderService;
         }
 
         public int Run(string[] args)
@@ -65,7 +84,7 @@ namespace Crossroads.ScheduledDataUpdate
                 Log.Error(options.GetUsage());
                 return 1;
             }
-
+            
             if (options.HelpMode)
             {
                 Log.Error(options.GetUsage());
@@ -74,6 +93,78 @@ namespace Crossroads.ScheduledDataUpdate
 
             var exitCode = 0;
             var modeSelected = false;
+            AutoMapperConfig.RegisterMappings();
+
+            if (options.UpdateAddressLatLong)
+            {
+                modeSelected = true;
+                try
+                {
+                    // get address ids from the file. If no file then geocode 100 addresses with no lat/long
+                    var filename = "addressids.txt";
+                    var addressids = new List<int>();
+                    if (File.Exists(filename))
+                    {
+                        // load addressids from file
+                        List<string> list = new List<string>(File.ReadAllLines(filename));
+                        foreach (string item in list)
+                        {
+                            int id;
+                            if (int.TryParse(item, out id))
+                            {
+                                addressids.Add(id);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // geocode any participants on the map that have no lat/long
+                        addressids = _finderService.GetAddressIdsForMapParticipantWithNoGeoCode();
+
+                        // if we dont have any map participants that need geocoding then lets geocode other addresses
+                        if (addressids.Count == 0)
+                        {
+                            addressids = _finderService.GetAddressIdsWithNoGeoCode();
+                        }
+                    }
+
+                    foreach(int addressid in addressids)
+                    {
+                        _addressService.SetGeoCoordinates(addressid);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("UpdateAddressLatLong failed.", ex);
+                    exitCode = 9999;
+                }
+            }
+
+
+            if (options.ConnectMapListenForUpdates)
+            {
+                modeSelected = true;
+                try
+                {
+                    const int fiveminutes = (60 * 5) * 1000;
+                    Log.Info("Starting Connect Map Update to Firestore");
+                    var conStr = ConfigurationManager.ConnectionStrings["MessageQueueDBAccess"].ToString();
+                    conStr = conStr.Replace("%MP_API_DB_QUEUE_USER%", Environment.GetEnvironmentVariable("MP_API_DB_QUEUE_USER"));
+                    conStr = conStr.Replace("%MP_API_DB_QUEUE_PASSWORD%", Environment.GetEnvironmentVariable("MP_API_DB_QUEUE_PASSWORD"));
+                    string queueName = "MPAppQueue";
+                    string query = "select AuditID, Participant_ID, ShowOnMap, processed from dbo.cr_MapAudit where processed=0 ";
+                    var watcher = new DbWatcher(conStr, queueName, query, _firestoreUpdateService);
+                    watcher.Start();
+                    Thread.Sleep(fiveminutes);
+                    watcher.Stop();
+                    Log.Info("Finished Connect Map Update to Firestore successfully");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Connect Map Update to Firestore failed.", ex);
+                    exitCode = 9999;
+                }
+            }
 
             if (options.AutoCompleteTasksMode)
             {
@@ -166,6 +257,22 @@ namespace Crossroads.ScheduledDataUpdate
                 catch (Exception ex)
                 {
                     Log.Error("Corkboard AWS Refresh failed.", ex);
+                    exitCode = 9999;
+                }
+            }
+
+            if (options.HuddleStatusParticipantUpdateMode)
+            {
+                modeSelected = true;
+                try
+                {
+                    Log.Info("Starting Huddle Status Participant Update");
+                    _groupService.UpdateHuddleGroupParticipantStatus();
+                    Log.Info("Finished Huddle Status Participant Update successfully");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Huddle Status Participant Update failed.", ex);
                     exitCode = 9999;
                 }
             }

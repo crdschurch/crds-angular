@@ -47,7 +47,7 @@ namespace crds_angular.test.Services
             Prop.ForAll<string>( token =>
             {
                 var skills = TestHelpers.MPSkills();
-                _apiUserService.Setup(m => m.GetToken()).Returns(token);
+                _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
                 _skillsService.Setup(m => m.GetGoVolunteerSkills(token)).Returns(skills);
                 var returned = _fixture.RetrieveGoSkills(string.Empty);
                 Assert.IsInstanceOf<List<GoSkills>>(returned);
@@ -66,7 +66,7 @@ namespace crds_angular.test.Services
             var participantId = TestHelpers.RandomInt();
             _configurationWrapper.Setup(m => m.GetConfigIntValue("AttributeTypeIdSkills")).Returns(SKILLSATTRIBUTETYPEID);
             _contactService.Setup(m => m.GetContactByParticipantId(participantId)).Returns(contact);
-            _objectAttributeService.Setup(m => m.GetObjectAttributes(token, contact.Contact_ID, It.IsAny<MpObjectAttributeConfiguration>())).Returns(currentSkills);
+            _objectAttributeService.Setup(m => m.GetObjectAttributes(contact.Contact_ID, It.IsAny<MpObjectAttributeConfiguration>())).Returns(currentSkills);
 
             var toEndDate = _fixture.SkillsToEndDate(skills, currentSkills.MultiSelect[1].Attributes).Select(sk =>
             {
@@ -81,7 +81,7 @@ namespace crds_angular.test.Services
                 {
                     skill.EndDate = It.IsAny<DateTime>();
                 }
-                _objectAttributeService.Setup(m => m.SaveObjectMultiAttribute(token, contact.Contact_ID, skill, It.IsAny<MpObjectAttributeConfiguration>(), false));
+                _objectAttributeService.Setup(m => m.SaveObjectMultiAttribute(contact.Contact_ID, skill, It.IsAny<MpObjectAttributeConfiguration>(), false));
                 _objectAttributeService.Verify();
             });
             _fixture.UpdateSkills(participantId, skills, token);            

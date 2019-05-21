@@ -8,11 +8,16 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class ContactAttributeController : MPAuth
+    public class ContactAttributeController : ImpersonateAuthBaseController
     {
         private readonly IObjectAttributeService _objectAttributeService;
 
-        public ContactAttributeController(IPersonService personService, IObjectAttributeService objectAttributeService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public ContactAttributeController(IAuthTokenExpiryService authTokenExpiryService, 
+                                          IPersonService personService, 
+                                          IObjectAttributeService objectAttributeService, 
+                                          IUserImpersonationService userImpersonationService, 
+                                          IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _objectAttributeService = objectAttributeService;
         }
@@ -24,7 +29,7 @@ namespace crds_angular.Controllers.API
             return Authorized(token =>
             {
                 var configuration = MpObjectAttributeConfigurationFactory.MyContact();
-                _objectAttributeService.SaveObjectMultiAttribute(token, contactId, objectAttribute, configuration);
+                _objectAttributeService.SaveObjectMultiAttribute(contactId, objectAttribute, configuration);
                 return this.Ok();
             });
         }

@@ -18,8 +18,6 @@
   // The SU2S Tool
   require('./signup_to_serve');
 
-  // The KC Appliant Tool
-  require('./kc_applicant');
 
   // The Check Batch Processor Tool
   require('./check_batch_processor');

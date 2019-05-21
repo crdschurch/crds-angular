@@ -1,0 +1,40 @@
+USE [MinistryPlatform]
+GO
+
+INSERT INTO [dbo].[dp_Communications]
+           ([Author_User_ID]
+           ,[Subject]
+           ,[Body]
+           ,[Domain_ID]
+           ,[Start_Date]
+           ,[Expire_Date]
+           ,[Communication_Status_ID]
+           ,[From_Contact]
+           ,[Reply_to_Contact]
+           ,[_Sent_From_Task]
+           ,[Selection_ID]
+           ,[Template]
+           ,[Active]
+           ,[To_Contact]
+           ,[Time_Zone]
+           ,[Locale]
+           ,[Pertains_To_Page_ID])
+     VALUES
+           (3009216
+           ,'Quarterly Giving Statement'
+           ,'Click on <a href="https://www.crossroads.net/givinghistory" target="_self">https://www.crossroads.net/givinghistory</a> to view your giving history.'
+           ,1
+           ,'2018-06-19 00:00:00.000'
+           ,null
+           ,1
+           ,1519180
+           ,1519180
+           ,null
+           ,null
+           ,1
+           ,1
+           ,null
+           ,null
+           ,null
+           ,null)
+GO

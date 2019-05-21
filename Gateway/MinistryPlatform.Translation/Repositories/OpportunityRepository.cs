@@ -18,7 +18,6 @@ namespace MinistryPlatform.Translation.Repositories
     {
         private readonly int _eventPage = Convert.ToInt32(AppSettings("Events"));
         private readonly IParticipantRepository _participantService;
-        private readonly IApiUserRepository _apiUserService;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRest;
         private readonly int _groupParticpantsSubPageView = Convert.ToInt32(AppSettings("GroupsParticipantsSubPage"));
         private readonly IMinistryPlatformService _ministryPlatformService;
@@ -31,14 +30,12 @@ namespace MinistryPlatform.Translation.Repositories
                                       IAuthenticationRepository authenticationService,
                                       IConfigurationWrapper configurationWrapper,
                                       IParticipantRepository participantService,
-                                      IApiUserRepository apiUserService,
-                                      IMinistryPlatformRestRepository ministryPlatformRest
-            )
-            : base(authenticationService, configurationWrapper)
+                                      IMinistryPlatformRestRepository ministryPlatformRest,
+                                      IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _participantService = participantService;
-            _apiUserService = apiUserService;
             _ministryPlatformRest = ministryPlatformRest;
         }
 
@@ -167,16 +164,14 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<Models.Opportunities.MpResponse> SearchResponseByGroupAndEvent(String searchString)
         {
-            var token = _apiUserService.GetToken();
-            var records = _ministryPlatformService.GetPageViewRecords("ResponsesByEventAndGroup", token, searchString);
+            var records = _ministryPlatformService.GetPageViewRecords("ResponsesByEventAndGroup", ApiLogin(), searchString);
             return ConvertToMPResponse(records);
         } 
 
         public List<Models.Opportunities.MpResponse> GetContactsOpportunityResponseByGroupAndEvent(int groupId, int eventId)
         {
             var search = string.Format("{0}, {1}", groupId, eventId);
-            var token = _apiUserService.GetToken();
-            var records = _ministryPlatformService.GetPageViewRecords("ResponsesByEventAndGroup", token, search);
+            var records = _ministryPlatformService.GetPageViewRecords("ResponsesByEventAndGroup", ApiLogin(), search);
             return ConvertToMPResponse(records);
 
         }
@@ -198,7 +193,7 @@ namespace MinistryPlatform.Translation.Repositories
         {
             string searchString = $"Opportunity_ID = {opportunityId} AND Event_ID = {eventId}";
 
-            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetToken()).Search<MpResponse>(searchString);
+            return _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Search<MpResponse>(searchString);
         }
 
         public int GetOpportunitySignupCount(int opportunityId, int eventId, string token)
@@ -212,9 +207,10 @@ namespace MinistryPlatform.Translation.Repositories
             return records.Count();
         }
 
-        public List<DateTime> GetAllOpportunityDates(int opportunityId, string token)
+        public List<DateTime> GetAllOpportunityDates(int opportunityId)
         {
             //First get the event type
+            var token = ApiLogin();
             var opp = _ministryPlatformService.GetRecordDict(_opportunityPage, opportunityId, token);
             var eventType = opp["Event_Type_ID_Text"];
 
@@ -235,9 +231,9 @@ namespace MinistryPlatform.Translation.Repositories
             return filteredEvents;
         }
 
-        public DateTime GetLastOpportunityDate(int opportunityId, string token)
+        public DateTime GetLastOpportunityDate(int opportunityId)
         {
-            var events = GetAllOpportunityDates(opportunityId, token);
+            var events = GetAllOpportunityDates(opportunityId);
             //grab the last one
             try
             {
@@ -266,9 +262,10 @@ namespace MinistryPlatform.Translation.Repositories
             }
         }
 
-        public int RespondToOpportunity(string token, int opportunityId, string comments)
+        public int RespondToOpportunity( int opportunityId, string comments, int contactId)
         {
-            var participant = _participantService.GetParticipantRecord(token);
+            var token = ApiLogin();
+            var participant = _participantService.GetParticipant(contactId);
             var participantId = participant.ParticipantId;
 
             var values = new Dictionary<string, object>
@@ -351,14 +348,14 @@ namespace MinistryPlatform.Translation.Repositories
             return recordId;
         }
 
-        public MpGroup GetGroupParticipantsForOpportunity(int opportunityId, string token)
+        public MpGroup GetGroupParticipantsForOpportunity(int opportunityId)
         {
-            var opp = _ministryPlatformService.GetRecordDict(_opportunityPage, opportunityId, token);
+            var apiToken = ApiLogin();
+            var opp = _ministryPlatformService.GetRecordDict(_opportunityPage, opportunityId, apiToken);
             var groupId = opp.ToInt("Add_to_Group");
             var groupName = opp.ToString("Add_to_Group_Text");
             var searchString = ",,,," + opp.ToString("Group_Role_ID");
             var eventTypeId = opp.ToInt("Event_Type_ID");
-            var apiToken = ApiLogin();
             var group = _ministryPlatformService.GetSubpageViewRecords(_groupParticpantsSubPageView,
                                                                        groupId,
                                                                        apiToken,

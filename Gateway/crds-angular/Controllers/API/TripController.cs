@@ -18,14 +18,19 @@ using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.Controllers.API
 {
-    public class TripController : MPAuth
+    public class TripController : ImpersonateAuthBaseController
     {
         private readonly ILog _logger = LogManager.GetLogger(typeof(DonationController));
 
         private readonly ITripService _tripService;
         private readonly IContactRepository _contactRepository;
 
-        public TripController(ITripService tripService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository, IContactRepository contactRepository) : base(userImpersonationService, authenticationRepository)
+        public TripController(IAuthTokenExpiryService authTokenExpiryService, 
+                              ITripService tripService, 
+                              IUserImpersonationService userImpersonationService, 
+                              IAuthenticationRepository authenticationRepository, 
+                              IContactRepository contactRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _tripService = tripService;
             _contactRepository = contactRepository;
@@ -136,7 +141,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _tripService.GeneratePrivateInvite(dto, token);
+                    _tripService.GeneratePrivateInvite(dto);
                     return Ok();
                 }
                 catch (Exception exception)
@@ -236,8 +241,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var contactId = _contactRepository.GetContactId(token);
-                    var contact = _contactRepository.GetSimpleContact(contactId).Wait();
+                    var contact = _contactRepository.GetSimpleContact(token.UserInfo.Mp.ContactId).Wait();
                     return Ok(contact);
                 }
                 catch (Exception e)

@@ -22,8 +22,13 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly int _usersApiLookupPageViewId;
         private readonly int _usersPageId;
 
-        public UserRepository(IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper,
-            IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRest) : base(authenticationService, configurationWrapper)
+        public UserRepository(
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IMinistryPlatformService ministryPlatformService,
+            IMinistryPlatformRestRepository ministryPlatformRest,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRest = ministryPlatformRest;
@@ -74,6 +79,16 @@ namespace MinistryPlatform.Translation.Repositories
                 apiToken = ApiLogin();
             string userNameClean = userName.Replace("'", "''");
             string searchUser = $"dp_Users.User_Name='{userNameClean}'";
+            string columns = "User_Name,User_GUID, ISNULL(Can_Impersonate, 0) AS Can_Impersonate, User_Email,User_ID";
+            var users = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpUser>(searchUser, columns, null, true);
+            return users.FirstOrDefault();
+        }
+
+        public MpUser GetByContactId(int contactId, string apiToken)
+        {
+            if (String.IsNullOrEmpty(apiToken))
+                apiToken = ApiLogin();
+            string searchUser = $"dp_Users.Contact_ID={contactId}";
             string columns = "User_Name,User_GUID, ISNULL(Can_Impersonate, 0) AS Can_Impersonate, User_Email,User_ID";
             var users = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpUser>(searchUser, columns, null, true);
             return users.FirstOrDefault();

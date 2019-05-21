@@ -39,7 +39,7 @@ namespace crds_angular.Services
         public List<GoSkills> RetrieveGoSkills(string token)
         {
             // get all the skill attributes
-            var apiToken = _apiUserService.GetToken();
+            var apiToken = _apiUserService.GetDefaultApiClientToken();
             var skills = _skillsService.GetGoVolunteerSkills(apiToken);
 
             // if the user is logged in, check if they have skills
@@ -69,7 +69,7 @@ namespace crds_angular.Services
             MpObjectAttributeConfiguration configuration;
             if (token == String.Empty)
             {
-                token = _apiUserService.GetToken();
+                token = _apiUserService.GetDefaultApiClientToken();
                 configuration = MpObjectAttributeConfigurationFactory.Contact();
             }
             else
@@ -80,7 +80,7 @@ namespace crds_angular.Services
             var contactObs = Observable.Start(() => _contactService.GetContactByParticipantId(participantId));
             contactObs.Subscribe(con =>
             {
-                var attrs = Observable.Start(() => _objectAttributeService.GetObjectAttributes(token, con.Contact_ID, configuration));
+                var attrs = Observable.Start(() => _objectAttributeService.GetObjectAttributes(con.Contact_ID, configuration));
 
                 attrs.Subscribe(attr =>
                 {
@@ -101,7 +101,7 @@ namespace crds_angular.Services
                     {
                         allSkillsObs.ForEachAsync(skill =>
                         {
-                            _objectAttributeService.SaveObjectMultiAttribute(token, con.Contact_ID, skill, configuration, true);
+                            _objectAttributeService.SaveObjectMultiAttribute(con.Contact_ID, skill, configuration, true);
                         });
                     }
                     catch (Exception e)
@@ -142,7 +142,7 @@ namespace crds_angular.Services
         {
             var contact = _contactService.GetMyProfile(token);
             var configuration = MpObjectAttributeConfigurationFactory.Contact();
-            var attributesTypes = _objectAttributeService.GetObjectAttributes(apiToken, contact.Contact_ID, configuration);
+            var attributesTypes = _objectAttributeService.GetObjectAttributes(contact.Contact_ID, configuration);
             ObjectAttributeTypeDTO contactSkills;
             var skillsAttributeTypeId = _configurationWrapper.GetConfigIntValue("AttributeTypeIdSkills");
             attributesTypes.MultiSelect.TryGetValue(skillsAttributeTypeId, out contactSkills);

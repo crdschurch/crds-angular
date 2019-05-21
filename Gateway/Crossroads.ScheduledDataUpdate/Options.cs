@@ -33,6 +33,18 @@ namespace Crossroads.ScheduledDataUpdate
             HelpText = "Execute 'api_crds_Archive_Pending_Group_Inquiries_Older_Than_90_Days'")]
         public bool ArchivePendingGroupInquiriesMode { get; set; }
 
+        [Option("HuddleStatusParticipantUpdateMode", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
+            HelpText = "Execute 'Huddle Status Participant Updates'")]
+        public bool HuddleStatusParticipantUpdateMode { get; set; }
+
+        [Option("ConnectMapListenForUpdates", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
+            HelpText = "Execute 'Listen for changes and Sync Connect Pins to Firestore'")]
+        public bool ConnectMapListenForUpdates { get; set; }
+
+        [Option("UpdateAddressLatLong", Required = false, DefaultValue = false, MutuallyExclusiveSet = "OpMode",
+            HelpText = "Update latitude and longitude for given addess ids'")]
+        public bool UpdateAddressLatLong { get; set; }
+
         [ParserState]
         public IParserState LastParserState { get; set; }
 

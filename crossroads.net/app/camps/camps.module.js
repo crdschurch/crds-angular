@@ -18,6 +18,7 @@ import ApplicationPage from './application_page/application_page.module';
 export default angular.module(constants.MODULES.CAMPS, [
   constants.MODULES.CORE,
   constants.MODULES.COMMON,
+  constants.MODULES.FORMLY_BUILDER,
   ApplicationPage])
   .config(CampRoutes)
   .config(FormlyConfig)

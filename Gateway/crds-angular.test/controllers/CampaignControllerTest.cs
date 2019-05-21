@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -16,6 +17,7 @@ namespace crds_angular.test.controllers
     [TestFixture]
     public class CampaignControllerTest
     {
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<ICampaignService> _campaignServiceMock;
         private CampaignController _fixture;
         private readonly int _pledgeCampaignId = 24680;
@@ -23,9 +25,10 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _campaignServiceMock = new Mock<ICampaignService>();
 
-            _fixture = new CampaignController(_campaignServiceMock.Object, null, null);
+            _fixture = new CampaignController(_authTokenExpiryService.Object, _campaignServiceMock.Object, null, null);
 
             _fixture.Request = new HttpRequestMessage();
             _fixture.Request.Headers.Authorization = new AuthenticationHeaderValue("auth_type", "auth_token");
@@ -35,11 +38,11 @@ namespace crds_angular.test.controllers
         [Test]
         public void ShouldReturnCampaignSummary()
         {
-            _campaignServiceMock.Setup(m => m.GetSummary(_pledgeCampaignId)).Returns(new PledgeCampaignSummaryDto());
+            _campaignServiceMock.Setup(m => m.GetSummary(_pledgeCampaignId)).Returns(new List<PledgeCampaignSummaryDto>());
 
             var result = _fixture.GetSummary(_pledgeCampaignId);
-            Assert.IsInstanceOf<OkNegotiatedContentResult<PledgeCampaignSummaryDto>>(result);
-            var contentResult = (OkNegotiatedContentResult<PledgeCampaignSummaryDto>)result;
+            Assert.IsInstanceOf<OkNegotiatedContentResult<List<PledgeCampaignSummaryDto>>>(result);
+            var contentResult = (OkNegotiatedContentResult<List<PledgeCampaignSummaryDto>>)result;
             Assert.IsNotNull(contentResult.Content);
 
             _campaignServiceMock.VerifyAll();

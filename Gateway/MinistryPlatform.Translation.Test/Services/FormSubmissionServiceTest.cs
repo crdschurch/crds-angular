@@ -19,7 +19,8 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
         private Mock<IDbConnection> _dbConnection;
-        private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;        
+        private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;
+        private Mock<IApiUserRepository> _apiUserService;
         private MpFormResponse _mockForm;
         private MpFormAnswer _mockAnswer1, _mockAnswer2, _mockAnswer3;
         private const int formResponsePageId = 424;
@@ -33,17 +34,18 @@ namespace MinistryPlatform.Translation.Test.Services
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
             _dbConnection = new Mock<IDbConnection>();
-            _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();           
+            _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
+        _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
             });
 
-            _fixture = new FormSubmissionRepository(_ministryPlatformService.Object, _dbConnection.Object, _authService.Object, _configWrapper.Object, _ministryPlatformRest.Object);
+            _fixture = new FormSubmissionRepository(_ministryPlatformService.Object, _dbConnection.Object, _authService.Object, _configWrapper.Object, _ministryPlatformRest.Object, _apiUserService.Object);
 
             _mockAnswer1 = new MpFormAnswer
             {

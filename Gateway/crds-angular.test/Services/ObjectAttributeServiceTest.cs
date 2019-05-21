@@ -88,7 +88,7 @@ namespace crds_angular.test.Services
             var configuration = MpObjectAttributeConfigurationFactory.Contact();
 
             _contactAttributeService.Setup(x => x.GetCurrentObjectAttributes(_fakeToken, _fakeContactId, configuration, null)).Returns(_currentAttributes);
-            _apiUserService.Setup(x => x.GetToken()).Returns(_fakeToken);
+            _apiUserService.Setup(x => x.GetDefaultApiClientToken()).Returns(_fakeToken);
             _contactAttributeService.Setup(x => x.UpdateAttribute(_fakeToken, It.IsAny<MpObjectAttribute>(), configuration)).Callback<string, MpObjectAttribute, MpObjectAttributeConfiguration>((id, actual, objectConfiguration) =>
             {
                 Assert.AreEqual(actual.Notes, _updatedNote);  

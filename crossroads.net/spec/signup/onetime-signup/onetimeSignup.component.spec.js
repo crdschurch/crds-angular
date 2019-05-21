@@ -27,7 +27,7 @@ describe('Onetime Signup Component', function() {
     $rootScope = _$rootScope_;
 
     scope = $rootScope.$new();
-    scope.cmsInfo = helpers.cmsInfo.pages[0];
+    scope.cmsInfo = helpers.cmsInfo.items[0].fields;
     scope.group = helpers.group;
     element = '<onetime-event cms-info=\'cmsInfo\' group=\'group\'></onetime-event>';
     element = $compile(element)(scope);
@@ -37,7 +37,7 @@ describe('Onetime Signup Component', function() {
   }));
 
   it('should get a title from the cmsInfo', function() {
-    expect(isolated.onetimeEvent.cmsInfo).toEqual(helpers.cmsInfo.pages[0]);
+    expect(isolated.onetimeEvent.cmsInfo).toEqual(helpers.cmsInfo.items[0].fields);
   });
 
   it('should get the group', function() {

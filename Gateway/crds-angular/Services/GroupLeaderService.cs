@@ -78,13 +78,13 @@ namespace crds_angular.Services
             });         
         }
 
-        public IObservable<int> GetGroupLeaderStatus(string token)
+        public IObservable<int> GetGroupLeaderStatus(int contactId)
         {
             return Observable.Create<int>(observer =>
             {
                 try
                 {
-                    var participant = _participantRepository.GetParticipantRecord(token);
+                    var participant = _participantRepository.GetParticipant(contactId);
                     observer.OnNext(participant.GroupLeaderStatus);
                 }
                 catch (Exception e)
@@ -97,13 +97,13 @@ namespace crds_angular.Services
             });
         }
 
-        public IObservable<int> SetApplied(string token)
+        public IObservable<int> SetApplied(int contactId)
         {
             return Observable.Create<int>(observer =>
             {
                 try
                 {
-                    var participant = _participantRepository.GetParticipantRecord(token);
+                    var participant = _participantRepository.GetParticipant(contactId);
                     SetGroupLeaderStatus(participant, _configWrapper.GetConfigIntValue("GroupLeaderApplied"));
                     observer.OnNext(1);
                     observer.OnCompleted();
@@ -116,16 +116,16 @@ namespace crds_angular.Services
             });           
         }
 
-        public void SetInterested(string token)
+        public void SetInterested(int contactId)
         {
-            var participant = _participantRepository.GetParticipantRecord(token);
+            var participant = _participantRepository.GetParticipant(contactId);
             SetGroupLeaderStatus(participant, _configWrapper.GetConfigIntValue("GroupLeaderInterested"));
         }
 
-        public IObservable<IList<Unit>> SaveProfile(string token, GroupLeaderProfileDTO leader)
+        public IObservable<IList<Unit>> SaveProfile(int contactId, GroupLeaderProfileDTO leader)
         {
             // get the current contact data....
-            var currentPerson = _personService.GetLoggedInUserProfile(token);
+            var currentPerson = _personService.GetPerson(contactId);
             currentPerson.CongregationId = leader.Site;
             currentPerson.NickName = leader.NickName;
             currentPerson.LastName = leader.LastName;
@@ -178,13 +178,23 @@ namespace crds_angular.Services
                 {
                     new MpFormAnswer
                     {
-                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormStoryFieldId"),
-                        Response = spiritualGrowth.Story
+                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormOpenResponse1FieldId"),
+                        Response = spiritualGrowth.OpenResponse1
                     },
                     new MpFormAnswer
                     {
-                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormTaughtFieldId"),
-                        Response = spiritualGrowth.Taught
+                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormOpenResponse2FieldId"),
+                        Response = spiritualGrowth.OpenResponse2
+                    },
+                    new MpFormAnswer
+                    {
+                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormOpenResponse3FieldId"),
+                        Response = spiritualGrowth.OpenResponse3
+                    },
+                    new MpFormAnswer
+                    {
+                        FieldId = _configWrapper.GetConfigIntValue("GroupLeaderFormOpenResponse4FieldId"),
+                        Response = spiritualGrowth.OpenResponse4
                     }
                 }
             };
@@ -245,31 +255,6 @@ namespace crds_angular.Services
             });
         }
 
-        public IObservable<int> SendReferenceEmail(Dictionary<string, object> referenceData)
-        {
-            var templateId = _configWrapper.GetConfigIntValue("GroupLeaderReferenceEmailTemplate");           
-            return Observable.Create<int>(observer =>
-            {
-                try
-                {
-                    var referenceId = int.Parse((string)referenceData["referenceContactId"]);
-                    var reference = _contactRepository.GetContactById(referenceId);
-                    var template = _communicationRepository.GetTemplateAsCommunication(
-                        templateId,                        
-                        referenceId,
-                        reference.Email_Address,
-                        SetupReferenceEmailMergeData(reference, (MpMyContact)referenceData["contact"], ((MpParticipant)referenceData["participant"]).ParticipantId));
-                    var messageId = _communicationRepository.SendMessage(template);
-                    observer.OnNext(messageId);
-                }
-                catch (Exception e)
-                {
-                    observer.OnError(new ApplicationException("Unable to send reference email", e));
-                }
-                return Disposable.Empty;
-            });
-        }
-
         public IObservable<int> SendStudentMinistryRequestEmail(Dictionary<string, object> referenceData)
         {
             var templateId = _configWrapper.GetConfigIntValue("GroupLeaderForStudentsEmailTemplate");
@@ -293,46 +278,6 @@ namespace crds_angular.Services
                 }
                 return Disposable.Empty;
             });
-        }
-
-        public IObservable<int> SendNoReferenceEmail(Dictionary<string, object> referenceData)
-        {
-            var templateId = _configWrapper.GetConfigIntValue("GroupLeaderNoReferenceEmailTemplate");
-            return Observable.Create<int>(observer =>
-            {
-                try
-                {
-                    var toContactId = _configWrapper.GetConfigIntValue("DefaultGroupContactEmailId");
-                    var toContactEmail = _contactRepository.GetContactEmail(toContactId);
-                    var template = _communicationRepository.GetTemplateAsCommunication(
-                        templateId,
-                        toContactId,
-                        toContactEmail,
-                        SetupGenericEmailMergeData((MpMyContact) referenceData["contact"])
-                    );
-
-                    var messageId = _communicationRepository.SendMessage(template);
-                    observer.OnNext(messageId);
-                }
-                catch (Exception e)
-                {
-                    observer.OnError(new ApplicationException("Unable to send no reference email"));
-                }
-
-                return Disposable.Empty;
-            });
-        }
-
-        private Dictionary<string, object> SetupReferenceEmailMergeData(MpMyContact reference, MpMyContact applicant, int participant_Id)
-        {
-            return new Dictionary<string, object>
-            {
-                {"Recipient_First_Name", reference.Nickname ?? reference.First_Name },
-                {"First_Name" , applicant.Nickname ?? applicant.First_Name },
-                {"Last_Name", applicant.Last_Name },
-                {"Participant_ID", participant_Id },
-                {"Base_Url", _configWrapper.GetConfigValue("BaseMPUrl") }
-            };
         }
 
         private Dictionary<string, object> SetupGenericEmailMergeData(MpMyContact applicant)

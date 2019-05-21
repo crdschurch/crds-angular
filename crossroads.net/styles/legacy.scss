@@ -22,6 +22,7 @@
   @import 'modules/crds-card.scss';
   @import 'modules/crds-hero.scss';
   @import 'modules/crds-modal.scss';
+  @import 'modules/give-embed.scss';  
   @import 'modules/group-detail-about.scss';
   @import 'modules/group-participants-cards.scss';
   @import 'modules/group-requests.scss';
@@ -77,15 +78,11 @@
   @import 'pages/iam.scss';
   @import 'pages/invoices.scss';
   @import 'pages/leaveyourmark.scss';
-  @import 'pages/live.crossroads.scss';
   @import 'pages/locations.scss';
-  @import 'pages/media.scss';
-  @import 'pages/media_topics.scss';
   @import 'pages/nextsteps.scss';
   @import 'pages/serve.scss';
   @import 'pages/signin-register.scss';
   @import 'pages/spark.scss';
-  @import 'pages/styleguide.scss';
   @import 'pages/superbowl.scss';
   @import 'pages/thefeed.scss';
   @import 'pages/errorpage.scss';
@@ -104,7 +101,7 @@
   @import 'helpers/utilities.scss';
   @import 'lib/angular-aside.scss';
   @import 'lib/ng-img-crop.scss';
-  @import url('//crossroads-media.s3.amazonaws.com/documents/styles/hotfix-seventy-five.css');
+  @import url('//crossroads-media.s3.amazonaws.com/documents/styles/hotfix-seventy-six.css');
   @import '../node_modules/ng-table/dist/ng-table.css';
 }
 

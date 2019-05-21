@@ -35,7 +35,7 @@ namespace MinistryPlatform.Translation.Repositories
     public bool InvoiceExistsForEventParticipant(int eventParticipantId)
     {
       var filter = new Dictionary<string, object> { { "Event_Participant_ID", eventParticipantId } };
-      var apiToken = _apiUserRepository.GetToken();
+      var apiToken = _apiUserRepository.GetDefaultApiClientToken();
       var invoices = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Get<MpInvoiceDetail>("Invoice_Detail", filter);
       return invoices.Where(i => i.InvoiceStatusId != _invoiceCancelled).ToList().Any();
     }
@@ -46,13 +46,13 @@ namespace MinistryPlatform.Translation.Repositories
 
       var update = new List<Dictionary<string, object>> { dict };
 
-      var apiToken = _apiUserRepository.GetToken();
+      var apiToken = _apiUserRepository.GetDefaultApiClientToken();
       _ministryPlatformRest.UsingAuthenticationToken(apiToken).Put("Invoices", update);
     }
 
     public MpInvoice GetInvoice(int invoiceId)
     {
-      var apiToken = _apiUserRepository.GetToken();
+      var apiToken = _apiUserRepository.GetDefaultApiClientToken();
       var filter = $"Invoice_ID={invoiceId} AND Invoice_Status_ID!={_invoiceCancelled}";
 
       var resultLst = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpInvoice>(filter);
@@ -62,7 +62,7 @@ namespace MinistryPlatform.Translation.Repositories
 
     public MpInvoiceDetail GetInvoiceDetailForInvoice(int invoiceId)
     {
-      var apiToken = _apiUserRepository.GetToken();
+      var apiToken = _apiUserRepository.GetDefaultApiClientToken();
       var filter = $"Invoice_ID_Table.[Invoice_ID] = {invoiceId}";  
       var cols =$"Invoice_Detail.[Invoice_Detail_ID], Invoice_ID_Table_Invoice_Status_ID_Table.[Invoice_Status_ID], Invoice_ID_Table.[Invoice_ID]," +
                 $"Recipient_Contact_ID_Table.[Contact_ID] AS [Recipient_Contact_ID], Event_Participant_ID_Table.[Event_Participant_ID], Invoice_Detail.[Item_Quantity]," +
@@ -94,7 +94,7 @@ namespace MinistryPlatform.Translation.Repositories
         RecipientContactId = recipientContactId,
         EventParticipantId = eventParticipantId
       };
-      var apiToken = _apiUserRepository.GetToken();
+      var apiToken = _apiUserRepository.GetDefaultApiClientToken();
       return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Post(new List<MpNestedInvoiceDetail>(new List<MpNestedInvoiceDetail> { invoice })) == 200;
     }
 
@@ -123,13 +123,13 @@ namespace MinistryPlatform.Translation.Repositories
         EventParticipantId = eventParticipantId
       };
       
-      var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+      var apiToken = _apiUserRepository.GetDefaultApiClientToken();
       _ministryPlatformRest.UsingAuthenticationToken(apiToken).Put(new List<MpNestedInvoiceDetail> { updatedInvoice });
     }
 
     public Result<MpInvoiceDetail> GetInvoiceDetailsForProductAndCamper(int productId, int camperId, int eventId)
     {
-      var apiToken = _apiUserRepository.GetDefaultApiUserToken();
+      var apiToken = _apiUserRepository.GetDefaultApiClientToken();
       var invoiceDetails = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpInvoiceDetail>($"Recipient_Contact_ID_Table.[Contact_ID]={camperId} AND Product_ID_Table.[Product_ID]={productId} AND Event_Participant_ID_Table_Event_ID_Table.[Event_ID]={eventId} AND Invoice_Status_ID!={_invoiceCancelled}", "Invoice_ID_Table.[Invoice_ID]");
       if (!invoiceDetails.Any())
       {
@@ -140,7 +140,7 @@ namespace MinistryPlatform.Translation.Repositories
 
     public int GetInvoiceIdForPayment(int paymentId)
     {
-      var apiToken = _apiUserRepository.GetToken();
+      var apiToken = _apiUserRepository.GetDefaultApiClientToken();
       var searchString = $"Payment_ID_Table.[Payment_ID]={paymentId}";
       var column = "Invoice_Detail_ID_Table_Invoice_ID_Table.[Invoice_ID]";
       return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<int>("Payment_Detail", searchString, column, null, false);

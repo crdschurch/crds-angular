@@ -18,11 +18,15 @@ namespace crds_angular.test.controllers
     public class ImageControllerTest
     {
         private ImageController _fixture;
+
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IMinistryPlatformService> _mpService;
         private Mock<IAuthenticationRepository> _authenticationRepository;
         private Mock<IApiUserRepository> _apiUserRepository;
         private Mock<IUserImpersonationService> _userImpersonationService;
         private Mock<IConfigurationWrapper> _configurationWrapper;
+        private Mock<IContactRepository> _contactRepository;
+        private Mock<IFinderService> _finderService;
 
         private List<Type> _attributesThatRequireApiKey;
 
@@ -36,13 +40,23 @@ namespace crds_angular.test.controllers
                 typeof(HttpDeleteAttribute)
             };
 
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _mpService = new Mock<IMinistryPlatformService>();
             _authenticationRepository = new Mock<IAuthenticationRepository>();
             _apiUserRepository = new Mock<IApiUserRepository>();
             _userImpersonationService = new Mock<IUserImpersonationService>();
             _configurationWrapper = new Mock<IConfigurationWrapper>();
+            _contactRepository = new Mock<IContactRepository>();
+            _finderService = new Mock<IFinderService>();
 
-            _fixture = new ImageController(_mpService.Object, _authenticationRepository.Object, _apiUserRepository.Object, _userImpersonationService.Object, _configurationWrapper.Object);
+            _fixture = new ImageController(_authTokenExpiryService.Object, 
+                                           _mpService.Object, 
+                                           _authenticationRepository.Object, 
+                                           _apiUserRepository.Object, 
+                                           _userImpersonationService.Object, 
+                                           _configurationWrapper.Object,
+                                            _contactRepository.Object,
+                                           _finderService.Object);
         }
 
         [Test]

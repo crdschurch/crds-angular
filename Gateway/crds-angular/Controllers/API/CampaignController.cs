@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -20,10 +21,11 @@ namespace crds_angular.Controllers.API
 
         private readonly ICampaignService _campaignService;
 
-        public CampaignController(ICampaignService campaignService,
-            IUserImpersonationService userImpersonationService,
-            IAuthenticationRepository authenticationRepository)
-            : base(userImpersonationService, authenticationRepository)
+        public CampaignController(IAuthTokenExpiryService authTokenExpiryService, 
+                                  ICampaignService campaignService,
+                                  IUserImpersonationService userImpersonationService,
+                                  IAuthenticationRepository authenticationRepository)
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _campaignService = campaignService;
         }
@@ -33,7 +35,7 @@ namespace crds_angular.Controllers.API
         /// </summary>
         /// <param name="pledgeCampaignId">A pledge campaign Id</param>
         /// <returns>A <see cref="PledgeCampaignSummaryDto">PledgeCampaignSummaryDto</see> with summary information for the campaign. This will return a 404/Not Found if the pledge campaign Id could not be located.</returns>
-        [ResponseType(typeof(PledgeCampaignSummaryDto))]
+        [ResponseType(typeof(List<PledgeCampaignSummaryDto>))]
         [VersionedRoute(template: "campaign/summary/{pledgeCampaignId}", minimumVersion: "1.0.0")]
         [Route("campaign/summary/{pledgeCampaignId}")]
         [HttpGet]

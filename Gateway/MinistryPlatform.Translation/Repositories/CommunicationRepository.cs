@@ -45,7 +45,7 @@ namespace MinistryPlatform.Translation.Repositories
             IAuthenticationRepository authenticationService,
             IConfigurationWrapper configurationWrapper,
             IApiUserRepository apiUserRepository)
-            : base(authenticationService, configurationWrapper)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRestRepository;

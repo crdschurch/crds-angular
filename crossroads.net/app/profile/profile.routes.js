@@ -84,12 +84,6 @@
           controller: 'ProfileSkillsController as profileSkills',
           data: {resolve: true}
         })
-        .state('profile.giving', {
-          url: '/giving',
-          controller: 'ProfileGivingController as giving_profile_controller',
-          templateUrl: 'giving/profileGiving.html',
-          data: {resolve: true}
-        })
     ;
   }
 })();

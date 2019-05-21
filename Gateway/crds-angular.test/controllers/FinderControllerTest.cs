@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Device.Location;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Results;
 using crds_angular.Controllers.API;
-using crds_angular.Exceptions;
-using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Finder;
 using crds_angular.Services.Analytics;
@@ -25,6 +21,7 @@ namespace crds_angular.test.controllers
     {
         private FinderController _fixture;
 
+        private Mock<IAuthTokenExpiryService> _authTokenExpiryService;
         private Mock<IAddressService> _addressService;
         private Mock<IAddressGeocodingService> _addressGeocodingService;
         private Mock<IGroupToolService> _groupToolService;
@@ -40,6 +37,7 @@ namespace crds_angular.test.controllers
         [SetUp]
         public void SetUp()
         {
+            _authTokenExpiryService = new Mock<IAuthTokenExpiryService>();
             _finderService = new Mock<IFinderService>();
             _userImpersonationService = new Mock<IUserImpersonationService>();
             _authenticationRepository = new Mock<IAuthenticationRepository>();
@@ -51,7 +49,8 @@ namespace crds_angular.test.controllers
             _authType = "authType";
             _authToken = "authToken";
 
-            _fixture = new FinderController(_finderService.Object,
+            _fixture = new FinderController(_authTokenExpiryService.Object,
+                                            _finderService.Object,
                                             _groupToolService.Object,
                                             _userImpersonationService.Object,
                                             _authenticationRepository.Object,
@@ -64,6 +63,7 @@ namespace crds_angular.test.controllers
             };
 
             _fixture.Request.Headers.Authorization = new AuthenticationHeaderValue(_authType, _authToken);
+
         }
 
         [Test]
@@ -71,143 +71,7 @@ namespace crds_angular.test.controllers
         {
             Assert.IsNotNull(_fixture);
         }
-
-        [Test]
-        public void TestGetMyPinsByContactIdWithResults()
-        {
-            var fakeQueryParams = new PinSearchQueryParams();
-            fakeQueryParams.CenterGeoCoords = new GeoCoordinates(39.123, -84.456);
-            fakeQueryParams.ContactId = 12345;
-            fakeQueryParams.FinderType = "CONNECT";
-            var geoCoordinate = new GeoCoordinate(39.123, -84.456);
-            var listPinDto = GetListOfPinDto();
-            var address = new AddressDTO("123 Main st","","Independence","KY","41051",32,-84);
-
-            _finderService.Setup(m => m.GetGeoCoordsFromAddressOrLatLang(It.IsAny<string>(), It.IsAny<GeoCoordinates>())).Returns(geoCoordinate);
-            _finderService.Setup(m => m.GetMyPins(It.IsAny<string>(), It.IsAny<GeoCoordinate>(), It.IsAny<int>(), It.IsAny<string>())).Returns(listPinDto);
-            _finderService.Setup(m => m.RandomizeLatLong(It.IsAny<AddressDTO>())).Returns(address);
-
-            var response = _fixture.GetMyPinsByContactId(fakeQueryParams);
-
-            Assert.IsNotNull(response);
-            Assert.IsInstanceOf<OkNegotiatedContentResult<PinSearchResultsDto>>(response);
-        }
-
-        [Test]
-        public void InviteToGroupShouldCallAnalytics()
-        {   var token = "good ABC";
-            var groupId = 1;
-            var fakeInvite = new User()
-            {
-                email = "email@email.com"
-            };
-            _fixture.SetupAuthorization("good", "ABC");
- 
-            _finderService.Setup(m => m.InviteToGroup(
-                It.Is<string>(toke => toke.Equals(token)), 
-                It.Is<int>(id => id.Equals(groupId)),
-                It.Is<User>(user => user.email == fakeInvite.email),
-                It.Is<string>(connectType => connectType.Equals("connect"))
-            ));
-
-            _authenticationRepository.Setup(m => m.GetContactId(It.IsAny<string>())).Returns(12345);
-
-            _analyticsService.Setup(m => m.Track(
-                                        It.Is<string>(contactId => contactId.Equals("12345")),
-                                        It.Is<string>(eventName => eventName.Equals("HostInvitationSent")),
-                                        It.Is<EventProperties>(props => props["InvitationToEmail"].Equals(fakeInvite.email))
-                                    ));
-
-            _fixture.InviteToGroup(groupId, "connect", fakeInvite);
-            
-            _analyticsService.VerifyAll();
-            _finderService.VerifyAll();
-        }
-
-        [Test]
-        public void RequestToBeAHostShouldCallAnalytics()
-        {
-            var token = "good ABC";
-            _fixture.SetupAuthorization("good", "ABC");
-            var fakeRequest = new HostRequestDto()
-            {
-                Address = new AddressDTO()
-                {
-                    City = "City!",
-                    State = "OH",
-                    PostalCode = "12345"
-                },
-                ContactId = 42
-            };
-
-            _finderService.Setup(m => m.RequestToBeHost(
-                It.Is<string>(toke => toke.Equals(token)),
-                It.Is<HostRequestDto>(dto => 
-                        dto.Address.City.Equals(fakeRequest.Address.City)
-                        && dto.Address.State.Equals(fakeRequest.Address.State)
-                        && dto.Address.PostalCode.Equals(fakeRequest.Address.PostalCode)
-                        && dto.ContactId.Equals(fakeRequest.ContactId))
-                ));
-
-            _analyticsService.Setup(m => m.Track(
-                                        It.Is<string>(contactId => contactId.Equals(fakeRequest.ContactId.ToString())),
-                                        It.Is<string>(eventName => eventName.Equals("RegisteredAsHost")),
-                                        It.Is<EventProperties>(props =>
-                                                              props["City"].Equals(fakeRequest.Address.City)
-                                                              && props["State"].Equals(fakeRequest.Address.State)
-                                                              && props["Zip"].Equals(fakeRequest.Address.PostalCode))                                                                
-                                        ));
-            _fixture.RequestToBeHost(fakeRequest);
-            _finderService.VerifyAll();
-            _analyticsService.VerifyAll();
-        }
-
-        [Test]
-        public void TestGetMyPinsByContactIdReturnsNothing()
-        {
-
-            var fakeQueryParams = new PinSearchQueryParams();
-            fakeQueryParams.CenterGeoCoords = new GeoCoordinates(39.123, -84.456);
-            fakeQueryParams.ContactId = 12345;
-            fakeQueryParams.FinderType = "CONNECT";
-            var geoCoordinate = new GeoCoordinate(39.123, -84.456);
-
-            _finderService.Setup(m => m.GetGeoCoordsFromAddressOrLatLang(It.IsAny<string>(), It.IsAny<GeoCoordinates>())).Returns(geoCoordinate);
-            _finderService.Setup(m => m.GetMyPins(It.IsAny<string>(), It.IsAny<GeoCoordinate>(), It.IsAny<int>(), It.IsAny<string>())).Returns(new List<PinDto>());
-
-            var response = _fixture.GetMyPinsByContactId(fakeQueryParams) as OkNegotiatedContentResult<PinSearchResultsDto>;
-            Assert.That(response != null && response.Content.PinSearchResults.Count == 0);
-        }
-
-        [Test]
-        public void AddToGroupShouldUseRoleId()
-        {
-            var token = "good ABC";
-            _fixture.SetupAuthorization("good", "ABC");
-            var fakePerson = new User()
-            {
-               email = "fake@person.com",
-               firstName = "fake",
-               lastName = "person",
-               password = "pass"
-            };
-            var groupId = 1;
-            var roleId = 2;
-
-            _finderService.Setup(m => m.AddUserDirectlyToGroup(It.Is<string>(toke => toke.Equals(token)),It.Is<User>(u => u.Equals(fakePerson)), 1, 2));
-
-            _fixture.AddToGroup(groupId, fakePerson, roleId);
-            _finderService.VerifyAll();
-        }
-
-        [Test]
-        [ExpectedException(typeof(HttpResponseException))]
-        public void TestNotAuthorized()
-        {
-            _authenticationRepository.Setup(mocked => mocked.GetContactId("abc")).Returns(123456);
-            _fixture.EditGatheringPin(GetListOfPinDto()[0]);
-        }
-
+    
         private static List<PinDto> GetListOfPinDto()
         {
             var list = new List<PinDto>();
@@ -220,7 +84,6 @@ namespace crds_angular.test.controllers
             var pin1 = new PinDto
             {
                 Contact_ID = 1,
-                EmailAddress = "pin1@fake.com",
                 FirstName = "pinhead",
                 LastName = "One",
                 Address = addr1
@@ -234,7 +97,6 @@ namespace crds_angular.test.controllers
             var pin2 = new PinDto
             {
                 Contact_ID = 2,
-                EmailAddress = "pin2@fake.com",
                 FirstName = "pinhead",
                 LastName = "Two",
                 Address = addr2

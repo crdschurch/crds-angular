@@ -30,7 +30,7 @@ namespace crds_angular.test.Services
             _apiUserService = new Mock<IApiUserRepository>();
             _fixture = new OrganizationService(_organizationService.Object, _apiUserService.Object);
 
-            _apiUserService.Setup(m => m.GetToken()).Returns(apiUserToken);
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns(apiUserToken);
         }
 
         [Test]

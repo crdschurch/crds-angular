@@ -20,7 +20,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpMedical> GetMedicalAllergyInfo(int contactId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             string columns = "Allergy_ID_Table.[Description],Allergy_ID_Table.[Allergy_ID], " +
                              "Allergy_ID_Table_Allergy_Type_ID_Table.[Allergy_Type_ID],Allergy_ID_Table_Allergy_Type_ID_Table.[Allergy_Type],cr_Medical_Information_Allergies.[Medical_Information_Allergy_ID]";
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken)
@@ -29,21 +29,21 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpMedication> GetMedications(int contactId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var columns = "MedicalInformationMedication_ID, cr_Medical_Information_Medications.MedicalInformation_ID, Medication_Name, Medication_Type_ID, Dosage_Time, Dosage_Amount";
             return _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpMedication>($"MedicalInformation_ID_Table_Contact_ID_Table.Contact_ID={contactId}", columns).ToList();
         }
 
         public MpMedicalInformation GetMedicalInformation(int contactId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var medInfo = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpMedicalInformation>($"Contact_ID_Table.Contact_ID={contactId}", "cr_Medical_Information.[MedicalInformation_ID], cr_Medical_Information.[Insurance_Company],Contact_ID_Table.[Contact_ID],cr_Medical_Information.[Policy_Holder_Name],cr_Medical_Information.[Physician_Name] AS[Physician_Name],cr_Medical_Information.[Physician_Phone],cr_Medical_Information.[Allowed_To_Administer_Medications]");
             return medInfo.FirstOrDefault();
         }
 
         public MpMedicalInformation SaveMedicalInfo(MpMedicalInformation mpMedicalInfo, int contactId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var records = new List<MpMedicalInformation> {mpMedicalInfo};
             if (mpMedicalInfo.MedicalInformationId != 0)
             {
@@ -63,7 +63,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public void UpdateOrCreateMedAllergy(List<MpMedicalAllergy> updateToAllergyList, List<MpMedicalAllergy> createToAllergyList  )
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             //var records = new List<Dictionary<string, object>>();
             if (updateToAllergyList.Count > 0) {
                 _ministryPlatformRest.UsingAuthenticationToken(apiToken).Put(updateToAllergyList);
@@ -75,7 +75,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public void UpdateOrCreateMedications(List<MpMedication> medications)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var updateMedications = medications.Where(m => m.MedicalInformationMedicationId > 0 && !m.Deleted).ToList();
             if (updateMedications.Count > 0)
             {

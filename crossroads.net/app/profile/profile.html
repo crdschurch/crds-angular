@@ -20,6 +20,7 @@
     </div>
   </div>
 </div>
+<span dynamic-content="$root.MESSAGES.givingHistoryMoved.content | html"></span>
 <ng-form name="profile.profileParentForm">
   <tabset>
     <tab ng-repeat="tab in profile.tabs" heading="{{tab.title}}" active="tab.active" ng-click="profile.goToTab(tab)" class="{{tab.class}}" >

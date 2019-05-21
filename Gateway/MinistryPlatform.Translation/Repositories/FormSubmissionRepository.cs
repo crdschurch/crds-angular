@@ -28,8 +28,14 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly IConfigurationWrapper _configurationWrapper;
         private readonly ILog _logger;
 
-        public FormSubmissionRepository(IMinistryPlatformService ministryPlatformService, IDbConnection dbConnection, IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper, IMinistryPlatformRestRepository ministryPlatformRest)
-            : base(authenticationService,configurationWrapper)
+        public FormSubmissionRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IDbConnection dbConnection,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IMinistryPlatformRestRepository ministryPlatformRest,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _dbConnection = dbConnection;

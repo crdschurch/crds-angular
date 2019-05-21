@@ -20,9 +20,6 @@ namespace crds_angular.Models.Finder
         [JsonProperty("lastName")]
         public string LastName { get; set; }
 
-        [JsonProperty("emailAddress")]
-        public string EmailAddress { get; set; }
-
         [JsonProperty("contactId")]
         public int? Contact_ID { get; set; }
 
@@ -61,5 +58,8 @@ namespace crds_angular.Models.Finder
 
         [JsonProperty("title")]
         public string Title { get; set; }
+
+        [JsonProperty("congregationId")]
+        public int congregationId { get; set; }
     }
 }

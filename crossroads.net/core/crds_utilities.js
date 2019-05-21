@@ -77,6 +77,7 @@ var checkLoggedin = function ($q, $timeout, $http, $location, $rootScope, $cooki
       $location.url('/');
     }
   }).error(function (e) {
+    $timeout(deferred.reject, 0);
     console.log(e);
     console.log('ERROR: trying to authenticate');
   });
@@ -84,8 +85,8 @@ var checkLoggedin = function ($q, $timeout, $http, $location, $rootScope, $cooki
 };
 
 /**
- * This is a specialty function that just checks if the cookie exists and is 
- * not expired. This helps when we are in a flow that requires logging in and 
+ * This is a specialty function that just checks if the cookie exists and is
+ * not expired. This helps when we are in a flow that requires logging in and
  * quickly transitioning between states
  */
 var optimisticallyCheckLoggedin = function ($q, $timeout, $http, $location, $rootScope, $cookies, Session) {

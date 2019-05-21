@@ -16,10 +16,6 @@
       FORM_BUILDER: 'crossroads.form_builder',
       FORMLY_BUILDER: 'crossroads.formly_builder',
       GO_VOLUNTEER: 'crossroads.go_volunteer',
-      MEDIA: 'crossroads.media',
-      MY_SERVE: 'crossroads.my_serve',
-      LIVE_STREAM: 'crossroads.live_stream',
-      GROUP_TOOL: 'crossroads.grouptool',
       MPTOOLS: 'crossroads.mptools',
       ONETIME_SIGNUP: 'crossroads.onetime',
       PROFILE: 'crossroads.profile',
@@ -44,6 +40,7 @@
       MEDICAL_RESTRICTIONS: 100,
       MEDICATION_TAKING: 101,
       PERSONAL: 1,
+      PREFERRED_AIRPORT: 109,
       SCRUB_TOP_SIZES: 22,
       SCRUB_BOTTOM_SIZES: 23,
       SKILLS: 24,
@@ -56,6 +53,7 @@
       UNDIVIDED_RSVP_KICKOFF: 86
     },
     ATTRIBUTE_IDS: {
+      PREFERRED_AIRPORT_NAME: 9050,
       ALL_ALLERGIES: 3971,
       COFACILITATOR: 7086,
       COPARTICIPANT: 7087,
@@ -89,7 +87,7 @@
     },
     CMS: {
       PAGENAMES: {
-        COMMUNITYGROUPS: 'CommunityGroupSignupPage',
+        COMMUNITYGROUPS: 'OnsiteGroupSignupPage',
         ONETIMEEVENTS: 'OnetimeEventSignupPage'
       },
       FORM_BUILDER: {
@@ -116,7 +114,6 @@
       GROUP_TYPE_ID: {
         UNDIVIDED: 26,
         SMALL_GROUPS: 1,
-        MY_SERVE: 9,
         ONSITE_GROUPS: 8
       },
       ROLES: {
@@ -159,16 +156,17 @@
     MINISTRY: {
       SPIRITUAL_GROWTH: '8'
     },
-    STREAM_STATUS: {
-      LIVE: 'Live',
-      UPCOMING: 'Upcoming',
-      OFF: 'Off'
+    COMMON_AIRPORT_NAMES: {
+      CVG: 'Cincinnati(CVG)',
+      LEX: 'Lexington(LEX)',
+      OTHER: 'Other'
     },
-    PRE_STREAM_HOURS: 15,
     COOKIES: {
       SESSION_ID: `${__CRDS_ENV__}sessionId`,
       REFRESH_TOKEN: `${__CRDS_ENV__}refreshToken`,
-      IMPERSONATION_ID: `${__CRDS_ENV__}impersonateUserId`
+      IMPERSONATION_ID: `${__CRDS_ENV__}impersonateUserId`,
+      USER_ID: 'userId',
+      USERNAME: 'username'
     },
     EVENTS: {
       ROOM_AVAILABLE: null,

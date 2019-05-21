@@ -23,7 +23,7 @@ namespace crds_angular.Services {
             }
 
             string dayString = null;
-            var days = _lookupRepository.MeetingDays(_apiUserRepository.GetToken());
+            var days = _lookupRepository.MeetingDays(_apiUserRepository.GetDefaultApiClientToken());
 
             foreach (var day in days)
             {
@@ -34,6 +34,27 @@ namespace crds_angular.Services {
                 }
             }
             return dayString;
+        }
+
+        public string GetMeetingFrequencyFromId(int? meetingFrequencyId)
+        {
+            if (meetingFrequencyId == null)
+            {
+                return null;
+            }
+
+            string freqString = null;
+            var freqs = _lookupRepository.MeetingFrequencies(_apiUserRepository.GetDefaultApiClientToken());
+
+            foreach (var freq in freqs)
+            {
+                var freqid = Convert.ToInt32(freq["dp_RecordID"]);
+                if (freqid == meetingFrequencyId)
+                {
+                    freqString = freq["dp_RecordName"].ToString();
+                }
+            }
+            return freqString;
         }
     }
 }

@@ -18,6 +18,7 @@ using MinistryPlatform.Translation.Enum;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
+using Constants = Crossroads.Utilities.Constants;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -62,7 +63,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _config.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _config.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
@@ -73,8 +74,8 @@ namespace MinistryPlatform.Translation.Test.Services
                                               _pledgeService.Object,
                                               _config.Object,
                                               _authService.Object,
-                                              _apiUserRepository.Object,
-                                              _ministryPlatformRest.Object);
+                                              _ministryPlatformRest.Object,
+                                              _apiUserRepository.Object);
         }
 
         [Test]
@@ -125,7 +126,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             List<int> expectedResults = new List<int> {5, 10, 25, 50, 100, 500};
 
-            _apiUserRepository.Setup(mocked => mocked.GetToken()).Returns(apiToken);
+            _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns(apiToken);
 
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRest.Object);
 
@@ -199,9 +200,10 @@ namespace MinistryPlatform.Translation.Test.Services
             const int depositPageId = 7070;
             const string token = "afasdfoweradfafewwefafdsajfdafoew";
 
+            _apiUserRepository.Setup(m => m.GetDefaultApiClientToken()).Returns(token);
             _ministryPlatformService.Setup(mocked => mocked.GetSelectionsForPageDict(depositPageId, selectionId, token)).Returns(MockDepositList);
 
-            var result = _fixture.GetSelectedDonationBatches(selectionId, token);
+            var result = _fixture.GetSelectedDonationBatches(selectionId);
             _ministryPlatformService.VerifyAll();
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Count, 2);
@@ -451,7 +453,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRest.Setup(mock => mock.Get<MPGLAccountMapping>(It.IsAny<int>(), (string)null)).Returns(MockGLAccountMapping());
             _config.Setup(mocked => mocked.GetConfigIntValue("ProcessingMappingId")).Returns(127);
             
-            var result = _fixture.GetGpExport(depositId, token);
+            var result = _fixture.GetGpExport(depositId);
             _ministryPlatformService.VerifyAll();
             Assert.IsNotNull(result);
             Assert.AreEqual(12, result.Count);
@@ -1306,7 +1308,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformService.Setup(mocked => mocked.UpdateRecord(7070, expectedParms, It.IsAny<string>()));
             _ministryPlatformService.Setup(mocked => mocked.RemoveSelection(selectionId, new [] {depositId}, It.IsAny<string>()));
 
-            _fixture.UpdateDepositToExported(selectionId, depositId, "afasdfasdf");
+            _fixture.UpdateDepositToExported(selectionId, depositId);
             _ministryPlatformService.VerifyAll();
         }
 

@@ -21,24 +21,23 @@ namespace crds_angular.Controllers.API
     public class LoginController : MPAuth
     {
 
-        private readonly IPersonService _personService;
         private readonly IUserRepository _userService;
         private readonly ILoginService _loginService;
 
         private readonly IContactRepository _contactRepository;
         private readonly IAnalyticsService _analyticsService;
 
-        public LoginController(ILoginService loginService, 
-                                IPersonService personService, 
+        public LoginController(IAuthTokenExpiryService authTokenExpiryService, 
+                                ILoginService loginService, 
                                 IUserRepository userService, 
                                 IAnalyticsService analyticsService,
                                 IUserImpersonationService userImpersonationService, 
                                 IAuthenticationRepository authenticationRepository,
-                                IContactRepository contactRepository) : base(userImpersonationService, authenticationRepository)
+                                IContactRepository contactRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
 
         {
             _loginService = loginService;
-            _personService = personService;
             _userService = userService;
 
             _contactRepository = contactRepository;
@@ -123,21 +122,18 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    //var personService = new PersonService();
-                    var person = _personService.GetLoggedInUserProfile(token);
-
-                    if (person == null)
+                    var contact = _contactRepository.GetMyProfile(token);
+                    if (contact == null)
                     {
                         return this.Unauthorized();
                     }
-                    else
-                    {
-                        var apiToken = _userService.HelperApiLogin();
-                        var user = _userService.GetByUserName(person.EmailAddress, apiToken); //235 ms _userService.GetByAuthenticationToken(token) was 1.5 seconds 
-                        var roles = _userService.GetUserRolesRest(user.UserRecordId, apiToken);
-                        var l = new LoginReturn(token, person.ContactId, person.FirstName, person.EmailAddress, person.MobilePhone, roles, user.CanImpersonate);
-                        return this.Ok(l);
-                    }
+
+                    var apiToken = _userService.HelperApiLogin();
+                    var user = _userService.GetByContactId(contact.Contact_ID, apiToken);
+                    var roles = _userService.GetUserRolesRest(user.UserRecordId, apiToken);
+
+                    var loginReturn = new LoginReturn(token, contact.Contact_ID, contact.First_Name, contact.Email_Address, contact.Mobile_Phone, roles, user.CanImpersonate);
+                    return this.Ok(loginReturn);
                 }
                 catch (Exception)
                 {
@@ -156,7 +152,7 @@ namespace crds_angular.Controllers.API
             try
             {
                 // try to login
-                var authData = AuthenticationRepository.Authenticate(cred.username, cred.password); //nothing we can do to speed this up
+                var authData = AuthenticationRepository.AuthenticateUser(cred.username, cred.password, true);
                 var token = authData.AccessToken;
                 var exp = authData.ExpiresIn+"";
                 var refreshToken = authData.RefreshToken;
@@ -187,8 +183,19 @@ namespace crds_angular.Controllers.API
 
                 _loginService.ClearResetToken(user.UserRecordId); //no need to lookup the userid if we already have it
                 _contactRepository.UpdateContactToActive(c.Contact_ID); //205
-                _analyticsService.Track(c.Contact_ID.ToString(), "SignedIn"); 
+                _analyticsService.Track(c.Contact_ID.ToString(), "SignedIn");
 
+                //Kick off a call to the migration service to create or update an account in Okta on the user's behalf
+                OktaMigrationUser oktaMigrationUser = new OktaMigrationUser
+                {
+                    firstName = c.First_Name,
+                    lastName = c.Last_Name,
+                    email = c.Email_Address,
+                    login = cred.username,
+                    password = cred.password,
+                    mpContactId = c.Contact_ID.ToString()
+                };
+                _loginService.CreateOrUpdateOktaAccount(oktaMigrationUser);
 
                 return this.Ok(r);
             }
@@ -208,7 +215,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    var authData = AuthenticationRepository.Authenticate(cred.username, cred.password);
+                    var authData = AuthenticationRepository.AuthenticateUser(cred.username, cred.password);
 
                     // if the username or password is wrong, auth data will be null
                     if (authData == null)
@@ -223,6 +230,36 @@ namespace crds_angular.Controllers.API
                 catch (Exception e)
                 {
                     var apiError = new ApiErrorDto("Verify Credentials Failed", e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Validates the password provided matches the user identified by the token.  This function
+        /// can be used in place of VerifyCredentials() to validate the password for the current user
+        /// without requiring an email address.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns>Ok (200) if the password is valid, or Unauthorized (401) if the password is not
+        /// valid or an error occurs</returns>
+        [VersionedRoute(template: "verify-password", minimumVersion: "1.0.0")]
+        [Route("verifypassword")]
+        [HttpPost]
+        public IHttpActionResult VerifyPassword([FromBody] string password)
+        {
+            return Authorized(token =>
+            {
+                try
+                {
+                    if (!_loginService.IsValidPassword(token, password))
+                        return this.Unauthorized();
+
+                    return this.Ok();
+                }
+                catch (Exception e)
+                {
+                    var apiError = new ApiErrorDto("Verify Password Failed", e);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
             });

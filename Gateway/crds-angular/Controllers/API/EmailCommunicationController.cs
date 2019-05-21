@@ -13,12 +13,17 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class EmailCommunicationController : MPAuth
+    public class EmailCommunicationController : ImpersonateAuthBaseController
     {
         private readonly IEmailCommunication _emailCommunication;
         private readonly IConfigurationWrapper _configurationWrapper;
 
-        public EmailCommunicationController(IEmailCommunication emailCommunication, IConfigurationWrapper configurationWrapper, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public EmailCommunicationController(IAuthTokenExpiryService authTokenExpiryService, 
+                                            IEmailCommunication emailCommunication, 
+                                            IConfigurationWrapper configurationWrapper, 
+                                            IUserImpersonationService userImpersonationService, 
+                                            IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _emailCommunication = emailCommunication;
             _configurationWrapper = configurationWrapper;
@@ -36,7 +41,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
-                    _emailCommunication.SendEmail(email, token);
+                    _emailCommunication.SendEmail(email);
 
                     return Ok();
                 }

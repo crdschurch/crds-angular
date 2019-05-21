@@ -20,8 +20,12 @@ namespace crds_angular.Controllers.API
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly Services.Interfaces.IFormBuilderService _formBuilderService;
 
-        public FormBuilderController(Services.Interfaces.IFormBuilderService formBuilderService,
-                                     IMinistryPlatformService ministryPlatformService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public FormBuilderController(IAuthTokenExpiryService authTokenExpiryService, 
+                                     Services.Interfaces.IFormBuilderService formBuilderService,
+                                     IMinistryPlatformService ministryPlatformService, 
+                                     IUserImpersonationService userImpersonationService, 
+                                     IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _formBuilderService = formBuilderService;
             _ministryPlatformService = ministryPlatformService;

@@ -1,7 +1,0 @@
-R_Campaign_Name,R_Campaign_Goal,R_Pledge_Campaign_Type,R_Start_Date,End_Date,Program_Name,Event_Name,Description,Registration_Start_Date,Registration_End_Date,Registration_Deposit,Registration_Form_ID,Fundraising_Goal,Destination_ID,Youngest_Age_Allowed
-(t) Test Pledge Campaign1,10000000,1,1/1/2018,,(t) Test Pledge Program1,,Test Pledge Campaign1,,,,,,,
-(t) Test Pledge Campaign2,1000,1,1/1/2018,,(t) Test Pledge Program2,,,,,,,,,
-(t) Test Pledge Campaign+Auto1,10000000,1,1/1/2018,,(t) Test Pledge Program+Auto1,,Test Pledge Campaign+Auto1,,,,,,,
-(t) Test Pledge Campaign+Auto2,10000000,1,1/1/2018,,(t) Test Pledge Program+Auto2,,,,,,,,,
-(t) GO Midgar 2018,5000,2,1/1/2018,12/25/2018,(t) GO Midgar 2018,(t) GO Midgar 2018,Church Mobilization - Midgar,1/1/2018,12/25/2018,100,20,1000,2,17
-(t+auto) GO Bedrock 2018,5000,2,1/1/2018,12/25/2018,(t+auto) GO Bedrock 2018,(t+auto) GO Bedrock 2018,Church Mobilization - Bedrock,1/1/2018,12/25/2018,100,20,1000,,17

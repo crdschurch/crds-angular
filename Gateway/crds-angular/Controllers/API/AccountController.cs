@@ -15,7 +15,11 @@ namespace crds_angular.Controllers.API
     {      
         private readonly IAccountService _accountService;
 
-        public AccountController(IAccountService accountService, IUserImpersonationService userImpersonationService, IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+        public AccountController(IAuthTokenExpiryService authTokenExpiryService, 
+                                 IAccountService accountService, 
+                                 IUserImpersonationService userImpersonationService, 
+                                 IAuthenticationRepository authenticationRepository) 
+            : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _accountService = accountService;
         }

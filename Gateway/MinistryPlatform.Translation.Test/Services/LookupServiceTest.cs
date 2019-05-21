@@ -22,6 +22,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;
         private Mock<IConfigurationWrapper> _configurationWrapper;
         private Mock<IAuthenticationRepository> _authenticationService;
+        private Mock<IApiUserRepository> _apiUserService;
 
 
         [SetUp]
@@ -31,7 +32,8 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
             _authenticationService = new Mock<IAuthenticationRepository>();
             _configurationWrapper = new Mock<IConfigurationWrapper>();
-            _fixture = new LookupRepository(_authenticationService.Object, _configurationWrapper.Object, _ministryPlatformService.Object, _ministryPlatformRest.Object);
+            _apiUserService = new Mock<IApiUserRepository>();
+        _fixture = new LookupRepository(_authenticationService.Object, _configurationWrapper.Object, _ministryPlatformService.Object, _ministryPlatformRest.Object, _apiUserService.Object);
 
         }
 
@@ -69,12 +71,12 @@ namespace MinistryPlatform.Translation.Test.Services
         public void ShouldReturnSites()
         {
             string _tokenValue = "ABC";
-            _authenticationService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authenticationService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = _tokenValue,
                 ExpiresIn = 123
             });
-            _fixture = new LookupRepository(_authenticationService.Object, _configurationWrapper.Object, _ministryPlatformService.Object, _ministryPlatformRest.Object);
+            _fixture = new LookupRepository(_authenticationService.Object, _configurationWrapper.Object, _ministryPlatformService.Object, _ministryPlatformRest.Object, _apiUserService.Object);
             var sites = CrossroadsSites();
             _ministryPlatformService.Setup(m => m.GetLookupRecords(It.IsAny<int>(), It.IsAny<String>())).Returns(sites);
             var returnVal = _fixture.CrossroadsLocations();

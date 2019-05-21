@@ -1,14 +1,42 @@
 <div class="form-group">
-  <div class="push-top push-bottom">
+<div dynamic-content="$root.MESSAGES.tripDepositDisclaimer.content | html"></div>
 
-      <div dynamic-content="$root.MESSAGES.tripDepositDisclaimer.content | html"></div>
-
-      <p>A required deposit of <strong>{{tripDeposit.dto.amount | currency}} </strong> will be contributed to <strong>{{tripDeposit.dto.program.Name}}</strong> with
-      <svg viewBox="0 0 160 100" class="icon icon-cc_visa confirm-cc-icon">
-        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{{tripDeposit.dto.brand}}"></use>
-      </svg> ending in <strong>{{tripDeposit.dto.last4}}</strong>
-      <a href="" ng-click="tripDeposit.giveFlow.goToChange()" tabindex="-1" class="text-secondary">Change</a>
+<div class="push-top push-bottom table-contrast-bg"> 
+  <h4 class="flush-top">Confirm</h4> 
+    <table class="table"> 
+      <tbody> 
+        <tr>
+          <td class="text-uppercase font-size-smaller" data-automation-id="amount-label">Required Deposit Amount</td> 
+          <td class="text-right font-size-large ng-binding" data-automation-id="amount">{{tripDeposit.dto.amount | currency}}</td> 
+        </tr> 
+        <tr> 
+          <td class="text-uppercase font-size-smaller" data-automation-id="to-label">To</td> 
+          <td class="text-right font-size-small ng-binding" data-automation-id="title">{{tripDeposit.dto.program.Name}}</td> 
+        </tr> 
+      </tbody>
+    </table> 
   </div>
+
+
+<div class="push-top push-bottom table-contrast-bg">
+    <table class="table schedule-table">
+        <tbody>
+          <tr>
+            <td>
+              <p class="text-uppercase font-size-smaller flush-ends">Payment Type</p>              
+              <svg viewBox="0 0 160 100" class="icon icon-cc_visa confirm-cc-icon">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{{tripDeposit.dto.brand}}"></use>
+              </svg> ending in <strong>{{tripDeposit.dto.last4}}</strong>
+            </td>
+            <td>
+              <a href="" ng-click="tripDeposit.giveFlow.goToChange()" tabindex="-1" class="btn pull-right btn-outline btn-primary btn-sm">Change payment type</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+  </div>
+
       <button ng-click="tripDeposit.saveApplication()"
         ng-disabled="tripDeposit.dto.processing"
         class="btn btn-primary pull-right"
@@ -20,5 +48,3 @@
         </svg>
       </button>
 </div>
-
-

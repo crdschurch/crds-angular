@@ -17,6 +17,8 @@ using MinistryPlatform.Translation.Models.Product;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using Crossroads.Web.Auth.Models;
+using crds_angular.test.Models.Crossroads;
 
 namespace crds_angular.test.Services
 {
@@ -33,6 +35,7 @@ namespace crds_angular.test.Services
         private readonly Mock<IConfigurationWrapper> _configWrapper;
         private readonly Mock<IApiUserRepository> _apiUserRepository;
         private readonly Mock<IProductRepository> _productRepository;
+        private readonly Mock<IProgramRepository> _programRepository;
         private readonly Mock<IPaymentProcessorService> _paymentProcessorService;
 
         private readonly IPaymentService _fixture;
@@ -43,6 +46,7 @@ namespace crds_angular.test.Services
         private readonly int defaultPaymentStatus = 15;
         private readonly int declinedPaymentStatus = 20;
         private readonly int defaultCongregation = 5;
+        private readonly int defaultInvoicePaymentTemplate = 2022;
 
         public PaymentServiceTest()
         {
@@ -61,14 +65,18 @@ namespace crds_angular.test.Services
             _configWrapper = new Mock<IConfigurationWrapper>();
             _apiUserRepository = new Mock<IApiUserRepository>();
             _productRepository = new Mock<IProductRepository>();
+            _programRepository = new Mock<IProgramRepository>();
             _paymentProcessorService = new Mock<IPaymentProcessorService>();
             _configWrapper.Setup(m => m.GetConfigIntValue("PaidInFull")).Returns(paidInFull);
             _configWrapper.Setup(m => m.GetConfigIntValue("SomePaid")).Returns(somePaid);
             _configWrapper.Setup(m => m.GetConfigIntValue("NonePaid")).Returns(nonePaid);
             _configWrapper.Setup(m => m.GetConfigIntValue("DonationStatusPending")).Returns(defaultPaymentStatus);
             _configWrapper.Setup(m => m.GetConfigIntValue("DonationStatusDeclined")).Returns(declinedPaymentStatus);
+            _configWrapper.Setup(m => m.GetConfigIntValue("DefaultInvoicePaymentEmailTemplate")).Returns(defaultInvoicePaymentTemplate);
 
-            _fixture = new PaymentService(_invoiceRepository.Object, _paymentRepository.Object, _configWrapper.Object, _contactRepository.Object, _paymentTypeRepository.Object, _eventRepository.Object, _communicationRepository.Object, _apiUserRepository.Object, _productRepository.Object, _paymentProcessorService.Object);            
+            _fixture = new PaymentService(_invoiceRepository.Object, _paymentRepository.Object, _configWrapper.Object, _contactRepository.Object,
+              _paymentTypeRepository.Object, _eventRepository.Object, _communicationRepository.Object, _apiUserRepository.Object, _productRepository.Object,
+              _programRepository.Object, _paymentProcessorService.Object);            
         }         
 
         [Test]
@@ -76,9 +84,10 @@ namespace crds_angular.test.Services
         {
             const int paymentId = 12345;
             const int invoiceId = 3389753;
-            const int contactId = 12323354;
+            const int contactId = 123;
             const string emailAddress = "help_me@usa.com";
-            const string token = "NOOOOO";
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
+            const string apiToken = "apiToken";
             StripeCharge charge = new StripeCharge()
             {
                 Source = new StripeSource()
@@ -86,15 +95,13 @@ namespace crds_angular.test.Services
                     AccountNumberLast4 = "2342"
                 }
             };
-
-            var me = fakeMyContact(contactId, emailAddress);
+            
             var invoice = fakeInvoice(invoiceId, contactId, 500.00M);
             var payments = fakePayments(contactId, 24M, paymentId);
 
             _invoiceRepository.Setup(m => m.GetInvoice(invoiceId)).Returns(invoice);
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);
             _paymentProcessorService.Setup(m => m.GetCharge(It.IsAny<string>())).Returns(charge);
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
 
             PaymentDetailDTO ret = _fixture.GetPaymentDetails(paymentId, invoiceId, token, false);
             Assert.AreEqual(24M, ret.PaymentAmount);
@@ -113,7 +120,8 @@ namespace crds_angular.test.Services
             const int invoiceId = 3389753;
             const int contactId = 12323354;
             const string emailAddress = "help_me@usa.com";
-            const string token = "NOOOOO";
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
+            const string apiToken = "apiToken";
             StripeCharge charge = new StripeCharge()
             {
                 Source = new StripeSource()
@@ -121,12 +129,9 @@ namespace crds_angular.test.Services
                     AccountNumberLast4 = "2342"
                 }
             };
-
-            var me = fakeMyContact(contactId, emailAddress);
             var invoice = fakeInvoice(invoiceId, contactId, 500.00M);
             var payments = fakePayments(contactId, 24M, paymentId);
-
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
+            
             _invoiceRepository.Setup(m => m.GetInvoice(invoiceId)).Returns(invoice);
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);
             _paymentProcessorService.Setup(m => m.GetCharge(It.IsAny<string>())).Returns(charge);
@@ -148,13 +153,12 @@ namespace crds_angular.test.Services
             const int invoiceId = 3389753;
             const int contactId = 12323354;
             const string emailAddress = "help_me@usa.com";
-            const string token = "NOOOOO";
-
-            var me = fakeMyContact(contactId, emailAddress);
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
+            const string apiToken = "apiToken";
+            
             var invoice = fakeInvoice(invoiceId, contactId, 500.00M);
             var payments = fakePayments(1, 24M, paymentId);
-
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
+            
             _invoiceRepository.Setup(m => m.GetInvoice(invoiceId)).Returns(invoice);
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);
 
@@ -390,14 +394,14 @@ namespace crds_angular.test.Services
 
         public void DepositAlreadyExists()
         {
-            const string token = "letmein";
-            const int payerId = 3333;           
+            const int payerId = 3333;
+            const string emailAddress = "help_me@usa.com";
+            AuthDTO token = AuthHelpers.fakeAuthDTO(payerId, 23, emailAddress);
+            const string apiToken = "apiToken";          
             const int invoiceId = 89989;
 
             var payments = fakePayments(payerId, 500);
-            var me = fakeMyContact(payerId, "faekemail@jon.com");
-
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
+            
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);            
                 
             var result = _fixture.DepositExists(invoiceId, token);
@@ -407,14 +411,14 @@ namespace crds_angular.test.Services
         [Test]
         public void DepositDoesNotExist()
         {
-            const string token = "letmein";
+            const int contactId = 12323354;
+            const string emailAddress = "help_me@usa.com";
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
+            const string apiToken = "apiToken";
             const int payerId = 3333;
             const int invoiceId = 89989;
 
             var payments = fakePayments(1234, 500);
-            var me = fakeMyContact(payerId, "faekemail@jon.com");
-
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
             _paymentRepository.Setup(m => m.GetPaymentsForInvoice(invoiceId)).Returns(payments);
 
             var result = _fixture.DepositExists(invoiceId, token);
@@ -427,29 +431,26 @@ namespace crds_angular.test.Services
             const int paymentId = 345;
             const int eventId = 231;
             const int emailTemplateId = 555;
-            const string token = "testingapi";
+            const string apiToken = "apiToken";
             const int contactId = 8484;
+            const string emailAddress = "help_me@usa.com";
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
             const string baseUrl = "some url.com";
 
             const string eventTitle = "My Awesome Event";
             const decimal paymentTotal = 56M;
 
-            var me = FactoryGirl.NET.FactoryGirl.Build<MpMyContact>(m =>
-            {
-                m.Contact_ID = contactId;
-                m.Email_Address = "me.com@.com";
-            });
             var payment = FactoryGirl.NET.FactoryGirl.Build<MpPayment>(m => { m.PaymentId = paymentId; m.PaymentTotal = paymentTotal; });
             var mpEvent = FactoryGirl.NET.FactoryGirl.Build<MpEvent>(m =>
             {
                 m.EventId = eventId;
                 m.EventTitle = eventTitle;
-                m.PrimaryContactId = 1234;
+                m.PrimaryContactId = contactId;
                 m.PrimaryContact = new MpContact
                 {
                     EmailAddress = "Lucille@bluth.com",
                     PreferredName = "Lucille",
-                    ContactId = 1234
+                    ContactId = contactId
                 };
             });
 
@@ -466,7 +467,6 @@ namespace crds_angular.test.Services
 
             _paymentRepository.Setup(m => m.GetPaymentById(paymentId)).Returns(payment);
             _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpEvent);
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
             _eventRepository.Setup(m => m.GetProductEmailTemplate(eventId)).Returns(new Ok<int>(emailTemplateId));
             _configWrapper.Setup(m => m.GetConfigValue("BaseUrl")).Returns(baseUrl);
             //_configWrapper.Setup(m => m.GetConfigIntValue("DefaultPaymentEmailTempalte")).Returns(defaultTemplateId);
@@ -478,8 +478,8 @@ namespace crds_angular.test.Services
                                                  mpEvent.PrimaryContact.EmailAddress,
                                                  mpEvent.PrimaryContactId,
                                                  mpEvent.PrimaryContact.EmailAddress,
-                                                 me.Contact_ID,
-                                                 me.Email_Address,
+                                                 contactId,
+                                                 emailAddress,
                                                  mergeData));
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
             _fixture.SendPaymentConfirmation(paymentId, eventId, token);
@@ -496,14 +496,15 @@ namespace crds_angular.test.Services
             const int paymentId = 345;
             const int eventId = 231;
             const int emailTemplateId = 555;
-            const string token = "testingapi";
             const int contactId = 8484;
+            const string emailAddress = "Lucille@bluth.com";
+            AuthDTO token = AuthHelpers.fakeAuthDTO(contactId, 23, emailAddress);
+            const string apiToken = "apiToken";
             const string baseUrl = "some url.com";
 
             const string eventTitle = "My Awesome Event";
             const decimal paymentTotal = 56.1M;
-
-            var me = FactoryGirl.NET.FactoryGirl.Build<MpMyContact>(m => m.Contact_ID = contactId);
+           
             var payment = FactoryGirl.NET.FactoryGirl.Build<MpPayment>(m => { m.PaymentId = paymentId; m.PaymentTotal = paymentTotal; });
             var mpEvent = FactoryGirl.NET.FactoryGirl.Build<MpEvent>(m => {
                 m.EventId = eventId;
@@ -528,7 +529,6 @@ namespace crds_angular.test.Services
 
             _paymentRepository.Setup(m => m.GetPaymentById(paymentId)).Returns(payment);
             _eventRepository.Setup(m => m.GetEvent(eventId)).Returns(mpEvent);
-            _contactRepository.Setup(m => m.GetMyProfile(token)).Returns(me);
             _eventRepository.Setup(m => m.GetProductEmailTemplate(eventId)).Returns(new Err<int>("Template Not Found"));
 
             _configWrapper.Setup(m => m.GetConfigValue("BaseUrl")).Returns(baseUrl);
@@ -541,8 +541,8 @@ namespace crds_angular.test.Services
                                                  mpEvent.PrimaryContact.EmailAddress,
                                                  mpEvent.PrimaryContactId,
                                                  mpEvent.PrimaryContact.EmailAddress,
-                                                 me.Contact_ID,
-                                                 me.Email_Address,
+                                                 contactId,
+                                                 emailAddress,
                                                  mergeData));
             _communicationRepository.Setup(m => m.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
             _fixture.SendPaymentConfirmation(paymentId, eventId, token);
@@ -660,6 +660,24 @@ namespace crds_angular.test.Services
             _productRepository.VerifyAll();
         }
 
+        [Test]
+        public void ShoudlDetermineCorrectEmailTemplate()
+        {
+          const int productId = 1234;
+
+          var programWithTemplate = fakeProgram1(productId);
+          int template = (programWithTemplate.CommunicationTemplateId ?? defaultInvoicePaymentTemplate);
+          Assert.AreEqual(template, programWithTemplate.CommunicationTemplateId);
+
+          var programNoTemplate = fakeProgram2(productId);
+          int templateId = (programNoTemplate.CommunicationTemplateId ?? defaultInvoicePaymentTemplate);
+          Assert.AreEqual(templateId, defaultInvoicePaymentTemplate);
+
+          var noProgram = fakeProgram3(productId);
+          int templateId2 = noProgram == null ? defaultInvoicePaymentTemplate : noProgram.CommunicationTemplateId ?? defaultInvoicePaymentTemplate;
+          Assert.AreEqual(templateId2, defaultInvoicePaymentTemplate);
+        }
+
         private static List<MpPayment> fakePayments(int payerId, decimal paymentTotal, int paymentIdOfOne = 34525, int paymentStatus = 0)
         {
             return new List<MpPayment>
@@ -731,6 +749,27 @@ namespace crds_angular.test.Services
                 ProductId = productId,
                 ProductName = "Test Product",
             };
+        }
+
+        private static MpProgram fakeProgram1(int productId)
+        {
+          return new MpProgram()
+          {
+            CommunicationTemplateId = 987
+          };
+        }
+
+        private static MpProgram fakeProgram2(int productId)
+        {
+          return new MpProgram()
+          {
+            CommunicationTemplateId = null
+          };
+        }
+
+        private static MpProgram fakeProgram3(int productId)
+        {
+          return new MpProgram();
         }
 
     }

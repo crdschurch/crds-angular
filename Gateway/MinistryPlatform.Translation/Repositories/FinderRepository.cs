@@ -17,18 +17,16 @@ namespace MinistryPlatform.Translation.Repositories
         private const int SearchRadius = 6380; 
 
         private readonly IMinistryPlatformRestRepository _ministryPlatformRest;
-        private readonly IApiUserRepository _apiUserRepository;
         private readonly ILog _logger = LogManager.GetLogger(typeof(CampRepository));
         private readonly List<string> _groupColumns;
 
         public FinderRepository(IConfigurationWrapper configuration,
                                 IMinistryPlatformRestRepository ministryPlatformRest,
-                                IApiUserRepository apiUserRepository,
-                                IAuthenticationRepository authenticationService)
-            : base(authenticationService, configuration)
+                                IAuthenticationRepository authenticationService,
+                                IApiUserRepository apiUserRepository)
+            : base(authenticationService, configuration, apiUserRepository)
         {
             _ministryPlatformRest = ministryPlatformRest;
-            _apiUserRepository = apiUserRepository;
             _groupColumns = new List<string>
             {
                 "Groups.Group_ID",
@@ -47,12 +45,11 @@ namespace MinistryPlatform.Translation.Repositories
 
         public FinderPinDto GetPinDetails(int participantId)
         {
-            var token = _apiUserRepository.GetDefaultApiUserToken();
 
             const string pinSearch = "Email_Address, Nickname as FirstName, Last_Name as LastName, Participant_Record_Table.*, Household_ID";
             string filter = $"Participant_Record = {participantId}";
 
-            var myPin = _ministryPlatformRest.UsingAuthenticationToken(token).Search<FinderPinDto>(filter, pinSearch);
+            var myPin = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Search<FinderPinDto>(filter, pinSearch);
             FinderPinDto pinDetails;
 
             if (myPin != null && myPin.Count > 0)
@@ -69,17 +66,46 @@ namespace MinistryPlatform.Translation.Repositories
             return pinDetails;
         }
 
+        public List<MpMapAudit> GetMapAuditRecords()
+        {
+
+            const string mapAuditColumns = "AuditID, Participant_ID, ShowOnMap, Processed, DateProcessed, PinType";
+            string filter = $"Processed = 0";
+
+            var auditRecs = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Search<MpMapAudit>(filter, mapAuditColumns);
+
+            return auditRecs;
+        }
+
+        public void MarkMapAuditRecordAsProcessed(MpMapAudit auditRec)
+        {
+            try
+            {
+                var dict = new Dictionary<string, object> {
+                    { "AuditID", auditRec.AuditId },
+                    { "Processed", auditRec.processed },
+                    { "DateProcessed", auditRec.dateProcessed },
+                    { "ProcessStatus", auditRec.processStatus }
+                };
+                var update = new List<Dictionary<string, object>> { dict };
+                _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Put("cr_MapAudit", update);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
         public FinderGatheringDto UpdateGathering(FinderGatheringDto finderGathering)
         {
-            var token = _apiUserRepository.GetDefaultApiUserToken();
-            return _ministryPlatformRest.UsingAuthenticationToken(token).Update(finderGathering, _groupColumns);
+            return _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Update(finderGathering, _groupColumns);
         }
 
         public MpAddress GetPinAddress(int participantId)
         {
             string filter = $"Participant_Record = {participantId}";
             const string addressSearch = "Household_ID_Table_Address_ID_Table.*";
-            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserRepository.GetDefaultApiUserToken()).Search<MpContact, MpAddress>(filter, addressSearch)?.First();
+            return _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Search<MpContact, MpAddress>(filter, addressSearch)?.First();
         }
         
         public void EnablePin(int participantId)
@@ -87,9 +113,7 @@ namespace MinistryPlatform.Translation.Repositories
             var dict = new Dictionary<string, object> { { "Participant_ID", participantId }, { "Show_On_Map", true } };
 
             var update = new List<Dictionary<string, object>> { dict };
-
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
-            _ministryPlatformRest.UsingAuthenticationToken(apiToken).Put("Participants", update);
+            _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Put("Participants", update);
         }
 
         public void DisablePin(int participantId)
@@ -97,14 +121,29 @@ namespace MinistryPlatform.Translation.Repositories
             var dict = new Dictionary<string, object> { { "Participant_ID", participantId }, { "Show_On_Map", false } };
 
             var update = new List<Dictionary<string, object>> { dict };
+            
+            _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Put("Participants", update);
+        }
 
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
-            _ministryPlatformRest.UsingAuthenticationToken(apiToken).Put("Participants", update);
+        public void RecordPinHistory(int participantId, int statusId)
+        {
+            var token = ApiLogin();
+            try
+            {
+                var historyItem = new MpConnectHistory();
+                historyItem.ParticipantId = participantId;
+                historyItem.ConnectStatusId = statusId;
+                historyItem.TransactionDate = DateTime.Now;
+                _ministryPlatformRest.UsingAuthenticationToken(token).Post<MpConnectHistory>(new List<MpConnectHistory> { historyItem });
+            }
+            catch (Exception e)
+            {
+                throw new ApplicationException("Error creating connect history record: " + e.Message);
+            }
         }
 
         public List<SpPinDto> GetPinsInRadius(GeoCoordinate originCoords)
         {
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
 
             var parms = new Dictionary<string, object>()
             {
@@ -117,7 +156,7 @@ namespace MinistryPlatform.Translation.Repositories
 
             try
             {
-                var storedProcReturn = _ministryPlatformRest.UsingAuthenticationToken(apiToken).GetFromStoredProc<SpPinDto>(spName, parms);
+                var storedProcReturn = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).GetFromStoredProc<SpPinDto>(spName, parms);
                 var pinsFromSp = storedProcReturn.FirstOrDefault();
 
                 return pinsFromSp; 
@@ -130,12 +169,11 @@ namespace MinistryPlatform.Translation.Repositories
 
         public List<MpConnectAws> GetAllPinsForAws()
         {
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
             const string spName = "api_crds_Get_Connect_AWS_Data_v2";
 
             try
             {
-                var storedProcReturn = _ministryPlatformRest.UsingAuthenticationToken(apiToken).GetFromStoredProc<MpConnectAws>(spName);
+                var storedProcReturn = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).GetFromStoredProc<MpConnectAws>(spName);
                 var pinsFromSp = storedProcReturn.FirstOrDefault();
 
                 return pinsFromSp;
@@ -149,7 +187,6 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpConnectAws GetSingleGroupRecordFromMpInAwsPinFormat(int groupId)
         {
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
             const string spName = "api_crds_Get_Finder_AWS_Data_For_Single_Group";
             Dictionary <string, object> spParams = new Dictionary<string, object>()
             {
@@ -158,7 +195,7 @@ namespace MinistryPlatform.Translation.Repositories
 
             try
             {
-                var storedProcReturn = _ministryPlatformRest.UsingAuthenticationToken(apiToken).GetFromStoredProc<MpConnectAws>(spName, spParams);
+                var storedProcReturn = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).GetFromStoredProc<MpConnectAws>(spName, spParams);
                 var pinsFromSp = storedProcReturn.FirstOrDefault();
                 var groupPin = pinsFromSp.FirstOrDefault();
 
@@ -173,8 +210,6 @@ namespace MinistryPlatform.Translation.Repositories
 
         public void RecordConnection(MpConnectCommunication connection)
         {
-            var apiToken = _apiUserRepository.GetDefaultApiUserToken();
-
             try
             {
                 if (connection.CommunicationStatusId == _configurationWrapper.GetConfigIntValue("ConnectCommunicationStatusAccepted") ||
@@ -183,17 +218,17 @@ namespace MinistryPlatform.Translation.Repositories
                     string filter = $"Group_ID = {connection.GroupId} AND From_Contact_ID = {connection.FromContactId} AND To_Contact_ID = {connection.ToContactId} AND Communication_Type_ID = {connection.CommunicationTypeId}";
                     const string columnList = "Connect_Communications_ID";
 
-                    var communicationsToUpdate = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpConnectCommunication>(filter , columnList).ToList();
+                    var communicationsToUpdate = _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Search<MpConnectCommunication>(filter , columnList).ToList();
                     foreach (var communication  in communicationsToUpdate)
                     {
                         //Update
                         var dict = new Dictionary<string, object> { { "Connect_Communication_ID", communication.ConnectCommunicationId }, { "Communication_Status_ID", connection.CommunicationStatusId } };
                         var update = new List<Dictionary<string, object>> { dict };
-                        _ministryPlatformRest.UsingAuthenticationToken(apiToken).Put("cr_Connect_Communications", update);
+                        _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Put("cr_Connect_Communications", update);
                     }
 
                 }
-                _ministryPlatformRest.UsingAuthenticationToken(apiToken).Create(connection);
+                _ministryPlatformRest.UsingAuthenticationToken(ApiLogin()).Create(connection);
             }
             catch (Exception ex)
             {

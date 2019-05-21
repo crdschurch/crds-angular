@@ -20,5 +20,7 @@ namespace crds_angular.Models.Crossroads
         [JsonProperty(PropertyName = "password")]
         public string password { get; set; }
 
+        [JsonProperty(PropertyName = "contactId")]
+        public int? contactId { get; set; }
     }
 }

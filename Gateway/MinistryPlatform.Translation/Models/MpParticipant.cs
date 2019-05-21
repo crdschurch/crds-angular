@@ -43,5 +43,8 @@ namespace MinistryPlatform.Translation.Models
 
         [JsonProperty(PropertyName = "Host_Status_ID")]
         public int HostStatus { get; set; }
+
+        [JsonProperty(PropertyName = "Show_On_Map")]
+        public bool ShowOnMap { get; set; }
     }
 }

@@ -16,6 +16,7 @@ using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 using IDonorRepository = MinistryPlatform.Translation.Repositories.Interfaces.IDonorRepository;
+using Constants = Crossroads.Utilities.Constants;
 
 namespace crds_angular.Services
 {
@@ -27,6 +28,7 @@ namespace crds_angular.Services
         private readonly IContactRepository _mpContactService;
         private readonly Interfaces.IPaymentProcessorService _paymentService;
         private readonly IPledgeRepository _pledgeService;
+        private readonly IUserRepository _userRepository;
         public const string DefaultInstitutionName = "Bank";
         public const string DonorRoutingNumberDefault = "0";
         public const string DonorAccountNumberDefault = "0";
@@ -47,12 +49,13 @@ namespace crds_angular.Services
 
         public DonorService(IDonorRepository mpDonorService, IContactRepository mpContactService,
             Interfaces.IPaymentProcessorService paymentService, IConfigurationWrapper configurationWrapper,
-            IPledgeRepository pledgeService)
+            IPledgeRepository pledgeService, IUserRepository userRepository)
         {
             _mpDonorService = mpDonorService;
             _mpContactService = mpContactService;
             _paymentService = paymentService;
             _pledgeService = pledgeService;
+            _userRepository = userRepository;
 
             _guestGiverDisplayName = configurationWrapper.GetConfigValue("GuestGiverContactDisplayName");
 
@@ -77,6 +80,17 @@ namespace crds_angular.Services
         public MpContactDonor GetContactDonorForAuthenticatedUser(string authToken)
         {
             var contactId = _mpContactService.GetContactId(authToken);
+            return (_mpDonorService.GetContactDonor(contactId));
+        }
+
+        public MpContactDonor GetContactDonorByUserId(int userId)
+        {
+            var contactId = _userRepository.GetContactIdByUserId(userId);
+            return (_mpDonorService.GetContactDonor(contactId));
+        }
+
+        public MpContactDonor GetContactDonorByContactId(int contactId)
+        {
             return (_mpDonorService.GetContactDonor(contactId));
         }
 
@@ -266,7 +280,7 @@ namespace crds_angular.Services
             return (_mpDonorService.DecryptCheckValue(value));
         }
 
-        public int CreateRecurringGift(string authorizedUserToken, RecurringGiftDto recurringGiftDto, MpContactDonor mpContactDonor, string email, string displayName)
+        public int CreateRecurringGift(RecurringGiftDto recurringGiftDto, MpContactDonor mpContactDonor, string email, string displayName)
         {
             StripeCustomer customer = null;
             StripePlan plan = null;
@@ -296,8 +310,7 @@ namespace crds_angular.Services
                 var contact = _mpContactService.GetContactById(mpContactDonor.ContactId);
                 var congregation = contact.Congregation_ID ?? _notSiteSpecificCongregation;
 
-                recurGiftId = _mpDonorService.CreateRecurringGiftRecord(authorizedUserToken,
-                                                                        mpContactDonor.DonorId,
+                recurGiftId = _mpDonorService.CreateRecurringGiftRecord(mpContactDonor.DonorId,
                                                                         donorAccountId,
                                                                         EnumMemberSerializationUtils.ToEnumString(recurringGiftDto.PlanInterval),
                                                                         recurringGiftDto.PlanAmount,
@@ -308,7 +321,7 @@ namespace crds_angular.Services
                                                                         recurringGiftDto.SourceUrl,
                                                                         recurringGiftDto.PredefinedAmount);
 
-                SendRecurringGiftConfirmationEmail(authorizedUserToken, _recurringGiftSetupEmailTemplateId, null, recurGiftId);
+                SendRecurringGiftConfirmationEmail(_recurringGiftSetupEmailTemplateId, null, recurGiftId);
 
                 return recurGiftId;
             }
@@ -360,7 +373,7 @@ namespace crds_angular.Services
                     _logger.Debug(string.Format("Deleting Donor Account {0} for donor {1}", donorAccountId, mpContactDonor.DonorId));
                     try
                     {
-                        _mpDonorService.DeleteDonorAccount(authorizedUserToken, donorAccountId);
+                        _mpDonorService.DeleteDonorAccount(donorAccountId);
                     }
                     catch (Exception ex)
                     {
@@ -373,7 +386,7 @@ namespace crds_angular.Services
                     _logger.Debug(string.Format("Deleting Recurring Gift {0} for donor {1}", recurGiftId, mpContactDonor.DonorId));
                     try
                     {
-                        _mpDonorService.CancelRecurringGift(authorizedUserToken, recurGiftId);
+                        _mpDonorService.CancelRecurringGift(recurGiftId);
                     }
                     catch (Exception ex)
                     {
@@ -385,13 +398,13 @@ namespace crds_angular.Services
             }
         }
 
-        private void SendRecurringGiftConfirmationEmail(string authorizedUserToken, int templateId, MpCreateDonationDistDto recurringGift, int? recurringGiftId = null)
+        private void SendRecurringGiftConfirmationEmail(int templateId, MpCreateDonationDistDto recurringGift, int? recurringGiftId = null)
         {
             try
             {
                 if (recurringGift == null)
                 {
-                    recurringGift = _mpDonorService.GetRecurringGiftById(authorizedUserToken, recurringGiftId.GetValueOrDefault());
+                    recurringGift = _mpDonorService.GetRecurringGiftById(recurringGiftId.GetValueOrDefault());
                 }
 
                 var acctType = _mpDonorService.GetDonorAccountPymtType(recurringGift.DonorAccountId.GetValueOrDefault());
@@ -410,16 +423,19 @@ namespace crds_angular.Services
             }
         }
 
-        public Boolean CancelRecurringGift(string authorizedUserToken, int recurringGiftId)
+        public Boolean CancelRecurringGift(int recurringGiftId, bool sendEmail)
         {
-            var existingGift = _mpDonorService.GetRecurringGiftById(authorizedUserToken, recurringGiftId);
+            var existingGift = _mpDonorService.GetRecurringGiftById(recurringGiftId);
 
             var subscription = _paymentService.CancelSubscription(existingGift.StripeCustomerId, existingGift.SubscriptionId);
             _paymentService.CancelPlan(subscription.Plan.Id);
 
-            _mpDonorService.CancelRecurringGift(authorizedUserToken, recurringGiftId);
+            _mpDonorService.CancelRecurringGift(recurringGiftId);
 
-            SendRecurringGiftConfirmationEmail(authorizedUserToken, _recurringGiftCancelEmailTemplateId, existingGift);
+            if (sendEmail == true)
+            {
+                SendRecurringGiftConfirmationEmail(_recurringGiftCancelEmailTemplateId, existingGift);
+            }
 
             return true;
         }
@@ -433,9 +449,9 @@ namespace crds_angular.Services
         /// <param name="editGift">The edited values for the Recurring Gift</param>
         /// <param name="donor">The donor performing the edits</param>
         /// <returns>A RecurringGiftDto, populated with any new/updated values after any edits</returns>
-        public RecurringGiftDto EditRecurringGift(string authorizedUserToken, RecurringGiftDto editGift, MpContactDonor donor)
+        public RecurringGiftDto EditRecurringGift(RecurringGiftDto editGift, MpContactDonor donor)
         {
-            var existingGift = _mpDonorService.GetRecurringGiftById(authorizedUserToken, editGift.RecurringGiftId);
+            var existingGift = _mpDonorService.GetRecurringGiftById(editGift.RecurringGiftId);
 
             // Assuming payment info is changed if a token is given.
             var changedPayment = !string.IsNullOrWhiteSpace(editGift.StripeTokenId);
@@ -472,7 +488,7 @@ namespace crds_angular.Services
                 // gift with the new donor account
                 if (!needsNewMpRecurringGift)
                 {
-                    _mpDonorService.UpdateRecurringGiftDonorAccount(authorizedUserToken, recurringGiftId, donorAccountId);
+                    _mpDonorService.UpdateRecurringGiftDonorAccount(recurringGiftId, donorAccountId);
                 }
             }
             else
@@ -512,12 +528,11 @@ namespace crds_angular.Services
                 }
 
                 // Cancel the old recurring gift, and create a new one
-                _mpDonorService.CancelRecurringGift(authorizedUserToken, recurringGiftId);
+                _mpDonorService.CancelRecurringGift(recurringGiftId);
                 var contact = _mpContactService.GetContactById(donor.ContactId);
                 var congregation = contact.Congregation_ID ?? 5;
 
-                recurringGiftId = _mpDonorService.CreateRecurringGiftRecord(authorizedUserToken,
-                                                                            donor.DonorId,
+                recurringGiftId = _mpDonorService.CreateRecurringGiftRecord(donor.DonorId,
                                                                             donorAccountId,
                                                                             EnumMemberSerializationUtils.ToEnumString(editGift.PlanInterval),
                                                                             editGift.PlanAmount,
@@ -529,7 +544,7 @@ namespace crds_angular.Services
             }
 
             // Get the new/updated recurring gift so we can return a DTO with all the new values
-            var newGift = _mpDonorService.GetRecurringGiftById(authorizedUserToken, recurringGiftId);
+            var newGift = _mpDonorService.GetRecurringGiftById(recurringGiftId);
 
             var newRecurringGift = new RecurringGiftDto
             {
@@ -543,7 +558,7 @@ namespace crds_angular.Services
                 SubscriptionID = stripeSubscription.Id,
             };
 
-            SendRecurringGiftConfirmationEmail(authorizedUserToken, _recurringGiftUpdateEmailTemplateId, newGift);
+            SendRecurringGiftConfirmationEmail(_recurringGiftUpdateEmailTemplateId, newGift);
 
             return (newRecurringGift);
         }
@@ -554,6 +569,21 @@ namespace crds_angular.Services
         }
 
         public List<RecurringGiftDto> GetRecurringGiftsForAuthenticatedUser(string userToken)
+        {
+            var records = _mpDonorService.GetRecurringGiftsForAuthenticatedUser(userToken);
+            var recurringGifts = records.Select(Mapper.Map<MpRecurringGift, RecurringGiftDto>).ToList();
+
+            // We're not currently storing routing number, postal code, or expiration date in the MpDonorAccount table.
+            // We need these for editing a gift, so populate them from Stripe
+            foreach (var gift in recurringGifts)
+            {
+                PopulateStripeInfoOnRecurringGiftSource(gift.Source);
+            }
+
+            return (recurringGifts);
+        }
+
+        public List<RecurringGiftDto> GetRecurringGiftsForDonor(string userToken)
         {
             var records = _mpDonorService.GetRecurringGiftsForAuthenticatedUser(userToken);
             var recurringGifts = records.Select(Mapper.Map<MpRecurringGift, RecurringGiftDto>).ToList();

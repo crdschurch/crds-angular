@@ -30,7 +30,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpCamp GetCampEventDetails(int eventId)
         {
-            var apiToken = _apiUserRepository.GetToken();
+            var apiToken = _apiUserRepository.GetDefaultApiClientToken();
             var campType = _configurationWrapper.GetConfigIntValue("CampEventType");
             var gradeGroupId = _configurationWrapper.GetConfigIntValue("AgeorGradeGroupType");
             var campGrades = _ministryPlatformRest.UsingAuthenticationToken(apiToken).Search<MpEventGroup>($"Event_ID_Table.[Event_ID] = {eventId} AND Group_ID_Table_Group_Type_ID_Table.[Group_Type_ID] = {gradeGroupId}", "Group_ID_Table.Group_ID, Group_ID_Table.Group_Name").ToList();

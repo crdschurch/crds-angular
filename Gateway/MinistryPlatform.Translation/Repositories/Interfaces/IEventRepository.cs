@@ -28,18 +28,16 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         IEnumerable<MpEvent> EventsByPageViewId(string token, int pageViewId, string search);
         IEnumerable<Participant> EventParticipants(string token, int eventId);
         void SetReminderFlag(int eventId, string token);
-        List<MpEventGroup> GetEventGroupsForEvent(int eventId, string token);
+        List<MpEventGroup> GetEventGroupsForEvent(int eventId);
         List<MpEventGroup> GetEventGroupsForGroup(int groupId, string token);
         //void CopyEventGroup(EventGroup eventGroup);
-        void DeleteEventGroup(MpEventGroup eventGroup, string token);
+        void DeleteEventGroup(MpEventGroup eventGroup);
         int CreateEventGroup(MpEventGroup eventGroup, string token = "");
         void UpdateEventGroup(MpEventGroup eventGroup, string token);
 
-        List<MpEventGroup> GetEventGroupsForEventAPILogin(int eventId);
-
-        List<MpEvent> GetEventsBySite(string site, string token, DateTime startDate, DateTime endDate);
-        List<MpEvent> GetEventTemplatesBySite(string site, string token);
-        void DeleteEventGroupsForEvent(int eventId, string token, int? groupTypeID = null);
+        List<MpEvent> GetEventsBySite(string site, DateTime startDate, DateTime endDate);
+        List<MpEvent> GetEventTemplatesBySite(string site);
+        void DeleteEventGroupsForEvent(int eventId, int? groupTypeID = null);
 
         List<MpEventWaivers> GetWaivers(int eventId, int contactId);
         List<MpEventWaivers> GetWaivers(int eventId);

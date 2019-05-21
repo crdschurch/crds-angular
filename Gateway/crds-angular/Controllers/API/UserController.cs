@@ -12,10 +12,11 @@ using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using System.Linq;
 
 namespace crds_angular.Controllers.API
 {
-    public class UserController : MPAuth
+    public class UserController : ImpersonateAuthBaseController
     {
         private readonly IAccountService _accountService;
         private readonly IContactRepository _contactRepository;
@@ -25,12 +26,13 @@ namespace crds_angular.Controllers.API
         // Do not change this string without also changing the same in the corejs register_controller
         private const string DUPLICATE_USER_MESSAGE = "Duplicate User";
 
-        public UserController(IAccountService accountService, 
+        public UserController(IAuthTokenExpiryService authTokenExpiryService,
+                                IAccountService accountService, 
                                 IContactRepository contactRepository, 
                                 IUserRepository userRepository, 
                                 IAnalyticsService analyticsService,
                                 IUserImpersonationService userImpersonationService, 
-                                IAuthenticationRepository authenticationRepository) : base(userImpersonationService, authenticationRepository)
+                                IAuthenticationRepository authenticationRepository) : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _accountService = accountService;
             _contactRepository = contactRepository;
@@ -48,6 +50,7 @@ namespace crds_angular.Controllers.API
             {
                 var userRecord = _accountService.RegisterPerson(user, householdSourceId);
                 var contact_Id = _contactRepository.GetContactIdByEmail(user.email);
+                userRecord.contactId = contact_Id;
 
                 _analyticsService.Track(contact_Id.ToString(), "SignedUp");
                 return Ok(userRecord);
@@ -70,18 +73,19 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult Get(string username)
         {
-            return Authorized(token =>
+            return Authorized(authDTO =>
             {
                 try
-                {                    
+                {
                     int userid = _userRepository.GetUserIdByUsername(username);
                     MpUser user = _userRepository.GetUserByRecordId(userid);
                     var userRoles = _userRepository.GetUserRoles(userid);
                     MpMyContact contact = _contactRepository.GetContactByUserRecordId(user.UserRecordId);
+                    string accessToken = Request.Headers.GetValues("Authorization").FirstOrDefault();
 
                     var r = new LoginReturn
                     {
-                        userToken = token,
+                        userToken = accessToken,
                         userTokenExp = "",
                         refreshToken = "",
                         userId = contact.Contact_ID,

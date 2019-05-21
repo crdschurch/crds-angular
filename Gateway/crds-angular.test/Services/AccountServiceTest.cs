@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using crds_angular.Exceptions;
 using crds_angular.Models.Crossroads;
 using crds_angular.Services;
@@ -25,6 +26,7 @@ namespace crds_angular.test.Services
         private Mock<IApiUserRepository> _apiUserService;
         private Mock<IParticipantRepository> _participantService;
         private Mock<IContactRepository> _contactRepository;
+        private Mock<IDonorRepository> _donorRepository;
 
         private AccountService _fixture;
 
@@ -40,6 +42,7 @@ namespace crds_angular.test.Services
             _apiUserService = new Mock<IApiUserRepository>();
             _participantService = new Mock<IParticipantRepository>();
             _contactRepository = new Mock<IContactRepository>();
+            _donorRepository = new Mock<IDonorRepository>();
 
             _fixture = new AccountService(_configurationWrapper.Object,
                                           _comunicationService.Object,
@@ -49,7 +52,8 @@ namespace crds_angular.test.Services
                                           _lookupService.Object,
                                           _apiUserService.Object,
                                           _participantService.Object,
-                                          _contactRepository.Object);
+                                          _contactRepository.Object,
+                                          _donorRepository.Object);
         }
 
         [Test]
@@ -66,7 +70,7 @@ namespace crds_angular.test.Services
 
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("user");
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
-            _apiUserService.Setup(mocked => mocked.GetToken()).Returns("1234567890");
+            _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("1234567890");
             
             _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email, "1234567890")).Returns(new Dictionary<string, object> { {"dp_RecordID", 123}});
 
@@ -89,7 +93,7 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("user");
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
             
-            _apiUserService.Setup(mocked => mocked.GetToken()).Returns("1234567890");
+            _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("1234567890");
             _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email, "1234567890")).Returns(new Dictionary<string, object>());
 
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Households")).Returns(123);
@@ -105,8 +109,8 @@ namespace crds_angular.test.Services
             _ministryPlatformService.Setup(mocked => mocked.CreateSubRecord(345, 987, It.IsAny<Dictionary<string, object>>(), "1234567890", false)).Returns(543);
 
             _participantService.Setup(m => m.CreateParticipantRecord(654)).Returns(567);
-
-            _subscriptionService.Setup(mocked => mocked.SetSubscriptions(It.IsAny<Dictionary<string, object>>(), 654, "1234567890")).Returns(999);
+            _donorRepository.Setup(m => m.CreateDonorRecord(654, null, It.IsAny<DateTime>(), 1, 1, 2, null));
+            _subscriptionService.Setup(mocked => mocked.SetSubscriptions(It.IsAny<Dictionary<string, object>>(), 654)).Returns(999);
 
             _fixture.RegisterPerson(newUserData, null);
 
@@ -136,7 +140,7 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("user");
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
 
-            _apiUserService.Setup(mocked => mocked.GetToken()).Returns("1234567890");
+            _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("1234567890");
             _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email, "1234567890")).Returns(new Dictionary<string, object>());
 
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Congregation_Default_ID")).Returns(321);
@@ -152,6 +156,8 @@ namespace crds_angular.test.Services
 
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Users_Roles")).Returns(345);
             _ministryPlatformService.Setup(mocked => mocked.CreateSubRecord(345, 987, It.IsAny<Dictionary<string, object>>(), "1234567890", false)).Returns(543);
+
+            _donorRepository.Setup(m => m.CreateDonorRecord(654, null, It.IsAny<DateTime>(), 1, 1, 2, null));
 
             _fixture.RegisterPerson(newUserData, null);
 
@@ -181,7 +187,7 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("user");
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
 
-            _apiUserService.Setup(mocked => mocked.GetToken()).Returns("1234567890");
+            _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("1234567890");
             _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email, "1234567890")).Returns(new Dictionary<string, object>());
 
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Congregation_Default_ID")).Returns(321);
@@ -200,6 +206,8 @@ namespace crds_angular.test.Services
 
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Users_Roles")).Returns(345);
             _ministryPlatformService.Setup(mocked => mocked.CreateSubRecord(345, 987, It.IsAny<Dictionary<string, object>>(), "1234567890", false)).Returns(543);
+
+            _donorRepository.Setup(m => m.CreateDonorRecord(654, null, It.IsAny<DateTime>(), 1, 1, 2, null));
 
             _fixture.RegisterPerson(newUserData, 51);
 

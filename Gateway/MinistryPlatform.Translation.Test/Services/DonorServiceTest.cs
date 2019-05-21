@@ -18,6 +18,7 @@ using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using Constants = Crossroads.Utilities.Constants;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -32,6 +33,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IConfigurationWrapper> _configuration;
         private Mock<IContactRepository> _contactService;
         private Mock<ICryptoProvider> _crypto;
+        private Mock<IApiUserRepository> _apiUserRepositoryMock;
 
         private DonorRepository _fixture;
 
@@ -45,6 +47,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _authService = new Mock<IAuthenticationRepository>();
             _contactService = new Mock<IContactRepository>();
             _crypto = new Mock<ICryptoProvider>();
+            _apiUserRepositoryMock = new Mock<IApiUserRepository>();
             _configuration = new Mock<IConfigurationWrapper>();
             _configuration.Setup(mocked => mocked.GetConfigIntValue("MyHouseholdDonationRecurringGifts")).Returns(523);
             _configuration.Setup(mocked => mocked.GetConfigIntValue("Donors")).Returns(299);
@@ -62,13 +65,13 @@ namespace MinistryPlatform.Translation.Test.Services
             _configuration.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configuration.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
 
-            _authService.Setup(m => m.Authenticate(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
             });
 
-            _fixture = new DonorRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object);
+            _fixture = new DonorRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object, _apiUserRepositoryMock.Object);
         }
 
         [Test]
@@ -924,7 +927,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             // TODO Mocking the test fixture in order to mock SendEmail.  Probably ought to refactor SendEmail to a separate class - shouldn't have to mock the class we're testing...
-            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object)
+            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object, _apiUserRepositoryMock.Object)
             {
                 CallBase = true
             };
@@ -956,7 +959,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             // TODO Mocking the test fixture in order to mock SendEmail.  Probably ought to refactor SendEmail to a separate class - shouldn't have to mock the class we're testing...
-            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object)
+            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object, _apiUserRepositoryMock.Object)
             {
                 CallBase = true
             };
@@ -988,7 +991,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             // TODO Mocking the test fixture in order to mock SendEmail.  Probably ought to refactor SendEmail to a separate class - shouldn't have to mock the class we're testing...
-            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object)
+            var donorService = new Mock<DonorRepository>(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _programService.Object, _communicationService.Object, _authService.Object, _contactService.Object, _configuration.Object, _crypto.Object, _apiUserRepositoryMock.Object)
             {
                 CallBase = true
             };
@@ -1891,7 +1894,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _ministryPlatformService.Setup(mocked => mocked.CreateRecord(45243, expectedParms, It.IsAny<string>(), true)).Returns(recurringGiftId);
 
-            var result = _fixture.CreateRecurringGiftRecord("auth", donorId, donorAccountId, planInterval, planAmount, startDate, program, subscriptionId, congregationId);
+            var result = _fixture.CreateRecurringGiftRecord(donorId, donorAccountId, planInterval, planAmount, startDate, program, subscriptionId, congregationId);
             _ministryPlatformService.VerifyAll();
 
             Assert.AreEqual(recurringGiftId, result);
@@ -2212,6 +2215,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 { "Recurring_Gift_ID", recurringGiftId}
             };
 
+            _apiUserRepositoryMock.Setup(m => m.GetDefaultApiClientToken()).Returns(authUserToken);
             _ministryPlatformService.Setup(mocked => mocked.UpdateRecord(523, expectedParms, authUserToken));
 
             _fixture.CancelRecurringGift(authUserToken, recurringGiftId);
@@ -2253,9 +2257,10 @@ namespace MinistryPlatform.Translation.Test.Services
                 { "Recurring_Gift_ID", recurringGiftId}
             };
 
+            _apiUserRepositoryMock.Setup(m => m.GetDefaultApiClientToken()).Returns(authUserToken);
             _ministryPlatformService.Setup(mocked => mocked.UpdateRecord(523, expectedParms, authUserToken));
 
-            _fixture.UpdateRecurringGiftDonorAccount(authUserToken, recurringGiftId, donorAccountId);
+            _fixture.UpdateRecurringGiftDonorAccount(recurringGiftId, donorAccountId);
             _ministryPlatformService.VerifyAll();
         }
     }

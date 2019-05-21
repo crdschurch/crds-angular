@@ -27,12 +27,14 @@ namespace crds_angular.DataAccess
             IDataReader reader = null;
             try
             {
-                var whereClause = onlyOpenBatches ? "WHERE COALESCE(Exported, 0) <> 1" : string.Empty;
+                var whereClause = "WHERE ((SELECT COUNT(*) FROM Items WHERE IDBatch = b.IDBatch) > 0)";
+                if (onlyOpenBatches)
+                    whereClause += " AND (COALESCE(Exported, 0) <> 1)";
 
                 batches = WithDbCommand(dbCommand =>
                 {
                     dbCommand.CommandType = CommandType.Text;
-                    dbCommand.CommandText = string.Format("SELECT ID, IDBatch, DateProcess, Exported FROM Batches {0} ORDER BY DateProcess DESC", whereClause);
+                    dbCommand.CommandText = string.Format("SELECT ID, IDBatch, DateProcess, Exported FROM Batches b {0} ORDER BY DateProcess DESC", whereClause);
 
                     var b = new List<CheckScannerBatch>();
                     reader = dbCommand.ExecuteReader();

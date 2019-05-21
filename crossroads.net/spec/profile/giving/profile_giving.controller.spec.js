@@ -112,37 +112,4 @@ describe('ProfileGivingController', function() {
     httpBackend.verifyNoOutstandingRequest();
   });
 
-  describe('On initialization', function() {
-    beforeEach(function() {
-      sut = controllerConstructor('ProfileGivingController', {$scope: scope});
-    });
-
-    it('should retrieve most recent giving year donations for current user and commitments', function() {
-      httpBackend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/donor/recurrence')
-                             .respond(mockRecurringGiftsResponse);
-      httpBackend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/donor/pledge')
-                            .respond(mockPledgeCommitmentsResponse);
-
-      httpBackend.flush();
-
-      expect(sut.recurring_giving).toBeTruthy();
-      expect(sut.recurring_giving_view_ready).toBeTruthy();
-
-      expect(sut.recurring_gifts.length).toBe(4);
-      expect(sut.recurring_gifts[0].recurrence).toEqual('Fridays Weekly');
-      expect(sut.recurring_gifts[1].recurrence).toEqual('8th Monthly');
-      expect(sut.recurring_gifts[2].recurrence).toEqual('30th Monthly');
-      expect(sut.recurring_gifts[3].recurrence).toEqual('21st Monthly');
-    });
-
-    it('should not have history if there are no donations', function() {
-      httpBackend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/donor/recurrence').respond(404, {});
-      httpBackend.expectGET(window.__env__['CRDS_GATEWAY_CLIENT_ENDPOINT'] + 'api/donor/pledge').respond(404, {});
-      httpBackend.flush();
-
-      expect(sut.recurring_giving).toBeFalsy();
-      expect(sut.recurring_giving_view_ready).toBeTruthy();
-      expect(sut.recurring_gifts.length).toBe(0);
-    });
-  });
 });

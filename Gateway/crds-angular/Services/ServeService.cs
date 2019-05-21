@@ -107,7 +107,43 @@ namespace crds_angular.Services
 
             // get family for contact Id
             var contactRelationships =
-                _contactRelationshipService.GetMyImmediateFamilyRelationships(contactId, token).ToList();
+                _contactRelationshipService.GetMyImmediateFamilyRelationships(contactId).ToList();
+            var family = contactRelationships.Select(contact => new FamilyMember
+            {
+                ContactId = contact.Contact_Id,
+                Email = contact.Email_Address,
+                LastName = contact.Last_Name,
+                LoggedInUser = false,
+                ParticipantId = contact.Participant_Id,
+                PreferredName = contact.Preferred_Name,
+                RelationshipId = contact.Relationship_Id,
+                Age = contact.Age,
+                HighSchoolGraduationYear = contact.HighSchoolGraduationYear
+            }).ToList();
+
+            relationships.AddRange(family);
+
+            return relationships.OrderByDescending(s => s.Age).ToList();
+        }
+
+        public List<FamilyMember> GetImmediateFamilyParticipants(int contactId)
+        {
+            var relationships = new List<FamilyMember>();
+            var me = _participantService.GetParticipant(contactId);
+            var myParticipant = new FamilyMember
+            {
+                ContactId = contactId,
+                Email = me.EmailAddress,
+                LoggedInUser = true,
+                ParticipantId = me.ParticipantId,
+                PreferredName = me.PreferredName,
+                Age = me.Age ?? 0
+            };
+            relationships.Add(myParticipant);
+
+            // get family for contact Id
+            var contactRelationships =
+                _contactRelationshipService.GetMyImmediateFamilyRelationships(contactId).ToList();
             var family = contactRelationships.Select(contact => new FamilyMember
                                                      {
                                                          ContactId = contact.Contact_Id,
@@ -129,13 +165,13 @@ namespace crds_angular.Services
         public DateTime GetLastServingDate(int opportunityId, string token)
         {
             logger.Debug(string.Format("GetLastOpportunityDate({0}) ", opportunityId));
-            return _opportunityService.GetLastOpportunityDate(opportunityId, token);
+            return _opportunityService.GetLastOpportunityDate(opportunityId);
         }
 
-        public List<QualifiedServerDto> GetQualifiedServers(int groupId, int opportunityId, string token)
+        public List<QualifiedServerDto> GetQualifiedServers(int groupId, int opportunityId, int contactId)
         {
             var qualifiedServers = new List<QualifiedServerDto>();
-            var immediateFamilyParticipants = GetImmediateFamilyParticipants(token);
+            var immediateFamilyParticipants = GetImmediateFamilyParticipants(contactId);
 
             foreach (var participant in immediateFamilyParticipants)
             {
@@ -205,7 +241,7 @@ namespace crds_angular.Services
 
         public List<ServingDay> GetServingDays(string token, int contactId, long from, long to)
         {
-            var family = GetImmediateFamilyParticipants(token);
+            var family = GetImmediateFamilyParticipants(contactId);
             var participants = family.OrderBy(f => f.ParticipantId).Select(f => f.ParticipantId).ToList();
             var servingParticipants = _groupParticipantService.GetServingParticipants(participants, from, to, contactId);
             var servingDays = new List<ServingDay>();
@@ -426,7 +462,7 @@ namespace crds_angular.Services
 
         public void SendReminderEmails()
         {
-            var token = _apiUserService.GetToken();
+            var token = _apiUserService.GetDefaultApiClientToken();
 
             var reminders = _responseService.GetServeReminders(token);
             var serveReminders = reminders.Select(Mapper.Map<ServeReminder>);
@@ -861,6 +897,31 @@ namespace crds_angular.Services
 
             member.ServeRsvp = NewServeRsvp(record);
             return member;
+        }
+
+        public List<QualifiedServerDto> GetQualifiedServers(int groupId, int opportunityId, string token)
+        {
+            var qualifiedServers = new List<QualifiedServerDto>();
+            var immediateFamilyParticipants = GetImmediateFamilyParticipants(token);
+
+            foreach (var participant in immediateFamilyParticipants)
+            {
+                var membership = _groupService.ParticipantQualifiedServerGroupMember(groupId, participant.ParticipantId);
+
+                var opportunityResponse = _opportunityService.GetMyOpportunityResponses(participant.ContactId,
+                                                                                        opportunityId);
+                var qualifiedServer = new QualifiedServerDto();
+                qualifiedServer.ContactId = participant.ContactId;
+                qualifiedServer.Email = participant.Email;
+                qualifiedServer.LastName = participant.LastName;
+                qualifiedServer.LoggedInUser = participant.LoggedInUser;
+                qualifiedServer.MemberOfGroup = membership;
+                qualifiedServer.Pending = opportunityResponse != null;
+                qualifiedServer.ParticipantId = participant.ParticipantId;
+                qualifiedServer.PreferredName = participant.PreferredName;
+                qualifiedServers.Add(qualifiedServer);
+            }
+            return qualifiedServers;
         }
 
         private ServeRsvp NewServeRsvp(MpGroupServingParticipant record)

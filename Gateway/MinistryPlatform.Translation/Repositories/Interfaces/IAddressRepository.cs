@@ -9,5 +9,8 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         int Update(MpAddress address);
         List<MpAddress> FindMatches(MpAddress address);
         MpAddress GetAddressById(string token, int id);
+        MpAddress GetAddressById(int id);
+        List<int> FindAddressIdsWithoutGeocode();
+        List<int> FindMapParticipantsAddressIdsWithoutGeocode();
     }
 }

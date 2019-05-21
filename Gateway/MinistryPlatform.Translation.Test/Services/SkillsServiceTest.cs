@@ -8,6 +8,7 @@ using FsCheck;
 using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
+using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
 
 namespace MinistryPlatform.Translation.Test.Services
@@ -19,15 +20,17 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IMinistryPlatformService> _ministryPlatformService;
         private Mock<IConfigurationWrapper> _configurationWrapper;
         private Mock<IAuthenticationRepository> _authenticationService;
-        
+        private Mock<IApiUserRepository> _apiUserService;
+
         [SetUp]
         public void Setup()
         {
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _configurationWrapper = new Mock<IConfigurationWrapper>();
             _authenticationService = new Mock<IAuthenticationRepository>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
-            _fixture = new SkillsRepository(_authenticationService.Object, _configurationWrapper.Object, _ministryPlatformService.Object);
+            _fixture = new SkillsRepository(_authenticationService.Object, _configurationWrapper.Object, _ministryPlatformService.Object, _apiUserService.Object);
             
         }
 
