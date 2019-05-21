@@ -17,7 +17,6 @@ using System.Collections.Generic;
 using System.Linq;
 using crds_angular.Models.Crossroads.Attribute;
 using crds_angular.Models.Finder;
-using static NewRelic.Api.Agent.NewRelic;
 
 namespace crds_angular.Services
 {
@@ -175,13 +174,7 @@ namespace crds_angular.Services
             mapAuditRecord.processed = true;
             mapAuditRecord.dateProcessed = DateTime.Now;
             _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
-            RecordCustomNewRelicEvent("SetRecordProcessedStatusFlag", mapAuditRecord.dateProcessed.ToString());
             
-        }
-        private static void RecordCustomNewRelicEvent(string methodName,string otherData)
-        {
-            var eventAttributes = new Dictionary<string, object> { { "MethodName", methodName }, { "Date Processed", otherData } };
-            RecordCustomEvent("Ape", eventAttributes);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
