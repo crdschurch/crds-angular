@@ -74,8 +74,8 @@ namespace MinistryPlatform.Translation.Test.Services
                                               _pledgeService.Object,
                                               _config.Object,
                                               _authService.Object,
-                                              _apiUserRepository.Object,
-                                              _ministryPlatformRest.Object);
+                                              _ministryPlatformRest.Object,
+                                              _apiUserRepository.Object);
         }
 
         [Test]

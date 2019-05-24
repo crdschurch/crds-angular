@@ -10,6 +10,7 @@ using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.EventReservations;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using Crossroads.Web.Common.MinistryPlatform;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -18,8 +19,12 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly ILog _logger = LogManager.GetLogger(typeof (RoomRepository));
 
-        public EquipmentRepository(IMinistryPlatformService ministryPlatformService, IAuthenticationRepository authenticationService, IConfigurationWrapper configuration)
-            : base(authenticationService, configuration)
+        public EquipmentRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configuration,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configuration, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
         }

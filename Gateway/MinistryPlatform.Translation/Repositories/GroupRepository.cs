@@ -56,9 +56,9 @@ namespace MinistryPlatform.Translation.Repositories
                                IContactRepository contactService,
                                IContentBlockService contentBlockService,
                                IAddressRepository addressRepository,
-                               IObjectAttributeRepository objectAttributeRepository
-                               )
-            : base(authenticationService, configurationWrapper)
+                               IObjectAttributeRepository objectAttributeRepository,
+                               IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             this.ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRestRepository;

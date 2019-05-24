@@ -134,32 +134,32 @@
           <DataField>Donation Status</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Soft_Credit_Donor_ID">
-          <DataField>Soft Credit Donor ID</DataField>
+        <Field Name="Hard_Credit_Donor_ID">
+          <DataField>Hard Credit Donor ID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
-        <Field Name="Soft_Credit_Display_Name">
-          <DataField>Soft Credit Display Name</DataField>
+        <Field Name="Hard_Credit_Display_Name">
+          <DataField>Hard Credit Display Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Soft_Credit_Address1">
-          <DataField>Soft Credit Address1</DataField>
+        <Field Name="Hard_Credit_Address1">
+          <DataField>Hard Credit Address1</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Soft_Credit_Address2">
-          <DataField>Soft Credit Address2</DataField>
+        <Field Name="Hard_Credit_Address2">
+          <DataField>Hard Credit Address2</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Soft_Credit_City">
-          <DataField>Soft Credit City</DataField>
+        <Field Name="Hard_Credit_City">
+          <DataField>Hard Credit City</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Soft_Credit_Zip">
-          <DataField>Soft Credit Zip</DataField>
+        <Field Name="Hard_Credit_Zip">
+          <DataField>Hard Credit Zip</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Soft_Credit_State">
-          <DataField>Soft Credit State</DataField>
+        <Field Name="Hard_Credit_State">
+          <DataField>Hard Credit State</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
@@ -184,19 +184,121 @@
     <DataSet Name="Programs">
       <Query>
         <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>select p.Program_name, p.Program_id
+        <CommandText>select *
 from dbo.Programs p where p.program_type_id = 1
+AND p.Allow_Online_Giving = 1
+AND p.End_Date IS NULL
 order by p.Program_Name</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="Program_name">
-          <DataField>Program_name</DataField>
+          <DataField>Program_Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="Program_id">
-          <DataField>Program_id</DataField>
+          <DataField>Program_ID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Congregation_ID">
+          <DataField>Congregation_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Ministry_ID">
+          <DataField>Ministry_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Start_Date">
+          <DataField>Start_Date</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="End_Date">
+          <DataField>End_Date</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Program_Type_ID">
+          <DataField>Program_Type_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Leadership_Team">
+          <DataField>Leadership_Team</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Primary_Contact">
+          <DataField>Primary_Contact</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Priority_ID">
+          <DataField>Priority_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="On_Connection_Card">
+          <DataField>On_Connection_Card</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="Stewardship_Information">
+          <DataField>Stewardship_Information</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="Tax_Deductible_Donations">
+          <DataField>Tax_Deductible_Donations</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="Statement_Title">
+          <DataField>Statement_Title</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Statement_Header_ID">
+          <DataField>Statement_Header_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Allow_Online_Giving">
+          <DataField>Allow_Online_Giving</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="Online_Sort_Order">
+          <DataField>Online_Sort_Order</DataField>
+          <rd:TypeName>System.Int16</rd:TypeName>
+        </Field>
+        <Field Name="Pledge_Campaign_ID">
+          <DataField>Pledge_Campaign_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Account_Number">
+          <DataField>Account_Number</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Default_Target_Event">
+          <DataField>Default_Target_Event</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="On_Donation_Batch_Tool">
+          <DataField>On_Donation_Batch_Tool</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="Domain_ID">
+          <DataField>Domain_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Available_Online">
+          <DataField>Available_Online</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="ID__ExternalFundID">
+          <DataField>__ExternalFundID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Communication_ID">
+          <DataField>Communication_ID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Allow_Recurring_Giving">
+          <DataField>Allow_Recurring_Giving</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="Show_On_Event_Tool">
+          <DataField>Show_On_Event_Tool</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>
@@ -204,7 +306,7 @@ order by p.Program_Name</CommandText>
       <Query>
         <DataSourceName>DataSource1</DataSourceName>
         <CommandText>select congregation_id, Congregation_Name, Accounting_Company_ID from congregations 
- </CommandText>
+order by Congregation_Name ASC</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
@@ -1227,7 +1329,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Soft Credit Donor ID</Value>
+                                  <Value>Hard Credit Donor ID</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -1263,7 +1365,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Soft Credit Display Name</Value>
+                                  <Value>Hard Credit Display Name</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -1299,7 +1401,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Soft Credit Address1</Value>
+                                  <Value>Hard Credit Address1</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -1335,7 +1437,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Soft Credit Address2</Value>
+                                  <Value>Hard Credit Address2</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -1371,7 +1473,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Soft Credit City</Value>
+                                  <Value>Hard Credit City</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -1407,7 +1509,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Soft Credit State</Value>
+                                  <Value>Hard Credit State</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -1443,7 +1545,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Soft Credit Zip</Value>
+                                  <Value>Hard Credit Zip</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -2277,7 +2379,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Soft_Credit_Donor_ID.Value</Value>
+                                  <Value>=Fields!Hard_Credit_Donor_ID.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Color>#4d4d4d</Color>
@@ -2310,7 +2412,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Soft_Credit_Display_Name.Value</Value>
+                                  <Value>=Fields!Hard_Credit_Display_Name.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Color>#4d4d4d</Color>
@@ -2343,7 +2445,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Soft_Credit_Address1.Value</Value>
+                                  <Value>=Fields!Hard_Credit_Address1.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Color>#4d4d4d</Color>
@@ -2376,7 +2478,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Soft_Credit_Address2.Value</Value>
+                                  <Value>=Fields!Hard_Credit_Address2.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Color>#4d4d4d</Color>
@@ -2409,7 +2511,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Soft_Credit_City.Value</Value>
+                                  <Value>=Fields!Hard_Credit_City.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Color>#4d4d4d</Color>
@@ -2442,7 +2544,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Soft_Credit_State.Value</Value>
+                                  <Value>=Fields!Hard_Credit_State.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Color>#4d4d4d</Color>
@@ -2475,7 +2577,7 @@ FROM Accounting_Companies</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Soft_Credit_Zip.Value</Value>
+                                  <Value>=Fields!Hard_Credit_Zip.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Color>#4d4d4d</Color>
@@ -2810,6 +2912,6 @@ FROM Accounting_Companies</CommandText>
     </GridLayoutDefinition>
   </ReportParametersLayout>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://mp-int-db-azimg:8880/Reportserver</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://localhost:8880/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>a8dbc641-8f81-4e85-94ac-8408904f690d</rd:ReportID>
 </Report>

@@ -5,6 +5,7 @@ using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using Crossroads.Web.Common.MinistryPlatform;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -12,11 +13,16 @@ namespace MinistryPlatform.Translation.Repositories
     {
         protected readonly IAuthenticationRepository _authenticationService;
         protected readonly IConfigurationWrapper _configurationWrapper;
+        protected readonly IApiUserRepository _apiUserRepository;
 
-        public BaseRepository(IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper)
+        public BaseRepository(
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IApiUserRepository apiUserRepository)
         {
             this._authenticationService = authenticationService;
             this._configurationWrapper = configurationWrapper;
+            this._apiUserRepository = apiUserRepository;
         }
 
         protected static int AppSettings(string pageKey)
@@ -36,13 +42,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         protected string ApiLogin()
         {
-            // TODO: Refactor this to use IApiUserRepository.GetDefaultApiClientToken
-            var clientId = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID");
-            var clientSecret = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET");
-            var authData = _authenticationService.AuthenticateClient(clientId, clientSecret);
-            var token = authData.AccessToken;
-
-            return (token);
+            return this._apiUserRepository.GetDefaultApiClientToken();
         }
 
 

@@ -16,7 +16,7 @@ using Crossroads.Web.Common.Security;
 
 namespace crds_angular.Controllers.API
 {
-    public class EventController : MPAuth
+    public class EventController : ImpersonateAuthBaseController
     {
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IApiUserRepository _apiUserService;
@@ -102,7 +102,7 @@ namespace crds_angular.Controllers.API
             return Authorized(token => {
                 try
                 {
-                    return Ok(_eventService.CopyEventSetup(request.EventTemplateId, request.EventId, token));
+                    return Ok(_eventService.CopyEventSetup(request.EventTemplateId, request.EventId));
                 }
                 catch (Exception e)
                 {
@@ -121,7 +121,7 @@ namespace crds_angular.Controllers.API
             return Authorized(token => {
                 try
                 {
-                    return Ok(_eventService.GetEventsBySite(site, token, startDate, endDate));
+                    return Ok(_eventService.GetEventsBySite(site, startDate, endDate));
                 }
                 catch (Exception e)
                 {
@@ -139,7 +139,7 @@ namespace crds_angular.Controllers.API
             return Authorized(token => {
                 try
                 {
-                    return Ok(_eventService.GetEventTemplatesBySite(site, token));
+                    return Ok(_eventService.GetEventTemplatesBySite(site));
                 }
                 catch (Exception e)
                 {

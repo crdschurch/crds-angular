@@ -25,7 +25,6 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IMinistryPlatformRestRepository _mpRestRepository;
-        private readonly IApiUserRepository _apiUserRepository;
         private const int JourneyCategoryID = 51;
 
         public GroupToolRepository(IMinistryPlatformService ministryPlatformService,
@@ -33,21 +32,19 @@ namespace MinistryPlatform.Translation.Repositories
                                IAuthenticationRepository authenticationService,
                                IMinistryPlatformRestRepository mpRestRepository,
                                IApiUserRepository apiUserRepository)
-            : base(authenticationService, configurationWrapper)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _invitationPageId = _configurationWrapper.GetConfigIntValue("InvitationPageID");
             _smallGroupTypeId = _configurationWrapper.GetConfigIntValue("SmallGroupTypeId");
             _gatheringTypeId = _configurationWrapper.GetConfigIntValue("AnywhereGroupTypeId");
             _mpRestRepository = mpRestRepository;
-            _apiUserRepository = apiUserRepository;
         }
 
         public string GetCurrentJourney()
         {
-            var token = _apiUserRepository.GetDefaultApiClientToken();
             var filter = $"ATTRIBUTE_CATEGORY_ID_TABLE.ATTRIBUTE_CATEGORY_ID = {JourneyCategoryID} AND GETDATE() BETWEEN START_DATE AND ISNULL(END_DATE, GETDATE())";
-            var attribute = _mpRestRepository.UsingAuthenticationToken(token).Search<MpAttribute>(filter, "Attribute_Name").FirstOrDefault();
+            var attribute = _mpRestRepository.UsingAuthenticationToken(ApiLogin()).Search<MpAttribute>(filter, "Attribute_Name").FirstOrDefault();
             return attribute?.Name;
         }
 
@@ -108,7 +105,6 @@ namespace MinistryPlatform.Translation.Repositories
             var mpInquiries = new List<MpInquiry>();
             try
             {
-                var token = _apiUserRepository.GetDefaultApiClientToken();
                 var filter = $"Group_ID_Table.Group_Type_ID in ({_smallGroupTypeId}, {_gatheringTypeId}) AND Placed is null";
 
                 if (groupId.HasValue)
@@ -116,7 +112,7 @@ namespace MinistryPlatform.Translation.Repositories
                     filter += $" AND Group_Inquiries.Group_ID = {groupId.Value}";
                 }
 
-               mpInquiries = _mpRestRepository.UsingAuthenticationToken(token)
+               mpInquiries = _mpRestRepository.UsingAuthenticationToken(ApiLogin())
                     .Search<MpInquiry>(filter, "Group_Inquiries.*").ToList();
 
                 if (mpInquiries.Count < 1)
