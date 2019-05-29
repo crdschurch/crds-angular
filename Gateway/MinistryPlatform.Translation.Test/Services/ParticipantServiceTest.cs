@@ -40,7 +40,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 ExpiresIn = 123
             });
 
-            _fixture = new ParticipantRepository(_apiUserRepositoryMock.Object, _mpServiceMock.Object, _ministryPlatformRestMock.Object, _authService.Object, _configWrapper.Object);
+            _fixture = new ParticipantRepository(_mpServiceMock.Object, _ministryPlatformRestMock.Object, _authService.Object, _configWrapper.Object, _apiUserRepositoryMock.Object);
         }
 
         [Test]
@@ -125,7 +125,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             _mpServiceMock.Setup(
-                mocked => mocked.CreateRecord(355, It.IsAny<Dictionary<string,object>>(), "ABC", false))
+                mocked => mocked.CreateRecord(355, It.IsAny<Dictionary<string,object>>(), It.IsAny<string>(), false))
                 .Returns(123);
 
             var participant = _fixture.CreateParticipantRecord(contactId);

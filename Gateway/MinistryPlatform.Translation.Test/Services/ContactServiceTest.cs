@@ -227,7 +227,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var dob = new DateTime().ToString();
             const string mobile = "5554441111";
 
-
+            _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("ABC");
             _ministryPlatformService.Setup(
                 mocked => mocked.CreateRecord(292, It.IsAny<Dictionary<string, object>>(), "ABC", false))
                 .Returns(123);
@@ -370,7 +370,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             const string columns = "Contact_ID_Table.Contact_ID, Contact_ID_Table.Display_Name, Contact_ID_Table.Email_Address, Contact_ID_Table.First_Name, Contact_ID_Table.Last_Name";
             string filter = $"Attribute_ID IN (7088,9048) AND Start_Date <= GETDATE() AND (End_Date IS NULL OR End_Date > GETDATE())";
-
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("ABC");
             _ministryPlatformRest.Setup(m => m.Search<MpContactAttribute, Dictionary<string, object>>(filter, columns, "Display_Name", true)).Returns(returnData);
 
             var result = _fixture.PrimaryContacts();
@@ -441,6 +441,7 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             const int householdId = 999;
             var householdContacts = GetContactHouseholds(householdId);
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("ABC");
             _ministryPlatformRest.Setup(m => m.Search<MpContactHousehold>(It.IsAny<string>(), It.IsAny<List<string>>(), null, false)).Returns(householdContacts);
 
             var householdMembers = _fixture.GetOtherHouseholdMembers(householdId);

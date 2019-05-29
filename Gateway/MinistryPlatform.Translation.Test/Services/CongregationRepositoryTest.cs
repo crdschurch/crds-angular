@@ -24,6 +24,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IAuthenticationRepository> _authRepository;
         private Mock<IConfigurationWrapper> _configWrapper;
         private ICongregationRepository _fixture;
+        private Mock<IApiUserRepository> _apiUserService;
 
         [SetUp]
         public void Setup()
@@ -34,7 +35,8 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
             _authRepository = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
-            _fixture = new CongregationRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, _authRepository.Object, _configWrapper.Object);
+            _apiUserService = new Mock<IApiUserRepository>();
+            _fixture = new CongregationRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, _authRepository.Object, _configWrapper.Object, _apiUserService.Object);
         }
 
         [TearDown]

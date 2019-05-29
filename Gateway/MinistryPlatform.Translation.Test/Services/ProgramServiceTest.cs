@@ -20,6 +20,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRest;
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
+        private Mock<IApiUserRepository> _apiUserService;
 
         private const int OnlineGivingProgramsPageViewId = 1038;
         private const int ProgramsPageId = 375;
@@ -32,6 +33,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
@@ -45,7 +47,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             AutoMapperConfig.RegisterMappings();
 
-            _fixture = new ProgramRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _ministryPlatformRest.Object);
+            _fixture = new ProgramRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _ministryPlatformRest.Object, _apiUserService.Object);
         }
 
         [Test]

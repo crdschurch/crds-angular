@@ -24,8 +24,9 @@ namespace MinistryPlatform.Translation.Repositories
         public InvitationRepository(IMinistryPlatformService ministryPlatformService,
                                IMinistryPlatformRestRepository ministryPlatformRestRepository,
                                IConfigurationWrapper configurationWrapper,
-                               IAuthenticationRepository authenticationService)
-            : base(authenticationService, configurationWrapper)
+                               IAuthenticationRepository authenticationService,
+                               IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRestRepository;

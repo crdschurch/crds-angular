@@ -20,8 +20,13 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly int _pledgePageId;
         private readonly int _myHouseholdPledges;
 
-        public PledgeRepository(IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRestRepository, IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper)
-            : base(authenticationService, configurationWrapper)
+        public PledgeRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IMinistryPlatformRestRepository ministryPlatformRestRepository,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRestRepository;

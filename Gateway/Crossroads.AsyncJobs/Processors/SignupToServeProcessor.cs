@@ -10,6 +10,7 @@ using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using Crossroads.Web.Common.MinistryPlatform;
 
 namespace Crossroads.AsyncJobs.Processors
 {
@@ -19,8 +20,12 @@ namespace Crossroads.AsyncJobs.Processors
         private readonly IConfigurationWrapper _configurationWrapper;
         private readonly IAuthenticationRepository _authenticationService;
 
-        public SignupToServeProcessor(IServeService serveService, IConfigurationWrapper configurationWrapper, IAuthenticationRepository authenticationService)
-            : base(authenticationService, configurationWrapper)
+        public SignupToServeProcessor(
+            IServeService serveService,
+            IConfigurationWrapper configurationWrapper,
+            IAuthenticationRepository authenticationService,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             this._serveService = serveService;
             this._configurationWrapper = configurationWrapper;

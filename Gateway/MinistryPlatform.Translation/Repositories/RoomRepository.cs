@@ -25,8 +25,9 @@ namespace MinistryPlatform.Translation.Repositories
         public RoomRepository(IMinistryPlatformService ministryPlatformService,
                               IMinistryPlatformRestRepository ministryPlatformRestRepository,
                               IAuthenticationRepository authenticationService,
-                              IConfigurationWrapper configuration)
-            : base(authenticationService, configuration)
+                              IConfigurationWrapper configuration,
+                              IApiUserRepository apiUserRepository)
+            : base(authenticationService, configuration, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRestRepository = ministryPlatformRestRepository;
@@ -166,7 +167,7 @@ namespace MinistryPlatform.Translation.Repositories
             }).ToList();
         }
 
-        public void DeleteEventRoomsForEvent(int eventId, string token)
+        public void DeleteEventRoomsForEvent(int eventId)
         {
             // get event room ids
             var discardedEventRoomIds = GetRoomReservations(eventId).Select(r => r.EventRoomId).ToArray();
@@ -177,22 +178,8 @@ namespace MinistryPlatform.Translation.Repositories
                 return;
             }
 
-            // create selection for event groups
-            SelectionDescription eventRoomSelDesc = new SelectionDescription();
-            eventRoomSelDesc.DisplayName = "DiscardedEventRooms " + DateTime.Now;
-            eventRoomSelDesc.Kind = SelectionKind.Normal;
-            eventRoomSelDesc.PageId = _configurationWrapper.GetConfigIntValue("RoomReservationPageId");
-            var eventRoomSelId = _ministryPlatformService.CreateSelection(eventRoomSelDesc, token);
-
-
-            // add events to selection
-            _ministryPlatformService.AddToSelection(eventRoomSelId, discardedEventRoomIds, token);
-
-            // delete the selection records
-            _ministryPlatformService.DeleteSelectionRecords(eventRoomSelId, token);
-
-            // delete the selection
-            _ministryPlatformService.DeleteSelection(eventRoomSelId, token);
+            _ministryPlatformRestRepository.UsingAuthenticationToken(ApiLogin())
+                .Delete<MpEventRooms>(discardedEventRoomIds);
         }
     }
 }

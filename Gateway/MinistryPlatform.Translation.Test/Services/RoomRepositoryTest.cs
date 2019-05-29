@@ -23,6 +23,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
         private Mock<IConfigurationWrapper> _config;
         private Mock<IAuthenticationRepository> _authenticationService;
+        private Mock<IApiUserRepository> _apiUserService;
 
         private RoomRepository _fixture;
         public const string GetRoomsProcName = "api_crds_GetReservedAndAvailableRoomsByLocation";
@@ -34,16 +35,12 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _config = new Mock<IConfigurationWrapper>();
             _authenticationService = new Mock<IAuthenticationRepository>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("abc")).Returns(_ministryPlatformRestRepository.Object);
+            
 
-            _authenticationService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
-            {
-                AccessToken = "abc",
-                ExpiresIn = 123
-            });
-
-            _fixture = new RoomRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authenticationService.Object, _config.Object);
+            _fixture = new RoomRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authenticationService.Object, _config.Object, _apiUserService.Object);
         }
 
         [Test]
@@ -105,7 +102,6 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var reservations = _fixture.GetRoomReservations(123);
             _ministryPlatformService.VerifyAll();
-            _authenticationService.VerifyAll();
             _config.VerifyAll();
 
             Assert.IsNotNull(reservations);
@@ -148,15 +144,13 @@ namespace MinistryPlatform.Translation.Test.Services
                 var eventRooms = GetMockedEventRooms(3);
 
                 _ministryPlatformService.Setup(m => m.GetPageViewRecords(It.IsAny<string>(), It.IsAny<string>(), searchString, "", 0)).Returns(eventRooms);
+                _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns(token);
 
                 var eventRoomIds = Conversions.BuildIntArrayFromKeyValue(eventRooms, "Event_Room_ID").ToArray();
 
-                _ministryPlatformService.Setup(m => m.CreateSelection(It.IsAny<SelectionDescription>(), token)).Returns(selectionId);
-                _ministryPlatformService.Setup(m => m.AddToSelection(selectionId, eventRoomIds, token));
-                _ministryPlatformService.Setup(m => m.DeleteSelectionRecords(selectionId, token));
-                _ministryPlatformService.Setup(m => m.DeleteSelection(selectionId, token));
+                _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRestRepository.Object);
 
-                _fixture.DeleteEventRoomsForEvent(eventId, token);
+                _fixture.DeleteEventRoomsForEvent(eventId);
                 _ministryPlatformService.VerifyAll();
             }).QuickCheckThrowOnFailure();
         }
@@ -174,7 +168,8 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"@EndDate", string.Join(",", date)},
                 {"@LocationId", string.Join(",", 1)}
             };
-
+            _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("ABC");
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(m => m.GetFromStoredProc<MpRoom>(GetRoomsProcName, parms)).Returns(returnList);
 
             var result = _fixture.GetRoomsByLocationId(1, date, date);
@@ -193,9 +188,9 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"@EndDate", string.Join(",", date)},
                 {"@LocationId", string.Join(",", 1)}
             };
-
+            _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("ABC");
             _ministryPlatformRestRepository.Setup(m => m.GetFromStoredProc<MpRoom>(GetRoomsProcName, parms)).Returns((List<List<MpRoom>>) null);
-
+            _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRestRepository.Object);
             var result = _fixture.GetRoomsByLocationId(1, date, date);
             Assert.IsNull(result);
         }

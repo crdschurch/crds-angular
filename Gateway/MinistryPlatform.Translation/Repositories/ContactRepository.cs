@@ -32,17 +32,20 @@ namespace MinistryPlatform.Translation.Repositories
 
         private readonly IMinistryPlatformService _ministryPlatformService;
         private readonly IMinistryPlatformRestRepository _ministryPlatformRest;
-        private readonly IApiUserRepository _apiUserRepository;
         private readonly int _participantsPageId;
         private readonly int _securityRolesSubPageId;
         
 
-        public ContactRepository(IMinistryPlatformService ministryPlatformService, IAuthenticationRepository authenticationService, IConfigurationWrapper configuration, IMinistryPlatformRestRepository ministryPlatformRest, IApiUserRepository apiUserRepository)
-            : base(authenticationService, configuration)
+        public ContactRepository(
+            IMinistryPlatformService ministryPlatformService,
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configuration,
+            IMinistryPlatformRestRepository ministryPlatformRest,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configuration, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRest = ministryPlatformRest;
-            _apiUserRepository = apiUserRepository;
 
             _householdsPageId = configuration.GetConfigIntValue("Households");
             _securityRolesSubPageId = configuration.GetConfigIntValue("SecurityRolesSubPageId");

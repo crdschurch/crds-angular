@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
+using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Extensions;
@@ -23,8 +23,9 @@ namespace MinistryPlatform.Translation.Test.Services
             _mpServiceMock = new Mock<IMinistryPlatformService>();
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
+            _apiUserService = new Mock<IApiUserRepository>();
 
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
+        _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
             _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _configWrapper.Setup(m => m.GetConfigIntValue("OrganizationsPage")).Returns(OrgPage);
             _configWrapper.Setup(m => m.GetConfigIntValue("LocationsForOrg")).Returns(LocPage);
@@ -34,13 +35,14 @@ namespace MinistryPlatform.Translation.Test.Services
                 ExpiresIn = 123
             });
 
-            _fixture = new OrganizationRepository(_authService.Object, _configWrapper.Object, _mpServiceMock.Object);
+            _fixture = new OrganizationRepository(_authService.Object, _configWrapper.Object, _mpServiceMock.Object, _apiUserService.Object);
         }
 
         private OrganizationRepository _fixture;
         private Mock<IMinistryPlatformService> _mpServiceMock;
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
+        private Mock<IApiUserRepository> _apiUserService;
 
         private const int OrgPage = 1234;
         private const int LocPage = 180;

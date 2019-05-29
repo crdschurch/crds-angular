@@ -22,8 +22,13 @@ namespace MinistryPlatform.Translation.Repositories
         private readonly int _usersApiLookupPageViewId;
         private readonly int _usersPageId;
 
-        public UserRepository(IAuthenticationRepository authenticationService, IConfigurationWrapper configurationWrapper,
-            IMinistryPlatformService ministryPlatformService, IMinistryPlatformRestRepository ministryPlatformRest) : base(authenticationService, configurationWrapper)
+        public UserRepository(
+            IAuthenticationRepository authenticationService,
+            IConfigurationWrapper configurationWrapper,
+            IMinistryPlatformService ministryPlatformService,
+            IMinistryPlatformRestRepository ministryPlatformRest,
+            IApiUserRepository apiUserRepository)
+            : base(authenticationService, configurationWrapper, apiUserRepository)
         {
             _ministryPlatformService = ministryPlatformService;
             _ministryPlatformRest = ministryPlatformRest;
