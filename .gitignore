@@ -215,3 +215,5 @@ Gateway/Crossroads.AsyncJobs/Unity.config
 .DS_Store
 /CI/SQL/20171023_150300_US10195-calculate-srfp-sp.sql
 /Gateway/*.DotSettings
+
+crossroads.net/package-lock.json
