@@ -49,7 +49,10 @@
               function redirectOutsideAngular() {
                 const queryParams = $location.search();
                 link = removeTrailingSlashIfNecessary($stateParams.link);
-                if (isAngularRoute(link)) $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
+                const angular = isAngularRoute(link)
+                console.log(angular);
+                if (angular)
+                  $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
                 const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
                 ContentPageService.page = {
                   redirectType: 'RedirectorPage',
