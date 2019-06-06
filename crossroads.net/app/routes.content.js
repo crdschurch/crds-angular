@@ -49,10 +49,10 @@
               function redirectOutsideAngular() {
                 const queryParams = $location.search();
                 link = removeTrailingSlashIfNecessary($stateParams.link);
-                const angular = isAngularRoute(link)
-                console.log(angular);
-                if (angular)
+                const isAngular = isAngularRoute(link)
+                if (isAngular === true) { 
                   $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
+                }
                 const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
                 ContentPageService.page = {
                   redirectType: 'RedirectorPage',
@@ -60,6 +60,7 @@
                   pageType: 'NoHeaderOrFooter',
                   title: ''
                 };
+                console.log('popping out of angular')
                 $window.location.replace(`${link}${queryParamsString}`);
                 $rootScope.$destroy();
               }
@@ -222,6 +223,7 @@
   }
 
   function isAngularRoute(link) {
+    if(link === "") return false;
     const angularRoutes = ['mycamps', 'camps', 'childcare', 'corkboard', 'invoices', 'undivided/participant', 'undivided/facilitator', 'mptools', 'reset-password', 'volunteer-sign-up', 'sign-up', 'trips'];
     return angularRoutes.find(route => link.includes(route));
   }
