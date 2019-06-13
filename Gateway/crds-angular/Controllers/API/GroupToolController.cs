@@ -72,6 +72,25 @@ namespace crds_angular.Controllers.API
             }
         }
 
+        [AcceptVerbs("GET")]
+        [ResponseType(typeof(List<AttributeCategoryDTO>))]
+        [VersionedRoute(template: "group-tool/subcategories", minimumVersion: "1.0.0")]
+        [Route("grouptool/subcategories")]
+        public IHttpActionResult GetSubcategories()
+        {
+            try
+            {
+                var cats = _groupToolService.GetGroupSubcategories();
+
+                return Ok(cats);
+            }
+            catch (Exception exception)
+            {
+                var apiError = new ApiErrorDto("Get Group Categories Failed", exception);
+                throw new HttpResponseException(apiError.HttpResponseMessage);
+            }
+        }
+
         /// <summary>
         /// Ends a group and emails all participants to let them know
         /// it is over
