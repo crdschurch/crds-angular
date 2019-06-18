@@ -23,13 +23,13 @@
       if ($rootScope.meta.title.indexOf(titleSuffix, $rootScope.meta.title.length - titleSuffix.length) === -1) {
         $rootScope.meta.title += titleSuffix;
       }
-      
+
       $rootScope.meta.url = $location.absUrl();
 
       if (!$rootScope.meta.statusCode) {
         $rootScope.meta.statusCode = '200';
       }
-      
+
       if ($rootScope.meta.image && $rootScope.meta.image.url) {
         $rootScope.meta.image.filename = $rootScope.meta.image.url;
       }
@@ -39,40 +39,6 @@
           filename: 'https://crds-cms-uploads.imgix.net/content/images/cr-social-sharing-still-bg.jpg'
         };
       }
-    }
-
-    function setupHeaderAndFooter() {
-      svg4everybody();
-      $('html, body').removeClass('noscroll');
-      $('.collapse.in').removeClass('in');
-      $('body:not(.modal-open) .modal-backdrop.fade').remove();
-      
-      var sharedOptions = {
-        cmsEndpoint: __CMS_CLIENT_ENDPOINT__,
-        appEndpoint: __APP_CLIENT_ENDPOINT__,
-        imgEndpoint: __IMG_ENDPOINT__,
-        crdsCookiePrefix: __CRDS_ENV__,
-        contentBlockCategories: ['common']
-      };
-      // header options
-      var headerOptions = {
-        el: '[data-header]'
-      };
-      Object.assign(headerOptions, sharedOptions);
-      // footer options
-      var footerOptions = {
-        el: '[data-footer]'
-      };
-      Object.assign(footerOptions, sharedOptions);
-      setTimeout(() => {
-        if ($('[data-header] [data-mobile-menu]').length == 0 &&
-            $('[data-header]').length > 0) {
-          new CRDS.SharedHeader(headerOptions).render();
-        }
-        if ($('[data-footer]')){
-          new CRDS.SharedFooter(footerOptions);
-        }
-      }, 100);
     }
 
     function setOriginForCmsPreviewPane($injectedDocument) {
@@ -144,7 +110,6 @@
         $rootScope.meta = toState.data.meta;
       }
       setupMetaData();
-      setupHeaderAndFooter();
     });
   }
 
