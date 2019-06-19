@@ -56,6 +56,7 @@ namespace crds_angular.Services
         private readonly int _defaultAuthorUserId;
         private readonly int _journeyGroupTypeId;
         private readonly int _groupCategoryAttributeTypeId;
+        private readonly int _groupSubcategoryAttributeTypeId;
         private readonly int _groupTypeAttributeTypeId;
         private readonly int _groupAgeRangeAttributeTypeId;
         private readonly int _groupRoleLeader;        
@@ -104,6 +105,7 @@ namespace crds_angular.Services
             _defaultContactEmailId = _configurationWrapper.GetConfigIntValue("DefaultContactEmailId");
             _journeyGroupTypeId = configurationWrapper.GetConfigIntValue("JourneyGroupTypeId");
             _groupCategoryAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupCategoryAttributeTypeId");
+            _groupSubcategoryAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupSubcategoryAttributeTypeId");
             _groupTypeAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupTypeAttributeTypeId");
             _groupAgeRangeAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupAgeRangeAttributeTypeId");
             _groupRoleLeader = configurationWrapper.GetConfigIntValue("GroupRoleLeader");            
@@ -127,6 +129,14 @@ namespace crds_angular.Services
 
                     categoryAttributes = _attributeService.CreateMissingAttributes(categoryAttributes, _groupCategoryAttributeTypeId);
                     group.AttributeTypes[_groupCategoryAttributeTypeId].Attributes = Mapper.Map<List<ObjectAttributeDTO>>(categoryAttributes);
+                }
+
+                if (group.AttributeTypes.ContainsKey(_groupSubcategoryAttributeTypeId) && group.AttributeTypes[92].Attributes.Any(a => a.AttributeId == 0))
+                {
+                    var categoryAttributes = Mapper.Map<List<MpAttribute>>(group.AttributeTypes[92].Attributes);
+
+                    categoryAttributes = _attributeService.CreateMissingAttributes(categoryAttributes, _groupSubcategoryAttributeTypeId);
+                    group.AttributeTypes[_groupSubcategoryAttributeTypeId].Attributes = Mapper.Map<List<ObjectAttributeDTO>>(categoryAttributes);
                 }
 
                 group.GroupId = _mpGroupRepository.CreateGroup(mpGroup);
@@ -622,7 +632,7 @@ namespace crds_angular.Services
         {
             var configuration = MpObjectAttributeConfigurationFactory.Group();
 
-            foreach (var attributeType in new[] { _groupCategoryAttributeTypeId, _groupTypeAttributeTypeId, _groupAgeRangeAttributeTypeId })
+            foreach (var attributeType in new[] { _groupCategoryAttributeTypeId, _groupSubcategoryAttributeTypeId, _groupTypeAttributeTypeId, _groupAgeRangeAttributeTypeId })
             {
                 var types = _attributeRepository.GetAttributes(attributeType);
                 foreach (var group in groups)
@@ -847,6 +857,14 @@ namespace crds_angular.Services
 
                     categoryAttributes = _attributeService.CreateMissingAttributes(categoryAttributes, _groupCategoryAttributeTypeId);
                     group.AttributeTypes[_groupCategoryAttributeTypeId].Attributes = Mapper.Map<List<ObjectAttributeDTO>>(categoryAttributes);
+                }
+
+                if (group.AttributeTypes.ContainsKey(_groupSubcategoryAttributeTypeId) && group.AttributeTypes[92].Attributes.Any(a => a.AttributeId == 0))
+                {
+                    var categoryAttributes = Mapper.Map<List<MpAttribute>>(group.AttributeTypes[92].Attributes);
+
+                    categoryAttributes = _attributeService.CreateMissingAttributes(categoryAttributes, _groupSubcategoryAttributeTypeId);
+                    group.AttributeTypes[_groupSubcategoryAttributeTypeId].Attributes = Mapper.Map<List<ObjectAttributeDTO>>(categoryAttributes);
                 }
 
                 var configuration = MpObjectAttributeConfigurationFactory.Group();
