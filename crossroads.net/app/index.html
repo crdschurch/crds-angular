@@ -1,102 +1,206 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="crossroads">
-
-<head>
+  <head>
     <style>
-        /* Allow angular.js to be loaded in body, hiding cloaked elements until
+      /* Allow angular.js to be loaded in body, hiding cloaked elements until
          * templates compile.  The !important is important given that there may be
          * other selectors that are more specific or come later and might alter display.
          */
-        [ng\:cloak],
-        [ng-cloak],
-        .ng-cloak {
-            display: none !important;
-        }
+      [ng\:cloak],
+      [ng-cloak],
+      .ng-cloak {
+        display: none !important;
+      }
     </style>
     <title ng-bind="meta.title">Crossroads</title>
-    <base href="/">
-    <meta name="fragment" content="!">
-    <meta name="description" content="{{meta.description | htmlToPlainText | truncate : 140}}">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="apple-touch-icon" sizes="57x57" href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-180x180.png">
-    <link rel="icon" type="image/png" href="//crossroads-media.s3.amazonaws.com/images/favicon/favicon-32x32.png" sizes="32x32">
-    <link rel="icon" type="image/png" href="//crossroads-media.s3.amazonaws.com/images/favicon/favicon-194x194.png" sizes="194x194">
-    <link rel="icon" type="image/png" href="//crossroads-media.s3.amazonaws.com/images/favicon/favicon-96x96.png" sizes="96x96">
-    <link rel="icon" type="image/png" href="//crossroads-media.s3.amazonaws.com/images/favicon/android-chrome-192x192.png" sizes="192x192">
-    <link rel="icon" type="image/png" href="//crossroads-media.s3.amazonaws.com/images/favicon/favicon-16x16.png" sizes="16x16">
-    <link rel="manifest" href="//crossroads-media.s3.amazonaws.com/images/favicon/manifest.json">
-    <link rel="shortcut icon" href="//crossroads-media.s3.amazonaws.com/images/favicon/favicon.ico">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="//crossroads-media.s3.amazonaws.com/images/favicon/mstile-144x144.png">
-    <meta name="msapplication-config" content="//crossroads-media.s3.amazonaws.com/images/favicon/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
-    <meta name="prerender-status-code" content="{{meta.statusCode}}">
+    <base href="/" />
+    <meta name="fragment" content="!" />
+    <meta
+      name="description"
+      content="{{ meta.description | htmlToPlainText | truncate: 140 }}"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="57x57"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-57x57.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="60x60"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-60x60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-72x72.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-76x76.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="114x114"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-114x114.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-120x120.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="144x144"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-144x144.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/apple-touch-icon-180x180.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/favicon-32x32.png"
+      sizes="32x32"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/favicon-194x194.png"
+      sizes="194x194"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/android-chrome-192x192.png"
+      sizes="192x192"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/favicon-16x16.png"
+      sizes="16x16"
+    />
+    <link
+      rel="manifest"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/manifest.json"
+    />
+    <link
+      rel="shortcut icon"
+      href="//crossroads-media.s3.amazonaws.com/images/favicon/favicon.ico"
+    />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta
+      name="msapplication-TileImage"
+      content="//crossroads-media.s3.amazonaws.com/images/favicon/mstile-144x144.png"
+    />
+    <meta
+      name="msapplication-config"
+      content="//crossroads-media.s3.amazonaws.com/images/favicon/browserconfig.xml"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="prerender-status-code" content="{{ meta.statusCode }}" />
 
     <!-- Site wide og/fb tags -->
-    <meta property="og:site_name" content="{{meta.siteconfig.title}}"/>
-    <meta property="og:locale" content="{{meta.siteconfig.locale}}" />
-    <!--<meta property="fb:app_id" content="[FB_APP_ID]" />-->   <!-- If and when we have a Facebook App ID, it goes here -->
+    <meta property="og:site_name" content="{{ meta.siteconfig.title }}" />
+    <meta property="og:locale" content="{{ meta.siteconfig.locale }}" />
+    <!--<meta property="fb:app_id" content="[FB_APP_ID]" />-->
+    <!-- If and when we have a Facebook App ID, it goes here -->
 
     <!-- URL specific og/fb tags. Using http://int.crossroads.net/media/single for example data-->
-    <meta property="og:title" content="{{meta.title}}" />
-    <meta property="og:url" content="{{meta.url}}" />
-    <meta property="og:image" content="{{meta.image.filename}}" />
+    <meta property="og:title" content="{{ meta.title }}" />
+    <meta property="og:url" content="{{ meta.url }}" />
+    <meta property="og:image" content="{{ meta.image.filename }}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:description" content="{{meta.description | htmlToPlainText}}" />
+    <meta
+      property="og:description"
+      content="{{ meta.description | htmlToPlainText }}"
+    />
 
-    <meta property="og:type" content="{{meta.type}}" />   <!-- Type of content. Use 'article' for blog posts & media pages. Use 'website' for content/static pages -->
-    <meta property="article:publisher" content="https://www.facebook.com/{{meta.siteconfig.facebook}}" /> <!-- Only valid for 'article' types (blog posts and media) -->
-    <!-- <meta property="article:author" content="https://www.facebook.com/tatelucas" /> -->   <!-- optional tag if you want to identify the author instead of just "Crossroads". Only valid for 'article' types (blog posts and media) -->
+    <meta property="og:type" content="{{ meta.type }}" />
+    <!-- Type of content. Use 'article' for blog posts & media pages. Use 'website' for content/static pages -->
+    <meta
+      property="article:publisher"
+      content="https://www.facebook.com/{{ meta.siteconfig.facebook }}"
+    />
+    <!-- Only valid for 'article' types (blog posts and media) -->
+    <!-- <meta property="article:author" content="https://www.facebook.com/tatelucas" /> -->
+    <!-- optional tag if you want to identify the author instead of just "Crossroads". Only valid for 'article' types (blog posts and media) -->
 
     <!-- Site wide Twitter tags. Twitter will use og tags for url, title, image and description -->
-    <meta name="twitter:card" content="{{meta.card}}">
-    <meta name="twitter:site" content="{{meta.siteconfig.twitter}}">
+    <meta name="twitter:card" content="{{ meta.card }}" />
+    <meta name="twitter:site" content="{{ meta.siteconfig.twitter }}" />
 
     <!-- URL specific twitter tags. Using http://int.crossroads.net/media/single for example data-->
-    <!-- <meta name="twitter:creator" content="@tatelucas" /> --> <!-- optional tag if you want to identify the author instead of just "Crossroads". -->
+    <!-- <meta name="twitter:creator" content="@tatelucas" /> -->
+    <!-- optional tag if you want to identify the author instead of just "Crossroads". -->
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.0/shim.min.js" async></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zone.js/0.6.12/zone.min.js" async></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/reflect-metadata/0.1.3/Reflect.min.js" async></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.3/tinymce.min.js" async></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.0/shim.min.js"
+      async
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/zone.js/0.6.12/zone.min.js"
+      async
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/reflect-metadata/0.1.3/Reflect.min.js"
+      async
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.3/tinymce.min.js"
+      async
+    ></script>
 
     <script type="text/ng-template" id="on-submit-messages">
-        <span ng-message="required"><span dynamic-content="$root.MESSAGES.fieldCanNotBeBlank.content | html"></span></span>
-        <span ng-message="initiativeRequired"><span dynamic-content="$root.MESSAGES.noInitiativeSelected.content | html"></span></span>
+      <span ng-message="required"><span dynamic-content="$root.MESSAGES.fieldCanNotBeBlank.content | html"></span></span>
+      <span ng-message="initiativeRequired"><span dynamic-content="$root.MESSAGES.noInitiativeSelected.content | html"></span></span>
     </script>
     <script type="text/ng-template" id="on-pause-messages">
-        <span ng-message="pattern"><span dynamic-content="$root.MESSAGES.invalidData.content | html"></span></span>
-        <span ng-message="invalidDate"><span dynamic-content="$root.MESSAGES.invalidData.content | html"></span></span>
-        <span ng-message="email"><span dynamic-content="$root.MESSAGES.invalidEmail.content | html"></span></span>
-        <span ng-message="invalidPaymentMethod"><span dynamic-content="$root.MESSAGES.invalidPaymentMethodInformation.content | html"></span></span>
+      <span ng-message="pattern"><span dynamic-content="$root.MESSAGES.invalidData.content | html"></span></span>
+      <span ng-message="invalidDate"><span dynamic-content="$root.MESSAGES.invalidData.content | html"></span></span>
+      <span ng-message="email"><span dynamic-content="$root.MESSAGES.invalidEmail.content | html"></span></span>
+      <span ng-message="invalidPaymentMethod"><span dynamic-content="$root.MESSAGES.invalidPaymentMethodInformation.content | html"></span></span>
     </script>
     <script type="text/ng-template" id="on-blur-messages">
-        <span ng-message="minlength"><span dynamic-content="$root.MESSAGES.invalidPassword.content | html"></span></span>
-        <span ng-message="unique"><span dynamic-content="$root.MESSAGES.emailInUse.content | html"></span></span>
-        <span ng-message="email"><span dynamic-content="$root.MESSAGES.invalidEmail.content | html"></span></span>
-        <span ng-message="invalidRouting"><span dynamic-content="$root.MESSAGES.invalidRoutingTransit.content | html"></span></span>
-        <span ng-message="invalidAccount"><span dynamic-content="$root.MESSAGES.invalidAccountNumber.content | html"></span></span>
-        <span ng-message="naturalNumber"><span dynamic-content="$root.MESSAGES.invalidDonationAmount.content | html"></span></span>
-        <span ng-message="invalidZip"><span dynamic-content="$root.MESSAGES.invalidZip.content | html"></span></span>
+      <span ng-message="minlength"><span dynamic-content="$root.MESSAGES.invalidPassword.content | html"></span></span>
+      <span ng-message="unique"><span dynamic-content="$root.MESSAGES.emailInUse.content | html"></span></span>
+      <span ng-message="email"><span dynamic-content="$root.MESSAGES.invalidEmail.content | html"></span></span>
+      <span ng-message="invalidRouting"><span dynamic-content="$root.MESSAGES.invalidRoutingTransit.content | html"></span></span>
+      <span ng-message="invalidAccount"><span dynamic-content="$root.MESSAGES.invalidAccountNumber.content | html"></span></span>
+      <span ng-message="naturalNumber"><span dynamic-content="$root.MESSAGES.invalidDonationAmount.content | html"></span></span>
+      <span ng-message="invalidZip"><span dynamic-content="$root.MESSAGES.invalidZip.content | html"></span></span>
     </script>
     <ng-include src="'/assets/cr.svg'"></ng-include>
     <!-- prerender.io - Prevent caching before page is rendered-->
     <script>
-        window.prerenderReady = false;
+      window.prerenderReady = false;
     </script>
 
     <script src="https://use.typekit.net/ccb3vpa.js"></script>
-    <script>try{Typekit.load({ async: true });}catch(e){}</script>
-
+    <script>
+      try {
+        Typekit.load({ async: true });
+      } catch (e) {}
+    </script>
 
     <!-- build:legacycss -->
     <link href="/assets/legacy.css" rel="stylesheet" />
@@ -105,66 +209,111 @@
     <!-- build:corecss -->
     <link href="/assets/core.css" rel="stylesheet" />
     <!-- endbuild -->
-</head>
+  </head>
 
-<body ng-controller="coreController as app" ng-class="app.bodyClasses">
-<!-- Google Tag Manager -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MFS4MJ"
-                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.defer=true;j.src=
-        '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-MFS4MJ');</script>
-<!-- End Google Tag Manager -->
-<div growl class="crds-styles"></div>
-<div ui-view>
-    <style>
+  <body ng-controller="coreController as app" ng-class="app.bodyClasses">
+    <!-- Google Tag Manager -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-MFS4MJ"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+      ></iframe
+    ></noscript>
+    <script>
+      (function(w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.defer = true;
+        j.src = "//www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-MFS4MJ");
+    </script>
+    <!-- End Google Tag Manager -->
+    <div growl class="crds-styles"></div>
+    <div ui-view>
+      <style>
         .preloader {
-            position: fixed;
-            width: 75px;
-            height: 75px;
-            background: transparent;
-            margin: 0 auto;
-            -webkit-animation: spin 700ms linear infinite;
-            animation: spin 700ms linear infinite;
-            display: block;
-            top: calc(50% - 37.5px);
-            left: calc(50% - 37.5px);
+          position: fixed;
+          width: 75px;
+          height: 75px;
+          background: transparent;
+          margin: 0 auto;
+          -webkit-animation: spin 700ms linear infinite;
+          animation: spin 700ms linear infinite;
+          display: block;
+          top: calc(50% - 37.5px);
+          left: calc(50% - 37.5px);
         }
         .preloader-wrapper {
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
+          position: fixed;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
         }
-    </style>
-    <div class="preloader-wrapper">
-        <svg viewBox="0 0 102 101" class="preloader" id="preloader"><title>preloader-icon</title><desc>Created with Sketch.</desc><g fill="none" fill-rule="evenodd"><g transform="translate(1 1)" stroke-width="2"><ellipse stroke="#eee" cx="50" cy="49.421" rx="50" ry="49.421"></ellipse><path d="M50 98.842c27.614 0 50-22.127 50-49.42C100 22.125 77.614 0 50 0" stroke-opacity=".631" stroke="#3B6E8F"></path></g></g></svg>
+      </style>
+      <div class="preloader-wrapper">
+        <svg viewBox="0 0 102 101" class="preloader" id="preloader">
+          <title>preloader-icon</title>
+          <desc>Created with Sketch.</desc>
+          <g fill="none" fill-rule="evenodd">
+            <g transform="translate(1 1)" stroke-width="2">
+              <ellipse
+                stroke="#eee"
+                cx="50"
+                cy="49.421"
+                rx="50"
+                ry="49.421"
+              ></ellipse>
+              <path
+                d="M50 98.842c27.614 0 50-22.127 50-49.42C100 22.125 77.614 0 50 0"
+                stroke-opacity=".631"
+                stroke="#3B6E8F"
+              ></path>
+            </g>
+          </g>
+        </svg>
+      </div>
     </div>
-</div>
-</body>
+  </body>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
-<script type="text/javascript" src="https://s7.addthis.com/js/300/addthis_widget.js#defer=1" defer></script>
-<script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/svg4everybody/2.1.8/svg4everybody.min.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/g/mutationobserver"></script>
-<script src="//crossroads-assets.s3.us-east-1.amazonaws.com/tmp/crds-components/crds-components.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+  <script
+    type="text/javascript"
+    src="https://s7.addthis.com/js/300/addthis_widget.js#defer=1"
+    defer
+  ></script>
+  <script
+    type="text/javascript"
+    src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"
+  ></script>
+  <script
+    type="text/javascript"
+    src="//cdnjs.cloudflare.com/ajax/libs/svg4everybody/2.1.8/svg4everybody.min.js"
+  ></script>
+  <script
+    type="text/javascript"
+    src="//cdn.jsdelivr.net/g/mutationobserver"
+  ></script>
+  <script src="//crds-components-int.netlify.com/dist/crds-components.js"></script>
 
-<!-- build:angjs -->
-<script src="/assets/ang.js"></script>
-<!-- endbuild -->
-<!-- build:corejs -->
-<script src="/assets/core.js" defer></script>
-<!-- endbuild -->
-<!-- build:miscjs -->
-<script src="/assets/misc.js" defer></script>
-<!-- endbuild -->
-<!-- build:js -->
-<script src="/assets/main.js" defer></script>
-<!-- endbuild -->
+  <!-- build:angjs -->
+  <script src="/assets/ang.js"></script>
+  <!-- endbuild -->
+  <!-- build:corejs -->
+  <script src="/assets/core.js" defer></script>
+  <!-- endbuild -->
+  <!-- build:miscjs -->
+  <script src="/assets/misc.js" defer></script>
+  <!-- endbuild -->
+  <!-- build:js -->
+  <script src="/assets/main.js" defer></script>
+  <!-- endbuild -->
 </html>
