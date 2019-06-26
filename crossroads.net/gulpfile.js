@@ -82,7 +82,7 @@ gulp.task('clean-assets', function () {
 
 // Production build
 gulp.task('build', ['clean-assets'], function () {
-  gutil.log('DEFECT DEBUGGING - PROCESS.ENV', process.env);
+  // gutil.log('DEFECT DEBUGGING - PROCESS.ENV', process.env);
   gulp.start('webpack:build');
 });
 
