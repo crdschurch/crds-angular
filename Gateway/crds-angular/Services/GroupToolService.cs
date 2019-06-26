@@ -52,6 +52,7 @@ namespace crds_angular.Services
         private readonly int _groupRequestPendingReminderEmailTemplateId;
         private readonly int _gatheringRequestPendingReminderEmailTemplateId;
         private readonly int _attributeTypeGroupCategory;
+        private readonly int _attributeTypeGroupSubcategory;
         private readonly int _smallGroupTypeId;
         private readonly int _onsiteGroupTypeId;
         private readonly int _anywhereGroupType;
@@ -106,6 +107,7 @@ namespace crds_angular.Services
             _groupRequestPendingReminderEmailTemplateId = configurationWrapper.GetConfigIntValue("GroupRequestPendingReminderEmailTemplateId");
             _gatheringRequestPendingReminderEmailTemplateId = configurationWrapper.GetConfigIntValue("GatheringRequestPendingReminderEmailTemplateId");
             _attributeTypeGroupCategory = configurationWrapper.GetConfigIntValue("GroupCategoryAttributeTypeId");
+            _attributeTypeGroupSubcategory = configurationWrapper.GetConfigIntValue("GroupSubcategoryAttributeTypeId");
 
             _genericGroupForCMSMergeEmailTemplateId = configurationWrapper.GetConfigIntValue("GenericGroupForCMSMergeEmailTemplateId");
 
@@ -727,6 +729,24 @@ namespace crds_angular.Services
 
             //do not return any categories where it requires an active attribute but there are no active attributes
             cats.RemoveAll(cat => cat.RequiresActiveAttribute && cat.Attribute == null );
+
+            return cats;
+        }
+
+        public List<AttributeCategoryDTO> GetGroupSubcategories()
+        {
+            List<AttributeCategoryDTO> cats = _attributeService.GetAttributeCategory(_attributeTypeGroupSubcategory);
+
+            foreach (AttributeCategoryDTO cat in cats)
+            {
+                if (cat.RequiresActiveAttribute)
+                {
+                    cat.Attribute = _attributeService.GetOneAttributeByCategoryId(cat.CategoryId);
+                }
+            }
+
+            //do not return any categories where it requires an active attribute but there are no active attributes
+            cats.RemoveAll(cat => cat.RequiresActiveAttribute && cat.Attribute == null);
 
             return cats;
         }

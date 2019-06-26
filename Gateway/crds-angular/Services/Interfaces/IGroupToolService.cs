@@ -33,6 +33,7 @@ namespace crds_angular.Services.Interfaces
         MyGroup GetMyGroupInfo(int contactId, int groupId);
         void SendSmallGroupPendingInquiryReminderEmails();
         List<AttributeCategoryDTO> GetGroupCategories();
+        List<AttributeCategoryDTO> GetGroupSubcategories();
         void ArchivePendingGroupInquiriesOlderThan90Days();
         List<GroupDTO> GetGroupToolGroups(int contactId);
         Inquiry GetGroupInquiryForContactId(int groupId, int contactId);

@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   angular.module('crossroads.core').controller('coreController', CoreController);
@@ -54,7 +54,7 @@
     ////////////////////////////
     // State Change Listeners //
     ////////////////////////////
-    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+    $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
       vm.bodyClasses = {};
       $rootScope.bodyClasses = [];
       delete $rootScope.doRenderLegacyStyles;
@@ -71,7 +71,7 @@
       }
     });
 
-    $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+    $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
       if (typeof $rootScope.doRenderLegacyStyles !== 'undefined') {
         $rootScope.renderLegacyStyles = $rootScope.doRenderLegacyStyles;
       } else {
@@ -87,7 +87,7 @@
       }
       if (typeof $rootScope.bodyClasses !== 'undefined') {
         var bodyClasses = $rootScope.bodyClasses || fromParams.bodyClasses;
-        bodyClasses.forEach(function(klass) {
+        bodyClasses.forEach(function (klass) {
           vm.bodyClasses[klass] = true;
         });
       }
@@ -99,19 +99,15 @@
       $anchorScroll('top-header');
     });
 
-    $rootScope.$on('dynamicContentCompiled', function() {
+    $rootScope.$on('dynamicContentCompiled', function () {
       ResponsiveImageService.updateResponsiveImages();
     });
 
-    $rootScope.$on(STATE_CHANGE_EVENTS.clearResolving, function() {
+    $rootScope.$on(STATE_CHANGE_EVENTS.clearResolving, function () {
       vm.resolving = false;
     });
 
-    $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
-      console.error('$stateChangeError: ' + error);
-      console.error(error);
-      
-
+    $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
       //TODO: put the 'toState' in the session if we want to redirect to that page
       vm.resolving = false;
       $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
@@ -120,10 +116,10 @@
     //////////////////////////
     /////// $ROOTSCOPE ///////
     //////////////////////////
-    $rootScope.mobile = screenSize.on('xs, sm', function(match) { $rootScope.mobile = match; });
+    $rootScope.mobile = screenSize.on('xs, sm', function (match) { $rootScope.mobile = match; });
 
-    $rootScope.$on('notify', function(event, msg, refId, ttl) {
-      var parms = { };
+    $rootScope.$on('notify', function (event, msg, refId, ttl) {
+      var parms = {};
       if (refId !== undefined && refId !== null) {
         parms.referenceId = refId;
       }
@@ -135,7 +131,7 @@
       growl[msg.type](msg.content, parms);
     });
 
-    $rootScope.$on('mailchimp-response', function(event, result, msg) {
+    $rootScope.$on('mailchimp-response', function (event, result, msg) {
       if (result === 'success') {
         $rootScope.$emit('notify', $rootScope.MESSAGES.mailchimpSuccess);
       } else if (result === 'error') {
@@ -143,20 +139,20 @@
       }
     });
 
-    $rootScope.$on('context', function(event, id) {
+    $rootScope.$on('context', function (event, id) {
       var contentblocks = ContentBlock.get({
         id: id
-      }, function() {
+      }, function () {
         return contentblocks.ContentBlock.content;
       });
     });
 
-    var contentBlockRequest = ContentBlock.get('', function() {
+    var contentBlockRequest = ContentBlock.get('', function () {
       mapContentBlocks(contentBlockRequest.contentblocks);
     });
 
     function mapContentBlocks(contentblocks) {
-      _.reduce(contentblocks, function(messages, cb) {
+      _.reduce(contentblocks, function (messages, cb) {
         messages[cb.title] = cb;
         return (messages);
       }, MESSAGES);
@@ -179,8 +175,8 @@
         templateUrl: 'templates/nav-mobile.html',
         placement: position,
         size: 'sm',
-        controller: function($scope, $modalInstance) {
-          $scope.ok = function(e) {
+        controller: function ($scope, $modalInstance) {
+          $scope.ok = function (e) {
 
             // This is a hack. It's a temporary fix to make external links work
             // in the mobile nav. Tate - 01/26/16
@@ -196,7 +192,7 @@
             $modalInstance.close();
           };
 
-          $scope.cancel = function(e) {
+          $scope.cancel = function (e) {
             $modalInstance.dismiss();
             e.stopPropagation();
           };
