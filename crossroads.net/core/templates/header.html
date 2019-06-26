@@ -1,7 +1,10 @@
-<div class="shared-header-skeleton" style="min-height: 49px; background-color: #0095d9; position: relative; z-index: 9999;">
-  <shared-header></shared-header>
+<div
+  class="shared-header-skeleton"
+  style="min-height: 49px; background-color: #0095d9; position: relative; z-index: 9999;"
+>
+  <shared-header env="{{ env }}"></shared-header>
 </div>
 
 <div class="snail-trail" style="min-height: 43px; background-color: white">
-  <snail-trail name="trending"></snail-trail>
+  <snail-trail env="{{ env }}" name="trending"></snail-trail>
 </div>
