@@ -50,19 +50,21 @@
                 const queryParams = $location.search();
                 link = removeTrailingSlashIfNecessary($stateParams.link);
                 const isAngular = isAngularRoute(link)
-                if (isAngular === true) { 
+                console.log(isAngular);
+                if (isAngular) {
                   $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
+                } 
+                else {
+                  const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
+                  ContentPageService.page = {
+                    redirectType: 'RedirectorPage',
+                    content: '',
+                    pageType: 'NoHeaderOrFooter',
+                    title: ''
+                  };
+                  $window.location.replace(`${link}${queryParamsString}`);
+                  $rootScope.$destroy();
                 }
-                const queryParamsString = angular.equals(queryParams, {}) ? '' : `?${$httpParamSerializer(queryParams)}`;
-                ContentPageService.page = {
-                  redirectType: 'RedirectorPage',
-                  content: '',
-                  pageType: 'NoHeaderOrFooter',
-                  title: ''
-                };
-                console.log('popping out of angular')
-                $window.location.replace(`${link}${queryParamsString}`);
-                $rootScope.$destroy();
               }
               /** Hard coding undivided pages here to remove dependency on legacy CMS */
               if (link.match(new RegExp('^\/undivided\/participant'))) {
@@ -223,7 +225,7 @@
   }
 
   function isAngularRoute(link) {
-    if(link === "") return false;
+    if (link === "") return false;
     const angularRoutes = ['mycamps', 'camps', 'childcare', 'corkboard', 'invoices', 'undivided/participant', 'undivided/facilitator', 'mptools', 'reset-password', 'volunteer-sign-up', 'sign-up', 'trips'];
     return angularRoutes.find(route => link.includes(route));
   }
