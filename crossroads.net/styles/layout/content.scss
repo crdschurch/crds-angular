@@ -1,7 +1,5 @@
 .main {
   position: relative;
-  z-index: 10;  // Header: 20, Main: 10, Footer: 0
-
   margin-top: 20px;
   margin-bottom: 40px;
   @media (max-width: $screen-md-min) {
