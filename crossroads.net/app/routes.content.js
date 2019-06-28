@@ -50,7 +50,6 @@
                 const queryParams = $location.search();
                 link = removeTrailingSlashIfNecessary($stateParams.link);
                 const isAngular = isAngularRoute(link)
-                console.log(isAngular);
                 if (isAngular) {
                   $window.location.replace(`${__APP_SERVER_ENDPOINT__}404`);
                 } 
