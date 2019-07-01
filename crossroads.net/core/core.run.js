@@ -67,7 +67,6 @@
     Impersonate.clear();
     $rootScope.MESSAGES = MESSAGES;
     setOriginForCmsPreviewPane($document);
-    fastclick.attach(document.body);
 
     // Detect Browser Agent. use for browser targeting in CSS
     const doc = document.documentElement;
