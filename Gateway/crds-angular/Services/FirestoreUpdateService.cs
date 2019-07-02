@@ -223,8 +223,9 @@ namespace crds_angular.Services
                 var geohash = GeoHash.Encode(address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0);
 
                 // create the pin object
-                MapPin pin = new MapPin("", congregation.Name, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0, 
-                    Convert.ToInt32(pinType), congregationid.ToString(), geohash, "", null, BuildStaticText1(pinType,congregationid), BuildStaticText2(pinType,congregationid), true);
+
+                MapPin pin = new MapPin("", congregation.Name, address.Latitude != null ? (double)address.Latitude : 0, address.Longitude != null ? (double)address.Longitude : 0,
+                    Convert.ToInt32(pinType), congregationid.ToString(), geohash, "", null, BuildStaticText1(pinType, congregationid), BuildStaticText2(pinType, congregationid), true);
 
                 FirestoreDb db = FirestoreDb.Create(_firestoreProjectId);
                 CollectionReference collection = db.Collection("Pins");
