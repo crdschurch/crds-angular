@@ -52,10 +52,6 @@
     vm.bodyClasses = {};
 
     $scope.env = __CRDS_ENV__ || 'prod';
-    $scope.componentsUrl =
-      $scope.env == "prod" || $scope.env == "production"
-        ? "https://crds-components.netlify.com/"
-        : "https://crds-components-int.netlify.com/";
 
     ////////////////////////////
     // State Change Listeners //
