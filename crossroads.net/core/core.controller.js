@@ -51,6 +51,8 @@
     vm.stayLoggedInPrompt = stayLoggedInPrompt;
     vm.bodyClasses = {};
 
+    $scope.env = __CRDS_ENV__ || 'prod';
+
     ////////////////////////////
     // State Change Listeners //
     ////////////////////////////

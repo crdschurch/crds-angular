@@ -1,5 +1,9 @@
-<div class="crds-shared-header">
-  <header ng-if="!app.state.current.data.hideMenu" class="hidden-print" id="top-header" style="height: 70px">
-    <div data-header></div>
-  </header>
+<div class="crds-styles">
+  <div class="shared-header-skeleton">
+    <crds-shared-header env="{{ env }}"></crds-shared-header>
+  </div>
+
+  <div class="snail-trail-skeleton">
+    <crds-snail-trail env="{{ env }}" name="trending"></crds-snail-trail>
+  </div>
 </div>
