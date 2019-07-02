@@ -53,10 +53,18 @@ function htmlReplace(devBuild) {
       js: { src: assets.main.js, tpl: '<script src="%s" type="text/javascript"  defer></script>' },
       legacycss: assets.legacy.css
     }))
+    .pipe(replace('crds-components.netlify.com', function (match) {
+      return !process.env.CRDS_ENV || 
+              process.env.CRDS_ENV == '' || 
+              process.env.CRDS_ENV == 'prod' || 
+              process.env.CRDS_ENV == 'production'
+                ? 'crds-components.netlify.com'
+                : 'crds-components-int.netlify.com';
+    }))
     .pipe(replace('/assets', function (match) {
       return `${process.env.DEPLOY_PRIME_URL}/assets`;
-    })
-    ).pipe(gulp.dest('./'));
+    }))
+    .pipe(gulp.dest('./'));
 
   if (!devBuild) {
     var rootedCoreCss = '.' + assets.core.css;
