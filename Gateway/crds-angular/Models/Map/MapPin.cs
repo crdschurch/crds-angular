@@ -39,7 +39,7 @@ namespace crds_angular.Models.Map
         public MapPin() { }
 
         // map pins that should have an address
-        public MapPin(string desc, string pinname, double latitude, double longitude, int pintype, string internalid, string geohash,
+        public MapPin(string desc, string pinname, double latitude, double longitude, int pintype, string internalid, string geohash, 
                       string imageurl, Dictionary<string, string[]> filtermetadata, string aboveHeading, string belowDescription, bool availableOnline)
         {
             this.description = desc;
