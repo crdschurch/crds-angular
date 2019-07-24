@@ -698,7 +698,7 @@ namespace crds_angular.Services
 
             // get sub group categories
             ObjectAttributeTypeDTO subgroupcategory;
-            if (t.TryGetValue(90, out subgroupcategory))
+            if (t.TryGetValue(92, out subgroupcategory))
             {
                 var subCategoryText = "";
                 // roll through the sub group category. add selected to the dictionary
