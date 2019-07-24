@@ -688,6 +688,23 @@ namespace crds_angular.Services
                 attrString = $"{attrString} {categoryText}";
             }
 
+            // get sub group categories
+            ObjectAttributeTypeDTO subgroupcategory;
+            if (t.TryGetValue(92, out subgroupcategory))
+            {
+                var subCategoryText = "";
+                // roll through the sub group category. add selected to the dictionary
+                var categories = new List<string>();
+                foreach (var a in subgroupcategory.Attributes)
+                {
+                    if (a.Selected)
+                    {
+                        subCategoryText = $"{subCategoryText} {a.Category}";
+                    }
+                }
+                attrString = $"{attrString} {subCategoryText}";
+            }
+
             return attrString;
         }
 
