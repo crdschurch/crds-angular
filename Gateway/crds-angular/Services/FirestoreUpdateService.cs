@@ -499,6 +499,28 @@ namespace crds_angular.Services
                         dict.Add("Categories", categories.ToArray());
                     }
                 }
+
+                // get group subcategories
+                int groupSubcategoryAttributeID = 92;
+                ObjectAttributeTypeDTO groupSubcategory;
+                if (t.TryGetValue(groupSubcategoryAttributeID, out groupSubcategory))
+                {
+                    // roll through the group categories. add selected to the dictionary
+                    var categories = new List<string>();
+                    foreach (var a in groupSubcategory.Attributes)
+                    {
+                        if (a.Selected)
+                        {
+                            categories.Add(a.Category);
+                        }
+                    }
+
+                    // add to the dict
+                    if (categories.Count > 0)
+                    {
+                        dict.Add("Categories", categories.ToArray());
+                    }
+                }
             }
             catch(Exception e)
             {
