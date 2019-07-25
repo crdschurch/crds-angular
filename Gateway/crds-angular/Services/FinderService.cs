@@ -765,6 +765,9 @@ namespace crds_angular.Services
                 };
             }
 
+            var groupList = GetStringListFromAttribute(mpGroup.AttributeTypes, 90);
+            var themeGroupList = GetStringListFromAttribute(mpGroup.AttributeTypes, 92) ?? new List<string>();
+
             pin.Gathering = new FinderGroupDto
             {
                 GroupId = mpGroup.GroupId,
@@ -786,7 +789,7 @@ namespace crds_angular.Services
                 PrimaryContactLastName = contact.Last_Name != null ? contact.Last_Name : null,
                 PrimaryContactCongregation =  null,
                 GroupAgesRangeList = GetStringListFromAttribute(mpGroup.AttributeTypes, 91),
-                GroupCategoriesList = GetStringListFromAttribute(mpGroup.AttributeTypes, 90),
+                GroupCategoriesList = groupList?.AddRange(themeGroupList),
                 AvailableOnline = mpGroup.AvailableOnline,
                 StartDate = mpGroup.StartDate
             };
@@ -806,6 +809,19 @@ namespace crds_angular.Services
             return returnString;
         }
 
+        private string GetNameFromAttribute(ObjectAttributeDTO s, int attributeId)
+        {
+            // if attribute is of type 'Theme Group Category'
+            if (attributeId == 92)
+            {
+                return "{s.Category}: {s.Name}";
+            }
+            else
+            {
+                return (s.Name ?? "").ToString();
+            }
+        }
+
         private List<string> GetStringListFromAttribute(Dictionary<int, ObjectAttributeTypeDTO> t, int attributeId)
         {
             var itemList = new List<string>();
@@ -816,7 +832,8 @@ namespace crds_angular.Services
                 {
                     if (a.Selected)
                     {
-                        itemList.Add(a.Name);
+                        var str = GetNameFromAttribute(a, attributeId);
+                        itemList.Add(str);
                     }
                 }
             }
