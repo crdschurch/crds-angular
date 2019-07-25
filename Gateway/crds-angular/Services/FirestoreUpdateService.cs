@@ -457,7 +457,7 @@ namespace crds_angular.Services
                 {
                     // grouptype is now equal to the value
                     var x = dayOfWeek.Value;
-                    dict.Add("DayOfWeek", new string[] { x.Name });
+                    dict.Add("DayOfWeek", new string[] { x.Description });
                 }
 
                 // get grouptype
