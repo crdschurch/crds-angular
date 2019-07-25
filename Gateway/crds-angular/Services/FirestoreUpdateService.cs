@@ -414,7 +414,7 @@ namespace crds_angular.Services
             {
                 //var group = _groupRepository.getGroupDetails(groupid);
                 var group = _groupService.GetGroupDetailsWithAttributes(groupid);
-                var meetingDayAttrib = new ObjectSingleAttributeDTO { Value = new AttributeDTO { Name = group.MeetingDay } };
+                var meetingDayAttrib = new ObjectSingleAttributeDTO { Value = new AttributeDTO { Name = group.MeetingDay, StartDate = DateTime.Parse("01/01/2001"), CategoryId = 999999 } };
                 group.SingleAttributes.Add(999999, meetingDayAttrib);
                 var s = group.SingleAttributes;
                 var t = group.AttributeTypes;
