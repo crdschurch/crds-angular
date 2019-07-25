@@ -271,7 +271,9 @@ namespace crds_angular.Services
             try
             {
                 //var group = _groupRepository.getGroupDetails(groupid);
-                var group = _groupService.GetGroupDetailsWithAttributes(groupid);              
+                var group = _groupService.GetGroupDetailsWithAttributes(groupid);
+                var meetingDayAttrib = new ObjectSingleAttributeDTO { Value = new AttributeDTO { Description = group.MeetingDay } };
+                group.SingleAttributes.Add(999999, meetingDayAttrib);
                 var s = group.SingleAttributes;
                 var t = group.AttributeTypes;
 
@@ -412,6 +414,8 @@ namespace crds_angular.Services
             {
                 //var group = _groupRepository.getGroupDetails(groupid);
                 var group = _groupService.GetGroupDetailsWithAttributes(groupid);
+                var meetingDayAttrib = new ObjectSingleAttributeDTO { Value = new AttributeDTO { Description = group.MeetingDay } };
+                group.SingleAttributes.Add(999999, meetingDayAttrib);
                 var s = group.SingleAttributes;
                 var t = group.AttributeTypes;
                 
@@ -446,6 +450,16 @@ namespace crds_angular.Services
 
             try
             {
+                // get dayOfWeek
+                int dayOfWeekCategoryAttributeID = 999999;
+                ObjectSingleAttributeDTO dayOfWeek;
+                if (s.TryGetValue(dayOfWeekCategoryAttributeID, out dayOfWeek) && dayOfWeek.Value != null)
+                {
+                    // grouptype is now equal to the value
+                    var x = dayOfWeek.Value;
+                    dict.Add("DayOfWeek", new string[] { x.Name });
+                }
+
                 // get grouptype
                 int grouptypeCategoryAttributeID = 73;
                 ObjectSingleAttributeDTO grouptype;
