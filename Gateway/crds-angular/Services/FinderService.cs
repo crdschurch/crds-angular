@@ -790,6 +790,11 @@ namespace crds_angular.Services
                 AvailableOnline = mpGroup.AvailableOnline,
                 StartDate = mpGroup.StartDate
             };
+            var subCatList = GetStringListFromAttribute(mpGroup.AttributeTypes, 92);
+            foreach (var subCat in subCatList){
+                pin.Gathering.GroupCategoriesList.Add(subCat);
+            }
+            pin.Gathering.GroupCategoriesList.Remove("Theme");
             return pin;
         }
 
