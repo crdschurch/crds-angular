@@ -414,8 +414,10 @@ namespace crds_angular.Services
             {
                 //var group = _groupRepository.getGroupDetails(groupid);
                 var group = _groupService.GetGroupDetailsWithAttributes(groupid);
-                var meetingDayAttrib = new ObjectSingleAttributeDTO { Value = new AttributeDTO { Name = group.MeetingDay, StartDate = DateTime.Parse("01/01/2001"), CategoryId = 999999 } };
-                group.SingleAttributes.Add(999999, meetingDayAttrib);
+                if (group.MeetingDayId != null)
+                {
+                    group.SingleAttributes.Add(999999, GetMeetingDayAttribute((int)group.MeetingDayId));
+                }
                 var s = group.SingleAttributes;
                 var t = group.AttributeTypes;
                 
@@ -444,6 +446,22 @@ namespace crds_angular.Services
         //////////////////////////////////////////////
         /// Common
         //////////////////////////////////////////////
+
+       
+        private ObjectSingleAttributeDTO GetMeetingDayAttribute(int meetingDayId)
+        {
+            Dictionary<int, string> days = new Dictionary<int, string>();
+            days.Add(1, "Sunday");
+            days.Add(2, "Monday");
+            days.Add(3, "Tuesday");
+            days.Add(4, "Wednesday");
+            days.Add(5, "Thursday");
+            days.Add(6, "Friday");
+            days.Add(7, "Saturday");
+
+            return new ObjectSingleAttributeDTO { Value = new AttributeDTO { Name = days.FirstOrDefault(x => x.Key == meetingDayId).Value } };
+        }
+        
         private Dictionary<string, string[]> BuildGroupAttributeDictionary(Dictionary<int,ObjectSingleAttributeDTO> s, Dictionary<int, ObjectAttributeTypeDTO> t)
         {
             var dict = new Dictionary<string, string[]>();
