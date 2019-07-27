@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Device.Location;
-using System.IO;
-using System.Linq;
-using System.Text;
-using crds_angular.Services.Interfaces;
-using Crossroads.Web.Common.Configuration;
-using Amazon.CloudSearchDomain;
+﻿using Amazon.CloudSearchDomain;
 using Amazon.CloudSearchDomain.Model;
 using AutoMapper;
 using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Finder;
+using crds_angular.Services.Interfaces;
+using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models.Finder;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Device.Location;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace crds_angular.Services
 {
@@ -23,15 +24,15 @@ namespace crds_angular.Services
         protected string AwsAccessKeyId;
         protected string AwsSecretAccessKey;
 
-        public AwsCloudsearchService(IFinderRepository finderRepository,                          
+        public AwsCloudsearchService(IFinderRepository finderRepository,
                                      IConfigurationWrapper configurationWrapper)
         {
             _finderRepository = finderRepository;
             var configurationWrapper1 = configurationWrapper;
 
-            AmazonSearchUrl    = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ENDPOINT");
-            AwsAccessKeyId     = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_ACCESSKEYID");
-            AwsSecretAccessKey = configurationWrapper1.GetEnvironmentVarAsString("CRDS_AWS_CONNECT_SECRETACCESSKEY");
+            AmazonSearchUrl = Environment.GetEnvironmentVariable("CRDS_AWS_CONNECT_ENDPOINT");
+            AwsAccessKeyId = Environment.GetEnvironmentVariable("CRDS_AWS_CONNECT_ACCESSKEYID");
+            AwsSecretAccessKey = Environment.GetEnvironmentVariable("CRDS_AWS_CONNECT_SECRETACCESSKEY");
         }
 
         public UploadDocumentsResponse UploadAllConnectRecordsToAwsCloudsearch()
@@ -51,7 +52,7 @@ namespace crds_angular.Services
                 List<AwsCloudsearchDto> awsDtoList = new List<AwsCloudsearchDto>() { awsDto };
 
                 SendAwsDocs(awsDtoList);
-            } 
+            }
         }
 
         public UploadDocumentsResponse DeleteAllConnectRecordsInAwsCloudsearch()
@@ -59,7 +60,8 @@ namespace crds_angular.Services
             var results = SearchConnectAwsCloudsearch("matchall", "_no_fields");
             var deletelist = results.Hits.Hit.Select(hit => new AwsCloudsearchDto
             {
-                id = hit.Id, type = "delete"
+                id = hit.Id,
+                type = "delete"
             }).ToList();
 
             return SendAwsDocs(deletelist);
@@ -86,7 +88,8 @@ namespace crds_angular.Services
             var results = SearchConnectAwsCloudsearch($"groupid: {groupId}", "_no_fields");
             var deletelist = results.Hits.Hit.Select(hit => new AwsCloudsearchDto
             {
-                id = hit.Id, type = "delete"
+                id = hit.Id,
+                type = "delete"
             }).ToList();
 
             return SendAwsDocs(deletelist);
@@ -112,7 +115,7 @@ namespace crds_angular.Services
                     awsDto.id = idToUpdate;
                     List<AwsCloudsearchDto> awsDtoList = new List<AwsCloudsearchDto> { awsDto };
                     SendAwsDocs((awsDtoList));
-                    return; 
+                    return;
                 default:
                     // we found multiple matches. This seems to be an issue. Let's delete all mathing groups and just add the one we want
                     DeleteGroupFromAws(groupId);
@@ -135,7 +138,7 @@ namespace crds_angular.Services
 
         private List<AwsCloudsearchDto> GetDataForCloudsearch()
         {
-            var pins= _finderRepository.GetAllPinsForAws().Select(Mapper.Map<AwsConnectDto>).ToList();
+            var pins = _finderRepository.GetAllPinsForAws().Select(Mapper.Map<AwsConnectDto>).ToList();
             var pinlist = new List<AwsCloudsearchDto>();
             foreach (var pin in pins)
             {
@@ -158,7 +161,7 @@ namespace crds_angular.Services
                 BottomRightCoordinates = new GeoCoordinates(mapBox.BottomRightLat, mapBox.BottomRightLng)
             };
 
-            return awsMapBoundingBox; 
+            return awsMapBoundingBox;
         }
 
         public SearchResponse SearchConnectAwsCloudsearch(string querystring, string returnFields, int returnSize = 10000, GeoCoordinate originCoords = null, AwsBoundingBox boundingBox = null)
@@ -176,7 +179,7 @@ namespace crds_angular.Services
             {
                 searchRequest.FilterQuery = $"latlong:['{boundingBox.UpperLeftCoordinates.Lat},{boundingBox.UpperLeftCoordinates.Lng}','{boundingBox.BottomRightCoordinates.Lat},{boundingBox.BottomRightCoordinates.Lng}']";
             }
-               
+
             if (originCoords != null)
             {
                 searchRequest.Expr = $"{{'distance':'haversin({originCoords.Latitude},{originCoords.Longitude},latlong.latitude,latlong.longitude)'}}"; // use to sort by proximity
@@ -194,7 +197,7 @@ namespace crds_angular.Services
             var searchRequest = new SearchRequest
             {
                 Query = "groupid: " + groupId,
-                QueryParser = QueryParser.Structured,                
+                QueryParser = QueryParser.Structured,
                 QueryOptions = "{'fields': ['groupid']}",
                 Size = 1,
                 Return = "_all_fields"
@@ -225,7 +228,7 @@ namespace crds_angular.Services
 
         private string GenerateAwsPinString(PinDto pin, string addressId, string groupId = "")
         {
-            return addressId + "-" + (int) pin.PinType + '-' + pin.Participant_ID + "-" + groupId;
+            return addressId + "-" + (int)pin.PinType + '-' + pin.Participant_ID + "-" + groupId;
         }
 
         public UploadDocumentsRequest GetObjectToUploadToAws(PinDto pin)
@@ -238,7 +241,7 @@ namespace crds_angular.Services
                 awsPinObject.Latitude = pin.Gathering.Address.Latitude;
                 awsPinObject.Longitude = pin.Gathering.Address.Longitude;
                 awsPinObject.City = pin.Gathering.Address.City;
-                awsPinObject.LatLong =  (pin.Gathering.Address.Latitude == null || pin.Gathering.Address.Longitude == null)  
+                awsPinObject.LatLong = (pin.Gathering.Address.Latitude == null || pin.Gathering.Address.Longitude == null)
                     ? "0 , 0" : $"{pin.Gathering.Address.Latitude} , {pin.Gathering.Address.Longitude}";
                 awsPinObject.State = pin.Gathering.Address.State;
                 awsPinObject.Zip = pin.Gathering.Address.PostalCode;
@@ -252,7 +255,7 @@ namespace crds_angular.Services
 
             AwsCloudsearchDto awsPostPinObject = new AwsCloudsearchDto("add", GenerateAwsPinId(pin), awsPinObject);
 
-            var pinlist = new List<AwsCloudsearchDto> {awsPostPinObject};
+            var pinlist = new List<AwsCloudsearchDto> { awsPostPinObject };
 
             string jsonAwsObject = JsonConvert.SerializeObject(pinlist, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
