@@ -1,23 +1,20 @@
-﻿using System;
+﻿using Crossroads.Utilities.Interfaces;
+using Crossroads.Web.Common.Configuration;
+using Crossroads.Web.Common.MinistryPlatform;
+using Crossroads.Web.Common.Security;
+using MinistryPlatform.Translation.Enum;
+using MinistryPlatform.Translation.Models;
+using MinistryPlatform.Translation.Repositories;
+using MinistryPlatform.Translation.Repositories.Interfaces;
+using Moq;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Crossroads.Utilities;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.MinistryPlatform;
-using Crossroads.Web.Common.Security;
-using MinistryPlatform.Translation.Enum;
-using MinistryPlatform.Translation.Models;
-using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
-using MinistryPlatform.Translation.Repositories;
-using MinistryPlatform.Translation.Repositories.Interfaces;
-using Moq;
-using NUnit.Framework;
 using Constants = Crossroads.Utilities.Constants;
 
 namespace MinistryPlatform.Translation.Test.Services
@@ -62,8 +59,8 @@ namespace MinistryPlatform.Translation.Test.Services
             _configuration.Setup(mocked => mocked.GetConfigIntValue("RecurringGiftBySubscription")).Returns(45208);
             _configuration.Setup(mocked => mocked.GetConfigIntValue("DonorAccountPageView")).Returns(524);
             _configuration.Setup(mocked => mocked.GetConfigIntValue("MyHouseholdRecurringGiftsApiPageView")).Returns(45209);
-            _configuration.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
-            _configuration.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
+            Environment.SetEnvironmentVariable("API_USER", "uid");
+            Environment.SetEnvironmentVariable("API_PASSWORD", "pwd");
 
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
@@ -104,7 +101,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 ProcessorAccountId = processorAcctId,
                 EncryptedAccount = expectedEncAcct
             };
-            
+
             _ministryPlatformService.Setup(mocked => mocked.CreateRecord(
                It.IsAny<int>(), It.IsAny<Dictionary<string, object>>(),
                It.IsAny<string>(), true)).Returns(expectedDonorId);
@@ -139,7 +136,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var donorPageId = Convert.ToInt32(ConfigurationManager.AppSettings["Donors"]);
             var expectedDonorId = 585858;
             var setupDate = DateTime.Now;
-            
+
             var expectedValues = new Dictionary<string, object>
             {
                 {"Contact_ID", 888888},
@@ -147,12 +144,12 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"Statement_Type_ID", 6},     //default to individual
                 {"Statement_Method_ID", 7},   //default to email/online
                 {"Setup_Date", setupDate},    //default to current date/time
-                {"Processor_ID", "cus_crds123456"}    
+                {"Processor_ID", "cus_crds123456"}
             };
-            
-               _ministryPlatformService.Setup(mocked => mocked.CreateRecord(
-               It.IsAny<int>(), It.IsAny<Dictionary<string, object>>(),
-               It.IsAny<string>(), true)).Returns(expectedDonorId);
+
+            _ministryPlatformService.Setup(mocked => mocked.CreateRecord(
+            It.IsAny<int>(), It.IsAny<Dictionary<string, object>>(),
+            It.IsAny<string>(), true)).Returns(expectedDonorId);
 
             var response = _fixture.CreateDonorRecord(888888, "cus_crds123456", setupDate, 5, 6, 7, null);
 
@@ -186,7 +183,7 @@ namespace MinistryPlatform.Translation.Test.Services
             const string itemNumber = "98766";
             const string notes = "notes notes notes";
             const string sourceUrl = "";
-            const decimal predefinedAmt = 676767; 
+            const decimal predefinedAmt = 676767;
 
             var defaultContact = new MpContact()
             {
@@ -205,7 +202,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _contactService.Setup(mocked => mocked.GetEmailFromDonorId(donorId)).Returns(defaultContact); //this isn't actually used so it doesn't matter what we return - it should be the donor email but it doesn't matter
 
             _communicationService.Setup(mocked => mocked.SendMessage(It.IsAny<MinistryPlatform.Translation.Models.MpCommunication>(), false));
-  
+
             _contactService.Setup(mocked => mocked.GetContactEmail(Convert.ToInt32(ConfigurationManager.AppSettings["DefaultGivingContactEmailId"]))).Returns(defaultContact.EmailAddress);
 
             var expectedDonationValues = new Dictionary<string, object>
@@ -236,7 +233,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"Donation_ID", expectedDonationId},
                 {"Amount", donationAmt},
                 {"Program_ID", programId},
-               
+
             };
 
             var programServiceResponse = new MpProgram
@@ -300,7 +297,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformService.Verify(mocked => mocked.CreateRecord(donationPageId, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true));
             _ministryPlatformService.Verify(mocked => mocked.CreateRecord(donationDistPageId, expectedDistributionValues, It.IsAny<string>(), true));
 
-           // _ministryPlatformService.VerifyAll();
+            // _ministryPlatformService.VerifyAll();
             _programService.VerifyAll();
             _communicationService.VerifyAll();
             Assert.IsNotNull(response);
@@ -735,8 +732,8 @@ namespace MinistryPlatform.Translation.Test.Services
                 { "@Contact_ID", contactId }
             };
 
-            _ministryPlatformRestRepository.Setup(mocked=>mocked.UsingAuthenticationToken(
-                It.IsAny<string>()).GetFromStoredProc<MpContactDonor>("api_crds_Get_Contact_Donor", parameters)).Returns((List < List<MpContactDonor> >)null);
+            _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken(
+                It.IsAny<string>()).GetFromStoredProc<MpContactDonor>("api_crds_Get_Contact_Donor", parameters)).Returns((List<List<MpContactDonor>>)null);
 
             var response = _fixture.GetContactDonor(contactId);
 
@@ -775,16 +772,16 @@ namespace MinistryPlatform.Translation.Test.Services
                 EmailAddress = emailAddress
             };
             _contactService.Setup(mocked => mocked.GetEmailFromDonorId(donorId)).Returns(donorContact);
-            
+
             var expectedCommunication = new MinistryPlatform.Translation.Models.MpCommunication
             {
                 AuthorUserId = 5,
                 DomainId = 1,
                 EmailBody = getTemplateResponse.Body,
                 EmailSubject = getTemplateResponse.Subject,
-                FromContact = new MpContact {ContactId = 5, EmailAddress = "giving@crossroads.net"},
+                FromContact = new MpContact { ContactId = 5, EmailAddress = "giving@crossroads.net" },
                 ReplyToContact = new MpContact { ContactId = 5, EmailAddress = "giving@crossroads.net" },
-                ToContacts = new List<MpContact> {new MpContact{ContactId = contactId, EmailAddress = emailAddress}},
+                ToContacts = new List<MpContact> { new MpContact { ContactId = contactId, EmailAddress = emailAddress } },
                 MergeData = new Dictionary<string, object>
                 {
                     {"Program_Name", program},
@@ -869,9 +866,9 @@ namespace MinistryPlatform.Translation.Test.Services
                 DomainId = 1,
                 EmailBody = getTemplateResponse.Body,
                 EmailSubject = getTemplateResponse.Subject,
-                FromContact = new MpContact {ContactId = 5, EmailAddress = "giving@crossroads.net"},
-                ReplyToContact = new MpContact {ContactId = 5, EmailAddress = "giving@crossroads.net" },
-                ToContacts = new List<MpContact> {new MpContact{ContactId = contactId, EmailAddress = emailAddress}},
+                FromContact = new MpContact { ContactId = 5, EmailAddress = "giving@crossroads.net" },
+                ReplyToContact = new MpContact { ContactId = 5, EmailAddress = "giving@crossroads.net" },
+                ToContacts = new List<MpContact> { new MpContact { ContactId = contactId, EmailAddress = emailAddress } },
                 MergeData = new Dictionary<string, object>
                 {
                     {"Program_Name", program},
@@ -902,7 +899,7 @@ namespace MinistryPlatform.Translation.Test.Services
                                 !c.MergeData.ContainsKey("Frequency")
                             ), false));
 
-            _fixture.SendEmail(declineEmailTemplate, donorId, donationAmt, paymentType, donationDate, DateTime.Now, program, 
+            _fixture.SendEmail(declineEmailTemplate, donorId, donationAmt, paymentType, donationDate, DateTime.Now, program,
                 emailReason, null);
 
             _ministryPlatformService.VerifyAll();
@@ -1004,7 +1001,7 @@ namespace MinistryPlatform.Translation.Test.Services
             donorService.VerifyAll();
         }
 
-        
+
         [Ignore] //Since we are using REST and now returning a donor,  
                  //in this test, we are creating a donor, setting the mock to return it, 
                  //and then checking that the mock returned what we told it to
@@ -1041,7 +1038,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             _ministryPlatformService.Setup(mocked => mocked.GetPageViewRecords(2015, It.IsAny<string>(), ",\"" + expectedEncAcct + "\"", "", 0)).Returns(queryResults);
-            
+
 
             var expectedDonorValues = new List<Dictionary<string, object>>
             {
@@ -1066,7 +1063,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 ProcessorId = processorId,
                 ContactId = contactId,
                 Email = email,
-                
+
                 Account = new MpDonorAccount
                 {
                     ProcessorAccountId = processorAccountId,
@@ -1074,9 +1071,9 @@ namespace MinistryPlatform.Translation.Test.Services
                 }
             };
 
-             
+
             //_ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken(It.IsAny<string>()).GetFromStoredProc<MpContactDonor>("api_crds_Get_Contact_Donor", parameters)).Returns(donor);
-       
+
 
             var result = _fixture.GetContactDonorForDonorAccount(accountNumber, routingNumber);
             _ministryPlatformService.VerifyAll();
@@ -1621,14 +1618,14 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             var searchString = string.Format("{0},{1}", null, false);
-            _ministryPlatformService.Setup(mocked => mocked.GetRecordsDict(516, "auth token", searchString, It.IsAny<string>())).Returns(records);            
+            _ministryPlatformService.Setup(mocked => mocked.GetRecordsDict(516, "auth token", searchString, It.IsAny<string>())).Returns(records);
 
             var result = _fixture.GetDonationsForAuthenticatedUser("auth token", false, null, false);
 
             _ministryPlatformService.VerifyAll();
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);            
+            Assert.AreEqual(1, result.Count);
             Assert.AreEqual(900000, result[0].donationAmt);
         }
 
@@ -1883,7 +1880,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"Donor_ID", donorId},
                 {"Donor_Account_ID", donorAccountId},
                 {"Frequency_ID", 1},
-                {"Day_Of_Month", (int?)null},
+                {"Day_Of_Month", null},
                 {"Day_Of_Week_ID", NumericDayOfWeek.GetDayOfWeekID((startDate.DayOfWeek).ToString())},
                 {"Amount", planAmount},
                 {"Start_Date", startDate},
@@ -2192,7 +2189,7 @@ namespace MinistryPlatform.Translation.Test.Services
             Assert.AreEqual(dayOfMonth, result.DayOfMonth);
             Assert.AreEqual(startDate, result.StartDate);
             Assert.AreEqual(amount * 100, result.Amount);
-            Assert.AreEqual(programId+"", result.ProgramId);
+            Assert.AreEqual(programId + "", result.ProgramId);
             Assert.AreEqual(congragationId, result.CongregationId);
             Assert.AreEqual(PaymentType.CreditCard.abbrv, result.PaymentType);
             Assert.AreEqual(donorAccountId, result.DonorAccountId);

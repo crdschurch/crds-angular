@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.Configuration;
+﻿using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
@@ -10,6 +6,8 @@ using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -34,8 +32,8 @@ namespace MinistryPlatform.Translation.Test.Services
             _configWrapper = new Mock<IConfigurationWrapper>();
             _apiUserService = new Mock<IApiUserRepository>();
 
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
+            Environment.SetEnvironmentVariable("API_USER", "uid");
+            Environment.SetEnvironmentVariable("API_PASSWORD", "pwd");
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
@@ -173,7 +171,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 PledgeStatus = "Active",
                 PledgeStatusId = 1
             };
-            var mockPledges = new List<MpPledge> {mockPledge};
+            var mockPledges = new List<MpPledge> { mockPledge };
 
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(
@@ -183,7 +181,7 @@ namespace MinistryPlatform.Translation.Test.Services
                         " AND Pledge_Status_ID_Table.Pledge_Status_ID=1",
                         mockColumns, It.IsAny<string>(), It.IsAny<bool>())).Returns(mockPledges);
 
-            var record =_fixture.GetPledgeByCampaignAndContact(mockCampaign, mockContact);
+            var record = _fixture.GetPledgeByCampaignAndContact(mockCampaign, mockContact);
             Assert.AreEqual(mockPledge.CampaignName, record.CampaignName);
             Assert.AreEqual(mockPledge.DonorId, record.DonorId);
             Assert.AreEqual(mockPledge.PledgeTotal, record.PledgeTotal);
@@ -268,7 +266,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 "Pledges.Total_Pledge"
             };
 
-            
+
             var mockPledges = new List<MpPledge>();
 
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRestRepository.Object);
@@ -334,7 +332,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 List<MpPledge> records = _fixture.GetPledgesByCampaign(mockCampaign, "ABC");
                 _ministryPlatformRestRepository.VerifyAll();
             });
-           
+
         }
 
     }
