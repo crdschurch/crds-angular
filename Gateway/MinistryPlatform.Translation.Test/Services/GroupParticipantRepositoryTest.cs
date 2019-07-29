@@ -129,7 +129,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)),
                 It.IsAny<string>(),
-                null,
+                (string)null,
                 false))
                 .Returns(groupParticipantReturn);
 
@@ -241,7 +241,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)),
                 It.IsAny<string>(),
-                null,
+                (string)null,
                 false))
                 .Returns(groupParticipantReturn);
 
@@ -327,7 +327,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
-                null,
+                (string)null,
                 false))
                 .Returns(groups);
             _groupParticipantRepository.Setup(mocked => mocked.GetLeadersGroupIds(participantId, groupType)).Returns(groups);
@@ -418,7 +418,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
-                null,
+                (string)null,
                 false))
                 .Returns(groups);
             _groupParticipantRepository.Setup(mocked => mocked.GetLeadersGroupIds(participantId, null)).Returns(groups);
@@ -578,7 +578,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)),
                 It.IsAny<string>(),
-                null,
+                (string)null,
                 false))
                 .Returns(groupParticipantReturn);
 
@@ -644,7 +644,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)),
                 It.IsAny<string>(),
-                null,
+                (string)null,
                 false))
                 .Returns(groupParticipantReturn);
 
@@ -665,7 +665,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
-                null,
+                (string)null,
                 false))
                 .Returns(groupParticipantReturn);
 
@@ -730,7 +730,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)),
                 It.IsAny<string>(),
-                null,
+                (string)null,
                 false))
                 .Returns(leadersGroupParticipantRecords);
 
@@ -798,11 +798,10 @@ namespace MinistryPlatform.Translation.Test.Services
                             $" AND Group_ID_Table.Group_Type_ID = {groupType}";
 
             _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
-            _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)),
                 It.IsAny<string>(),
-                 null,
+                (string)null,
                 false))
                 .Returns(leadersGroupParticipantRecords);
 

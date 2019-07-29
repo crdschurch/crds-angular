@@ -132,7 +132,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var filter = $"Event_ID_Table.[Event_ID] = {eventId} AND Participant_ID_Table_Contact_ID_Table.[Contact_ID] = {contactId} AND Participation_Status_ID_Table.[Participation_Status_ID] <> 5";
 
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRest.Object);
-            _ministryPlatformRest.Setup(m => m.Search<MpEventParticipant>(filter, "Event_Participants.[Event_Participant_ID],Event_Participants.[_Setup_Date] as [Setup_Date]", null, false)).Returns(expected);
+            _ministryPlatformRest.Setup(m => m.Search<MpEventParticipant>(filter, "Event_Participants.[Event_Participant_ID],Event_Participants.[_Setup_Date] as [Setup_Date]", (string) null, false)).Returns(expected);
 
             var result = _fixture.EventParticipantSignupDate(contactId, eventId, apiToken);
             Assert.IsNotNull(result);
@@ -152,7 +152,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var filter = $"Event_ID_Table.[Event_ID] = {eventId} AND Participant_ID_Table_Contact_ID_Table.[Contact_ID] = {contactId} AND Participation_Status_ID_Table.[Participation_Status_ID] <> 5";
 
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRest.Object);
-            _ministryPlatformRest.Setup(m => m.Search<MpEventParticipant>(filter, "Event_Participants.[Event_Participant_ID],Event_Participants.[_Setup_Date] as [Setup_Date]", null, false)).Returns(expected);
+            _ministryPlatformRest.Setup(m => m.Search<MpEventParticipant>(filter, "Event_Participants.[Event_Participant_ID],Event_Participants.[_Setup_Date] as [Setup_Date]", (string) null, false)).Returns(expected);
 
             var result = _fixture.EventParticipantSignupDate(contactId, eventId, apiToken);
             Assert.IsNull(result);

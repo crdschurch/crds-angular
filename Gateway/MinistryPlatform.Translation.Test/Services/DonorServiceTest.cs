@@ -1880,7 +1880,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"Donor_ID", donorId},
                 {"Donor_Account_ID", donorAccountId},
                 {"Frequency_ID", 1},
-                {"Day_Of_Month", null},
+                {"Day_Of_Month", (int?)null},
                 {"Day_Of_Week_ID", NumericDayOfWeek.GetDayOfWeekID((startDate.DayOfWeek).ToString())},
                 {"Amount", planAmount},
                 {"Start_Date", startDate},

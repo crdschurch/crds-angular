@@ -332,7 +332,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var answersSearch = $"Form_Response_ID={responseId}";
 
             _ministryPlatformRestRepository.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestRepository.Object);
-            _ministryPlatformRestRepository.Setup(m => m.Search<MpFormResponse>(searchString, null as string, null as string, false)).Returns(new List<MpFormResponse> { null });
+            _ministryPlatformRestRepository.Setup(m => m.Search<MpFormResponse>(searchString, null as string, null as string, false)).Returns(new List<MpFormResponse> { (MpFormResponse) null });
 
             Assert.Throws<ApplicationException>(() => _fixture.GetFormResponse(formId, contactId, null));
             _ministryPlatformRestRepository.VerifyAll();

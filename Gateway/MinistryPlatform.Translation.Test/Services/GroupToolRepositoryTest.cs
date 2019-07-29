@@ -74,7 +74,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository.Setup(
                 m =>
                     m.Search<MpInquiry>($"Group_ID_Table.Group_Type_ID in ({SmallGroupTypeId}, {GatheringTypeId}) AND Placed is null AND Group_Inquiries.Group_ID = {groupId}",
-                        "Group_Inquiries.*", null, false)).Returns(dto);
+                        "Group_Inquiries.*", (string)null, (bool)false)).Returns(dto);
 
 
             var result = _fixture.GetInquiries(groupId);
@@ -106,7 +106,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository.Setup(
                 m =>
                     m.Search<MpInquiry>($"Group_ID_Table.Group_Type_ID in ({SmallGroupTypeId}, {GatheringTypeId}) AND Placed is null",
-                        "Group_Inquiries.*", null, false)).Returns(inquiryResults);
+                        "Group_Inquiries.*", (string)null, (bool)false)).Returns(inquiryResults);
             var results = _fixture.GetInquiries();
             _apiUserRepository.VerifyAll();
             _ministryPlatformRestRepository.VerifyAll();
@@ -129,7 +129,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 m =>
                     m.Search<MpAttribute>(
                         "ATTRIBUTE_CATEGORY_ID_TABLE.ATTRIBUTE_CATEGORY_ID = 51 AND GETDATE() BETWEEN START_DATE AND ISNULL(END_DATE, GETDATE())",
-                        "Attribute_Name", null, false)).Returns(dto);
+                        "Attribute_Name", (string)null, (bool)false)).Returns(dto);
 
             var result = _fixture.GetCurrentJourney();
 
@@ -147,7 +147,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 m =>
                     m.Search<MpAttribute>(
                         "ATTRIBUTE_CATEGORY_ID_TABLE.ATTRIBUTE_CATEGORY_ID = 51 AND GETDATE() BETWEEN START_DATE AND ISNULL(END_DATE, GETDATE())",
-                        "Attribute_Name", null, false)).Returns(new List<MpAttribute>());
+                        "Attribute_Name", (string)null, (bool)false)).Returns(new List<MpAttribute>());
 
             var result = _fixture.GetCurrentJourney();
 
