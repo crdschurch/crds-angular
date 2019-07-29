@@ -798,6 +798,7 @@ namespace MinistryPlatform.Translation.Test.Services
                             $" AND Group_ID_Table.Group_Type_ID = {groupType}";
 
             _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
+            _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)),
                 It.IsAny<string>(),
