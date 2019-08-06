@@ -179,9 +179,7 @@
     <Compile Include="Messaging\MessageFactoryTest.cs" />
     <Compile Include="Messaging\MessageQueueFactoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\AppSettingsTypeConverterTest.cs" />
     <Compile Include="Services\ContentBlockServiceTest.cs" />
-    <Compile Include="Services\EnvironmentVariableTypeConverterTest.cs" />
     <Compile Include="Services\HtmlElementTest.cs" />
     <Compile Include="Services\ImpersonatedUserGuidTest.cs" />
     <Compile Include="Services\TripleDesSymmetricKeyCryptoProviderTest.cs" />
