@@ -271,7 +271,11 @@ namespace crds_angular.Services
             try
             {
                 //var group = _groupRepository.getGroupDetails(groupid);
-                var group = _groupService.GetGroupDetailsWithAttributes(groupid);              
+                var group = _groupService.GetGroupDetailsWithAttributes(groupid);
+                if (group.MeetingDayId != null)
+                {
+                    group.SingleAttributes.Add(999999, GetMeetingDayAttribute((int)group.MeetingDayId));
+                }
                 var s = group.SingleAttributes;
                 var t = group.AttributeTypes;
 
@@ -412,6 +416,10 @@ namespace crds_angular.Services
             {
                 //var group = _groupRepository.getGroupDetails(groupid);
                 var group = _groupService.GetGroupDetailsWithAttributes(groupid);
+                if (group.MeetingDayId != null)
+                {
+                    group.SingleAttributes.Add(999999, GetMeetingDayAttribute((int)group.MeetingDayId));
+                }
                 var s = group.SingleAttributes;
                 var t = group.AttributeTypes;
                 
@@ -440,12 +448,38 @@ namespace crds_angular.Services
         //////////////////////////////////////////////
         /// Common
         //////////////////////////////////////////////
+
+       
+        private ObjectSingleAttributeDTO GetMeetingDayAttribute(int meetingDayId)
+        {
+            Dictionary<int, string> days = new Dictionary<int, string>();
+            days.Add(1, "Sunday");
+            days.Add(2, "Monday");
+            days.Add(3, "Tuesday");
+            days.Add(4, "Wednesday");
+            days.Add(5, "Thursday");
+            days.Add(6, "Friday");
+            days.Add(7, "Saturday");
+
+            return new ObjectSingleAttributeDTO { Value = new AttributeDTO { Name = days.FirstOrDefault(x => x.Key == meetingDayId).Value } };
+        }
+        
         private Dictionary<string, string[]> BuildGroupAttributeDictionary(Dictionary<int,ObjectSingleAttributeDTO> s, Dictionary<int, ObjectAttributeTypeDTO> t)
         {
             var dict = new Dictionary<string, string[]>();
 
             try
             {
+                // get dayOfWeek
+                int dayOfWeekCategoryAttributeID = 999999;
+                ObjectSingleAttributeDTO dayOfWeek;
+                if (s.TryGetValue(dayOfWeekCategoryAttributeID, out dayOfWeek) && dayOfWeek.Value != null)
+                {
+                    // grouptype is now equal to the value
+                    var x = dayOfWeek.Value;
+                    dict.Add("DayOfWeek", new string[] { x.Name });
+                }
+
                 // get grouptype
                 int grouptypeCategoryAttributeID = 73;
                 ObjectSingleAttributeDTO grouptype;
@@ -478,26 +512,40 @@ namespace crds_angular.Services
                     }
                 }
 
-                // get group categories
+                // get group categories and subcategories
+                var categories = new List<string>();
                 int groupCategoryAttributeID = 90;
                 ObjectAttributeTypeDTO groupcategory;
                 if (t.TryGetValue(groupCategoryAttributeID, out groupcategory))
                 {
                     // roll through the group categories. add selected to the dictionary
-                    var categories = new List<string>();
                     foreach (var a in groupcategory.Attributes)
                     {
                         if (a.Selected)
                         {
                             categories.Add(a.Category);
                         }
-                    }
+                    }                    
+                }
 
-                    // add to the dict
-                    if (categories.Count > 0)
+                int groupSubcategoryAttributeID = 92;
+                ObjectAttributeTypeDTO groupSubcategory;
+                if (t.TryGetValue(groupSubcategoryAttributeID, out groupSubcategory))
+                {
+                    // roll through the group categories. add selected to the dictionary
+                    foreach (var a in groupSubcategory.Attributes)
                     {
-                        dict.Add("Categories", categories.ToArray());
+                        if (a.Selected)
+                        {
+                            categories.Add(a.Category);
+                        }
                     }
+                }
+
+                // add to the dict
+                if (categories.Count > 0)
+                {
+                    dict.Add("Categories", categories.ToArray());
                 }
             }
             catch(Exception e)
@@ -672,6 +720,23 @@ namespace crds_angular.Services
                     }
                 }
                 attrString = $"{attrString} {categoryText}";
+            }
+
+            // get sub group categories
+            ObjectAttributeTypeDTO subgroupcategory;
+            if (t.TryGetValue(92, out subgroupcategory))
+            {
+                var subCategoryText = "";
+                // roll through the sub group category. add selected to the dictionary
+                var categories = new List<string>();
+                foreach (var a in subgroupcategory.Attributes)
+                {
+                    if (a.Selected)
+                    {
+                        subCategoryText = $"{subCategoryText} {a.Category}";
+                    }
+                }
+                attrString = $"{attrString} {subCategoryText}";
             }
 
             return attrString;
