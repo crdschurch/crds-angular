@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using Crossroads.Utilities.FunctionalHelpers;
-using Crossroads.Utilities.Interfaces;
-using FsCheck;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.Configuration;
+﻿using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
+using FsCheck;
 using MinistryPlatform.Translation.Models;
-using MinistryPlatform.Translation.PlatformService;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
-using MinistryPlatform.Translation.Test.Helpers;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -25,14 +20,14 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             _ministryPlatformService = new Mock<IMinistryPlatformService>(MockBehavior.Strict);
             _ministryPlatformRestService = new Mock<IMinistryPlatformRestRepository>(MockBehavior.Strict);
-            _authService = new Mock<IAuthenticationRepository>(MockBehavior.Strict);           
+            _authService = new Mock<IAuthenticationRepository>(MockBehavior.Strict);
             _configWrapper = new Mock<IConfigurationWrapper>(MockBehavior.Strict);
             _groupService = new Mock<IGroupRepository>(MockBehavior.Strict);
             _eventParticipantRepository = new Mock<IEventParticipantRepository>(MockBehavior.Strict);
             _apiUserService = new Mock<IApiUserRepository>();
 
-        _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");
+            Environment.SetEnvironmentVariable("CRDS_MP_COMMON_CLIENT_ID", "client");
+            Environment.SetEnvironmentVariable("CRDS_MP_COMMON_CLIENT_SECRET", "secret");
             _configWrapper.Setup(m => m.GetConfigIntValue("GroupsByEventId")).Returns(2221);
             _configWrapper.Setup(m => m.GetConfigIntValue("EventsBySite")).Returns(2222);
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
@@ -164,21 +159,23 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             //Arrange
             const int eventId = 999;
-            var mpevent = new MpEvent {EventId = 999,
-                                       EventTitle = "event-title-100",
-                                       EventType = "event-type-100",
-                                       EventStartDate = new DateTime(2015, 3, 28, 8, 30, 0),
-                                       EventEndDate = new DateTime(2015, 3, 28, 8, 30, 0),
-                                       PrimaryContact = new MpContact{ContactId = 12345, EmailAddress = "thecinnamonbagel@react.js" },
-                                       ParentEventId = 6543219,
-                                       CongregationId = 2,
-                                       ReminderDaysPriorId = 2,
-                                       Cancelled = false
+            var mpevent = new MpEvent
+            {
+                EventId = 999,
+                EventTitle = "event-title-100",
+                EventType = "event-type-100",
+                EventStartDate = new DateTime(2015, 3, 28, 8, 30, 0),
+                EventEndDate = new DateTime(2015, 3, 28, 8, 30, 0),
+                PrimaryContact = new MpContact { ContactId = 12345, EmailAddress = "thecinnamonbagel@react.js" },
+                ParentEventId = 6543219,
+                CongregationId = 2,
+                ReminderDaysPriorId = 2,
+                Cancelled = false
             };
 
             _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
             _ministryPlatformRestService.Setup(m => m.Get<MpEvent>(eventId, (string)null)).Returns(mpevent);
-            _ministryPlatformRestService.Setup(m => m.Get<MpContact>(It.IsAny<int>(), It.IsAny<string>())).Returns(new MpContact {ContactId = 12345, EmailAddress = "thecinnamonbagel@react.js"});
+            _ministryPlatformRestService.Setup(m => m.Get<MpContact>(It.IsAny<int>(), It.IsAny<string>())).Returns(new MpContact { ContactId = 12345, EmailAddress = "thecinnamonbagel@react.js" });
 
             //Act
             var theEvent = _fixture.GetEvent(eventId);
@@ -353,7 +350,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var site = "Oakley";
             var searchString = ",,\"" + site + "\",,False," + currentDateTime.ToShortDateString() + "," + currentDateTime.ToShortDateString(); // search string needs to match
             _ministryPlatformService.Setup(m => m.GetPageViewRecords(2222, It.IsAny<string>(), searchString, "", 0)).Returns(GetMockedEvents(3));
-            
+
             _fixture.GetEventsBySite(site, currentDateTime, currentDateTime);
             _ministryPlatformService.VerifyAll();
         }
@@ -376,7 +373,7 @@ namespace MinistryPlatform.Translation.Test.Services
             Prop.ForAll<string, int, int>((token, selectionId, eventId) =>
             {
                 var eventGroups = GetMockedEventGroups(3);
-                
+
                 _ministryPlatformRestService.Setup(m => m.Search<MpEventGroup>(It.IsAny<string>(), It.IsAny<string>(), null, false)).Returns(eventGroups);
                 _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
                 _ministryPlatformRestService.Setup(m => m.Delete<MpEventGroup>((new List<int> { 0, 0, 0 })));
@@ -415,7 +412,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 }
             };
 
-            _ministryPlatformRestService.Setup(m => m.Search<MpEventWaivers>($"Event_ID = {eventId} AND Active=1", columnList, null, false)).Returns(mockWaiver);           
+            _ministryPlatformRestService.Setup(m => m.Search<MpEventWaivers>($"Event_ID = {eventId} AND Active=1", columnList, null, false)).Returns(mockWaiver);
             _ministryPlatformRestService.Setup(m => m.Search<MpWaiverResponse>($"Waiver_ID_Table.Waiver_ID = 123 AND Event_Participant_ID_Table_Event_ID_Table.Event_ID = {eventId} AND cr_Event_Participant_Waivers.Event_Participant_ID = {eventParticipantId}", columns, null, false)).Returns(mockWaiverResponse);
             _ministryPlatformRestService.Setup(m => m.Search<MpWaiverResponse>($"Waiver_ID_Table.Waiver_ID = 456 AND Event_Participant_ID_Table_Event_ID_Table.Event_ID = {eventId} AND cr_Event_Participant_Waivers.Event_Participant_ID = {eventParticipantId}", columns, null, false)).Returns(mockWaiverResponse2);
             _ministryPlatformRestService.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRestService.Object);
@@ -424,7 +421,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var result = _fixture.GetWaivers(eventId, contactId);
 
             _ministryPlatformRestService.VerifyAll();
-            Assert.AreEqual(2,result.Count);
+            Assert.AreEqual(2, result.Count);
             Assert.IsTrue(result[0].Accepted);
             Assert.IsFalse(result[1].Accepted);
             Assert.AreEqual(09876, result[0].SigneeContactId);

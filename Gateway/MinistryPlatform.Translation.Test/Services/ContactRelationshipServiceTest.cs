@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.Security;
+﻿using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
+using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -34,8 +32,8 @@ namespace MinistryPlatform.Translation.Test.Services
             _configWrapper = new Mock<IConfigurationWrapper>();
             _apiUserService = new Mock<IApiUserRepository>();
             _fixture = new ContactRelationshipRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _apiUserService.Object);
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
+            Environment.SetEnvironmentVariable("API_USER", "uid");
+            Environment.SetEnvironmentVariable("API_PASSWORD", "pwd");
 
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.Configuration;
+﻿using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
@@ -10,6 +6,8 @@ using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -21,7 +19,7 @@ namespace MinistryPlatform.Translation.Test.Services
         private Mock<IAuthenticationRepository> _authService;
         private Mock<IConfigurationWrapper> _configWrapper;
         private Mock<IMinistryPlatformRestRepository> _ministryPlatformRestMock;
-		private Mock<IApiUserRepository> _apiUserRepositoryMock;
+        private Mock<IApiUserRepository> _apiUserRepositoryMock;
 
         [SetUp]
         public void SetUp()
@@ -30,9 +28,9 @@ namespace MinistryPlatform.Translation.Test.Services
             _authService = new Mock<IAuthenticationRepository>();
             _configWrapper = new Mock<IConfigurationWrapper>();
             _ministryPlatformRestMock = new Mock<IMinistryPlatformRestRepository>();
-			_apiUserRepositoryMock = new Mock<IApiUserRepository>();
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
+            _apiUserRepositoryMock = new Mock<IApiUserRepository>();
+            Environment.SetEnvironmentVariable("API_USER", "uid");
+            Environment.SetEnvironmentVariable("API_PASSWORD", "pwd");
             _configWrapper.Setup(m => m.GetConfigIntValue("Participants")).Returns(355);
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
@@ -115,7 +113,7 @@ namespace MinistryPlatform.Translation.Test.Services
         public void TestCreateParticipantRecord()
         {
             const int contactId = 9999;
-            var date = DateTime.Now; 
+            var date = DateTime.Now;
 
             var mockDictionary = new Dictionary<string, object>
             {
@@ -125,11 +123,11 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             _mpServiceMock.Setup(
-                mocked => mocked.CreateRecord(355, It.IsAny<Dictionary<string,object>>(), It.IsAny<string>(), false))
+                mocked => mocked.CreateRecord(355, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), false))
                 .Returns(123);
 
             var participant = _fixture.CreateParticipantRecord(contactId);
-            Assert.AreEqual(123, participant);           
+            Assert.AreEqual(123, participant);
         }
 
     }
