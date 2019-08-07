@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using crds_angular.Exceptions;
-using crds_angular.Services.Interfaces;
-using Newtonsoft.Json;
-using RestSharp;
-using System.Net;
+﻿using crds_angular.Exceptions;
 using crds_angular.Models.Crossroads.Stewardship;
 using crds_angular.Models.Json;
-using Crossroads.Utilities;
+using crds_angular.Services.Interfaces;
 using Crossroads.Utilities.Extensions;
 using Crossroads.Utilities.Interfaces;
 using Crossroads.Utilities.Models;
 using Crossroads.Utilities.Services;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.Extensions;
 using Crossroads.Web.Common.Configuration;
-using MinistryPlatform.Translation.Models;
-using RestSharp.Extensions;
+using Crossroads.Web.Common.Extensions;
 using log4net;
-using Constants = Crossroads.Utilities.Constants;
+using MinistryPlatform.Translation.Models;
+using Newtonsoft.Json;
+using RestSharp;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
+using Constants = Crossroads.Utilities.Constants;
 
 namespace crds_angular.Services
 {
@@ -43,7 +40,7 @@ namespace crds_angular.Services
             _stripeRestClient = stripeRestClient;
             _maxQueryResultsPerPage = configuration.GetConfigIntValue("MaxStripeQueryResultsPerPage");
 
-            var stripeApiVersion = configuration.GetEnvironmentVarAsString("CRDS_STRIPE_API_VERSION", false);
+            var stripeApiVersion = Environment.GetEnvironmentVariable("CRDS_STRIPE_API_VERSION");
             if (stripeApiVersion != null)
             {
                 _stripeRestClient.AddDefaultHeader("Stripe-Version", stripeApiVersion);
@@ -71,12 +68,12 @@ namespace crds_angular.Services
             var content = JsonConvert.DeserializeObject<Content>(response.Content);
             if (content == null || content.Error == null)
             {
-                throw(AddGlobalErrorMessage(new PaymentProcessorException(HttpStatusCode.InternalServerError, errorMessage, StripeNetworkErrorResponseCode,
+                throw (AddGlobalErrorMessage(new PaymentProcessorException(HttpStatusCode.InternalServerError, errorMessage, StripeNetworkErrorResponseCode,
                     response.ErrorException?.Message, null, null, null)));
             }
             else
             {
-                throw(AddGlobalErrorMessage(new PaymentProcessorException(response.StatusCode, errorMessage, content.Error.Type, content.Error.Message, content.Error.Code, content.Error.DeclineCode, content.Error.Param)));
+                throw (AddGlobalErrorMessage(new PaymentProcessorException(response.StatusCode, errorMessage, content.Error.Type, content.Error.Message, content.Error.Code, content.Error.DeclineCode, content.Error.Param)));
             }
         }
 
@@ -128,7 +125,7 @@ namespace crds_angular.Services
                     Title = key,
                     Content = key,
                     Type = ContentBlockType.Error,
-                    Category =  ""
+                    Category = ""
                 };
             }
 
@@ -148,7 +145,7 @@ namespace crds_angular.Services
 
             var response = _stripeRestClient.Execute<StripeCustomer>(request);
             CheckStripeResponse("Customer creation failed", response);
-            
+
             return response.Data;
         }
 
@@ -210,7 +207,7 @@ namespace crds_angular.Services
             var defaultSourceId = response.Data.default_source;
             var sources = response.Data.sources.data;
             var defaultSource = MapDefaultSource(sources, defaultSourceId);
-            
+
             return defaultSource;
 
         }
@@ -287,7 +284,7 @@ namespace crds_angular.Services
             return (customer.sources.data.Find(src => src.id.Equals(sourceId)));
         }
 
-        private static SourceData MapDefaultSource(List<SourceData>sources, string defaultSourceId)
+        private static SourceData MapDefaultSource(List<SourceData> sources, string defaultSourceId)
         {
             var defaultSource = new SourceData();
 
@@ -315,7 +312,7 @@ namespace crds_angular.Services
             return defaultSource;
         }
 
-        public StripeCharge ChargeCustomer(string customerToken, decimal amount, int donorId, bool isPayment, string Email= null, string DisplayName = null)
+        public StripeCharge ChargeCustomer(string customerToken, decimal amount, int donorId, bool isPayment, string Email = null, string DisplayName = null)
         {
             var request = new RestRequest("charges", Method.POST);
             request.AddParameter("amount", (int)(amount * Constants.StripeDecimalConversionValue));
@@ -338,7 +335,7 @@ namespace crds_angular.Services
         public StripeCharge ChargeCustomer(string customerToken, string customerSourceId, decimal amount, int donorId, string checkNumber, string Email = null, string DisplayName = null)
         {
             var request = new RestRequest("charges", Method.POST);
-            request.AddParameter("amount",(int)(amount * Constants.StripeDecimalConversionValue));
+            request.AddParameter("amount", (int)(amount * Constants.StripeDecimalConversionValue));
             request.AddParameter("currency", "usd");
             request.AddParameter("customer", customerToken);
             request.AddParameter("source", customerSourceId);
@@ -423,7 +420,7 @@ namespace crds_angular.Services
 
             // TODO Execute<StripeRefund>() above always gets an error deserializing the response, so using Execute() instead, and manually deserializing here
             var refund = JsonConvert.DeserializeObject<StripeRefund>(response.Content);
-            
+
             return (refund);
         }
 
@@ -482,7 +479,7 @@ namespace crds_angular.Services
 
         public StripeSubscription CreateSubscription(string planName, string customer, DateTime trialEndDate, string Email = null, string DisplayName = null)
         {
-            var request = new RestRequest("customers/" + customer +"/subscriptions", Method.POST);
+            var request = new RestRequest("customers/" + customer + "/subscriptions", Method.POST);
             request.AddParameter("plan", planName);
             if (trialEndDate.ToUniversalTime().Date > DateTime.UtcNow.Date)
             {

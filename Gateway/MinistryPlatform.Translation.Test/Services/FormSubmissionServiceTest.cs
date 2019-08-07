@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using Crossroads.Web.Common.Configuration;
+﻿using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
@@ -8,6 +6,9 @@ using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -37,8 +38,8 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
             _apiUserService = new Mock<IApiUserRepository>();
 
-        _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
+            Environment.SetEnvironmentVariable("API_USER", "uid");
+            Environment.SetEnvironmentVariable("API_PASSWORD", "pwd");
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
@@ -92,7 +93,7 @@ namespace MinistryPlatform.Translation.Test.Services
         [Test]
         public void SubmitFormResponse()
         {
-        
+
             var expectedAnswerDict1 = new Dictionary<string, object>
             {
                 {"Form_Response_ID", responseId},
@@ -120,14 +121,14 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"Event_Participant_ID", null}
             };
             _configWrapper.Setup(m => m.GetConfigIntValue("FormResponsePageId")).Returns(formResponsePageId);
-            
+
             _ministryPlatformService.Setup(m => m.CreateRecord(formResponsePageId, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true)).Returns(responseId);
             _ministryPlatformService.Setup(m => m.CreateRecord(formAnswerPageId, expectedAnswerDict1, It.IsAny<string>(), true));
             _ministryPlatformService.Setup(m => m.CreateRecord(formAnswerPageId, expectedAnswerDict2, It.IsAny<string>(), true));
             _ministryPlatformService.Setup(m => m.CreateRecord(formAnswerPageId, expectedAnswerDict3, It.IsAny<string>(), true));
 
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRest.Object);
-            _ministryPlatformRest.Setup(m => m.Search<MpFormResponse>(It.IsAny<string>(), It.IsAny<string>(),null,true)).Returns(new List<MpFormResponse>());
+            _ministryPlatformRest.Setup(m => m.Search<MpFormResponse>(It.IsAny<string>(), It.IsAny<string>(), null, true)).Returns(new List<MpFormResponse>());
             _ministryPlatformRest.Setup(m => m.Search<MpFormAnswer>(It.IsAny<string>(), It.IsAny<string>(), null, true)).Returns(new List<MpFormAnswer>());
             var result = _fixture.SubmitFormResponse(_mockForm);
 

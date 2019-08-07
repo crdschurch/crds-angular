@@ -1,13 +1,10 @@
-﻿using System;
-using crds_angular.Services.Interfaces;
-using Crossroads.Utilities.Interfaces;
-using log4net;
-using Crossroads.Web.Common;
+﻿using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;
-using Twilio.Clients;
+using log4net;
+using System;
 using Twilio;
-using Twilio.Rest.Api.V2010.Account;
 using Twilio.Exceptions;
+using Twilio.Rest.Api.V2010.Account;
 
 namespace crds_angular.Services
 {
@@ -20,14 +17,14 @@ namespace crds_angular.Services
         public TwilioService(IConfigurationWrapper configurationWrapper)
         {
             var accountSid = configurationWrapper.GetConfigValue("TwilioAccountSid");
-            var authToken = configurationWrapper.GetEnvironmentVarAsString("TWILIO_AUTH_TOKEN");
+            var authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
             _fromPhoneNumber = configurationWrapper.GetConfigValue("TwilioFromPhoneNumber");
             TwilioClient.Init(accountSid, authToken);
         }
 
         public void SendTextMessage(string toPhoneNumber, string body)
         {
-            _logger.Debug("Sending text message to "+ toPhoneNumber);
+            _logger.Debug("Sending text message to " + toPhoneNumber);
 
             try
             {

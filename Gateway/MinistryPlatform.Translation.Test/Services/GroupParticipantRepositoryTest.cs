@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.Configuration;
+﻿using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
-using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -38,8 +35,8 @@ namespace MinistryPlatform.Translation.Test.Services
             var config = new Mock<IConfigurationWrapper>(MockBehavior.Strict);
             var auth = new Mock<IAuthenticationRepository>(MockBehavior.Strict);
 
-            config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("api_user");
-            config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
+            Environment.SetEnvironmentVariable("API_USER", "api_user");
+            Environment.SetEnvironmentVariable("API_PASSWORD", "password");
 
             auth.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
@@ -130,7 +127,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
-                It.Is<string>(searchString => MatchesDate(searchString, search)), 
+                It.Is<string>(searchString => MatchesDate(searchString, search)),
                 It.IsAny<string>(),
                 (string)null,
                 false))
@@ -242,7 +239,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
-                It.Is<string>(searchString => MatchesDate(searchString, search)), 
+                It.Is<string>(searchString => MatchesDate(searchString, search)),
                 It.IsAny<string>(),
                 (string)null,
                 false))
@@ -508,7 +505,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
-        
+
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => searchString.Equals(search)),
                 It.IsAny<string>(),
@@ -579,7 +576,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("yeah!");
             _ministryPlatformRestRepository.Setup(mocked => mocked.UsingAuthenticationToken("yeah!")).Returns(_ministryPlatformRestRepository.Object);
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
-                It.Is<string>(searchString => MatchesDate(searchString, search)), 
+                It.Is<string>(searchString => MatchesDate(searchString, search)),
                 It.IsAny<string>(),
                 (string)null,
                 false))
@@ -805,7 +802,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRestRepository.Setup(mocked => mocked.Search<MpGroupParticipant>(
                 It.Is<string>(searchString => MatchesDate(searchString, search)),
                 It.IsAny<string>(),
-                (string) null,
+                (string)null,
                 false))
                 .Returns(leadersGroupParticipantRecords);
 
