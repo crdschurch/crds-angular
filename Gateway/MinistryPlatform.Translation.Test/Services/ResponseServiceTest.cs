@@ -1,12 +1,14 @@
-﻿using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.MinistryPlatform;
+﻿using System;
+using System.Collections.Generic;
+using Crossroads.Utilities.Interfaces;
+using Crossroads.Web.Common;
+using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
+using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -22,8 +24,8 @@ namespace MinistryPlatform.Translation.Test.Services
             _apiUserService = new Mock<IApiUserRepository>();
 
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("SignupToServeReminders")).Returns(2203);
-            Environment.SetEnvironmentVariable("API_USER", "uid");
-            Environment.SetEnvironmentVariable("API_PASSWORD", "pwd");
+            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
+            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",

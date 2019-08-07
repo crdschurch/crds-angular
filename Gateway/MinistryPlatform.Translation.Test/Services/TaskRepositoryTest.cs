@@ -1,12 +1,14 @@
-﻿using Crossroads.Web.Common.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using Crossroads.Utilities.Interfaces;
+using Crossroads.Web.Common;
+using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace MinistryPlatform.Translation.Test
 {
@@ -34,8 +36,8 @@ namespace MinistryPlatform.Translation.Test
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("TasksNeedingAutoStarted")).Returns(2212);
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("TasksPageId")).Returns(400);
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("RoomReservationPageId")).Returns(384);
-            Environment.SetEnvironmentVariable("CRDS_MP_COMMON_CLIENT_ID", "client");
-            Environment.SetEnvironmentVariable("CRDS_MP_COMMON_CLIENT_SECRET", "secret");
+            _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
+            _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");
 
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {

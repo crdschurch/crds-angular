@@ -1,9 +1,11 @@
 ﻿using crds_angular.Exceptions;
 using crds_angular.Models.Crossroads;
 using crds_angular.Services;
+using Crossroads.Utilities.Services;
 using GoogleMapsAPI.NET.API.Client;
+using Crossroads.Web.Common;
+using Crossroads.Web.Common.Configuration;
 using NUnit.Framework;
-using System;
 
 namespace crds_angular.test.Services
 {
@@ -19,7 +21,7 @@ namespace crds_angular.test.Services
         [SetUp]
         public void SetUp()
         {
-            _mapsApiClient = new MapsAPIClient(Environment.GetEnvironmentVariable("GOOGLE_API_SECRET_KEY"));
+            _mapsApiClient = new MapsAPIClient(new ConfigurationWrapper().GetEnvironmentVarAsString("GOOGLE_API_SECRET_KEY"));
 
             _fixture = new GoogleMapsAddressGeocodingService(_mapsApiClient);
         }

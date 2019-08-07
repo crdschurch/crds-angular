@@ -1,16 +1,18 @@
-using crds_angular.Security;
-using crds_angular.Services.Interfaces;
-using Crossroads.ApiVersioning;
-using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.Security;
-using MinistryPlatform.Translation.Repositories;
-using MinistryPlatform.Translation.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Web.Helpers;
 using System.Web.Http;
+using System.Web.Http.Controllers;
 using System.Web.Http.Description;
 using System.Web.Http.Results;
+using crds_angular.Models.Json;
+using crds_angular.Security;
+using crds_angular.Services.Interfaces;
+using MinistryPlatform.Translation.Repositories;
+using Crossroads.ApiVersioning;
+using Crossroads.Web.Common.Configuration;
+using Crossroads.Web.Common.Security;
+using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.Controllers.API
 {
@@ -21,12 +23,12 @@ namespace crds_angular.Controllers.API
         private readonly IAuthenticationRepository _authenticationRepository;
         private readonly IUserRepository _userService;
 
-        public LookupController(IAuthTokenExpiryService authTokenExpiryService,
-                                IConfigurationWrapper configurationWrapper,
-                                LookupRepository lookupRepository,
-                                IUserImpersonationService userImpersonationService,
-                                IAuthenticationRepository authenticationRepository,
-                                IUserRepository userService)
+        public LookupController(IAuthTokenExpiryService authTokenExpiryService, 
+                                IConfigurationWrapper configurationWrapper, 
+                                LookupRepository lookupRepository, 
+                                IUserImpersonationService userImpersonationService, 
+                                IAuthenticationRepository authenticationRepository, 
+                                IUserRepository userService) 
             : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _configurationWrapper = configurationWrapper;
@@ -109,7 +111,7 @@ namespace crds_angular.Controllers.API
             }
             if (ret.Count == 0)
             {
-                return BadRequest(string.Format("table: {0}", table));
+                return this.BadRequest(string.Format("table: {0}", table));
             }
             return Ok(ret);
 
@@ -161,7 +163,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult LookupGroupReasonEnded()
         {
-            return LookupValues("groupreasonended", "");
+            return LookupValues("groupreasonended","");
         }
 
         /// <summary>
@@ -193,7 +195,7 @@ namespace crds_angular.Controllers.API
 
                 if (ret.Count == 0)
                 {
-                    return BadRequest(string.Format("congregationId: {0} ministryId: {1}", congregationId, ministryId));
+                    return this.BadRequest(string.Format("congregationId: {0} ministryId: {1}", congregationId, ministryId));
                 }
                 return Ok(ret);
             });
@@ -236,8 +238,8 @@ namespace crds_angular.Controllers.API
             if (authorizedWithCookie is UnauthorizedResult)
             {
                 // TODO: Refactor this to use IApiUserRepository.GetDefaultApiClientToken
-                var clientId = Environment.GetEnvironmentVariable("CRDS_MP_COMMON_CLIENT_ID");
-                var clientSecret = Environment.GetEnvironmentVariable("CRDS_MP_COMMON_CLIENT_SECRET");
+                var clientId = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID");
+                var clientSecret = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET");
                 var authData = _authenticationRepository.AuthenticateClient(clientId, clientSecret);
                 var token = authData?.AccessToken;
 
