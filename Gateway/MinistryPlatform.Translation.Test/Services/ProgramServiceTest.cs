@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using crds_angular.App_Start;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
+﻿using crds_angular.App_Start;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -9,6 +6,8 @@ using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -35,8 +34,8 @@ namespace MinistryPlatform.Translation.Test.Services
             _configWrapper = new Mock<IConfigurationWrapper>();
             _apiUserService = new Mock<IApiUserRepository>();
 
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
-            _configWrapper.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
+            Environment.SetEnvironmentVariable("API_USER", "uid");
+            Environment.SetEnvironmentVariable("API_PASSWORD", "pwd");
             _configWrapper.Setup(m => m.GetConfigIntValue("OnlineGivingProgramsPageViewId")).Returns(OnlineGivingProgramsPageViewId);
             _configWrapper.Setup(m => m.GetConfigIntValue("Programs")).Returns(ProgramsPageId);
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
@@ -89,7 +88,7 @@ namespace MinistryPlatform.Translation.Test.Services
         public void TestGetOnlineGivingProgramsNullResponse()
         {
             _ministryPlatformService.Setup(
-                mocked => mocked.GetPageViewRecords(OnlineGivingProgramsPageViewId, It.IsAny<string>(), ",,,1", "", 0)).Returns((List<Dictionary<string, object>>) null);
+                mocked => mocked.GetPageViewRecords(OnlineGivingProgramsPageViewId, It.IsAny<string>(), ",,,1", "", 0)).Returns((List<Dictionary<string, object>>)null);
 
             var programs = _fixture.GetOnlineGivingPrograms(1);
 
