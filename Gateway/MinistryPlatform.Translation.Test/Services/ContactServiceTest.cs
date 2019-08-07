@@ -1,4 +1,7 @@
-﻿using Crossroads.Web.Common.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
@@ -6,9 +9,6 @@ using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -39,8 +39,8 @@ namespace MinistryPlatform.Translation.Test.Services
             _configuration.Setup(mocked => mocked.GetConfigIntValue("StaffContactAttribute")).Returns(7088);
             _configuration.Setup(mocked => mocked.GetConfigIntValue("EventToolContactAttribute")).Returns(9048);
             _configuration.Setup(mocked => mocked.GetConfigIntValue("Addresses")).Returns(271);
-            Environment.SetEnvironmentVariable("API_USER", "uid");
-            Environment.SetEnvironmentVariable("API_PASSWORD", "pwd");
+            _configuration.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
+            _configuration.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken("ABC")).Returns(_ministryPlatformRest.Object);
 
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
@@ -446,8 +446,8 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var householdMembers = _fixture.GetOtherHouseholdMembers(householdId);
             Assert.AreEqual(1, householdMembers.Count);
-            Assert.AreEqual("Minor Child", householdMembers.First().HouseholdPosition);
-        }
+            Assert.AreEqual("Minor Child", householdMembers.First().HouseholdPosition);            
+        }     
 
         public static List<MpContactHousehold> GetContactHouseholds(int householdId)
         {

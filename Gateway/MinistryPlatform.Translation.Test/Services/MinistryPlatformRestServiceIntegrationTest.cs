@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -9,10 +13,6 @@ using MinistryPlatform.Translation.Models.Rules;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -29,12 +29,12 @@ namespace MinistryPlatform.Translation.Test.Services
             var config = new ConfigurationWrapper();
             var authRestClient = new HttpClient
             {
-                BaseAddress = new Uri(Environment.GetEnvironmentVariable("MP_OAUTH_BASE_URL"))
+                BaseAddress = new Uri(config.GetEnvironmentVarAsString("MP_OAUTH_BASE_URL"))
             };
 
             var mpRestClient = new HttpClient
             {
-                BaseAddress = new Uri(Environment.GetEnvironmentVariable("MP_REST_API_ENDPOINT"))
+                BaseAddress = new Uri(config.GetEnvironmentVarAsString("MP_REST_API_ENDPOINT"))
             };
             var authenticationRepository = new AuthenticationRepository(authRestClient, mpRestClient);
             var apiUserRepository = new ApiUserRepository(config, authenticationRepository, mpRestClient);
@@ -47,7 +47,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var ministryPlatformRestClient = new RestClient(Environment.GetEnvironmentVariable("MP_REST_API_ENDPOINT"));
             var authenticationRestClient = new RestClient(Environment.GetEnvironmentVariable("MP_OAUTH_BASE_URL"));
             _fixture = new MinistryPlatformRestRepository(ministryPlatformRestClient, authenticationRestClient);
-        }
+        }       
 
         [Test]
         public void TestChildcareDashboardProcedure()
@@ -60,7 +60,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
             var results = _fixture.UsingAuthenticationToken(_authToken).GetFromStoredProc<MpChildcareDashboard>("api_crds_getChildcareDashboard", parms);
             foreach (var p in results)
-            {
+            {               
                 Console.WriteLine("Result\t{0}", p.FirstOrDefault());
             }
         }
@@ -95,7 +95,7 @@ namespace MinistryPlatform.Translation.Test.Services
             }
         }
 
-
+        
         [Test]
         public void TestChildRsvpdProcedure()
         {
@@ -114,10 +114,10 @@ namespace MinistryPlatform.Translation.Test.Services
 
         [Test]
         public void TestChildcareEmailProcedure()
-        {
+        { 
             Console.WriteLine("TestCallingAStoredProcedure");
             var parms = new Dictionary<string, object>()
-            {
+            {                
                 {"@DaysOut", 7}
             };
             var results = _fixture.UsingAuthenticationToken(_authToken).GetFromStoredProc<MpContact>("api_crds_ChildcareReminderEmails", parms);
@@ -209,7 +209,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"Participation_Status_ID", participantStatus}
             };
             _fixture.UsingAuthenticationToken(_authToken).UpdateRecord("Event_Participants", eventParticipantId, fields);
-        }
+        }       
 
         [Test]
         public void TestGetGoTripsWithForms()
@@ -290,7 +290,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var l = result.FirstOrDefault();
             foreach (var r in l)
             {
-                Assert.IsFalse(r.isTrue);
+                Assert.IsFalse(r.isTrue);                
             }
         }
 
@@ -309,7 +309,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 Assert.IsTrue(r.isTrue);
             }
         }
-
+        
         public void ShouldCreateARecord()
         {
             var payment = new MpPayment
@@ -326,7 +326,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 PaymentAmount = 123.45M,
                 InvoiceDetailId = 19
             };
-            var resp = _fixture.UsingAuthenticationToken(_authToken).Post(new List<MpPaymentDetail> { paymentDetail });
+            var resp = _fixture.UsingAuthenticationToken(_authToken).Post(new List<MpPaymentDetail> {paymentDetail});
 
         }
 
@@ -336,7 +336,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var tableName = "Invoices";
 
             var dict = new Dictionary<string, object>();
-            dict.Add("Invoice_ID", 8);
+            dict.Add("Invoice_ID",8);
             dict.Add("Invoice_Status_ID", 2);
 
             var dict2 = new Dictionary<string, object>();
@@ -347,7 +347,7 @@ namespace MinistryPlatform.Translation.Test.Services
             thelist.Add(dict);
             thelist.Add(dict2);
 
-            var resp = _fixture.UsingAuthenticationToken(_authToken).Put(tableName, thelist);
+            var resp = _fixture.UsingAuthenticationToken(_authToken).Put(tableName,thelist);
         }
 
         [Test]
@@ -435,7 +435,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"Payment_ID", 8},
                 {"Batch_ID", 399484}
             };
-            var parmList = new List<Dictionary<string, object>> { parms };
+            var parmList = new List<Dictionary<string, object>> {parms};
             var results = _fixture.UsingAuthenticationToken(_authToken).Put("Payments", parmList);
 
             Assert.IsTrue(results > 0);
@@ -540,8 +540,8 @@ namespace MinistryPlatform.Translation.Test.Services
             const string columnList = "Product_ID_Table.[Product_ID],Ruleset_ID_Table.[Ruleset_ID],cr_Product_Ruleset.[Start_Date],cr_Product_Ruleset.[End_Date]";
             var res = _fixture.UsingAuthenticationToken(_authToken).Search<MPProductRuleSet>(searchString, columnList);
             Assert.IsNotEmpty(res);
-        }
-
+        } 
+        
         public void findCongregation()
         {
             var searchString = $"Congregations.[Congregation_Name]='Oakley'";
@@ -554,7 +554,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var filter = $"Events.[Event_ID] = 4532768";
             const string column = "Online_Registration_Product_Table_Program_ID_Table_Communication_ID_Table.[Communication_ID]";
             var result = _fixture.UsingAuthenticationToken(_authToken).Search<int>("Events", filter, column, null, false);
-            Assert.AreEqual(2006, result);
+            Assert.AreEqual(2006, result);            
         }
 
         [Test]
@@ -578,12 +578,12 @@ namespace MinistryPlatform.Translation.Test.Services
             Assert.AreEqual(1, result.Count);
             Assert.IsNotNull(result.First().EndDate);
         }
-
+        
         [Test]
         public void GetAllUncancelledInvoicesForEventParticipant()
         {
             var filter = new Dictionary<string, object> { { "Event_Participant_ID", 7720246 } };
-            var result = _fixture.UsingAuthenticationToken(_authToken)
+            var result =  _fixture.UsingAuthenticationToken(_authToken)
                 .Get<MpInvoiceDetail>("Invoice_Detail", filter);
             Assert.IsFalse(result.Where(i => i.InvoiceStatusId != 7).ToList().Any());
         }

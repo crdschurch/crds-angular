@@ -1,20 +1,23 @@
-﻿using crds_angular.App_Start;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using crds_angular.App_Start;
+using Crossroads.Utilities;
 using Crossroads.Utilities.Enums;
+using Crossroads.Utilities.Interfaces;
+using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
-using MinistryPlatform.Translation.Enum;
-using MinistryPlatform.Translation.Extensions;
-using MinistryPlatform.Translation.Models;
-using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.PlatformService;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using MinistryPlatform.Translation.Enum;
+using MinistryPlatform.Translation.Extensions;
+using MinistryPlatform.Translation.Models;
+using MinistryPlatform.Translation.Models.DTO;
 using Constants = Crossroads.Utilities.Constants;
 
 namespace MinistryPlatform.Translation.Test.Services
@@ -51,15 +54,15 @@ namespace MinistryPlatform.Translation.Test.Services
             _config.Setup(mocked => mocked.GetConfigIntValue("Deposits")).Returns(7070);
             _config.Setup(mocked => mocked.GetConfigIntValue("PaymentProcessorEventErrors")).Returns(6060);
             _config.Setup(mocked => mocked.GetConfigIntValue("GPExportView")).Returns(92198);
-            _config.Setup(mocked => mocked.GetConfigIntValue("PaymentsGPExportView")).Returns(1112);
+            _config.Setup(mocked => mocked.GetConfigIntValue("PaymentsGPExportView")).Returns(1112);            
             _config.Setup(mocked => mocked.GetConfigIntValue("DonationCommunications")).Returns(540);
             _config.Setup(mocked => mocked.GetConfigIntValue("Messages")).Returns(341);
             _config.Setup(mocked => mocked.GetConfigIntValue("GLAccountMappingByProgramPageView")).Returns(2213);
             _config.Setup(mocked => mocked.GetConfigIntValue("ScholarshipPaymentTypeId")).Returns(9);
             _config.Setup(mocked => mocked.GetConfigIntValue("DonationDistributionsApiSubPageView")).Returns(5050);
 
-            Environment.SetEnvironmentVariable("API_USER", "uid");
-            Environment.SetEnvironmentVariable("API_PASSWORD", "pwd");
+            _config.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
+            _config.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
@@ -121,7 +124,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 new PredefinedDonationAmountDTO() {Id = 6, Amount = 500, DomainId = 1},
             };
 
-            List<int> expectedResults = new List<int> { 5, 10, 25, 50, 100, 500 };
+            List<int> expectedResults = new List<int> {5, 10, 25, 50, 100, 500};
 
             _apiUserRepository.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns(apiToken);
 
@@ -449,7 +452,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 .Returns(0);
             _ministryPlatformRest.Setup(mock => mock.Get<MPGLAccountMapping>(It.IsAny<int>(), (string)null)).Returns(MockGLAccountMapping());
             _config.Setup(mocked => mocked.GetConfigIntValue("ProcessingMappingId")).Returns(127);
-
+            
             var result = _fixture.GetGpExport(depositId);
             _ministryPlatformService.VerifyAll();
             Assert.IsNotNull(result);
@@ -526,9 +529,9 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             const int feeMapping = 1;
             const string token = "mockToken";
-
+            
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRest.Object);
-            _ministryPlatformRest.Setup(mock => mock.Get<MPGLAccountMapping>(It.IsAny<int>(), (string)null)).Returns((MPGLAccountMapping)null);
+            _ministryPlatformRest.Setup(mock => mock.Get<MPGLAccountMapping>(It.IsAny<int>(), (string)null)).Returns( (MPGLAccountMapping) null);
 
             var result = _fixture.GetProcessingFeeGLMapping(feeMapping, token);
 
@@ -564,15 +567,15 @@ namespace MinistryPlatform.Translation.Test.Services
             const int congregationId = 1;
             var returnedData = MockGPExport(programId, congregationId);
 
-            var mockGPExportData = MockGPExportDataTest1(programId);
-
+            var mockGPExportData = MockGPExportDataTest1(programId);            
+            
             var searchStr = $"{depositId},";
             _ministryPlatformService.Setup(mock => mock.GetPageViewRecords(viewId, It.IsAny<string>(), searchStr, "", 0)).Returns(returnedData);
-
+            
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(It.IsAny<string>())).Returns(_ministryPlatformRest.Object);
             _ministryPlatformRest.Setup(m => m.Search<int>("GL_Account_Mapping", $"GL_Account_Mapping.Program_ID={programId} AND GL_Account_Mapping.Congregation_ID={congregationId}", "Processor_Fee_Mapping_ID_Table.Program_ID", null, false))
                 .Returns(0);
-            _config.Setup(mocked => mocked.GetConfigIntValue("ProcessingMappingId")).Returns(127);
+            _config.Setup(mocked => mocked.GetConfigIntValue("ProcessingMappingId")).Returns(127);          
 
             var result = _fixture.GetGpExportData(depositId, It.IsAny<string>());
             _ministryPlatformService.VerifyAll();
@@ -674,7 +677,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
         }
 
-        private List<Dictionary<string, object>> MockGPExport(int programId = 0, int congregationId = 0)
+        private List<Dictionary<string, object>> MockGPExport(int programId = 0,  int congregationId = 0)
         {
             return new List<Dictionary<string, object>>
             {
@@ -699,7 +702,7 @@ namespace MinistryPlatform.Translation.Test.Services
                     {"Program_ID", programId > 0 ? programId : 15},
                     {"Payment_Type_ID", 8},
                     {"Scholarship_Expense_Account", "19948-900-11"},
-                    {"Processor_Fee_Amount", "0.25"}
+                    {"Processor_Fee_Amount", "0.25"}                   
                 },
                 new Dictionary<string, object>
                 {
@@ -870,7 +873,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"Processor_Fee_Amount", "0.25"}
             };
 
-            var l = new List<Dictionary<string, object>>
+            var l =  new List<Dictionary<string, object>>
             {
                 one,
                 two,
@@ -880,9 +883,9 @@ namespace MinistryPlatform.Translation.Test.Services
 
             return l;
         }
+    
 
-
-        private List<MpGPExportDatum> MockGPExportDataTest1(int programId)
+    private List<MpGPExportDatum> MockGPExportDataTest1(int programId)
         {
             var dict = new List<MpGPExportDatum>
             {
@@ -981,7 +984,7 @@ namespace MinistryPlatform.Translation.Test.Services
             };
 
             return dict;
-        }
+        }   
 
         private List<MpGPExportDatum> MockGPExportDataTest2()
         {
@@ -1303,7 +1306,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 {"Exported", exported},
             };
             _ministryPlatformService.Setup(mocked => mocked.UpdateRecord(7070, expectedParms, It.IsAny<string>()));
-            _ministryPlatformService.Setup(mocked => mocked.RemoveSelection(selectionId, new[] { depositId }, It.IsAny<string>()));
+            _ministryPlatformService.Setup(mocked => mocked.RemoveSelection(selectionId, new [] {depositId}, It.IsAny<string>()));
 
             _fixture.UpdateDepositToExported(selectionId, depositId);
             _ministryPlatformService.VerifyAll();
@@ -1331,7 +1334,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformService.Setup(mocked => mocked.GetRecordsDict(540, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(resultsDict);
             _ministryPlatformService.Setup(mocked => mocked.UpdateRecord(341, expectedParams, It.IsAny<string>()));
             _ministryPlatformService.Setup(mocked => mocked.DeleteRecord(540, It.IsAny<int>(), It.IsAny<DeleteOption[]>(), It.IsAny<string>())).Returns(1);
-            _fixture.FinishSendMessageFromDonor(123, true);
+            _fixture.FinishSendMessageFromDonor(123,true);
             _ministryPlatformService.VerifyAll();
         }
 
@@ -1450,7 +1453,7 @@ namespace MinistryPlatform.Translation.Test.Services
             Assert.AreEqual(2, result.Distributions.Count);
 
             Assert.AreEqual(donationId, result.Distributions[0].donationId);
-            Assert.AreEqual((int)((distributions[0]["Amount"] as decimal? ?? 0M) * Constants.StripeDecimalConversionValue), result.Distributions[0].donationDistributionAmt);
+            Assert.AreEqual((int) ((distributions[0]["Amount"] as decimal? ?? 0M)*Constants.StripeDecimalConversionValue), result.Distributions[0].donationDistributionAmt);
             Assert.AreEqual(distributions[0].ToInt("Donation_Distribution_ID"), result.Distributions[0].donationDistributionId);
             Assert.AreEqual(distributions[0].ToString("Program_ID"), result.Distributions[0].donationDistributionProgram);
             Assert.AreEqual(distributions[0].ToNullableInt("Pledge_ID"), result.Distributions[0].PledgeId);

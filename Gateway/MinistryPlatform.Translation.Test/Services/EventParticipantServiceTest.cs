@@ -1,16 +1,19 @@
-﻿using Crossroads.Utilities.FunctionalHelpers;
+﻿using System;
+using System.Collections.Generic;
+using Crossroads.Utilities;
+using Crossroads.Utilities.FunctionalHelpers;
+using Crossroads.Utilities.Interfaces;
+using FsCheck;
+using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
-using FsCheck;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using MinistryPlatform.Translation.Test.Helpers;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -25,7 +28,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
         [SetUp]
         public void Setup()
-        {
+        {            
             Factories.EventParticipant();
             _ministryPlatformService = new Mock<IMinistryPlatformService>();
             _ministryPlatformRest = new Mock<IMinistryPlatformRestRepository>();
@@ -33,14 +36,14 @@ namespace MinistryPlatform.Translation.Test.Services
             _configWrapper = new Mock<IConfigurationWrapper>();
             _apiUserService = new Mock<IApiUserRepository>();
 
-            _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
+        _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = "ABC",
                 ExpiresIn = 123
             });
 
-            Environment.SetEnvironmentVariable("API_USER", "api-user");
-            Environment.SetEnvironmentVariable("API_PASSWORD", "api-password");
+            _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("api-user");
+            _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("api-password");
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("TripDestinationDocuments")).Returns(1234);
 
             _fixture = new EventParticipantRepository(_ministryPlatformService.Object, _ministryPlatformRest.Object, _authService.Object, _configWrapper.Object, _apiUserService.Object);
@@ -125,7 +128,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 {
                     EventParticipantId = 1232456,
                     SetupDate = signupDate
-                }
+                }   
             };
 
             _configWrapper.Setup(m => m.GetConfigIntValue("Event_Participant_Status_ID_Cancelled")).Returns(5);
@@ -152,7 +155,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var filter = $"Event_ID_Table.[Event_ID] = {eventId} AND Participant_ID_Table_Contact_ID_Table.[Contact_ID] = {contactId} AND Participation_Status_ID_Table.[Participation_Status_ID] <> 5";
 
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(apiToken)).Returns(_ministryPlatformRest.Object);
-            _ministryPlatformRest.Setup(m => m.Search<MpEventParticipant>(filter, "Event_Participants.[Event_Participant_ID],Event_Participants.[_Setup_Date] as [Setup_Date]", (string) null, false)).Returns(expected);
+            _ministryPlatformRest.Setup(m => m.Search<MpEventParticipant>(filter, "Event_Participants.[Event_Participant_ID],Event_Participants.[_Setup_Date] as [Setup_Date]", (string)null, false)).Returns(expected);
 
             var result = _fixture.EventParticipantSignupDate(contactId, eventId, apiToken);
             Assert.IsNull(result);
@@ -178,7 +181,7 @@ namespace MinistryPlatform.Translation.Test.Services
             _ministryPlatformRest.Setup(m => m.UsingAuthenticationToken(token)).Returns(_ministryPlatformRest.Object);
             _ministryPlatformRest.Setup(
                 m => m.Search<MpEventParticipant>($"Event_ID_Table.[Event_ID] = {eventId} AND Participant_ID_Table_Contact_ID_Table.[Contact_ID] = {contactId}", columns, null, false))
-                .Returns(new List<MpEventParticipant>() { eventParticipants });
+                .Returns(new List<MpEventParticipant>() {eventParticipants});
 
             var result = _fixture.GetEventParticipantByContactAndEvent(contactId, eventId, token);
 
@@ -210,7 +213,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var result = _fixture.GetEventParticipantByContactAndEvent(contactId, eventId, token);
 
             Assert.IsInstanceOf<Err<MpEventParticipant>>(result);
-            Assert.IsFalse(result.Status);
+            Assert.IsFalse(result.Status);            
         }
 
         [Test]
@@ -259,7 +262,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var result = _fixture.GetEventParticipantCountByGender(eventId, genderId);
 
             Assert.NotNull(result);
-            Assert.AreEqual(42, result);
+            Assert.AreEqual(42 , result);
         }
     }
 }

@@ -1,13 +1,16 @@
-﻿using Crossroads.Web.Common.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using Crossroads.Utilities.Interfaces;
+using Crossroads.Web.Common;
+using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
+using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -36,8 +39,8 @@ namespace MinistryPlatform.Translation.Test.Services
             config.Setup(mocked => mocked.GetConfigIntValue("SmallGroupTypeId")).Returns(SmallGroupTypeId);
             config.Setup(mocked => mocked.GetConfigIntValue("AnywhereGroupTypeId")).Returns(GatheringTypeId);
 
-            Environment.SetEnvironmentVariable("API_USER", "api_user");
-            Environment.SetEnvironmentVariable("API_PASSWORD", "password");
+            config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("api_user");
+            config.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
 
             auth.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
@@ -129,7 +132,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 m =>
                     m.Search<MpAttribute>(
                         "ATTRIBUTE_CATEGORY_ID_TABLE.ATTRIBUTE_CATEGORY_ID = 51 AND GETDATE() BETWEEN START_DATE AND ISNULL(END_DATE, GETDATE())",
-                        "Attribute_Name", (string)null, (bool)false)).Returns(dto);
+                        "Attribute_Name",(string) null, (bool) false)).Returns(dto);
 
             var result = _fixture.GetCurrentJourney();
 
