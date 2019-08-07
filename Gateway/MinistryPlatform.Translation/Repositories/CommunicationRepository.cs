@@ -1,12 +1,4 @@
-﻿using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.MinistryPlatform;
-using Crossroads.Web.Common.Security;
-using log4net;
-using MinistryPlatform.Translation.Exceptions;
-using MinistryPlatform.Translation.Extensions;
-using MinistryPlatform.Translation.Models;
-using MinistryPlatform.Translation.Repositories.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -14,6 +6,17 @@ using System.Net;
 using System.Net.Mail;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Web.Configuration;
+using Crossroads.Utilities.Interfaces;
+using log4net;
+using Crossroads.Web.Common;
+using Crossroads.Web.Common.Configuration;
+using Crossroads.Web.Common.MinistryPlatform;
+using Crossroads.Web.Common.Security;
+using MinistryPlatform.Translation.Exceptions;
+using MinistryPlatform.Translation.Extensions;
+using MinistryPlatform.Translation.Models;
+using MinistryPlatform.Translation.Repositories.Interfaces;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 
 namespace MinistryPlatform.Translation.Repositories
@@ -48,13 +51,13 @@ namespace MinistryPlatform.Translation.Repositories
             _ministryPlatformRestRepository = ministryPlatformRestRepository;
             _apiUserRepository = apiUserRepository;
         }
-
+		
         public int GetUserIdFromContactId(string token, int contactId)
         {
             int pNum = Convert.ToInt32(ConfigurationManager.AppSettings["MyContact"]);
             var profile = MinistryPlatformService.GetRecordDict(pNum, contactId, token);
 
-            return (int)profile["User_Account"];
+            return (int) profile["User_Account"];
         }
 
         public int GetUserIdFromContactId(int contactId)
@@ -87,9 +90,9 @@ namespace MinistryPlatform.Translation.Repositories
         {
             if (String.IsNullOrEmpty(EMAIL_USERNAME) || String.IsNullOrEmpty(EMAIL_PASSWORD))
             {
-                EMAIL_USERNAME = Environment.GetEnvironmentVariable("DIRECT_EMAIL_USERNAME");
-                EMAIL_PASSWORD = Environment.GetEnvironmentVariable("DIRECT_EMAIL_PASSWORD");
-            }
+                EMAIL_USERNAME = _configurationWrapper.GetEnvironmentVarAsString("DIRECT_EMAIL_USERNAME");
+                EMAIL_PASSWORD = _configurationWrapper.GetEnvironmentVarAsString("DIRECT_EMAIL_PASSWORD");
+            }          
         }
 
         private string GetColumns()
@@ -137,7 +140,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public MpCommunicationPreferences GetPreferences(String token, int userId)
         {
-            int pNum = Convert.ToInt32(ConfigurationManager.AppSettings["MyContact"]);
+            int pNum = Convert.ToInt32( ConfigurationManager.AppSettings["MyContact"]);
             int hNum = Convert.ToInt32(ConfigurationManager.AppSettings["MyHousehold"]);
             var profile = _ministryPlatformService.GetRecordDict(pNum, userId, token);
             var household = _ministryPlatformService.GetRecordDict(hNum, (int)profile["Household_ID"], token);
@@ -149,15 +152,13 @@ namespace MinistryPlatform.Translation.Repositories
             };
         }
 
-        public bool SetEmailSMSPreferences(String token, Dictionary<string, object> prefs)
-        {
+        public bool SetEmailSMSPreferences(String token, Dictionary<string,object> prefs){
             int pId = Convert.ToInt32(ConfigurationManager.AppSettings["MyContact"]);
             _ministryPlatformService.UpdateRecord(pId, prefs, token);
             return true;
         }
 
-        public bool SetMailPreferences(string token, Dictionary<string, object> prefs)
-        {
+        public bool SetMailPreferences(string token, Dictionary<string,object> prefs){
             int pId = Convert.ToInt32(ConfigurationManager.AppSettings["MyHousehold"]);
             _ministryPlatformService.UpdateRecord(pId, prefs, token);
             return true;
@@ -180,9 +181,9 @@ namespace MinistryPlatform.Translation.Repositories
 
         private int AddCommunication(MpCommunication communication, string token, int communicationStatus)
         {
-            if (communication.StartDate == default(DateTime))
+            if(communication.StartDate == default(DateTime))
                 communication.StartDate = DateTime.Now;
-
+            
             var dictionary = new Dictionary<string, object>
             {
                 {"Subject", communication.EmailSubject},
@@ -267,9 +268,9 @@ namespace MinistryPlatform.Translation.Repositories
                 DomainId = 1,
                 EmailBody = template.Body,
                 EmailSubject = template.Subject,
-                FromContact = new MpContact { ContactId = fromContactId, EmailAddress = fromEmailAddress },
-                ReplyToContact = new MpContact { ContactId = replyContactId, EmailAddress = replyEmailAddress },
-                ToContacts = new List<MpContact> { new MpContact { ContactId = toContactId, EmailAddress = toEmailAddress } },
+                FromContact = new MpContact {ContactId = fromContactId, EmailAddress = fromEmailAddress},
+                ReplyToContact = new MpContact {ContactId = replyContactId, EmailAddress = replyEmailAddress},
+                ToContacts = new List<MpContact>{ new MpContact{ContactId = toContactId, EmailAddress = toEmailAddress}},
                 TemplateId = templateId,
                 MergeData = mergeData
             };

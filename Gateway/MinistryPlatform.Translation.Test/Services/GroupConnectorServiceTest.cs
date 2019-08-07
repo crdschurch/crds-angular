@@ -1,12 +1,14 @@
-﻿using Crossroads.Web.Common.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using Crossroads.Utilities.Interfaces;
+using Crossroads.Web.Common;
+using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Repositories.GoCincinnati;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
 
 namespace MinistryPlatform.Translation.Test.Services
@@ -30,17 +32,17 @@ namespace MinistryPlatform.Translation.Test.Services
             _configuration = new Mock<IConfigurationWrapper>();
             _apiUserService = new Mock<IApiUserRepository>();
 
-            _configuration.Setup(mocked => mocked.GetConfigIntValue("GroupConnectorPageId")).Returns(467);
+        _configuration.Setup(mocked => mocked.GetConfigIntValue("GroupConnectorPageId")).Returns(467);
             _configuration.Setup(mocked => mocked.GetConfigValue("GroupConnectorRegistrationPageId")).Returns("GroupConnectorRegistrationPageId");
-            Environment.SetEnvironmentVariable("API_USER", "uid");
-            Environment.SetEnvironmentVariable("API_PASSWORD", "pwd");
+            _configuration.Setup(m => m.GetEnvironmentVarAsString("API_USER")).Returns("uid");
+            _configuration.Setup(m => m.GetEnvironmentVarAsString("API_PASSWORD")).Returns("pwd");
             _authService.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
                 AccessToken = It.IsAny<string>(),
                 ExpiresIn = 123
             });
             _fixture = new GroupConnectorRepository(_ministryPlatformService.Object, _ministryPlatformRestRepository.Object, _authService.Object, _configuration.Object, _apiUserService.Object);
-
+            
         }
 
         [Test]
@@ -98,7 +100,7 @@ namespace MinistryPlatform.Translation.Test.Services
             Assert.AreEqual(123, groupConnectorRegistration);
 
             _ministryPlatformService.VerifyAll();
-
+            
         }
 
         [Test]
@@ -106,7 +108,7 @@ namespace MinistryPlatform.Translation.Test.Services
         {
             Exception ex = new Exception("GroupConnecotrRegistration creation failed");
             _ministryPlatformService.Setup(
-                mocked => mocked.CreateSubRecord("GroupConnectorRegistrationPageId", 8888, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true))
+                mocked => mocked.CreateSubRecord("GroupConnectorRegistrationPageId",8888, It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), true))
                 .Throws(ex);
 
             try

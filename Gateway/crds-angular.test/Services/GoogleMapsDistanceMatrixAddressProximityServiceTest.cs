@@ -1,18 +1,22 @@
-﻿using crds_angular.Exceptions;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http.Headers;
+using crds_angular.Exceptions;
 using crds_angular.Models.Crossroads;
 using crds_angular.Services;
 using crds_angular.Services.Interfaces;
+using Crossroads.Utilities.Services;
 using GoogleMapsAPI.NET.API.Client;
 using GoogleMapsAPI.NET.API.Client.Interfaces;
 using GoogleMapsAPI.NET.API.Common.Components;
 using GoogleMapsAPI.NET.API.DistanceMatrix.Components;
 using GoogleMapsAPI.NET.API.DistanceMatrix.Responses;
 using GoogleMapsAPI.NET.Requests;
+using Crossroads.Web.Common;
+using Crossroads.Web.Common.Configuration;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Net;
 
 namespace crds_angular.test.Services
 {
@@ -29,7 +33,7 @@ namespace crds_angular.test.Services
         [SetUp]
         public void SetUp()
         {
-            _mapsApiClient = new MapsAPIClient(Environment.GetEnvironmentVariable("GOOGLE_API_SECRET_KEY"));
+            _mapsApiClient = new MapsAPIClient(new ConfigurationWrapper().GetEnvironmentVarAsString("GOOGLE_API_SECRET_KEY"));
             _addressGeocodingService = new GoogleMapsAddressGeocodingService(_mapsApiClient);
 
             _fixture = new GoogleMapsDistanceMatrixAddressProximityService(_mapsApiClient, _addressGeocodingService);
@@ -91,7 +95,7 @@ namespace crds_angular.test.Services
                 {
                     Distance = new Duration
                     {
-                        Value = 9000 + i
+                        Value  = 9000 + i
                     },
                     Status = "OK"
                 });
