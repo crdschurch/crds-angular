@@ -1,4 +1,8 @@
-﻿using Crossroads.Web.Common.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using Crossroads.Utilities.Interfaces;
+using Crossroads.Web.Common;
+using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Extensions;
@@ -7,8 +11,6 @@ using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -31,8 +33,8 @@ namespace MinistryPlatform.Translation.Test.Services
             var auth = new Mock<IAuthenticationRepository>(MockBehavior.Strict);
 
             config.Setup(mocked => mocked.GetConfigIntValue("InvitationPageID")).Returns(InvitationPageId);
-            Environment.SetEnvironmentVariable("CRDS_MP_COMMON_CLIENT_ID", "client");
-            Environment.SetEnvironmentVariable("CRDS_MP_COMMON_CLIENT_SECRET", "secret");
+            config.Setup(mocked => mocked.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID")).Returns("client");
+            config.Setup(mocked => mocked.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET")).Returns("secret");
 
             auth.Setup(m => m.AuthenticateClient(It.IsAny<string>(), It.IsAny<string>())).Returns(new AuthToken
             {
@@ -98,7 +100,7 @@ namespace MinistryPlatform.Translation.Test.Services
                 RecipientName = "Test User",
                 RequestDate = new DateTime(2004, 1, 13)
             };
-
+            
             const string invitationGuid = "329129741-adsfads-3281234-asdfasdf";
 
             var returned = new List<Dictionary<string, object>>

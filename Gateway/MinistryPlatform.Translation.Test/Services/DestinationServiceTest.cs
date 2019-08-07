@@ -1,12 +1,12 @@
-﻿using Crossroads.Web.Common.Configuration;
+﻿using System.Collections.Generic;
+using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;
+using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace MinistryPlatform.Translation.Test.Services
 {
@@ -31,8 +31,8 @@ namespace MinistryPlatform.Translation.Test.Services
                 ExpiresIn = 123
             });
 
-            Environment.SetEnvironmentVariable("API_USER", "api-user");
-            Environment.SetEnvironmentVariable("API_PASSWORD", "api-password");
+            _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_USER")).Returns("api-user");
+            _configWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("api-password");
             _configWrapper.Setup(mocked => mocked.GetConfigIntValue("TripDestinationDocuments")).Returns(1234);
 
             _fixture = new DestinationRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _apiUserService.Object);

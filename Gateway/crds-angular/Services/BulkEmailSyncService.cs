@@ -1,24 +1,26 @@
-﻿using AutoMapper;
-using crds_angular.Models.MailChimp;
-using crds_angular.Services.Interfaces;
-using Crossroads.Utilities.Serializers;
-using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.MinistryPlatform;
-using log4net;
-using MinistryPlatform.Translation.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RestSharp;
-using RestSharp.Authenticators;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
+using System.Timers;
 using System.Text;
 using System.Threading;
-using System.Timers;
+using crds_angular.Models.MailChimp;
+using crds_angular.Services.Interfaces;
+using Crossroads.Utilities.Interfaces;
+using Crossroads.Utilities.Serializers;
+using log4net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RestSharp;
 using MPInterfaces = MinistryPlatform.Translation.Repositories.Interfaces;
+using AutoMapper;
+using Crossroads.Web.Common;
+using Crossroads.Web.Common.Configuration;
+using Crossroads.Web.Common.MinistryPlatform;
+using MinistryPlatform.Translation.Models;
+using RestSharp.Authenticators;
 
 namespace crds_angular.Services
 {
@@ -44,7 +46,7 @@ namespace crds_angular.Services
             _configWrapper = configWrapper;
 
             _token = _apiUserService.GetDefaultApiClientToken();
-
+            
             ConfigureRefreshTokenTimer();
         }
 
@@ -52,7 +54,7 @@ namespace crds_angular.Services
         {
             // Hack to get around token expiring every 15 minutes when updating large number of Third_Party_Contact_Id, 
             // so fire event every 10 minutes and get a new token
-            _refreshTokenTimer = new System.Timers.Timer(10 * 60 * 1000);
+            _refreshTokenTimer = new System.Timers.Timer(10*60*1000);
             _refreshTokenTimer.AutoReset = true;
             _refreshTokenTimer.Elapsed += RefreshTokenTimerElapsed;
         }
@@ -60,14 +62,14 @@ namespace crds_angular.Services
         private void RefreshTokenTimerElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             _logger.Info("Refreshing token");
-            _token = _apiUserService.GetDefaultApiClientToken();
+            _token = _apiUserService.GetDefaultApiClientToken();            
         }
 
 
         public void RunService()
         {
             try
-            {
+            {                
                 _refreshTokenTimer.Start();
 
                 var publications = _bulkEmailRepository.GetPublications(_token);
@@ -93,16 +95,16 @@ namespace crds_angular.Services
         }
 
         private List<string> CreateAndSendBatches(MpBulkEmailPublication publication, List<MpBulkEmailSubscriber> subscribers)
-        {
+        {            
             var batchSize = 10000;
-            var batches = Math.Ceiling(subscribers.Count / (decimal)batchSize);
+            var batches = Math.Ceiling(subscribers.Count/(decimal) batchSize);
             var operationIds = new List<string>();
 
             for (var batchIndex = 0; batchIndex < batches; batchIndex++)
             {
-                var currentBatch = subscribers.Skip(batchIndex * batchSize).Take(batchSize);
+                var currentBatch = subscribers.Skip(batchIndex*batchSize).Take(batchSize);
                 var operationId = SendBatch(publication, currentBatch.ToList(), batchIndex);
-
+                
                 if (!string.IsNullOrEmpty(operationId))
                 {
                     operationIds.Add(operationId);
@@ -136,7 +138,7 @@ namespace crds_angular.Services
             }
 
             var content = response.Content;
-
+            
             if (String.IsNullOrEmpty(content))
             {
                 // This will be addressed is US2861: MP/MailChimp Synch Error Handling 
@@ -149,8 +151,8 @@ namespace crds_angular.Services
             var responseValues = DeserializeToDictionary(content);
 
             // this needs to be returned, because we can't guarantee that the operation won't fail after it begins
-            if (responseValues["status"].ToString() == "started" ||
-                responseValues["status"].ToString() == "pending" ||
+            if (responseValues["status"].ToString() == "started" || 
+                responseValues["status"].ToString() == "pending" || 
                 responseValues["status"].ToString() == "finished")
             {
                 return responseValues["id"].ToString();
@@ -168,15 +170,15 @@ namespace crds_angular.Services
         private void ProcessSynchronizationResultsWithRetries(Dictionary<MpBulkEmailPublication, List<string>> publicationOperations)
         {
             var configurationWaitHours = _configWrapper.GetConfigIntValue("BulkEmailMaximumWaitHours");
-            var waitTime = (int)TimeSpan.FromSeconds(10).TotalSeconds;
-            var maximumWaitTime = (int)TimeSpan.FromHours(configurationWaitHours).TotalSeconds;
+            var waitTime = (int) TimeSpan.FromSeconds(10).TotalSeconds;
+            var maximumWaitTime = (int) TimeSpan.FromHours(configurationWaitHours).TotalSeconds;
             var maxRetries = maximumWaitTime / waitTime;
             var attempts = 0;
 
             do
-            {
+            {                
                 attempts++;
-
+                
                 if (attempts > maxRetries)
                 {
                     // This will be addressed is US2861: MP/MailChimp Synch Error Handling 
@@ -281,8 +283,8 @@ namespace crds_angular.Services
         private RestClient GetBulkEmailClient()
         {
             var apiUrl = _configWrapper.GetConfigValue("BulkEmailApiUrl");
-            var apiKey = Environment.GetEnvironmentVariable("BULK_EMAIL_API_KEY");
-
+            var apiKey = _configWrapper.GetEnvironmentVarAsString("BULK_EMAIL_API_KEY");
+           
             var client = new RestClient(apiUrl);
             client.Authenticator = new HttpBasicAuthenticator("noname", apiKey);
 
@@ -299,7 +301,7 @@ namespace crds_angular.Services
                 if (subscriber.EmailAddress != subscriber.ThirdPartyContactId)
                 {
                     if (!string.IsNullOrEmpty(subscriber.ThirdPartyContactId))
-                    {
+                    {                        
                         var unsubscribeOperation = UnsubscribeOldEmailAddress(publication, subscriber);
                         batch.Operations.Add(unsubscribeOperation);
                     }
@@ -313,7 +315,7 @@ namespace crds_angular.Services
                 var operation = GetOperation(publication, subscriber);
                 batch.Operations.Add(operation);
             }
-
+            
             return batch;
         }
 
@@ -328,7 +330,7 @@ namespace crds_angular.Services
         private SubscriberOperationDTO GetOperation(MpBulkEmailPublication publication, MpBulkEmailSubscriber subscriber)
         {
             var mailChimpSubscriber = new SubscriberDTO();
-
+            
             mailChimpSubscriber.Subscribed = subscriber.Subscribed;
             mailChimpSubscriber.EmailAddress = subscriber.ThirdPartyContactId;
             mailChimpSubscriber.MergeFields = subscriber.MergeFields;
@@ -425,7 +427,7 @@ namespace crds_angular.Services
             foreach (var subscriberDTO in subscribersDTOs)
             {
                 subscriberDTO.PublicationID = publication.PublicationId;
-                subscriberOpts.Add(Mapper.Map<MpBulkEmailSubscriberOpt>(subscriberDTO));
+                subscriberOpts.Add(Mapper.Map<MpBulkEmailSubscriberOpt>(subscriberDTO));   
             }
 
             foreach (var subscriberOpt in subscriberOpts)
