@@ -1,0 +1,41 @@
+USE [MinistryPlatform]
+GO
+
+/****** Object:  StoredProcedure [dbo].[cr_CreateTask]    Script Date: 8/9/2019 8:32:28 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+-- =============================================
+-- Author:		Canterbury, Andy
+-- Create date: 02/19/2015
+-- Description:	Create a Task
+-- =============================================
+CREATE OR ALTER PROCEDURE [dbo].[cr_CreateTask] 
+	-- Add the parameters for the stored procedure here
+	@Title nvarchar(50), 
+	@Description nvarchar(2000),
+	@StartDate datetime = NULL,
+	@EndDate datetime = NULL,
+	@AssignedUserID int,
+	@AuthorID int,
+	@RecordID int, 
+	@PageID int
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+	INSERT INTO dp_Tasks
+		(Title, [Start_Date], End_Date, [Description], Completed, Assigned_User_ID, Author_User_ID, _Record_ID, _Table_Name, Domain_ID)
+	VALUES
+		(@Title, GetDate(), @EndDate, @Description, 0, @AssignedUserID, @AuthorID, @RecordID, @PageID, 1)
+
+END
+
+GO
+
+
