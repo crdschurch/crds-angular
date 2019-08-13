@@ -475,7 +475,7 @@ namespace crds_angular.Services
                 ObjectSingleAttributeDTO dayOfWeek;
                 if (s.TryGetValue(dayOfWeekCategoryAttributeID, out dayOfWeek) && dayOfWeek.Value != null)
                 {
-                    // grouptype is now equal to the value
+                    // dayOfWeek is now equal to the value
                     var x = dayOfWeek.Value;
                     dict.Add("DayOfWeek", new string[] { x.Name });
                 }
@@ -540,6 +540,14 @@ namespace crds_angular.Services
                             categories.Add(a.Category);
                         }
                     }
+                }
+
+                int groupAutoJourneyAttributeID = 93;
+                ObjectSingleAttributeDTO groupAutoJourney;
+                if (s.TryGetValue(groupAutoJourneyAttributeID, out groupAutoJourney) && groupAutoJourney.Value != null)
+                {
+                    var x = groupAutoJourney.Value;
+                    categories.Add(x.Category);
                 }
 
                 // add to the dict
