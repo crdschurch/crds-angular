@@ -35,3 +35,4 @@ R_Event_Name,R_Start_Date,R_End_Date,R_Event_Type,R_Program_Name,R_Contact_Email
 (t+auto) automation event resource test event,1/1/2020,12/31/2020,Outside Events,Reachout,mpcrds+aliciakeys@gmail.com,15,,,1/1/2019,12/31/2019,,,
 (t+auto) automation list events resource test form event,1/1/2020,12/31/2020,Outside Events,Reachout,mpcrds+aliciakeys@gmail.com,15,,,1/1/2019,12/31/2019,,,
 (t+auto) automation resource test form event,1/1/2020,12/31/2020,Outside Events,Reachout,mpcrds+aliciakeys@gmail.com,15,,,1/1/2019,12/31/2019,,,
+(t+auto) childcare,1/1/2022 13:00,1/1/2022 15:00,Childcare,Kids Club,mpcrds+aliciakeys@gmail.com,7,,(t+auto) Parents Who Need Childcare,,,,,
