@@ -57,6 +57,7 @@ namespace crds_angular.Services
         private readonly int _journeyGroupTypeId;
         private readonly int _groupCategoryAttributeTypeId;
         private readonly int _groupSubcategoryAttributeTypeId;
+        private readonly int _groupAutoJourneyAttributeTypeId;
         private readonly int _groupTypeAttributeTypeId;
         private readonly int _groupAgeRangeAttributeTypeId;
         private readonly int _groupRoleLeader;        
@@ -106,6 +107,7 @@ namespace crds_angular.Services
             _journeyGroupTypeId = configurationWrapper.GetConfigIntValue("JourneyGroupTypeId");
             _groupCategoryAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupCategoryAttributeTypeId");
             _groupSubcategoryAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupSubcategoryAttributeTypeId");
+            _groupAutoJourneyAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupAutoJourneyAttributeTypeId");
             _groupTypeAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupTypeAttributeTypeId");
             _groupAgeRangeAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupAgeRangeAttributeTypeId");
             _groupRoleLeader = configurationWrapper.GetConfigIntValue("GroupRoleLeader");            
@@ -632,7 +634,7 @@ namespace crds_angular.Services
         {
             var configuration = MpObjectAttributeConfigurationFactory.Group();
 
-            foreach (var attributeType in new[] { _groupCategoryAttributeTypeId, _groupSubcategoryAttributeTypeId, _groupTypeAttributeTypeId, _groupAgeRangeAttributeTypeId })
+            foreach (var attributeType in new[] { _groupCategoryAttributeTypeId, _groupSubcategoryAttributeTypeId, _groupAutoJourneyAttributeTypeId, _groupTypeAttributeTypeId, _groupAgeRangeAttributeTypeId })
             {
                 var types = _attributeRepository.GetAttributes(attributeType);
                 foreach (var group in groups)
