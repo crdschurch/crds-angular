@@ -43,9 +43,7 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var wt = WorkTeams();
 
-            string token = "ABC";
-
-            _ministryPlatformService.Setup(m => m.GetLookupRecords(It.IsAny<int>(), token)).Returns(wt);
+            _ministryPlatformService.Setup(m => m.GetLookupRecords(It.IsAny<int>(), It.IsAny<string>())).Returns(wt);
             var returnVal = _fixture.GetList<MpWorkTeams>();
 
             Assert.IsInstanceOf<IEnumerable<MpWorkTeams>>(returnVal);
