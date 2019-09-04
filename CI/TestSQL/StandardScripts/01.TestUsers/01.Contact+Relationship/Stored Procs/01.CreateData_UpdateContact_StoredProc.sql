@@ -21,6 +21,7 @@ IF NOT EXISTS ( SELECT  *
 	EXEC('CREATE PROCEDURE dbo.cr_QA_Update_Contact
 	@contact_email varchar(255),
 	@middle_name nvarchar(50),
+	@nickname varchar(50),
 	@birthdate date,
 	@gender_id int,
 	@marital_status_id int,
@@ -35,6 +36,7 @@ GO
 ALTER PROCEDURE [dbo].[cr_QA_Update_Contact] 
 	@contact_email varchar(254),
 	@middle_name nvarchar(50),
+	@nickname varchar(50),
 	@birthdate date,
 	@gender_id int,
 	@marital_status_id int,
@@ -71,6 +73,7 @@ BEGIN
 	--Update contact
 	UPDATE [dbo].Contacts
 	SET Middle_Name = @middle_name,
+	Nickname = @nickname,
 	Date_of_Birth = @birthdate,
 	Gender_ID = @gender_id,
 	Marital_Status_ID = @marital_status_id,

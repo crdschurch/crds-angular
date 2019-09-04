@@ -9,7 +9,7 @@ param (
 . ((Split-Path $MyInvocation.MyCommand.Definition)+"\..\..\00.PowershellScripts\DBCommand.ps1") #should avoid dot-source errors
 
 function OpenConnection{
-    $DBConnection = new-object System.Data.SqlClient.SqlConnection 
+    $DBConnection = new-object System.Data.SqlClient.SqlConnection
     $DBConnection.ConnectionString = "Server=$DBServer;Database=MinistryPlatform;User Id=$DBUser;Password=$DBPassword"
     $DBConnection.Open();
     return $DBConnection
@@ -26,10 +26,11 @@ function UpdateContacts($DBConnection){
         {
             #Create command to be executed
             $command = CreateStoredProcCommand $DBConnection "cr_QA_Update_Contact"
-                        
+
             #Add parameters to command - parameter names must match stored proc parameter names
             AddStringParameter $command "@contact_email" $userRow.R_Contact_Email
             AddStringParameter $command "@middle_name" $userRow.Middle_Name
+            AddStringParameter $command "@nickname" $userRow.Nickname
             AddDateParameter $command "@birthdate" $userRow.Date_of_Birth
             AddIntParameter $command "@gender_id" $userRow.Gender_ID
             AddIntParameter $command "@marital_status_id" $userRow.Marital_Status_ID
@@ -45,7 +46,7 @@ function UpdateContacts($DBConnection){
             $result = $command.ExecuteNonQuery()
             $error_found = LogResult $command "@error_message" "ERROR"
             $contact_created = LogResult $command "@contact_id" "Contact updated"
-            
+
             if(!$contact_created){
                 $error_count += 1
             }
@@ -72,12 +73,12 @@ function CreateContactRelationships($DBConnection){
             AddDateParameter $command "@start_date" $userRow.Start_Date
             AddOutputParameter $command "@error_message" "String"
             AddOutputParameter $command "@contact_relationship_id" "Int32"
-            
+
             #Execute and report results
             $result = $command.ExecuteNonQuery()
             $error_found = LogResult $command "@error_message" "ERROR"
             $relationship_created = LogResult $command "@contact_relationship_id" "Contact Relationship"
-            
+
             if(!$relationship_created){
                 $error_count += 1
             }

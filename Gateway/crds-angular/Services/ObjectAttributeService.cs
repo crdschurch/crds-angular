@@ -157,7 +157,10 @@ namespace crds_angular.Services
 
             foreach (var attribute in attributesToSave)
             {
-                SaveAttribute(objectId, attribute, apiUserToken, configuration);
+                if (attribute.AttributeTypeName != "Auto Journey")
+                {
+                    SaveAttribute(objectId, attribute, apiUserToken, configuration);
+                }
             }
         }
 
