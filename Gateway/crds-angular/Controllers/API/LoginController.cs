@@ -14,12 +14,13 @@ using Crossroads.ClientApiKeys;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
-
+using log4net;
 
 namespace crds_angular.Controllers.API
 {
     public class LoginController : MPAuth
     {
+        private readonly ILog _logger = LogManager.GetLogger(typeof(LoginController));
 
         private readonly IUserRepository _userService;
         private readonly ILoginService _loginService;
@@ -118,6 +119,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult isAuthenticated()
         {
+            _logger.Info($"IsAuthenticated - Headers: {Request.Headers.ToString()}");
             return Authorized(token =>
             {
                 try
