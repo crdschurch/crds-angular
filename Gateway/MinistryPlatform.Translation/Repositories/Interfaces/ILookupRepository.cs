@@ -4,36 +4,35 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
 {
     public interface ILookupRepository
     {
-        Dictionary<string, object> EmailSearch(string email, string token);
+        Dictionary<string, object> EmailSearch(string email);
 
-        List<Dictionary<string, object>> EventTypes(string token);
+        List<Dictionary<string, object>> EventTypes();
 
-        List<Dictionary<string, object>> EventTypesForEventTool(string token);
+        List<Dictionary<string, object>> EventTypesForEventTool();
 
-        List<Dictionary<string, object>> Genders(string token);
+        List<Dictionary<string, object>> Genders();
 
-        List<Dictionary<string, object>> MaritalStatus(string token);
+        List<Dictionary<string, object>> MaritalStatus();
 
-        List<Dictionary<string, object>> ServiceProviders(string token);
+        List<Dictionary<string, object>> ServiceProviders();
 
-        List<Dictionary<string, object>> States(string token);
+        List<Dictionary<string, object>> States();
 
-        List<Dictionary<string, object>> Countries(string token);
+        List<Dictionary<string, object>> Countries();
 
-        List<Dictionary<string, object>> CrossroadsLocations(string token);
+        List<Dictionary<string, object>> CrossroadsLocations();
 
-        List<Dictionary<string, object>> ReminderDays(string token);
+        List<Dictionary<string, object>> ReminderDays();
 
-        List<Dictionary<string, object>> WorkTeams(string token);
+        List<Dictionary<string, object>> WorkTeams();
 
-        List<Dictionary<string, object>> GroupReasonEnded(string token);
+        List<Dictionary<string, object>> GroupReasonEnded();
 
-        List<Dictionary<string, object>> MeetingDays(string token);
+        List<Dictionary<string, object>> MeetingDays();
 
-        List<Dictionary<string, object>> MeetingFrequencies(string token);
+        List<Dictionary<string, object>> MeetingFrequencies();
 
-        IEnumerable<T> GetList<T>(string token);
-        T GetObject<T>(string token);
+        IEnumerable<T> GetList<T>();
         
     }
 }

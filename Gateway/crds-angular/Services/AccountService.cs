@@ -174,7 +174,7 @@ namespace crds_angular.Services
         public User RegisterPerson(User newUserData, int? householdSourceId = null)
         {
             var token = _apiUserService.GetDefaultApiClientToken();
-            var exists = _lookupService.EmailSearch(newUserData.email, token);
+            var exists = _lookupService.EmailSearch(newUserData.email);
             if (exists != null && exists.Any())
             {
                 throw (new DuplicateUserException(newUserData.email));

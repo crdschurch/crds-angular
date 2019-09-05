@@ -16,7 +16,7 @@ using MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.Controllers.API
 {
-    public class LookupController : MPAuth
+    public class LookupController : ImpersonateAuthBaseController
     {
         private readonly IConfigurationWrapper _configurationWrapper;
         private readonly LookupRepository _lookupRepository;
@@ -48,63 +48,56 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult Lookup(string table)
         {
-            return Authorized(t =>
-            {
-                return LookupValues(table, t);
-            },
-            () =>
-            {
-                return LookupValues(table, "");
-            });
+            return LookupValues(table);
         }
 
-        private IHttpActionResult LookupValues(string table, string token)
+        private IHttpActionResult LookupValues(string table)
         {
             var ret = new List<Dictionary<string, object>>();
             switch (table)
             {
                 case "genders":
-                    ret = _lookupRepository.Genders(token);
+                    ret = _lookupRepository.Genders();
                     break;
                 case "maritalstatus":
-                    ret = _lookupRepository.MaritalStatus(token);
+                    ret = _lookupRepository.MaritalStatus();
                     break;
                 case "serviceproviders":
-                    ret = _lookupRepository.ServiceProviders(token);
+                    ret = _lookupRepository.ServiceProviders();
                     break;
                 case "countries":
-                    ret = _lookupRepository.Countries(token);
+                    ret = _lookupRepository.Countries();
                     break;
                 case "states":
-                    ret = _lookupRepository.States(token);
+                    ret = _lookupRepository.States();
                     break;
                 case "crossroadslocations":
                     // This returns Crossroads sites and NOT locations!
-                    ret = _lookupRepository.CrossroadsLocations(token);
+                    ret = _lookupRepository.CrossroadsLocations();
                     break;
                 case "workteams":
-                    ret = _lookupRepository.WorkTeams(token);
+                    ret = _lookupRepository.WorkTeams();
                     break;
                 case "eventtypes":
-                    ret = _lookupRepository.EventTypes(token);
+                    ret = _lookupRepository.EventTypes();
                     break;
                 case "eventtypes-eventtool":
-                    ret = _lookupRepository.EventTypesForEventTool(token);
+                    ret = _lookupRepository.EventTypesForEventTool();
                     break;
                 case "reminderdays":
-                    ret = _lookupRepository.ReminderDays(token);
+                    ret = _lookupRepository.ReminderDays();
                     break;
                 case "meetingdays":
-                    ret = _lookupRepository.MeetingDays(token);
+                    ret = _lookupRepository.MeetingDays();
                     break;
                 case "ministries":
-                    ret = _lookupRepository.Ministries(token);
+                    ret = _lookupRepository.Ministries();
                     break;
                 case "childcarelocations":
-                    ret = _lookupRepository.ChildcareLocations(token);
+                    ret = _lookupRepository.ChildcareLocations();
                     break;
                 case "groupreasonended":
-                    ret = _lookupRepository.GroupReasonEnded(token);
+                    ret = _lookupRepository.GroupReasonEnded();
                     break;
                 default:
                     break;
@@ -139,7 +132,7 @@ namespace crds_angular.Controllers.API
         public IHttpActionResult LookupEventTypes(string filter = null)
         {
             var table = (filter == "event-tool") ? "eventtypes-eventtool" : "eventtypes";
-            return LookupValues(table, "");
+            return LookupValues(table);
         }
 
         /// <summary>
@@ -151,7 +144,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult LookupChildCareLocations()
         {
-            return LookupValues("childcarelocations", "");
+            return LookupValues("childcarelocations");
         }
 
         /// <summary>
@@ -163,7 +156,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult LookupGroupReasonEnded()
         {
-            return LookupValues("groupreasonended","");
+            return LookupValues("groupreasonended");
         }
 
         /// <summary>
@@ -191,7 +184,7 @@ namespace crds_angular.Controllers.API
             return Authorized(t =>
             {
                 var ret = new List<Dictionary<string, object>>();
-                ret = _lookupRepository.GroupsByCongregationAndMinistry(t, congregationId, ministryId);
+                ret = _lookupRepository.GroupsByCongregationAndMinistry(congregationId, ministryId);
 
                 if (ret.Count == 0)
                 {
@@ -213,7 +206,7 @@ namespace crds_angular.Controllers.API
         {
             return Authorized(t =>
             {
-                var ret = _lookupRepository.ChildcareTimesByCongregation(t, congregationId);
+                var ret = _lookupRepository.ChildcareTimesByCongregation(congregationId);
                 return Ok(ret);
             });
         }
@@ -228,7 +221,7 @@ namespace crds_angular.Controllers.API
             //TODO let's clean this up
             var authorizedWithCookie = Authorized(t =>
             {
-                var exists = _lookupRepository.EmailSearch(email, t);
+                var exists = _lookupRepository.EmailSearch(email);
                 if (exists.Count == 0 || _userService.GetContactIdByUserId(Convert.ToInt32(exists["dp_RecordID"])) == userId)
                     return Ok();
 
@@ -243,7 +236,7 @@ namespace crds_angular.Controllers.API
                 var authData = _authenticationRepository.AuthenticateClient(clientId, clientSecret);
                 var token = authData?.AccessToken;
 
-                var exists = _lookupRepository.EmailSearch(email, token);
+                var exists = _lookupRepository.EmailSearch(email);
                 if (exists.Count == 0)
                 {
                     return Ok();
