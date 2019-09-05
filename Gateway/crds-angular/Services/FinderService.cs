@@ -1672,7 +1672,7 @@ namespace crds_angular.Services
 
             // Record in connections table if this is an anywhere gathering.
             var commType = group.GroupTypeId == _smallGroupType ? _connectCommunicationTypeRequestToJoinSmallGroup : _connectGatheringRequestToJoin;
-            RecordConnectInteraction(group.GroupId, participant.ContactId, inquiry.ContactId, commType, (approve) ? 1 : 0);
+            RecordConnectInteraction(group.GroupId, participant.ContactId, inquiry.ContactId, commType, (approve) ? 1 : 2);
 
             // Send the email
             SendInquiryAcceptDenyEmail(group, approve, participant);
