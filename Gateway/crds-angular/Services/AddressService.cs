@@ -41,6 +41,7 @@ namespace crds_angular.Services
         public GeoCoordinate GetGeoLocationCascading(AddressDTO addressReal)
         {
             var address = new AddressDTO(addressReal);
+            address.AddressLine1 = address.AddressLine1.Replace(" Ct.", "");
             var stateTemp = address.State;
 
             var coords = new GeoCoordinate();
