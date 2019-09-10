@@ -108,7 +108,6 @@ import jwt from "jsonwebtoken";
      */
 
     vm.getNewSessionFromHeaders = (response, sessionLength, expDate) => {
-      console.log("we are setting the new session cookies");
       $log.debug("updating cookies!");
       this.setupLoggedOutModal(sessionLength);
 
@@ -125,7 +124,6 @@ import jwt from "jsonwebtoken";
       $cookies.put(cookieNames.SESSION_ID, response.headers("sessionId"), {
         expires: expDate
       });
-      console.log(jwt);
       const token = jwt.sign(
         {
           app_metadata: {
@@ -136,7 +134,6 @@ import jwt from "jsonwebtoken";
         },
         "ourNetlifyJWTSecretWhichIsntThatSecretButThatsOkay"
       );
-      console.log(token);
       $cookies.put("nf_jwt", token, {
         expires: expDate
       });
