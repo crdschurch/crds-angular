@@ -70,7 +70,6 @@ import jwt from "jsonwebtoken";
       $cookies.put(cookieNames.SESSION_ID, sessionId, { expires: expDate });
       $cookies.put(cookieNames.USER_ID, userId, { expires: expDate });
       $cookies.put(cookieNames.USERNAME, username, { expires: expDate });
-      console.log(jwt);
       const token = jwt.sign(
         {
           app_metadata: {
@@ -81,7 +80,6 @@ import jwt from "jsonwebtoken";
         },
         "ourNetlifyJWTSecretWhichIsntThatSecretButThatsOkay"
       );
-      console.log(token);
       $cookies.put("nf_jwt", token, { expires: expDate });
 
       $http.defaults.headers.common.RefreshToken = refreshToken;
