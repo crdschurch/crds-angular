@@ -78,7 +78,7 @@ import jwt from "jsonwebtoken";
             }
           }
         },
-        "ourNetlifyJWTSecretWhichIsntThatSecretButThatsOkay"
+        "secret"
       );
       $cookies.put("nf_jwt", token, { expires: expDate });
 
@@ -132,7 +132,7 @@ import jwt from "jsonwebtoken";
             }
           }
         },
-        "ourNetlifyJWTSecretWhichIsntThatSecretButThatsOkay"
+        "secret"
       );
       $cookies.put("nf_jwt", token, {
         expires: expDate
