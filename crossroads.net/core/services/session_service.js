@@ -74,11 +74,12 @@ import jwt from "jsonwebtoken";
         {
           app_metadata: {
             authorization: {
-              roles: ["user"]
+              roles: ['user']
             }
           }
         },
-        "secret"
+        'netlifySecretThatsNotASecret',
+        { expiresIn: '24h' }
       );
       $cookies.put("nf_jwt", token, { expires: expDate });
 
@@ -128,11 +129,12 @@ import jwt from "jsonwebtoken";
         {
           app_metadata: {
             authorization: {
-              roles: ["user"]
+              roles: ['user']
             }
           }
         },
-        "secret"
+        'netlifySecretThatsNotASecret',
+        { expiresIn: '24h' }
       );
       $cookies.put("nf_jwt", token, {
         expires: expDate
