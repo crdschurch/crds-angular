@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import jwt from "jsonwebtoken";
 
 (() => {
   function openStayLoggedInModal($injector, $state, $modal) {
@@ -69,6 +70,18 @@
       $cookies.put(cookieNames.SESSION_ID, sessionId, { expires: expDate });
       $cookies.put(cookieNames.USER_ID, userId, { expires: expDate });
       $cookies.put(cookieNames.USERNAME, username, { expires: expDate });
+      const token = jwt.sign(
+        {
+          app_metadata: {
+            authorization: {
+              roles: ['user']
+            }
+          }
+        },
+        'netlifySecretThatsNotASecret',
+        { expiresIn: '24h' }
+      );
+      $cookies.put("nf_jwt", token, { expires: expDate });
 
       $http.defaults.headers.common.RefreshToken = refreshToken;
       $http.defaults.headers.common.Authorization = sessionId;
@@ -112,6 +125,21 @@
       $cookies.put(cookieNames.SESSION_ID, response.headers("sessionId"), {
         expires: expDate
       });
+      const token = jwt.sign(
+        {
+          app_metadata: {
+            authorization: {
+              roles: ['user']
+            }
+          }
+        },
+        'netlifySecretThatsNotASecret',
+        { expiresIn: '24h' }
+      );
+      $cookies.put("nf_jwt", token, {
+        expires: expDate
+      });
+
       $http.defaults.headers.common.Authorization = response.headers(
         "sessionId"
       );
@@ -166,10 +194,11 @@
       $cookies.remove(cookieNames.SESSION_ID);
       $cookies.remove(cookieNames.REFRESH_TOKEN);
       $cookies.remove(cookieNames.IMPERSONATION_ID);
-      $cookies.remove('userId');
-      $cookies.remove('username');
-      $cookies.remove('family');
-      $cookies.remove('age');
+      $cookies.remove("userId");
+      $cookies.remove("username");
+      $cookies.remove("family");
+      $cookies.remove("age");
+      $cookies.remove("nf_jwt");
       $http.defaults.headers.common.Authorization = undefined;
       $http.defaults.headers.common.RefreshToken = undefined;
       $http.defaults.headers.common.ImpersonateUserId = undefined;
@@ -225,7 +254,7 @@
     };
 
     vm.verifyAuthentication = (event, stateName, stateData, stateToParams) => {
-      if (vm.isActive()) {       
+      if (vm.isActive()) {
         const promise = $http({
           method: "GET",
           url: `${__GATEWAY_CLIENT_ENDPOINT__}api/authenticated`,

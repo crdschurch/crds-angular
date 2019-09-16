@@ -43,10 +43,8 @@ namespace MinistryPlatform.Translation.Test.Services
 
             var wt = WorkTeams();
 
-            string token = "ABC";
-
-            _ministryPlatformService.Setup(m => m.GetLookupRecords(It.IsAny<int>(), token)).Returns(wt);
-            var returnVal = _fixture.GetList<MpWorkTeams>(token);
+            _ministryPlatformService.Setup(m => m.GetLookupRecords(It.IsAny<int>(), It.IsAny<string>())).Returns(wt);
+            var returnVal = _fixture.GetList<MpWorkTeams>();
 
             Assert.IsInstanceOf<IEnumerable<MpWorkTeams>>(returnVal);
             Assert.AreEqual(wt.Count, returnVal.Count());
@@ -60,7 +58,7 @@ namespace MinistryPlatform.Translation.Test.Services
             var oo = OtherOrgs();
 
             _ministryPlatformService.Setup(m => m.GetLookupRecords(It.IsAny<int>(), It.IsAny<string>())).Returns(oo);
-            var returnVal = _fixture.GetList<MpOtherOrganization>(It.IsAny<string>());
+            var returnVal = _fixture.GetList<MpOtherOrganization>();
 
             Assert.IsInstanceOf<IEnumerable<MpOtherOrganization>>(returnVal);
             Assert.AreEqual(oo.Count, returnVal.Count());

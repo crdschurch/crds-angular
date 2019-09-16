@@ -40,7 +40,7 @@ namespace crds_angular.test.Services
                     _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns(tk);
                     token = tk;
                 }
-                _lookupService.Setup(m => m.GetList<MpOtherOrganization>(token)).Returns(otherOrgs);
+                _lookupService.Setup(m => m.GetList<MpOtherOrganization>()).Returns(otherOrgs);
                 var result = _fixture.GetOtherOrgs(token);
                 Assert.IsInstanceOf<List<OtherOrganization>>(result);
                 Assert.AreEqual(otherOrgs.Count(), result.Count);
