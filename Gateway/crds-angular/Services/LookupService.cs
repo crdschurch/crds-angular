@@ -23,7 +23,7 @@ namespace crds_angular.Services {
             }
 
             string dayString = null;
-            var days = _lookupRepository.MeetingDays(_apiUserRepository.GetDefaultApiClientToken());
+            var days = _lookupRepository.MeetingDays();
 
             foreach (var day in days)
             {
@@ -44,7 +44,7 @@ namespace crds_angular.Services {
             }
 
             string freqString = null;
-            var freqs = _lookupRepository.MeetingFrequencies(_apiUserRepository.GetDefaultApiClientToken());
+            var freqs = _lookupRepository.MeetingFrequencies();
 
             foreach (var freq in freqs)
             {

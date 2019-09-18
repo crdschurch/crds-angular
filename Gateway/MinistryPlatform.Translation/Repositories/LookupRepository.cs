@@ -28,152 +28,124 @@ namespace MinistryPlatform.Translation.Repositories
             _ministryPlatformRest = ministryPlatformRest;
         }
 
-        public Dictionary<string, object> EmailSearch(string email, string token)
+        public Dictionary<string, object> EmailSearch(string email)
         {
-            return _ministryPlatformServiceImpl.GetLookupRecord(AppSettings("Emails"), email, token);
+            return _ministryPlatformServiceImpl.GetLookupRecord(AppSettings("Emails"), email, base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> EventTypes(string token)
+        public List<Dictionary<string, object>> EventTypes()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return Enumerable.OrderBy(_ministryPlatformServiceImpl.GetRecordsDict(AppSettings("EventTypesLookup"), token), x => x["dp_RecordName"].ToString()).ToList();
+            return Enumerable.OrderBy(_ministryPlatformServiceImpl.GetRecordsDict(AppSettings("EventTypesLookup"), base.ApiLogin()), x => x["dp_RecordName"].ToString()).ToList();
         }
 
-        public List<Dictionary<string, object>> EventTypesForEventTool(string token)
+        public List<Dictionary<string, object>> EventTypesForEventTool()
         {
             const string columns = "Event_Type_ID AS dp_RecordID,Event_Type AS dp_RecordName,Allow_Multiday_Event";
             const string filter = "Show_On_Event_Tool=1";
             const string orderBy = "Event_Type";
-
-            token = ApiLogonIfNotAuthenticated(token);
-            var records = _ministryPlatformRest.UsingAuthenticationToken(token)
+            
+            var records = _ministryPlatformRest.UsingAuthenticationToken(base.ApiLogin())
                 .SearchTable<Dictionary<string, object>>("Event_Types", filter, columns, orderBy);
 
             return records;
         }
 
-        public List<Dictionary<string, object>> Genders(string token = "")
+        public List<Dictionary<string, object>> Genders()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("Genders"), token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("Genders"), base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> MaritalStatus(string token)
+        public List<Dictionary<string, object>> MaritalStatus()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("MaritalStatus"), token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("MaritalStatus"), base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> ServiceProviders(string token)
+        public List<Dictionary<string, object>> ServiceProviders()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("ServiceProviders"), token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("ServiceProviders"), base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> States(string token)
+        public List<Dictionary<string, object>> States()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("States"), token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("States"), base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> Countries(string token)
+        public List<Dictionary<string, object>> Countries()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("Countries"), token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("Countries"), base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> CrossroadsLocations(string token = "")
+        public List<Dictionary<string, object>> CrossroadsLocations()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("CrossroadsLocations"), token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("CrossroadsLocations"), base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> ReminderDays(string token)
+        public List<Dictionary<string, object>> ReminderDays()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("ReminderDaysLookup"), token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("ReminderDaysLookup"), base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> WorkTeams(string token)
+        public List<Dictionary<string, object>> WorkTeams()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetLookupRecords(_configurationWrapper.GetConfigIntValue("WorkTeams"), token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(_configurationWrapper.GetConfigIntValue("WorkTeams"), base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> GroupReasonEnded(string token)
+        public List<Dictionary<string, object>> GroupReasonEnded()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetRecordsDict(AppSettings("GroupEndedLookup"), token);
+            return _ministryPlatformServiceImpl.GetRecordsDict(AppSettings("GroupEndedLookup"), base.ApiLogin());
         }
 
-        public IEnumerable<T> GetList<T>(string token)
+        public IEnumerable<T> GetList<T>()
         {
             if (typeof (T) == typeof (MpWorkTeams))
             {
                 return (IEnumerable<T>) 
-                    WorkTeams(token).Select(wt => new MpWorkTeams(wt.ToInt("dp_RecordID"), wt.ToString("dp_RecordName")));
+                    WorkTeams().Select(wt => new MpWorkTeams(wt.ToInt("dp_RecordID"), wt.ToString("dp_RecordName")));
             }
             if (typeof (T) == typeof (MpOtherOrganization))
             {                
                 return (IEnumerable<T>)
-                    _ministryPlatformServiceImpl.GetLookupRecords(_configurationWrapper.GetConfigIntValue("OtherOrgs"), token)
+                    _ministryPlatformServiceImpl.GetLookupRecords(_configurationWrapper.GetConfigIntValue("OtherOrgs"), base.ApiLogin())
                     .Select(other => new MpOtherOrganization(other.ToInt("dp_RecordID"), other.ToString("dp_RecordName")));
             }
 
             return null;
         }
 
-        public T GetObject<T>(string token)
+        public List<Dictionary<string, object>> MeetingDays()
         {
-            throw new NotImplementedException();
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("MeetingDay"), base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> MeetingDays(string token)
+        public List<Dictionary<string, object>> MeetingFrequencies()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("MeetingDay"), token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("MeetingFrequency"), base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> MeetingFrequencies(string token)
+        public List<Dictionary<string, object>> Ministries()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("MeetingFrequency"), token);
+            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("Ministries"), base.ApiLogin());
         }
 
-        public List<Dictionary<string, object>> Ministries(string token)
+        public List<Dictionary<string, object>> ChildcareLocations()
         {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetLookupRecords(AppSettings("Ministries"), token);
+            return _ministryPlatformServiceImpl.GetPageViewRecords(AppSettings("CongregationsWithChildcarePageView"), base.ApiLogin(), "", "");
         }
 
-        public List<Dictionary<string, object>> ChildcareLocations(string token)
-        {
-            token = ApiLogonIfNotAuthenticated(token);
-            return _ministryPlatformServiceImpl.GetPageViewRecords(AppSettings("CongregationsWithChildcarePageView"), token, "", "");
-        }
-
-        public List<Dictionary<string, object>> GroupsByCongregationAndMinistry(string token, string congregationid, string ministryid)
+        public List<Dictionary<string, object>> GroupsByCongregationAndMinistry(string congregationid, string ministryid)
         {
             var searchString = string.Format("\"{0}\",\"{1}\",", congregationid, ministryid);
 
-            var groups =  _ministryPlatformServiceImpl.GetPageViewRecords(AppSettings("GroupsByCongregationAndMinistry"), token, searchString);
+            var groups =  _ministryPlatformServiceImpl.GetPageViewRecords(AppSettings("GroupsByCongregationAndMinistry"), base.ApiLogin(), searchString);
             return groups;
         }
-        public List<Dictionary<string, object>> ChildcareTimesByCongregation(string token, string congregationid)
+        public List<Dictionary<string, object>> ChildcareTimesByCongregation(string congregationid)
         {
             var searchString = string.Format("\"{0}\",", congregationid);
 
-            var times = _ministryPlatformServiceImpl.GetPageViewRecords(AppSettings("ChildcareTimesByCongregation"), token, searchString);
+            var times = _ministryPlatformServiceImpl.GetPageViewRecords(AppSettings("ChildcareTimesByCongregation"), base.ApiLogin(), searchString);
             return times;
         }
 
-        private string ApiLogonIfNotAuthenticated(string token)
-        {
-            if (string.IsNullOrEmpty(token))
-            {
-                token = base.ApiLogin();
-            }
-            return token;
-        }
     }
 }

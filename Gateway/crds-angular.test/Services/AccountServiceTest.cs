@@ -72,7 +72,7 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
             _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("1234567890");
             
-            _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email, "1234567890")).Returns(new Dictionary<string, object> { {"dp_RecordID", 123}});
+            _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email)).Returns(new Dictionary<string, object> { {"dp_RecordID", 123}});
 
             _fixture.RegisterPerson(newUserData, null);
 
@@ -94,7 +94,7 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
             
             _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("1234567890");
-            _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email, "1234567890")).Returns(new Dictionary<string, object>());
+            _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email)).Returns(new Dictionary<string, object>());
 
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Households")).Returns(123);
             _ministryPlatformService.Setup(mocked => mocked.CreateRecord(123, It.IsAny<Dictionary<string, object>>(), "1234567890", false)).Returns(321);
@@ -141,7 +141,7 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
 
             _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("1234567890");
-            _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email, "1234567890")).Returns(new Dictionary<string, object>());
+            _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email)).Returns(new Dictionary<string, object>());
 
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Congregation_Default_ID")).Returns(321);
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Household_Default_Source_ID")).Returns(654);
@@ -188,7 +188,7 @@ namespace crds_angular.test.Services
             _configurationWrapper.Setup(mocked => mocked.GetEnvironmentVarAsString("API_PASSWORD")).Returns("password");
 
             _apiUserService.Setup(mocked => mocked.GetDefaultApiClientToken()).Returns("1234567890");
-            _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email, "1234567890")).Returns(new Dictionary<string, object>());
+            _lookupService.Setup(mocked => mocked.EmailSearch(newUserData.email)).Returns(new Dictionary<string, object>());
 
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Congregation_Default_ID")).Returns(321);
             _configurationWrapper.Setup(mocked => mocked.GetConfigIntValue("Household_Default_Source_ID")).Callback(() =>
