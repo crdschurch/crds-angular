@@ -178,7 +178,7 @@ namespace crds_angular.Services
             mapAuditRecord.processed = true;
             mapAuditRecord.dateProcessed = DateTime.Now;
             _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
-            if (!success)
+            if (!success && _firestoreSyncExceptionMessage != string.Empty)
             {
                 WriteFailureReasonToSlack();
             };
@@ -188,12 +188,14 @@ namespace crds_angular.Services
         {
             var client = new RestClient(_fireStoreSyncErrorsSlackChannel);
             var request = new RestRequest(Method.POST);
-            request.AddHeader("content-type", "application/json");
             var jsonBody = new
             {
-                text = "Fire Store Sync Error: " + _firestoreSyncExceptionMessage
+                text = "Fire Store Sync Error " + _firestoreProjectId + ": " + _firestoreSyncExceptionMessage
             };
+
+            request.AddHeader("content-type", "application/json");
             request.AddJsonBody(jsonBody);
+
             client.ExecuteAsync(request, response => { Console.WriteLine(response.Content); });
             return;
         }
