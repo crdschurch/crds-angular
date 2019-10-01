@@ -113,8 +113,9 @@
 
     function redirectToSpecifiedPageOrToHomepage(Session, $timeout) {
       $timeout(function() {
-        if (isRedirect()) {
-          window.location.href = $location.absUrl();
+        var redirectParam = $location.search().redirectUrl;
+        if (redirectParam) {
+          window.location.href = redirectParam;
         } else if (Session.hasRedirectionInfo()) {
           Session.redirectIfNeeded();
         } else {
@@ -179,7 +180,7 @@
     }
 
     function isRedirect() {
-      return $location.path() !== "/signin";
+      return $location.search().redirectUrl;
     }
   }
 })();
