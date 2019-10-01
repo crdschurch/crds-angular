@@ -113,7 +113,7 @@
 
     function redirectToSpecifiedPageOrToHomepage(Session, $timeout) {
       $timeout(function() {
-        if (isRediret()) {
+        if (isRedirect()) {
           window.location.href = $location.absUrl();
         } else if (Session.hasRedirectionInfo()) {
           Session.redirectIfNeeded();
