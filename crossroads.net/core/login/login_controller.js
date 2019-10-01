@@ -113,8 +113,9 @@
 
     function redirectToSpecifiedPageOrToHomepage(Session, $timeout) {
       $timeout(function() {
-        if (isRedirect()) {
-          window.location.href = $location.absUrl();
+        var redirectParam = $location.search().redirectUrl;
+        if (redirectParam) {
+          window.location.href = redirectParam;
         } else if (Session.hasRedirectionInfo()) {
           Session.redirectIfNeeded();
         } else {
@@ -176,10 +177,6 @@
         $scope.credentials.username = undefined;
         $scope.credentials.password = undefined;
       }
-    }
-
-    function isRedirect() {
-      return $location.path() !== "/signin";
     }
   }
 })();
