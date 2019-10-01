@@ -178,9 +178,5 @@
         $scope.credentials.password = undefined;
       }
     }
-
-    function isRedirect() {
-      return $location.search().redirectUrl;
-    }
   }
 })();
