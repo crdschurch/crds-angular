@@ -1,22 +1,23 @@
 ﻿using AutoMapper;
-using System;
-using System.Threading.Tasks;
+using crds_angular.Models.Crossroads;
+using crds_angular.Models.Crossroads.Attribute;
+using crds_angular.Models.Finder;
+using crds_angular.Models.Map;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;
+using Crossroads.Web.Common.MinistryPlatform;
 using Google.Cloud.Firestore;
 using Google.Cloud.Storage.V1;
 using log4net;
-using crds_angular.Models.Crossroads;
+using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Finder;
 using MinistryPlatform.Translation.Repositories.Interfaces;
-using MinistryPlatform.Translation.Models;
-using crds_angular.Models.Map;
-using Crossroads.Web.Common.MinistryPlatform;
 using NGeoHash.Portable;
+using RestSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using crds_angular.Models.Crossroads.Attribute;
-using crds_angular.Models.Finder;
+using System.Threading.Tasks;
 
 namespace crds_angular.Services
 {
@@ -40,7 +41,8 @@ namespace crds_angular.Services
 
         private readonly Random _random = new Random(DateTime.Now.Millisecond);
 
-        
+        private string _fireStoreSyncErrorsSlackChannel;
+        private string _firestoreSyncExceptionMessage = string.Empty;
 
         public FirestoreUpdateService(IImageService imageService, 
                                       IConfigurationWrapper configurationWrapper, 
@@ -69,9 +71,10 @@ namespace crds_angular.Services
             //constants
             _googleStorageBucketId = configurationWrapper.GetConfigValue("GoogleStorageBucketId");
             _firestoreProjectId = configurationWrapper.GetConfigValue("FirestoreMapProjectId");
-        }
+            _fireStoreSyncErrorsSlackChannel = configurationWrapper.GetConfigValue("FireStoreSyncErrorsSlackChannel");
+    }
 
-        public string SendProfilePhotoToFirestore(int participantId)
+    public string SendProfilePhotoToFirestore(int participantId)
         {
             string urlForPhoto = "";
             try
@@ -133,6 +136,7 @@ namespace crds_angular.Services
                 {
                     foreach (MpMapAudit mapAuditRecord in recordList)
                     {
+                        _firestoreSyncExceptionMessage = string.Empty;
                         // if we have multiple records with the same type and id in our collection then only process it once
                         // this condition can occur when multiple db triggers add to the cr_mapAudit table
                         if( recordList.FindIndex(f => f.pinType == mapAuditRecord.pinType && f.ParticipantId == mapAuditRecord.ParticipantId && f.processed == true) != -1)
@@ -174,7 +178,26 @@ namespace crds_angular.Services
             mapAuditRecord.processed = true;
             mapAuditRecord.dateProcessed = DateTime.Now;
             _finderRepository.MarkMapAuditRecordAsProcessed(mapAuditRecord);
-            
+            if (!success && _firestoreSyncExceptionMessage != string.Empty)
+            {
+                WriteFailureReasonToSlack();
+            };
+        }
+
+        private void WriteFailureReasonToSlack()
+        {
+            var client = new RestClient(_fireStoreSyncErrorsSlackChannel);
+            var request = new RestRequest(Method.POST);
+            var jsonBody = new
+            {
+                text = "Fire Store Sync Error " + _firestoreProjectId + ": " + _firestoreSyncExceptionMessage
+            };
+
+            request.AddHeader("content-type", "application/json");
+            request.AddJsonBody(jsonBody);
+
+            client.ExecuteAsync(request, response => { Console.WriteLine(response.Content); });
+            return;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -235,6 +258,7 @@ namespace crds_angular.Services
             {
                 Console.WriteLine("Problem getting MP Data for PinSync");
                 Console.WriteLine(e.Message);
+                _firestoreSyncExceptionMessage = "Congregation ID: " + congregationid + Environment.NewLine + "Exception Message: " + e.Message;
                 return false;
             }
             return true;
@@ -313,6 +337,7 @@ namespace crds_angular.Services
             {
                 Console.WriteLine("Problem getting MP Data for PinSync");
                 Console.WriteLine(e.Message);
+                _firestoreSyncExceptionMessage = "Group ID: " + groupid + Environment.NewLine + "Exception Message: " + e.Message;
                 return false;
             }
             return true;
@@ -379,6 +404,7 @@ namespace crds_angular.Services
             {
                 Console.WriteLine("Problem getting MP Data for PinSync");
                 Console.WriteLine(e.Message);
+                _firestoreSyncExceptionMessage = "Participant ID: " + participantid + Environment.NewLine + "Exception Message: " + e.Message;
                 return false;
             }
             return true;
@@ -440,6 +466,7 @@ namespace crds_angular.Services
             {
                 Console.WriteLine("Problem getting MP Data for PinSync");
                 Console.WriteLine(e.Message);
+                _firestoreSyncExceptionMessage = "Group ID: " + groupid + Environment.NewLine + "Exception Message: " + e.Message;
                 return false;
             }
             return true;
@@ -448,8 +475,7 @@ namespace crds_angular.Services
         //////////////////////////////////////////////
         /// Common
         //////////////////////////////////////////////
-
-       
+        
         private ObjectSingleAttributeDTO GetMeetingDayAttribute(int meetingDayId)
         {
             Dictionary<int, string> days = new Dictionary<int, string>();
