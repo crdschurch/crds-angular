@@ -41,6 +41,7 @@ namespace crds_angular.test.Services
         private Mock<IGroupService> _groupService;
         private Mock<IChildcareRepository> _childcareRepository;
         private Mock<IChildcareService> _childcareServiceMock;
+        private Mock<IGroupParticipantRepository> _groupParticipantRepository;
 
         private ChildcareService _fixture;
 
@@ -61,6 +62,7 @@ namespace crds_angular.test.Services
             _groupService = new Mock<IGroupService>();
             _childcareRepository = new Mock<IChildcareRepository>();
             _childcareServiceMock = new Mock<IChildcareService>();
+            _groupParticipantRepository = new Mock<IGroupParticipantRepository>();
 
             _fixture = new ChildcareService(_eventParticipantService.Object,
                                             _communicationService.Object,
@@ -74,7 +76,8 @@ namespace crds_angular.test.Services
                                             _crdsEventService.Object,
                                             _childcareRequestService.Object,
                                             _groupService.Object,
-                                            _childcareRepository.Object);
+                                            _childcareRepository.Object,
+                                            _groupParticipantRepository.Object);
         }
 
         [Test]

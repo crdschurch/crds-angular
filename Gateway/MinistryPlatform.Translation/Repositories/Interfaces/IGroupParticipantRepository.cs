@@ -15,5 +15,7 @@ namespace MinistryPlatform.Translation.Repositories.Interfaces
         bool GetIsLeader(int participantId, int? groupType = null, int? groupId = null);
         List<MpGroupParticipant> GetAllParticipantsForLeaderGroups(int participantId, int? groupType, int? groupId);
         List<MpGroupParticipant> GetLeadersGroupIds(int participantId, int? groupType = -1);
+        List<MpGroupParticipant> GetGroupParticipantsRecordsForParticipant(int participantId, int groupId);
+        void EndDateGroupParticipantRecords(List<MpGroupParticipant> groupParticipants);
     }
 }
