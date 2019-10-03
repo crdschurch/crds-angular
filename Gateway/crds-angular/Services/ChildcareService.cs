@@ -142,12 +142,6 @@ namespace crds_angular.Services
                 }
 
                 _groupParticipantRepository.EndDateGroupParticipantRecords(groupParticipants);
-
-                //var groupParticipant = _groupService.GetGroupParticipants(cancelRsvp.GroupId, false).FirstOrDefault(p => p.ContactId == cancelRsvp.ChildContactId);
-                //if (participant != null)
-                //{
-                //    _groupService.endDateGroupParticipant(cancelRsvp.GroupId, groupParticipant.GroupParticipantId);
-                //}
             }
             catch (Exception ex)
             {
