@@ -197,8 +197,7 @@ namespace MinistryPlatform.Translation.Repositories
                 var groupIds = GetLeadersGroupIds(participantId, groupType);
                 if (groupIds.Count > 0)
                     csvGroupIds = String.Join(",", groupIds.Select(g => g.GroupId.ToString()).ToArray());
-
-             }
+            }
             else
                 csvGroupIds = groupId.ToString();
 
@@ -235,6 +234,35 @@ namespace MinistryPlatform.Translation.Repositories
                 groupIdSearch += $" AND Group_ID_Table.Group_Type_ID = {groupType}";
 
             return _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).Search<MpGroupParticipant>(groupIdSearch, groupIdColumns);
+        }
+
+        public List<MpGroupParticipant> GetGroupParticipantsRecordsForParticipant(int participantId, int groupId)
+        {
+            const string groupParticipantColumns = "Participant_ID, Group_Participant_ID, Group_ID";
+
+            string groupParticipantSearch = $"Participant_ID = {participantId}" +
+                                            $"AND Group_ID = {groupId}" +
+                                            $"AND End_Date IS NULL";
+
+            return _ministryPlatformRest.UsingAuthenticationToken(_apiUserService.GetDefaultApiClientToken()).Search<MpGroupParticipant>(groupParticipantSearch, groupParticipantColumns);
+        }
+
+        public void EndDateGroupParticipantRecords(List<MpGroupParticipant> groupParticipants)
+        {
+            var token = _apiUserService.GetDefaultApiClientToken();
+
+            // update individually, as we don't have a batch update available
+            foreach (var groupParticipant in groupParticipants)
+            {
+                Dictionary<string, object> updateValues = new Dictionary<string, object>()
+                {
+                    { "Group_Participant_ID", groupParticipant.GroupParticipantId },
+                    {"End_Date", groupParticipant.EndDate }
+                };
+
+                //The second parameter is not used, you must include the PK in the dictionary
+                _ministryPlatformRest.UsingAuthenticationToken(token).UpdateRecord("Group_Participants", -1, updateValues);
+            }
         }
     }
 }
