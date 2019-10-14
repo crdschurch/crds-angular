@@ -41,6 +41,7 @@ namespace crds_angular.test.Services
         private Mock<IGroupService> _groupService;
         private Mock<IChildcareRepository> _childcareRepository;
         private Mock<IChildcareService> _childcareServiceMock;
+        private Mock<IGroupParticipantRepository> _groupParticipantRepository;
 
         private ChildcareService _fixture;
 
@@ -61,6 +62,7 @@ namespace crds_angular.test.Services
             _groupService = new Mock<IGroupService>();
             _childcareRepository = new Mock<IChildcareRepository>();
             _childcareServiceMock = new Mock<IChildcareService>();
+            _groupParticipantRepository = new Mock<IGroupParticipantRepository>();
 
             _fixture = new ChildcareService(_eventParticipantService.Object,
                                             _communicationService.Object,
@@ -74,7 +76,8 @@ namespace crds_angular.test.Services
                                             _crdsEventService.Object,
                                             _childcareRequestService.Object,
                                             _groupService.Object,
-                                            _childcareRepository.Object);
+                                            _childcareRepository.Object,
+                                            _groupParticipantRepository.Object);
         }
 
         [Test]
@@ -602,5 +605,47 @@ namespace crds_angular.test.Services
             Assert.AreEqual("Matt", data["Nickname"]);
         }
 
+        [Test]
+        public void ShouldCancelRSVP()
+        {
+            // Arrange
+            var cancelRsvp = new ChildcareRsvpDto
+            {
+                ChildContactId = 1234567,
+                EnrolledBy = 7654321,
+                GroupId = 2345678,
+                Registered = true
+            };
+
+            var groupParticipants = new List<MpGroupParticipant>
+            {
+                new MpGroupParticipant
+                {
+                    ParticipantId = 151200300,
+                    ContactId = 1234567,
+                    GroupId = 2345678
+                }
+            };
+
+            var groupId = 2345678;
+            var participantId = 151200300;
+            var participant = new MpParticipant
+            {
+                ParticipantId = participantId
+            };
+
+            _participantService.Setup(m => m.GetParticipant(1234567)).Returns(participant);
+
+            _groupParticipantRepository.Setup(m => m.GetGroupParticipantsRecordsForParticipant(participantId, groupId))
+                .Returns(groupParticipants);
+
+            _groupParticipantRepository.Setup(m => m.EndDateGroupParticipantRecords(groupParticipants));
+
+            // Act
+            _fixture.CancelRsvp(cancelRsvp);
+
+            // Assert
+            _groupParticipantRepository.VerifyAll();
+        }
     }
 }
