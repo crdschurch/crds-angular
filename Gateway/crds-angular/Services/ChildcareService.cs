@@ -37,6 +37,7 @@ namespace crds_angular.Services
         private readonly IServeService _serveService;
         private readonly IDateTime _dateTimeWrapper;
         private readonly IApiUserRepository _apiUserService;
+        private readonly IGroupParticipantRepository _groupParticipantRepository;
         private readonly int _childcareGroupType;
 
         private readonly ILog _logger = LogManager.GetLogger(typeof (ChildcareService));
@@ -53,7 +54,8 @@ namespace crds_angular.Services
                                 IEventService crdsEventService, 
                                 IChildcareRequestRepository childcareRequestService,
                                 IGroupService groupService,
-                                IChildcareRepository childcareRepository)
+                                IChildcareRepository childcareRepository,
+                                IGroupParticipantRepository groupParticipantRepository)
         {
             _childcareRequestService = childcareRequestService;
             _eventParticipantService = eventParticipantService;
@@ -68,6 +70,7 @@ namespace crds_angular.Services
             _apiUserService = apiUserService;
             _groupService = groupService;
             _childcareRepository = childcareRepository;
+            _groupParticipantRepository = groupParticipantRepository;
 
             _childcareGroupType = _configurationWrapper.GetConfigIntValue("ChildcareGroupType");
         }
@@ -125,11 +128,20 @@ namespace crds_angular.Services
         {
             try
             {
-                var groupParticipant = _groupService.GetGroupParticipants(cancelRsvp.GroupId, false).FirstOrDefault(p => p.ContactId == cancelRsvp.ChildContactId);
-                if (groupParticipant != null)
+                // get participant here, as we don't get the participant id passed down from the frontend
+                var participant = _participantService.GetParticipant(cancelRsvp.ChildContactId);
+
+                // get all group participant records that are not end dated for this participant
+                var groupParticipants =
+                    _groupParticipantRepository.GetGroupParticipantsRecordsForParticipant(participant.ParticipantId,
+                        cancelRsvp.GroupId);
+
+                foreach (var groupParticipant in groupParticipants)
                 {
-                    _groupService.endDateGroupParticipant(cancelRsvp.GroupId, groupParticipant.GroupParticipantId);
+                    groupParticipant.EndDate = System.DateTime.Now;
                 }
+
+                _groupParticipantRepository.EndDateGroupParticipantRecords(groupParticipants);
             }
             catch (Exception ex)
             {
