@@ -1,5 +1,5 @@
 R_Opportunity_Title,R_Contact_Email,R_Program_Name,R_Group_Role_ID,Shift_Sart,Shift_End,Minimum_Needed,Maximum_Needed,Room,Group_Name,Event_Type,Description,Publish_Date,Sign_Up_Deadline_ID,Opportunity_Subtitle
-(t+auto) Attack Shinra Mako reactor 1,mpcrds+chell@aperture.com,First Impressions,16,14:00:00,16:00:00,1,250,Oakley Atrium,(t+auto) Avalanche,Service - Oakley Sunday at 9:30am,Test Data,11/27/2015,0,Attack Mako reactor 1
+(t+auto) Attack Shinra Mako reactor 1,mpcrds+chell@aperture.com,First Impressions,16,14:00:00,16:00:00,1,250,Oakley Atrium,(t+auto) Avalanche,Service - Oakley Sunday at 9:15am,Test Data,11/27/2015,0,Attack Mako reactor 1
 (t+auto) Attack Shinra Mako reactor 5,mpcrds+chell@aperture.com,First Impressions,16,16:00:00,18:00:00,1,250,Main Coffee Station Alpha,(t+auto) Avalanche,Service - Oakley Saturday at 4:30pm,Test Data,11/27/2015,0,Attack Mako reactor 5
 (t) Coffee Setup Sat 2:00,mpcrds+chell@aperture.com,First Impressions,16,14:00:00,16:00:00,1,1,Oakley Atrium,(t) FI Oakley Coffee Team,Service - Oakley Saturday at 4:30pm,Test Data,10/27/2015,7,
 (t) Coffee Team Sat 4:00,mpcrds+chell@aperture.com,First Impressions,16,16:00:00,18:00:00,1,1,Main Coffee Station Alpha,(t) FI Oakley Coffee Team,Service - Oakley Saturday at 4:30pm,Test Data,10/27/2015,7,
@@ -43,7 +43,7 @@ R_Opportunity_Title,R_Contact_Email,R_Program_Name,R_Group_Role_ID,Shift_Sart,Sh
 (t) Superbowl Oakley 10:00,mpcrds+chell@aperture.com,Spiritual Growth,16,9:45:00,15:15:00,5,10,,(t) Superbowl Oakley Group,(t) Superbowl Oakley daily 10:00,,11/1/2015,3,
 (t) Superbowl Leader Oakley 3:00,mpcrds+chell@aperture.com,Spiritual Growth,22,14:45:00,16:15:00,1,1,,(t) Superbowl Oakley Group,(t) Superbowl Oakley daily 3:00,,11/1/2015,3,
 (t) Superbowl Oakley 3:00,mpcrds+chell@aperture.com,Spiritual Growth,16,14:45:00,16:15:00,5,10,,(t) Superbowl Oakley Group,(t) Superbowl Oakley daily 3:00,,11/1/2015,3,
-(t+auto) Another Opportunity in Another Event,mpcrds+chell@aperture.com,First Impressions,16,14:00:00,16:00:00,2,250,Atrium,(t+auto) Verify UI,Service - Florence Sunday at 11:30am,Test Data,11/27/2015,0,Opportunity in Another Event
-(t+auto) Another Opportunity in Same Event,mpcrds+chell@aperture.com,First Impressions,16,8:00:00,10:00:00,1,250,Atrium,(t+auto) Verify UI,Service - Florence Saturday at 5:30pm,Test Data,11/27/2015,0,Opportunity in Same Event
-(t+auto) Hey Serve UI,mpcrds+chell@aperture.com,First Impressions,16,4:00:00,5:00:00,1,250,UI Room,(t+auto) Verify UI,Service - Florence Saturday at 5:30pm,Test Data,11/27/2015,0,(t+auto) Hey Serve UI
-(t+auto) Barret's meeting,mpcrds+chell@aperture.com,First Impressions,22,14:00:00,16:00:00,1,250,Oakley Atrium,(t+auto) Avalanche,Service - Oakley Sunday at 9:30am,Test Data,11/27/2015,0,(t+auto) Barret's meeting
+(t+auto) Another Opportunity in Another Event,mpcrds+chell@aperture.com,First Impressions,16,14:00:00,16:00:00,2,250,Atrium,(t+auto) Verify UI,Service - Florence Sunday at 11:00am,Test Data,11/27/2015,0,Opportunity in Another Event
+(t+auto) Another Opportunity in Same Event,mpcrds+chell@aperture.com,First Impressions,16,8:00:00,10:00:00,1,250,Atrium,(t+auto) Verify UI,Service - Florence Saturday at 5:00pm,Test Data,11/27/2015,0,Opportunity in Same Event
+(t+auto) Hey Serve UI,mpcrds+chell@aperture.com,First Impressions,16,4:00:00,5:00:00,1,250,UI Room,(t+auto) Verify UI,Service - Florence Saturday at 5:00pm,Test Data,11/27/2015,0,(t+auto) Hey Serve UI
+(t+auto) Barret's meeting,mpcrds+chell@aperture.com,First Impressions,22,14:00:00,16:00:00,1,250,Oakley Atrium,(t+auto) Avalanche,Service - Oakley Sunday at 9:15am,Test Data,11/27/2015,0,(t+auto) Barret's meeting
