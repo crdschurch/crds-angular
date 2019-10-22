@@ -9,7 +9,7 @@ namespace crds_angular.Models.Json
 
         public static DateTime ConvertEpochToDateTime(long seconds)
         {
-            return _epochStartDateTime.AddSeconds(seconds).ToLocalTime();
+            return _epochStartDateTime.AddSeconds(seconds).ToUniversalTime();
         }
 
         public static long ConvertDateTimeToEpoch(this DateTime datetime)
