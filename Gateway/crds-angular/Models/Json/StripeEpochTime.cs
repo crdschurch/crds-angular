@@ -9,10 +9,7 @@ namespace crds_angular.Models.Json
 
         public static DateTime ConvertEpochToDateTime(long seconds)
         {
-            // Adding -4 hours is a hack because we need to get this into local time, 
-            // but calling ToLocalTime makes the date time to be 4 hours to early.
-            // Not converting to local time would make the time 4 hours into the future
-            return _epochStartDateTime.AddSeconds(seconds).AddHours(-4);
+            return TimeZoneInfo.ConvertTime( _epochStartDateTime.AddSeconds(seconds), TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"));
         }
 
         public static long ConvertDateTimeToEpoch(this DateTime datetime)
