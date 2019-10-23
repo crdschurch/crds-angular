@@ -9,7 +9,7 @@ namespace crds_angular.Models.Json
 
         public static DateTime ConvertEpochToDateTime(long seconds)
         {
-            return TimeZoneInfo.ConvertTime( _epochStartDateTime.AddSeconds(seconds), TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"));
+            return _epochStartDateTime.AddSeconds(seconds);
         }
 
         public static long ConvertDateTimeToEpoch(this DateTime datetime)
