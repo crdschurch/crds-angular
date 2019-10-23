@@ -81,7 +81,7 @@ import jwt from "jsonwebtoken";
         'netlifySecretThatsNotASecret',
         { expiresIn: '24h' }
       );
-      $cookies.put("nf_jwt", token, { expires: expDate });
+      $cookies.put("nf_jwt", token, { expires: expDate, domain: __CRDS_ENV__ + '.crossroads.net' });
 
       $http.defaults.headers.common.RefreshToken = refreshToken;
       $http.defaults.headers.common.Authorization = sessionId;
