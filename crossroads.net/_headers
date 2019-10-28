@@ -1,5 +1,0 @@
-/assets/*
-  # Headers for that path:
-  Access-Control-Allow-Origin: *
-  Access-Control-Allow-Headers: authorization,crds-api-key,refreshtoken,x-use-the-force
-  Access-Control-Allow-Methods: GET
