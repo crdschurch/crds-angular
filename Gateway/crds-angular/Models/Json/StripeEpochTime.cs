@@ -5,7 +5,7 @@ namespace crds_angular.Models.Json
 {
     public static class StripeEpochTime
     {
-        private static DateTime _epochStartDateTime = new DateTime(1970, 1, 1, 0, 0, 0);
+        private static DateTime _epochStartDateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public static DateTime ConvertEpochToDateTime(long seconds)
         {
