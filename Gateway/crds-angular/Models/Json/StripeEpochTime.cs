@@ -10,7 +10,8 @@ namespace crds_angular.Models.Json
         public static DateTime ConvertEpochToDateTime(long seconds)
         {
             var updatedTime = _epochStartDateTime.AddSeconds(seconds);
-            return updatedTime;
+
+            return TimeZoneInfo.ConvertTime(updatedTime, TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"));
 
             // this was setting it back by four hours
             //return TimeZoneInfo.ConvertTimeFromUtc(updatedTime, TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"));
