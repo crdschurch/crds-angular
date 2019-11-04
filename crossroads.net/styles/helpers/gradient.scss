@@ -1,5 +1,0 @@
-@mixin gradient($from-color, $to-color) {
-    background-color: mix($from-color, $to-color); /* Fallback */
-    background-image: gradient(linear, 0% 0%, 0% 100%, from($from-color), to($to-color));
-    background-image: linear-gradient(to top, $from-color, $to-color);
-}
