@@ -1,7 +1,0 @@
-// Prevent Internet Explorer from putting two arrows on selects
-
-html[data-useragent*='MSIE'] select.form-control,
-html[data-useragent*='Trident'] select.form-control {
-  background: transparent !important;
-  padding:  0 0 0 10px !important;
-}

@@ -617,6 +617,16 @@ namespace MinistryPlatform.Translation.PlatformService {
         
         [System.Runtime.Serialization.EnumMemberAttribute()]
         Image = 22,
+
+        /// <summary>
+        ///  Added Manually. These are needed to allow getting email templates through SOAP API
+        /// </summary>
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        TimeZone = 23,
+
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        Locale = 24,
+        //-----------------------------------------------------------------------
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
