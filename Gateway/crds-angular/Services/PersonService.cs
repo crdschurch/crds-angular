@@ -1,6 +1,10 @@
 using System;
+using System.Net.Http;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using AutoMapper;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Profile;
@@ -8,6 +12,7 @@ using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
+using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.Repositories;
@@ -26,6 +31,8 @@ namespace crds_angular.Services
         private readonly IAuthenticationRepository _authenticationService;
         private readonly IAddressService _addressService;
         private readonly IAnalyticsService _analyticsService;
+        private readonly IConfigurationWrapper _configurationWrapper;
+        private readonly string _identityServiceUrl;        
 
         public PersonService(MPServices.IContactRepository contactService, 
             IObjectAttributeService objectAttributeService, 
@@ -34,7 +41,8 @@ namespace crds_angular.Services
             MPServices.IUserRepository userService,
             IAuthenticationRepository authenticationService,
             IAddressService addressService,
-            IAnalyticsService analyticsService)
+            IAnalyticsService analyticsService,
+            IConfigurationWrapper configurationWrapper)
         {
             _contactRepository = contactService;
             _objectAttributeService = objectAttributeService;
@@ -44,9 +52,11 @@ namespace crds_angular.Services
             _authenticationService = authenticationService;
             _addressService = addressService;
             _analyticsService = analyticsService;
+            _configurationWrapper = configurationWrapper;
+            _identityServiceUrl = _configurationWrapper.GetEnvironmentVarAsString("IDENTITY_SERVICE_URL");
         }
 
-        public void SetProfile( Person person)
+        public void SetProfile( Person person, string userAccessToken)
         {
             var contactDictionary = getDictionary(person.GetContact());
             var householdDictionary = getDictionary(person.GetHousehold());
@@ -95,10 +105,13 @@ namespace crds_angular.Services
                     throw new Exception("Old password did not match profile");
                 }
                 else
-                {
-                    var userUpdateValues = person.GetUserUpdateValues();
-                    userUpdateValues["User_ID"] = _userRepository.GetUserIdByUsername(person.OldEmail);
+                {                     
+                    var userUpdateValues = new Dictionary<string, object>();
+                    userUpdateValues["Display_Name"] = $"{person.LastName}, {person.NickName}";
                     _userRepository.UpdateUser(userUpdateValues);
+
+                    UpdateOktaEmailAddressIfNeeded(person, userAccessToken);                    
+                    UpdateOktaPasswordIfNeeded(person, userAccessToken);
                 }
             }
             CaptureProfileAnalytics(person);
@@ -159,6 +172,41 @@ namespace crds_angular.Services
             person.HouseholdMembers = family;
 
             return person;
+        }
+
+        private HttpResponseMessage PutToIdentityService(string apiEndpoint, string userAccessToken, JObject payload)
+        {
+            HttpClient client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Put, _identityServiceUrl + apiEndpoint);
+            request.Headers.Add("Authorization", userAccessToken);
+            request.Headers.Add("Accept", "application/json");            
+            request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");            
+            var response = client.SendAsync(request).Result;
+            return response;            
+        }
+
+        private Boolean UpdateOktaEmailAddressIfNeeded(Person person, string userAccessToken)
+        {
+            if(person.EmailAddress != person.OldEmail && person.OldEmail != null)
+            {                                                
+                JObject payload = new JObject();
+                payload.Add("newEmail", person.EmailAddress);
+                PutToIdentityService(person.OldEmail + "/email", userAccessToken, payload);
+                return true;
+            }
+            return false;
+        }
+
+        private Boolean UpdateOktaPasswordIfNeeded(Person person, string userAccessToken)
+        {
+            if(!(String.IsNullOrEmpty(person.NewPassword)))
+            {                                                                        
+                JObject payload = new JObject();
+                payload.Add("newPassword", person.NewPassword);
+                PutToIdentityService(person.EmailAddress + "/password", userAccessToken, payload);
+                return true;
+            }
+            return false;
         }
     }
 }
