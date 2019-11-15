@@ -32,7 +32,9 @@ namespace crds_angular.Services
         private readonly IAddressService _addressService;
         private readonly IAnalyticsService _analyticsService;
         private readonly IConfigurationWrapper _configurationWrapper;
-        private readonly string _identityServiceUrl;        
+        private readonly string _identityServiceUrl;
+        protected virtual HttpClient client { get { return _client; } }
+        private static readonly HttpClient _client = new HttpClient();
 
         public PersonService(MPServices.IContactRepository contactService, 
             IObjectAttributeService objectAttributeService, 
@@ -96,24 +98,8 @@ namespace crds_angular.Services
             // TODO: See About moving the check for new password above or moving the update for user / person into an atomic operation
             //
             // update the user values if the email and/or password has changed
-            if (!(String.IsNullOrEmpty(person.NewPassword)) || (person.EmailAddress != person.OldEmail && person.OldEmail != null))
-            {
-                var authData = _authenticationService.AuthenticateUser(person.OldEmail, person.OldPassword);
+            UpdateUsernameOrPasswordIfNeeded(person, userAccessToken);
 
-                if (authData == null)
-                {
-                    throw new Exception("Old password did not match profile");
-                }
-                else
-                {                     
-                    var userUpdateValues = new Dictionary<string, object>();
-                    userUpdateValues["Display_Name"] = $"{person.LastName}, {person.NickName}";
-                    _userRepository.UpdateUser(userUpdateValues);
-
-                    UpdateOktaEmailAddressIfNeeded(person, userAccessToken);                    
-                    UpdateOktaPasswordIfNeeded(person, userAccessToken);
-                }
-            }
             CaptureProfileAnalytics(person);
         }
 
@@ -174,9 +160,31 @@ namespace crds_angular.Services
             return person;
         }
 
-        private HttpResponseMessage PutToIdentityService(string apiEndpoint, string userAccessToken, JObject payload)
+        //Should not be called once cut over to Okta...
+        protected virtual void UpdateUsernameOrPasswordIfNeeded(Person person, string userAccessToken)
         {
-            HttpClient client = new HttpClient();
+            if (!(String.IsNullOrEmpty(person.NewPassword)) || (person.EmailAddress != person.OldEmail && person.OldEmail != null))
+            {
+                var authData = _authenticationService.AuthenticateUser(person.OldEmail, person.OldPassword);
+
+                if (authData == null)
+                {
+                    throw new Exception("Old password did not match profile");
+                }
+                else
+                {
+                    var userUpdateValues = new Dictionary<string, object>();
+                    userUpdateValues["Display_Name"] = $"{person.LastName}, {person.NickName}";
+                    _userRepository.UpdateUser(userUpdateValues);
+
+                    UpdateOktaEmailAddressIfNeeded(person, userAccessToken);
+                    UpdateOktaPasswordIfNeeded(person, userAccessToken);
+                }
+            }
+        }
+
+        private HttpResponseMessage PutToIdentityService(string apiEndpoint, string userAccessToken, JObject payload)
+        {            
             var request = new HttpRequestMessage(HttpMethod.Put, _identityServiceUrl + apiEndpoint);
             request.Headers.Add("Authorization", userAccessToken);
             request.Headers.Add("Accept", "application/json");            

@@ -14,6 +14,10 @@ using MinistryPlatform.Translation.Models;
 using MPInterfaces = MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
+using Crossroads.Web.Common.Configuration;
+using Crossroads.Service.Identity.Tests.Repositories;
+using System.Net.Http;
+using System.Threading;
 
 namespace crds_angular.test.Services
 {
@@ -27,8 +31,10 @@ namespace crds_angular.test.Services
         private Mock<MPInterfaces.IUserRepository> _userService;
         private Mock<IAddressService> _addressService;
         private Mock<IAnalyticsService> _analyticsService;
-
-        private PersonService _fixture;
+        private Mock<IConfigurationWrapper> _configurationWrapper;
+        private FakeHttpClientFactory _httpClientFactory;
+        private MockRepository mockRepository;
+        private IsolatedPersonService _fixture;
         private MpMyContact _myContact;
         private List<MpHouseholdMember> _householdMembers;
 
@@ -48,6 +54,7 @@ namespace crds_angular.test.Services
         [SetUp]
         public void SetUp()
         {
+            MockRepository mockRepository = new MockRepository(MockBehavior.Loose);
             _objectAttributeService = new Mock<IObjectAttributeService>();
             _contactService = new Mock<MPInterfaces.IContactRepository>();
             _authenticationService = new Mock<IAuthenticationRepository>();
@@ -56,7 +63,13 @@ namespace crds_angular.test.Services
             _apiUserService = new Mock<IApiUserRepository>();            
             _addressService = new Mock<IAddressService>();
             _analyticsService = new Mock<IAnalyticsService>();
-            
+            _configurationWrapper = new Mock<IConfigurationWrapper>();
+            _httpClientFactory = new FakeHttpClientFactory(mockRepository);
+            List<HttpRequestMessage> sentRequestMessages = new List<HttpRequestMessage>();
+            _httpClientFactory.SetupSendAsync().ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK
+            }).Callback((HttpRequestMessage msg, CancellationToken ct) => sentRequestMessages.Add(msg));
             _myContact = new MpMyContact
             {
                 Contact_ID = 123456,
@@ -87,7 +100,7 @@ namespace crds_angular.test.Services
             };
             _householdMembers = new List<MpHouseholdMember>();
 
-            _fixture = new PersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object, _analyticsService.Object);
+            _fixture = new IsolatedPersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object, _analyticsService.Object, _configurationWrapper.Object, _httpClientFactory.httpClient);
 
             //force AutoMapper to register
             AutoMapperConfig.RegisterMappings();
@@ -118,7 +131,7 @@ namespace crds_angular.test.Services
             _participantService.Setup(m => m.GetParticipant(person.ContactId)).Returns(participant);
             _addressService.Setup(m => m.GetGeoLocationCascading(It.IsAny<AddressDTO>())).Returns(new GeoCoordinate(5, 6));
             _analyticsService.Setup(m => m.Track(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<EventProperties>()));
-            _fixture.SetProfile(person);
+            _fixture.SetProfile(person, token);
 
         }
 
