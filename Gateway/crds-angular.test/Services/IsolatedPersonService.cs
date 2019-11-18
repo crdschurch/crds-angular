@@ -6,18 +6,13 @@ using Crossroads.Web.Common.Configuration;
 using MPServices = MinistryPlatform.Translation.Repositories.Interfaces;
 using System.Net.Http;
 using crds_angular.Models.Crossroads.Profile;
-using Crossroads.Service.Identity.Tests.Repositories;
 
 namespace crds_angular.test.Services
 {
     class IsolatedPersonService : PersonService
     {
         protected override HttpClient client { get; }
-        public void _UpdateUsernameOrPasswordIfNeeded(Person person, string UserAccessToken)
-        {
-            UpdateUsernameOrPasswordIfNeeded(person, UserAccessToken);
-        }
-
+        
         public IsolatedPersonService(MPServices.IContactRepository contactService,
             IObjectAttributeService objectAttributeService,
             IApiUserRepository apiUserService,
@@ -30,6 +25,10 @@ namespace crds_angular.test.Services
             HttpClient fakeClient) : base(contactService, objectAttributeService, apiUserService, participantService, userService, authenticationService, addressService, analyticsService, configurationWrapper)
         {
             client = fakeClient;
+        }
+        public void IsolatedUpdateUsernameOrPasswordIfNeeded(Person person, string UserAccessToken)
+        {
+            UpdateUsernameOrPasswordIfNeeded(person, UserAccessToken);
         }
     }
 }
