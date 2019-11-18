@@ -19,7 +19,7 @@ namespace crds_angular.test.Services
     class PersonServiceIdentityIntegrationTest
     {
         [Test]
-        public void UpdateUsernameOrPasswordIfNeeded_WhenPasswordUpdated_RequestMadeToExpectedEndpoint()
+        public void UpdateUsernameOrPasswordIfNeeded_WhenPasswordUpdated_RequestMadeToUpdatePasswordEndpoint()
         {
             //Arrange
             string fakeAccessToken = "123";
@@ -57,7 +57,7 @@ namespace crds_angular.test.Services
         }
 
         [Test]
-        public void UpdateUsernameOrPasswordIfNeeded_WhenEmailUpdated_RequestMadeWithEmailUpdateData()
+        public void UpdateUsernameOrPasswordIfNeeded_WhenEmailUpdated_RequestMadeToUpdateEmailEndpoint()
         {
             //Arrange
             string fakeAccessToken = "123";
