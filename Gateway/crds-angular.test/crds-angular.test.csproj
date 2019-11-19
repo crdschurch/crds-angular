@@ -339,6 +339,7 @@
     <Compile Include="Services\AwsCloudsearchServiceTest.cs" />
     <Compile Include="Services\AwsTimeHelperTest.cs" />
     <Compile Include="Services\CampaignServiceTest.cs" />
+    <Compile Include="Services\FakeHttpClientFactory.cs" />
     <Compile Include="Services\GroupConnectorServiceTest.cs" />
     <Compile Include="Helpers\Factories.cs" />
     <Compile Include="Models\Crossroads\Events\EventHelpers.cs" />
@@ -372,11 +373,13 @@
     <Compile Include="Services\InvitationServiceTest.cs" />
     <Compile Include="Services\GroupToolServiceTest.cs" />
     <Compile Include="Services\GroupServiceTest.cs" />
+    <Compile Include="Services\IsolatedPersonService.cs" />
     <Compile Include="Services\ListHandlerTest.cs" />
     <Compile Include="Services\LocationServiceTest.cs" />
     <Compile Include="Services\LoginServiceTest.cs" />
     <Compile Include="Services\OrganizationServiceTest.cs" />
     <Compile Include="Services\PaymentServiceTest.cs" />
+    <Compile Include="Services\PersonServiceIdentityIntegrationTest.cs" />
     <Compile Include="Services\PersonServiceTest.cs" />
     <Compile Include="Services\ProgramServiceTest.cs" />
     <Compile Include="Services\EventServiceTest.cs" />
