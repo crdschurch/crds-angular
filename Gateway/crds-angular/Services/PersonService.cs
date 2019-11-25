@@ -174,6 +174,7 @@ namespace crds_angular.Services
                 else
                 {
                     var userUpdateValues = new Dictionary<string, object>();
+                    userUpdateValues["User_ID"] = _userRepository.GetUserIdByUsername(person.OldEmail);
                     userUpdateValues["Display_Name"] = $"{person.LastName}, {person.NickName}";
                     _userRepository.UpdateUser(userUpdateValues);
 
