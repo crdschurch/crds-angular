@@ -82,6 +82,9 @@ namespace crds_angular.Services
                 addressDictionary.Add("Longitude", coordinates.Longitude);
             }
 
+            // update the user values if the email and/or password has changed
+            UpdateUsernameOrPasswordIfNeeded(person, userAccessToken);
+
             _contactRepository.UpdateContact(person.ContactId, contactDictionary, householdDictionary, addressDictionary);
             var configuration = MpObjectAttributeConfigurationFactory.Contact();            
             _objectAttributeService.SaveObjectAttributes(person.ContactId, person.AttributeTypes, person.SingleAttributes, configuration);
@@ -96,9 +99,8 @@ namespace crds_angular.Services
             // TODO: It appears we are updating the contact records email address above if the email address is changed
             // TODO: If the password is invalid we would not run the update on user, and therefore create a data integrity problem
             // TODO: See About moving the check for new password above or moving the update for user / person into an atomic operation
-            //
-            // update the user values if the email and/or password has changed
-            UpdateUsernameOrPasswordIfNeeded(person, userAccessToken);
+            // TODO: SEE IF THESE TODO's ARE RELEVANT 
+            
 
             CaptureProfileAnalytics(person);
         }
@@ -200,7 +202,7 @@ namespace crds_angular.Services
             {                                                
                 JObject payload = new JObject();
                 payload.Add("newEmail", person.EmailAddress);
-                PutToIdentityService(person.OldEmail + "/email", userAccessToken, payload);
+                PutToIdentityService("/api/identities/" + person.OldEmail + "/email", userAccessToken, payload);
                 return true;
             }
             return false;
@@ -212,7 +214,7 @@ namespace crds_angular.Services
             {                                                                        
                 JObject payload = new JObject();
                 payload.Add("newPassword", person.NewPassword);
-                PutToIdentityService(person.EmailAddress + "/password", userAccessToken, payload);
+                PutToIdentityService("/api/identities/" + person.EmailAddress + "/password", userAccessToken, payload);
                 return true;
             }
             return false;
