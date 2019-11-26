@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using AutoMapper;
@@ -83,6 +82,9 @@ namespace crds_angular.Services
                 addressDictionary.Add("Longitude", coordinates.Longitude);
             }
 
+            // update the user values if the email and/or password has changed
+            UpdateUsernameOrPasswordIfNeeded(person, userAccessToken);
+
             _contactRepository.UpdateContact(person.ContactId, contactDictionary, householdDictionary, addressDictionary);
             var configuration = MpObjectAttributeConfigurationFactory.Contact();            
             _objectAttributeService.SaveObjectAttributes(person.ContactId, person.AttributeTypes, person.SingleAttributes, configuration);
@@ -97,10 +99,8 @@ namespace crds_angular.Services
             // TODO: It appears we are updating the contact records email address above if the email address is changed
             // TODO: If the password is invalid we would not run the update on user, and therefore create a data integrity problem
             // TODO: See About moving the check for new password above or moving the update for user / person into an atomic operation
-            //
-            // update the user values if the email and/or password has changed
-            UpdateUsernameOrPasswordIfNeeded(person, userAccessToken);
-
+            // TODO: SEE IF THESE TODO's ARE RELEVANT 
+            
             CaptureProfileAnalytics(person);
         }
 
@@ -162,7 +162,7 @@ namespace crds_angular.Services
         }
 
         //Should not be called once cut over to Okta...
-        protected virtual async void UpdateUsernameOrPasswordIfNeeded(Person person, string userAccessToken)
+        protected virtual void UpdateUsernameOrPasswordIfNeeded(Person person, string userAccessToken)
         {
             if (!(String.IsNullOrEmpty(person.NewPassword)) || (person.EmailAddress != person.OldEmail && person.OldEmail != null))
             {
@@ -179,53 +179,53 @@ namespace crds_angular.Services
                     userUpdateValues["Display_Name"] = $"{person.LastName}, {person.NickName}";
                     _userRepository.UpdateUser(userUpdateValues);
 
-                    await UpdateOktaEmailAddressIfNeeded(person, userAccessToken);
-                    await UpdateOktaPasswordIfNeeded(person, userAccessToken);
+                    UpdateOktaEmailAddressIfNeeded(person, userAccessToken);
+                    UpdateOktaPasswordIfNeeded(person, userAccessToken);
                 }
             }
         }
-        
-        private async Task<bool> UpdateOktaEmailAddressIfNeeded(Person person, string userAccessToken)
+
+        private HttpResponseMessage PutToIdentityService(string apiEndpoint, string userAccessToken, JObject payload)
+        {            
+            var request = new HttpRequestMessage(HttpMethod.Put, _identityServiceUrl + apiEndpoint);
+            request.Headers.Add("Authorization", userAccessToken);
+            request.Headers.Add("Accept", "application/json");            
+            request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");            
+            var response = client.SendAsync(request).Result; 
+            return response;            
+        }
+
+        private Boolean UpdateOktaEmailAddressIfNeeded(Person person, string userAccessToken)
         {
-            if(person.EmailAddress != person.OldEmail && person.OldEmail != null)
-            {                                                
+            if (person.EmailAddress != person.OldEmail && person.OldEmail != null)
+            {
                 JObject payload = new JObject();
                 payload.Add("newEmail", person.EmailAddress);
-                var response = await PutToIdentityService(person.OldEmail + "/email", userAccessToken, payload);
+                var response = PutToIdentityService("/api/identities/" + person.OldEmail + "/email", userAccessToken, payload);
+               
                 if (!response.IsSuccessStatusCode)
-                {
                     throw new Exception($"Could not update Okta email address for user {person.EmailAddress}");
-                }
+               
                 return true;
             }
             return false;
         }
 
-        private async Task<bool> UpdateOktaPasswordIfNeeded(Person person, string userAccessToken)
+        private Boolean UpdateOktaPasswordIfNeeded(Person person, string userAccessToken)
         {
             if(!(String.IsNullOrEmpty(person.NewPassword)))
             {                                                                        
                 JObject payload = new JObject();
                 payload.Add("newPassword", person.NewPassword);
-                var response = await PutToIdentityService(person.EmailAddress + "/password", userAccessToken, payload);
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception($"Could not update Okta password for user {person.EmailAddress}");
-                }
+                var email = (person.EmailAddress != person.OldEmail && person.OldEmail != null) ? person.EmailAddress : person.OldEmail;
+                var response = PutToIdentityService("/api/identities/" + email + "/password", userAccessToken, payload);
 
+                if (!response.IsSuccessStatusCode)
+                    throw new Exception($"Could not update Okta password for user {person.EmailAddress}");
+                
                 return true;
             }
             return false;
-        }
-
-        private async Task<HttpResponseMessage> PutToIdentityService(string apiEndpoint, string userAccessToken, JObject payload)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Put, _identityServiceUrl + apiEndpoint);
-            request.Headers.Add("Authorization", userAccessToken);
-            request.Headers.Add("Accept", "application/json");
-            request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-            var response = await client.SendAsync(request);
-            return response;
         }
     }
 }
