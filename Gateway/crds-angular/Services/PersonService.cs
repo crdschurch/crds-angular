@@ -191,7 +191,7 @@ namespace crds_angular.Services
             request.Headers.Add("Authorization", userAccessToken);
             request.Headers.Add("Accept", "application/json");            
             request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");            
-            var response = client.SendAsync(request).Result;
+            var response = client.SendAsync(request).Result; 
             return response;            
         }
 
