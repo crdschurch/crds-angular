@@ -197,11 +197,15 @@ namespace crds_angular.Services
 
         private Boolean UpdateOktaEmailAddressIfNeeded(Person person, string userAccessToken)
         {
-            if(person.EmailAddress != person.OldEmail && person.OldEmail != null)
-            {                                                
+            if (person.EmailAddress != person.OldEmail && person.OldEmail != null)
+            {
                 JObject payload = new JObject();
                 payload.Add("newEmail", person.EmailAddress);
-                PutToIdentityService("/api/identities/" + person.OldEmail + "/email", userAccessToken, payload);
+                var response = PutToIdentityService("/api/identities/" + person.OldEmail + "/email", userAccessToken, payload);
+               
+                if (!response.IsSuccessStatusCode)
+                    throw new Exception($"Could not update Okta email address for user {person.EmailAddress}");
+               
                 return true;
             }
             return false;
@@ -214,7 +218,11 @@ namespace crds_angular.Services
                 JObject payload = new JObject();
                 payload.Add("newPassword", person.NewPassword);
                 var email = (person.EmailAddress != person.OldEmail && person.OldEmail != null) ? person.EmailAddress : person.OldEmail;
-                PutToIdentityService("/api/identities/" + email + "/password", userAccessToken, payload);
+                var response = PutToIdentityService("/api/identities/" + email + "/password", userAccessToken, payload);
+
+                if (!response.IsSuccessStatusCode)
+                    throw new Exception($"Could not update Okta password for user {person.EmailAddress}");
+                
                 return true;
             }
             return false;
