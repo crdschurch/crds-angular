@@ -101,7 +101,6 @@ namespace crds_angular.Services
             // TODO: See About moving the check for new password above or moving the update for user / person into an atomic operation
             // TODO: SEE IF THESE TODO's ARE RELEVANT 
             
-
             CaptureProfileAnalytics(person);
         }
 
@@ -214,7 +213,8 @@ namespace crds_angular.Services
             {                                                                        
                 JObject payload = new JObject();
                 payload.Add("newPassword", person.NewPassword);
-                PutToIdentityService("/api/identities/" + person.EmailAddress + "/password", userAccessToken, payload);
+                var email = (person.EmailAddress != person.OldEmail && person.OldEmail != null) ? person.EmailAddress : person.OldEmail;
+                PutToIdentityService("/api/identities/" + email + "/password", userAccessToken, payload);
                 return true;
             }
             return false;
