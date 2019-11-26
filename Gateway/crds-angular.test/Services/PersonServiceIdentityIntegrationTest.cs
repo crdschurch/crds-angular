@@ -23,7 +23,7 @@ namespace crds_angular.test.Services
         {
             //Arrange
             string fakeAccessToken = "123";
-            string fakeFullyQualifiedApiUrl = "https://fakeurl.crossroads.net/";
+            string fakeFullyQualifiedApiUrl = "https://fakeurl.crossroads.net";
             string currentEmail = "test@crossroads.net";
 
             var mockRepository = new MockRepository(MockBehavior.Loose);
@@ -53,7 +53,7 @@ namespace crds_angular.test.Services
             //Assert
             Assert.AreEqual(1, sentRequestMessages.Count);
             var passwordRequest = sentRequestMessages[0];
-            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}{currentEmail}/password", passwordRequest.RequestUri.ToString());
+            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}/api/identities/{currentEmail}/password", passwordRequest.RequestUri.ToString());
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace crds_angular.test.Services
             //Assert
             Assert.AreEqual(1, sentRequestMessages.Count);
             var emailRequest = sentRequestMessages[0];
-            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}{currentEmail}/email", emailRequest.RequestUri.ToString());
+            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}/api/identities/{currentEmail}/email", emailRequest.RequestUri.ToString());
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace crds_angular.test.Services
         {
             //Arrange
             string fakeAccessToken = "123";
-            string fakeFullyQualifiedApiUrl = "https://fakeurl.crossroads.net/";
+            string fakeFullyQualifiedApiUrl = "https://fakeurl.crossroads.net";
             string currentEmail = "test@crossroads.net";
             string newEmail = "test2@crossroads.net";
 
@@ -134,8 +134,8 @@ namespace crds_angular.test.Services
             var emailRequest = sentRequestMessages[0];
             var passwordRequest = sentRequestMessages[1];
             
-            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}{currentEmail}/email", emailRequest.RequestUri.ToString());
-            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}{newEmail}/password", passwordRequest.RequestUri.ToString());
+            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}/api/identities/{currentEmail}/email", emailRequest.RequestUri.ToString());
+            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}/api/identities/{newEmail}/password", passwordRequest.RequestUri.ToString());
         }
     }
 

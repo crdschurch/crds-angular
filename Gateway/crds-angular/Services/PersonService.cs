@@ -217,8 +217,7 @@ namespace crds_angular.Services
             {                                                                        
                 JObject payload = new JObject();
                 payload.Add("newPassword", person.NewPassword);
-                var email = (person.EmailAddress != person.OldEmail && person.OldEmail != null) ? person.EmailAddress : person.OldEmail;
-                var response = PutToIdentityService("/api/identities/" + email + "/password", userAccessToken, payload);
+                var response = PutToIdentityService("/api/identities/" + person.EmailAddress + "/password", userAccessToken, payload);
 
                 if (!response.IsSuccessStatusCode)
                     throw new Exception($"Could not update Okta password for user {person.EmailAddress}");
