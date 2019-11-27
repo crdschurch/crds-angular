@@ -176,11 +176,13 @@ namespace crds_angular.Services
                 {
                     var userUpdateValues = new Dictionary<string, object>();
                     userUpdateValues["User_ID"] = _userRepository.GetUserIdByUsername(person.OldEmail);
+                    if (!string.IsNullOrEmpty(person.NewPassword))
+                        userUpdateValues["Password"] = person.NewPassword;
                     userUpdateValues["Display_Name"] = $"{person.LastName}, {person.NickName}";
                     _userRepository.UpdateUser(userUpdateValues);
 
                     UpdateOktaEmailAddressIfNeeded(person, userAccessToken);
-                    UpdateOktaPasswordIfNeeded(person, userAccessToken);
+                    NotifyIdentityofPasswordUpdateIfNeeded(person.EmailAddress, userAccessToken);
                 }
             }
         }
@@ -211,19 +213,14 @@ namespace crds_angular.Services
             return false;
         }
 
-        private Boolean UpdateOktaPasswordIfNeeded(Person person, string userAccessToken)
+        private Boolean NotifyIdentityofPasswordUpdateIfNeeded(string email, string userAccessToken)
         {
-            if(!(String.IsNullOrEmpty(person.NewPassword)))
-            {                                                                        
-                JObject payload = new JObject();
-                payload.Add("newPassword", person.NewPassword);
-                var response = PutToIdentityService("/api/identities/" + person.EmailAddress + "/password", userAccessToken, payload);
-
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception($"Could not update Okta password for user {person.EmailAddress}");
-                
+            var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{email}/passwordupdated");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Authorization", userAccessToken);
+            var response = client.SendAsync(request).Result;
+            if(response.IsSuccessStatusCode)
                 return true;
-            }
             return false;
         }
     }
