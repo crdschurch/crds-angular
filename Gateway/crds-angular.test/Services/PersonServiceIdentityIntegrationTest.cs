@@ -53,7 +53,7 @@ namespace crds_angular.test.Services
             //Assert
             Assert.AreEqual(1, sentRequestMessages.Count);
             var passwordRequest = sentRequestMessages[0];
-            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}/api/identities/{currentEmail}/password", passwordRequest.RequestUri.ToString());
+            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}/api/identities/{currentEmail}/passwordupdated", passwordRequest.RequestUri.ToString());
         }
 
         [Test]
@@ -135,7 +135,7 @@ namespace crds_angular.test.Services
             var passwordRequest = sentRequestMessages[1];
             
             Assert.AreEqual($"{fakeFullyQualifiedApiUrl}/api/identities/{currentEmail}/email", emailRequest.RequestUri.ToString());
-            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}/api/identities/{newEmail}/password", passwordRequest.RequestUri.ToString());
+            Assert.AreEqual($"{fakeFullyQualifiedApiUrl}/api/identities/{newEmail}/passwordupdated", passwordRequest.RequestUri.ToString());
         }
     }
 

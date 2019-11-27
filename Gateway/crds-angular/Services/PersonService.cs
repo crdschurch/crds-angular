@@ -182,7 +182,7 @@ namespace crds_angular.Services
                     _userRepository.UpdateUser(userUpdateValues);
 
                     UpdateOktaEmailAddressIfNeeded(person, userAccessToken);
-                    NotifyIdentityofPasswordUpdateIfNeeded(person.EmailAddress, userAccessToken);
+                    NotifyIdentityofPasswordUpdateIfNeeded(person, userAccessToken);
                 }
             }
         }
@@ -213,14 +213,18 @@ namespace crds_angular.Services
             return false;
         }
 
-        private Boolean NotifyIdentityofPasswordUpdateIfNeeded(string email, string userAccessToken)
+        private Boolean NotifyIdentityofPasswordUpdateIfNeeded(Person person, string userAccessToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{email}/passwordupdated");
-            request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("Authorization", userAccessToken);
-            var response = client.SendAsync(request).Result;
-            if(response.IsSuccessStatusCode)
-                return true;
+            if(person.OldPassword != person.NewPassword && !string.IsNullOrEmpty(person.NewPassword))
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{person.EmailAddress}/passwordupdated");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("Authorization", userAccessToken);
+                var response = client.SendAsync(request).Result;
+                if (response.IsSuccessStatusCode)
+                    return true;
+
+            }           
             return false;
         }
     }
