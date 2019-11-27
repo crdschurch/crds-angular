@@ -77,9 +77,9 @@ namespace crds_angular.Services
             {
                 //add the lat/long to the address 
                 var address = new AddressDTO(addressDictionary["Address_Line_1"].ToString(), "", addressDictionary["City"].ToString(),  addressDictionary["State"].ToString(),  addressDictionary["Postal_Code"].ToString(),null,null);
-                var coordinates = _addressService.GetGeoLocationCascading(address);
+                /*var coordinates = _addressService.GetGeoLocationCascading(address);
                 addressDictionary.Add("Latitude", coordinates.Latitude);
-                addressDictionary.Add("Longitude", coordinates.Longitude);
+                addressDictionary.Add("Longitude", coordinates.Longitude);*/
             }
 
             // update the user values if the email and/or password has changed
@@ -176,11 +176,13 @@ namespace crds_angular.Services
                 {
                     var userUpdateValues = new Dictionary<string, object>();
                     userUpdateValues["User_ID"] = _userRepository.GetUserIdByUsername(person.OldEmail);
+                    if (!string.IsNullOrEmpty(person.NewPassword))
+                        userUpdateValues["Password"] = person.NewPassword;
                     userUpdateValues["Display_Name"] = $"{person.LastName}, {person.NickName}";
                     _userRepository.UpdateUser(userUpdateValues);
 
                     UpdateOktaEmailAddressIfNeeded(person, userAccessToken);
-                    UpdateOktaPasswordIfNeeded(person, userAccessToken);
+                    NotifyIdentityofPasswordUpdateIfNeeded(person.EmailAddress, userAccessToken);
                 }
             }
         }
@@ -211,19 +213,14 @@ namespace crds_angular.Services
             return false;
         }
 
-        private Boolean UpdateOktaPasswordIfNeeded(Person person, string userAccessToken)
+        private Boolean NotifyIdentityofPasswordUpdateIfNeeded(string email, string userAccessToken)
         {
-            if(!(String.IsNullOrEmpty(person.NewPassword)))
-            {                                                                        
-                JObject payload = new JObject();
-                payload.Add("newPassword", person.NewPassword);
-                var response = PutToIdentityService("/api/identities/" + person.EmailAddress + "/password", userAccessToken, payload);
-
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception($"Could not update Okta password for user {person.EmailAddress}");
-                
+            var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{email}/passwordupdated");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Authorization", userAccessToken);
+            var response = client.SendAsync(request).Result;
+            if(response.IsSuccessStatusCode)
                 return true;
-            }
             return false;
         }
     }
