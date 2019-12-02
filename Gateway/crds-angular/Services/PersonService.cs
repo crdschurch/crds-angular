@@ -82,26 +82,34 @@ namespace crds_angular.Services
                 addressDictionary.Add("Longitude", coordinates.Longitude);
             }
 
-            // update the user values if the email and/or password has changed
-            UpdateUsernameOrPasswordIfNeeded(person, userAccessToken);
+            try
+            {
+                // update the user values if the email and/or password has changed
+                UpdateUsernameOrPasswordIfNeeded(person, userAccessToken);
 
-            _contactRepository.UpdateContact(person.ContactId, contactDictionary, householdDictionary, addressDictionary);
-            var configuration = MpObjectAttributeConfigurationFactory.Contact();            
-            _objectAttributeService.SaveObjectAttributes(person.ContactId, person.AttributeTypes, person.SingleAttributes, configuration);
+                _contactRepository.UpdateContact(person.ContactId, contactDictionary, householdDictionary, addressDictionary);
+                var configuration = MpObjectAttributeConfigurationFactory.Contact();
+                _objectAttributeService.SaveObjectAttributes(person.ContactId, person.AttributeTypes, person.SingleAttributes, configuration);
 
-            var participant = _participantService.GetParticipant(person.ContactId);
-            if (participant.AttendanceStart != person.AttendanceStartDate)
-            {                
-                participant.AttendanceStart = person.AttendanceStartDate;
-                _participantService.UpdateParticipant(participant);
+                var participant = _participantService.GetParticipant(person.ContactId);
+                if (participant.AttendanceStart != person.AttendanceStartDate)
+                {
+                    participant.AttendanceStart = person.AttendanceStartDate;
+                    _participantService.UpdateParticipant(participant);
+                }
+
+                // TODO: It appears we are updating the contact records email address above if the email address is changed
+                // TODO: If the password is invalid we would not run the update on user, and therefore create a data integrity problem
+                // TODO: See About moving the check for new password above or moving the update for user / person into an atomic operation
+                // TODO: SEE IF THESE TODO's ARE RELEVANT 
+
+                CaptureProfileAnalytics(person);
             }
-
-            // TODO: It appears we are updating the contact records email address above if the email address is changed
-            // TODO: If the password is invalid we would not run the update on user, and therefore create a data integrity problem
-            // TODO: See About moving the check for new password above or moving the update for user / person into an atomic operation
-            // TODO: SEE IF THESE TODO's ARE RELEVANT 
+            catch(Exception e)
+            {
+                throw new Exception($"Could not complete updates : {e.Message}");
+            }
             
-            CaptureProfileAnalytics(person);
         }
 
         public void CaptureProfileAnalytics(Person person)
@@ -162,15 +170,15 @@ namespace crds_angular.Services
         }
 
         //Should not be called once cut over to Okta...
-        protected virtual void UpdateUsernameOrPasswordIfNeeded(Person person, string userAccessToken)
+        protected virtual bool UpdateUsernameOrPasswordIfNeeded(Person person, string userAccessToken)
         {
             if (!(String.IsNullOrEmpty(person.NewPassword)) || (person.EmailAddress != person.OldEmail && person.OldEmail != null))
             {
                 var authData = _authenticationService.AuthenticateUser(person.OldEmail, person.OldPassword);
 
                 if (authData == null)
-                {
-                    throw new Exception("Old password did not match profile");
+                {                    
+                    throw new Exception("Could not authenticate user");
                 }
                 else
                 {
@@ -185,6 +193,7 @@ namespace crds_angular.Services
                     NotifyIdentityofPasswordUpdateIfNeeded(person, userAccessToken);
                 }
             }
+            return true;
         }
 
         private HttpResponseMessage PutToIdentityService(string apiEndpoint, string userAccessToken, JObject payload)
