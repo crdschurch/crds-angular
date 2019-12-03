@@ -211,8 +211,8 @@ namespace crds_angular.Controllers.API
                     {
                         try
                         {
-                            
-                            _personService.SetProfile(person);
+                            var userAccessToken = this.Request.Headers.Authorization.ToString();
+                            _personService.SetProfile(person, userAccessToken);
                             return this.Ok();
                         }
                         catch (Exception ex)
