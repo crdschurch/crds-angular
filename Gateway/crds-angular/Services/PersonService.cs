@@ -1,6 +1,10 @@
 using System;
+using System.Net.Http;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using AutoMapper;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Profile;
@@ -8,6 +12,7 @@ using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
+using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.Repositories;
@@ -26,6 +31,10 @@ namespace crds_angular.Services
         private readonly IAuthenticationRepository _authenticationService;
         private readonly IAddressService _addressService;
         private readonly IAnalyticsService _analyticsService;
+        private readonly IConfigurationWrapper _configurationWrapper;
+        private readonly string _identityServiceUrl;
+        protected virtual HttpClient client { get { return _client; } }
+        private static readonly HttpClient _client = new HttpClient();
 
         public PersonService(MPServices.IContactRepository contactService, 
             IObjectAttributeService objectAttributeService, 
@@ -34,7 +43,8 @@ namespace crds_angular.Services
             MPServices.IUserRepository userService,
             IAuthenticationRepository authenticationService,
             IAddressService addressService,
-            IAnalyticsService analyticsService)
+            IAnalyticsService analyticsService,
+            IConfigurationWrapper configurationWrapper)
         {
             _contactRepository = contactService;
             _objectAttributeService = objectAttributeService;
@@ -44,9 +54,11 @@ namespace crds_angular.Services
             _authenticationService = authenticationService;
             _addressService = addressService;
             _analyticsService = analyticsService;
+            _configurationWrapper = configurationWrapper;
+            _identityServiceUrl = _configurationWrapper.GetEnvironmentVarAsString("IDENTITY_SERVICE_URL");
         }
 
-        public void SetProfile( Person person)
+        public void SetProfile( Person person, string userAccessToken)
         {
             var contactDictionary = getDictionary(person.GetContact());
             var householdDictionary = getDictionary(person.GetHousehold());
@@ -70,38 +82,34 @@ namespace crds_angular.Services
                 addressDictionary.Add("Longitude", coordinates.Longitude);
             }
 
-            _contactRepository.UpdateContact(person.ContactId, contactDictionary, householdDictionary, addressDictionary);
-            var configuration = MpObjectAttributeConfigurationFactory.Contact();            
-            _objectAttributeService.SaveObjectAttributes(person.ContactId, person.AttributeTypes, person.SingleAttributes, configuration);
-
-            var participant = _participantService.GetParticipant(person.ContactId);
-            if (participant.AttendanceStart != person.AttendanceStartDate)
-            {                
-                participant.AttendanceStart = person.AttendanceStartDate;
-                _participantService.UpdateParticipant(participant);
-            }
-
-            // TODO: It appears we are updating the contact records email address above if the email address is changed
-            // TODO: If the password is invalid we would not run the update on user, and therefore create a data integrity problem
-            // TODO: See About moving the check for new password above or moving the update for user / person into an atomic operation
-            //
-            // update the user values if the email and/or password has changed
-            if (!(String.IsNullOrEmpty(person.NewPassword)) || (person.EmailAddress != person.OldEmail && person.OldEmail != null))
+            try
             {
-                var authData = _authenticationService.AuthenticateUser(person.OldEmail, person.OldPassword);
+                // update the user values if the email and/or password has changed
+                UpdateUsernameOrPasswordIfNeeded(person, userAccessToken);
 
-                if (authData == null)
+                _contactRepository.UpdateContact(person.ContactId, contactDictionary, householdDictionary, addressDictionary);
+                var configuration = MpObjectAttributeConfigurationFactory.Contact();
+                _objectAttributeService.SaveObjectAttributes(person.ContactId, person.AttributeTypes, person.SingleAttributes, configuration);
+
+                var participant = _participantService.GetParticipant(person.ContactId);
+                if (participant.AttendanceStart != person.AttendanceStartDate)
                 {
-                    throw new Exception("Old password did not match profile");
+                    participant.AttendanceStart = person.AttendanceStartDate;
+                    _participantService.UpdateParticipant(participant);
                 }
-                else
-                {
-                    var userUpdateValues = person.GetUserUpdateValues();
-                    userUpdateValues["User_ID"] = _userRepository.GetUserIdByUsername(person.OldEmail);
-                    _userRepository.UpdateUser(userUpdateValues);
-                }
+
+                // TODO: It appears we are updating the contact records email address above if the email address is changed
+                // TODO: If the password is invalid we would not run the update on user, and therefore create a data integrity problem
+                // TODO: See About moving the check for new password above or moving the update for user / person into an atomic operation
+                // TODO: SEE IF THESE TODO's ARE RELEVANT 
+
+                CaptureProfileAnalytics(person);
             }
-            CaptureProfileAnalytics(person);
+            catch(Exception e)
+            {
+                throw new Exception($"Could not complete updates : {e.Message}");
+            }
+            
         }
 
         public void CaptureProfileAnalytics(Person person)
@@ -159,6 +167,74 @@ namespace crds_angular.Services
             person.HouseholdMembers = family;
 
             return person;
+        }
+
+        //Should not be called once cut over to Okta...
+        protected virtual bool UpdateUsernameOrPasswordIfNeeded(Person person, string userAccessToken)
+        {
+            if (!(String.IsNullOrEmpty(person.NewPassword)) || (person.EmailAddress != person.OldEmail && person.OldEmail != null))
+            {
+                var authData = _authenticationService.AuthenticateUser(person.OldEmail, person.OldPassword);
+
+                if (authData == null)
+                {                    
+                    throw new Exception("Could not authenticate user");
+                }
+                else
+                {
+                    var userUpdateValues = new Dictionary<string, object>();
+                    userUpdateValues["User_ID"] = _userRepository.GetUserIdByUsername(person.OldEmail);
+                    if (!string.IsNullOrEmpty(person.NewPassword))
+                        userUpdateValues["Password"] = person.NewPassword;
+                    userUpdateValues["Display_Name"] = $"{person.LastName}, {person.NickName}";
+                    _userRepository.UpdateUser(userUpdateValues);
+
+                    UpdateOktaEmailAddressIfNeeded(person, userAccessToken);
+                    NotifyIdentityofPasswordUpdateIfNeeded(person, userAccessToken);
+                }
+            }
+            return true;
+        }
+
+        private HttpResponseMessage PutToIdentityService(string apiEndpoint, string userAccessToken, JObject payload)
+        {            
+            var request = new HttpRequestMessage(HttpMethod.Put, _identityServiceUrl + apiEndpoint);
+            request.Headers.Add("Authorization", userAccessToken);
+            request.Headers.Add("Accept", "application/json");            
+            request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");            
+            var response = client.SendAsync(request).Result; 
+            return response;            
+        }
+
+        private Boolean UpdateOktaEmailAddressIfNeeded(Person person, string userAccessToken)
+        {
+            if (person.EmailAddress != person.OldEmail && person.OldEmail != null)
+            {
+                JObject payload = new JObject();
+                payload.Add("newEmail", person.EmailAddress);
+                var response = PutToIdentityService("/api/identities/" + person.OldEmail + "/email", userAccessToken, payload);
+               
+                if (!response.IsSuccessStatusCode)
+                    throw new Exception($"Could not update Okta email address for user {person.EmailAddress}");
+               
+                return true;
+            }
+            return false;
+        }
+
+        private Boolean NotifyIdentityofPasswordUpdateIfNeeded(Person person, string userAccessToken)
+        {
+            if(person.OldPassword != person.NewPassword && !string.IsNullOrEmpty(person.NewPassword))
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{person.EmailAddress}/passwordupdated");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("Authorization", userAccessToken);
+                var response = client.SendAsync(request).Result;
+                if (response.IsSuccessStatusCode)
+                    return true;
+
+            }           
+            return false;
         }
     }
 }
