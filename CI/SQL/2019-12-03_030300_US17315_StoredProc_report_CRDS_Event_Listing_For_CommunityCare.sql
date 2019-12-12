@@ -5,8 +5,10 @@ GO
 -- Author:      Shakila Rajaiah 
 -- Created Date: 10/8/2019
 -- Description: This stored procedure generates a list of events, in a site for a given date range. 
---				It also includes events like camps which do not have a room associated with it. 
+--				All Events that have a room associated with it will appear on the report.
+--				The report will display events like camps which do not have a room associated with it. 
 --				It indicates if there is childcare associated with the event based on the groups they are under.	
+--				Cancelled events will not be displayed as per the user's requirement.
 -- User Story : US17315 - Event Listing Reports for Community Care
 --	
 -- ======================================================================================================================================
@@ -29,8 +31,7 @@ DECLARE @ShowBldgRm INT
 DECLARE @ExcludeRejectedRoomReservation BIT 
 DECLARE @EventTypes varchar(25)
 
-   --set @DomainID = '0FDE7F32-37E3-4E0B-B020-622E0EBD6BF0'
-   set @ShowCancelled = 1
+   set @ShowCancelled = 0   -- do not show cancelled events
    set @ShowNoRoomsSet = 1
    set @ListTime = 1
    set @ShowBldgRm = 1
@@ -55,7 +56,7 @@ CREATE TABLE #ReportData
 	contact_email varchar(500),
 	contact_phone varchar(500),
 	congregation_name varchar(500),
-	childcare_available int,
+	childcare_available varchar(10),
 	Room_1 varchar(500),
 	Room_2 varchar(500),
 	Room_3 varchar(500),
@@ -130,7 +131,7 @@ CREATE TABLE #ReportData
            ,Prog.[Program_Name]
            ,E.Cancelled
 		   ,ISNULL(E.[Description],'') AS Description
-		   ,Registration_Form AS Form
+		   ,CASE WHEN Registration_Form IS NOT NULL THEN 'Yes' ELSE 'No' END AS Form
 		   ,ISNULL(External_Registration_URL, '') AS External_Registration_URL
            ,E.__Reservation_Start AS Reservation_Start
            ,E.__Reservation_End AS Reservation_End
@@ -216,7 +217,7 @@ CREATE TABLE #ReportData
            ,Prog.[Program_Name]
            ,E.Cancelled
 		   ,ISNULL(E.[Description],'') AS Description
-		   ,Registration_Form AS Form
+		   ,CASE WHEN Registration_Form IS NOT NULL THEN 'Yes' ELSE 'No' END AS Form
 		   ,ISNULL(External_Registration_URL, '') AS External_Registration_URL
 		   ,E.__Reservation_Start AS Reservation_Start
            ,E.__Reservation_End AS Reservation_End
@@ -246,7 +247,6 @@ CREATE TABLE #ReportData
 				E.Event_Type_ID IN (6,8,9)
 	ORDER BY Congregation_Name
            ,Event_Start_Date
-           ,Event_Title
 
 --- For Child care available, drop if temp table already exists
 	IF (OBJECT_ID('tempdb..#TempChild') IS NOT NULL) DROP TABLE #TempChild
@@ -256,7 +256,7 @@ CREATE TABLE #ReportData
 	(
 		event_id int,
 		event_title	varchar(150),
-		childcare_available int, 
+		childcare_available varchar(10), 
 		event_type_ID int,
 		event_type varchar(50)	
 	)
@@ -270,7 +270,7 @@ CREATE TABLE #ReportData
 				,Event_Type)  
 	SELECT DISTINCT 
 		rd.Event_ID,  rd.Event_Title, 
-		g.Child_Care_Available, 
+		'Yes', 
 		eg.Group_ID,
 		rd.Event_Type
 	FROM
@@ -317,7 +317,7 @@ CREATE TABLE #ReportData
                 ,[Program_Name]
                 ,Cancelled
 				,[Description]
-				 ,Registration_Form
+				,Registration_Form
 				,External_Registration_URL
                 ,Reservation_Start
                 ,Reservation_End
@@ -409,8 +409,7 @@ CREATE TABLE #ReportData
 				,Contact_Person
                 ,Contact_Email
                 ,Contact_Phone              
-                --,ChildCare_Available
-				,ChildCare_Available = CASE WHEN Childcare_Available = 1 THEN 'Yes' ELSE '' END 
+                ,ChildCare_Available
                 ,Room_1
                 ,Room_2
                 ,Room_3
@@ -422,7 +421,7 @@ CREATE TABLE #ReportData
                 ,[Program_Name]
                 ,Cancelled
 				,[Description]
-				,Registration_Form = CASE WHEN Registration_Form IS NOT NULL THEN 'Yes' ELSE 'No' END 
+				, Registration_Form AS Form
 				,External_Registration_URL AS 'Social Link'
                 ,Reservation_Start
                 ,Reservation_End
@@ -434,11 +433,8 @@ CREATE TABLE #ReportData
                 OR @ShowNoRoomsSet = 1
             )
     ORDER BY Congregation_Name
-			,Event_Title
             ,Event_Date
-            ,CASE WHEN @ListTime = 1 THEN CONVERT(TIME,Event_Start_Date) ELSE CONVERT(TIME,Reservation_Start) END
-            ,CASE WHEN @ListTime = 1 THEN CONVERT(TIME,Event_End_Date) ELSE CONVERT(TIME,Reservation_End) END
-            
+            ,CASE WHEN @ListTime = 1 THEN CONVERT(TIME,Event_Start_Date) ELSE CONVERT(TIME,Reservation_Start) END         
 
 --    --CLEAN UP
     DROP TABLE #ReportData
