@@ -111,7 +111,6 @@ CREATE OR ALTER PROCEDURE [dbo].[report_CRDS_Donor_Contribution_Statement_Postal
 	@Congregations varchar(max),
 	@Campaigns varchar(max),
 	@PageID Int
-    --@SelectionID Int = 0
 )
 AS
 
@@ -131,22 +130,6 @@ BEGIN
 	CREATE TABLE #Campaigns (Campaign_ID INT)
 	INSERT INTO #Campaigns SELECT item FROM dp_Split(@Campaigns, ',')
 
-	--REMOVED THIS AS I DON'T THINK IT IS USED IN THIS REPORT
-	--CREATE TABLE #Selections (Statement_ID VARCHAR(15))
-	--INSERT INTO #Selections
-	--        SELECT 'C' + CONVERT(VARCHAR(10),C.Contact_ID)
-	--		FROM dp_Selected_Records SR 
-	--		INNER JOIN dp_Selections S ON S.Selection_ID = SR.Selection_ID  
-	--		INNER JOIN dbo.dp_Users U ON U.[User_ID] = S.[User_ID] AND U.User_GUID = @UserID 
-	--		INNER JOIN Donors D ON SR.record_id = D.Donor_ID
-	--		INNER JOIN Contacts C ON D.Contact_ID = C.Contact_ID
-	--		WHERE S.Page_ID = @PageID 
-	--			AND (    (S.Selection_ID = @SelectionID AND @SelectionID > 0) 
-	--					OR (S.Selection_Name = 'dp_DEFAULT' AND @SelectionID < 1 AND S.Sub_Page_ID IS NULL)
-	--				)
-					
-	--creating #Donations to use indexing
-	--#Donations holds all deposited donations within the specified time range
 	CREATE TABLE #Donations (
 		Donation_ID INT
 		, Donor_ID INT 
@@ -182,9 +165,6 @@ BEGIN
 		AND Donation_Status_ID = 2;  --deposited
 
 	CREATE INDEX IX_Donations_DonationID ON #Donations(Donation_ID); --#Donation table Index
---select ' #Donations'
---select * from #Donations
---select count(*) from #Donations --584 -- 11/01 to 11/30
 
 	--#D is going to hold a list of donors. The statement id will be the same for donors within families and diff for individuals. 
 	CREATE TABLE #D (
@@ -226,34 +206,6 @@ BEGIN
 			WHERE D.Donor_ID = Do.Donor_ID 
 		)
 
---select ' #D'
---select * from #D
---select count(*) from #D -- 7 rows
-
-    /*  UNION  US8143 No more soft credit
-
-	SELECT -- Finds soft credit donors with at least 1 soft credit donation between from date and to date
-		DD.Soft_Credit_Donor
-		, Do.Contact_ID		
-		, Statement_ID = CASE WHEN C.Household_ID IS NULL OR Do.Statement_Type_ID = 1 THEN 'C' + CONVERT(VARCHAR(10),C.Contact_ID) ELSE 'F' + CONVERT(VARCHAR(10),C.Household_ID) END
-		, Contact_Or_Household_ID = CASE WHEN C.Household_ID IS NULL OR Do.Statement_Type_ID = 1 THEN C.Contact_ID ELSE C.Household_ID END	
-		, Do.Statement_Type_ID 
-		, Do.Statement_Method_ID
-		, Do.Statement_Frequency_ID
-	FROM
-		Donation_Distributions DD
-		INNER JOIN Donors Do ON Do.Donor_ID = DD.Soft_Credit_Donor
-		INNER JOIN Contacts C ON C.Contact_ID = Do.Contact_ID
-		INNER JOIN Households H ON C.Household_ID = H.Household_ID
-		INNER JOIN #Congregations cong ON H.Congregation_ID = cong.Congregation_ID
-	WHERE
-		 EXISTS ( --Using EXISTS instead of JOIN because we only want one row per donor and #Donations will have one row for each donation
-			SELECT 1
-			FROM #Donations D
-			JOIN Donation_Distributions DD ON DD.Donation_ID = D.Donation_ID
-			WHERE DD.Soft_Credit_Donor IS NOT NULL AND DD.Soft_Credit_Donor = Do.Donor_ID 
-		);
-	*/
 
 	CREATE INDEX IX_D_DonorID ON #D(Donor_ID);
 
@@ -294,21 +246,9 @@ BEGIN
 		LEFT OUTER JOIN Addresses A ON A.Address_ID = H.Address_ID
 	WHERE Statement_Method_ID = 1 --Postal 
 	AND Statement_Frequency_ID <> 3 --never
-		--REMOVED THIS, AS I DON'T BELIEVE IT SERVES A FUNCTION ANY LONGER
-
-		--(@SelectionID > 0 OR (Statement_Method_ID <> 4 AND Statement_Frequency_ID <> 3))
-		--AND (@SelectionID = 0 OR EXISTS (
-		--		SELECT 1
-		--		FROM #Selections S
-		--		WHERE S.Statement_ID = #D.Statement_ID 
-		--	)
-		--)
 	ORDER BY Donor_ID;
 
 	CREATE INDEX IX_DONORS_DonorID ON #DONORS(Donor_ID);
---select ' #DONORS'
---select * from #DONORS --1 row?
---select count(*) from #DONORS 
 
 	--Handle Campaign Pledges 
 	--#PledgeData will hold all information about pledges for any statement_id in the list
@@ -389,9 +329,6 @@ BEGIN
 			EXISTS (SELECT 1 FROM #DONORS WHERE Contact_ID = c.Contact_ID)
 		;
 	END 
-
---select '* from #PledgeData';
---select * from #PledgeData;
 
 	--#Gifts will contain all of the donations for the time period with the information setup for the statements
 	CREATE TABLE #Gifts(
@@ -518,8 +455,6 @@ BEGIN
 	;
 
 	CREATE INDEX IX_Gifts_DonorID ON #Gifts(Donor_ID)
---select '* from #Gifts';
---select * from #Gifts;
 
 	SELECT
 		Statement_ID
@@ -586,8 +521,6 @@ BEGIN
 
 	DROP TABLE #Campaigns;
 	DROP TABLE #PledgeData; 
-	--REMOVED THIS AS I DON'T THINK IT IS USED IN THIS REPORT
-	--DROP TABLE #Selections;
 
 END
 
