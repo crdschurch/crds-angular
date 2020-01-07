@@ -218,7 +218,14 @@ BEGIN
 	UPDATE [dbo].Contact_Staging SET Congregation_ID = null WHERE Congregation_ID = @congregation_id;
 	UPDATE [dbo].Donation_Distributions SET Congregation_ID = null WHERE Congregation_ID = @congregation_id;
 	UPDATE [dbo].Donation_Distributions SET HC_Donor_Congregation_ID = null WHERE HC_Donor_Congregation_ID = @congregation_id;
+	UPDATE [dbo].dp_Publications SET Congregation_ID = null WHERE Congregation_ID = @congregation_id;
+	UPDATE [dbo].Forms SET Congregation_ID = null WHERE Congregation_ID = @congregation_id;
+	UPDATE [dbo].Form_Responses SET Congregation_ID = null WHERE Congregation_ID = @congregation_id;
 	UPDATE [dbo].Households SET Congregation_ID = null WHERE Congregation_ID = @congregation_id;
+	UPDATE [dbo].Invoices SET Congregation_ID = null WHERE Congregation_ID = @congregation_id;
+	UPDATE [dbo].Locations SET Congregation_ID = null WHERE Congregation_ID = @congregation_id;
+	UPDATE [dbo].Payments SET Congregation_ID = null WHERE Congregation_ID = @congregation_id;
+	UPDATE [dbo].Products SET Congregation_ID = null WHERE Congregation_ID = @congregation_id;
 
 	DELETE [dbo].Congregations WHERE Congregation_ID = @congregation_id;
 END
