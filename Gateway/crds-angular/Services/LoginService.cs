@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -27,6 +28,9 @@ namespace crds_angular.Services
         private readonly IEmailCommunication _emailCommunication;
         private readonly IUserRepository _userRepository;
         private readonly IAuthenticationRepository _authenticationRepository;
+        private readonly string _identityServiceUrl;
+        protected virtual HttpClient client { get { return _client; } }
+        private static readonly HttpClient _client = new HttpClient();
 
         public LoginService(IAuthenticationRepository authenticationRepository, IConfigurationWrapper configurationWrapper, IContactRepository contactService, IEmailCommunication emailCommunication, IUserRepository userRepository)
         {
@@ -35,6 +39,7 @@ namespace crds_angular.Services
             _emailCommunication = emailCommunication;
             _userRepository = userRepository;
             _authenticationRepository = authenticationRepository;
+            _identityServiceUrl = _configurationWrapper.GetEnvironmentVarAsString("IDENTITY_SERVICE_URL");
         }
 
         public bool PasswordResetRequest(string username, bool isMobile)
@@ -110,7 +115,8 @@ namespace crds_angular.Services
             userUpdateValues["PasswordResetToken"] = null;
             userUpdateValues["Password"] = password;
             _userRepository.UpdateUser(userUpdateValues);
-
+            NotifyIdentityofPasswordUpdate(user.UserEmail, _userRepository.HelperApiLogin());
+         
             return true;
         }
 
@@ -205,5 +211,17 @@ namespace crds_angular.Services
                 }
             });
         }
+
+        private Boolean NotifyIdentityofPasswordUpdate(string emailAddress, string userAccessToken)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{emailAddress}/passwordupdated");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Authorization", userAccessToken);
+            var response = client.SendAsync(request).Result;
+            if (response.IsSuccessStatusCode)
+                return true;
+            return false;
+        }
+
     }
 }
