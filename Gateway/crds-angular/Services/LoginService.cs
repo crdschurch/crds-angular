@@ -115,6 +115,7 @@ namespace crds_angular.Services
             userUpdateValues["PasswordResetToken"] = null;
             userUpdateValues["Password"] = password;
             _userRepository.UpdateUser(userUpdateValues);
+            ForceOktaPasswordReset(user.UserEmail, password, _userRepository.HelperApiLogin());
             NotifyIdentityofPasswordUpdate(user.UserEmail, _userRepository.HelperApiLogin());
          
             return true;
@@ -217,10 +218,43 @@ namespace crds_angular.Services
             var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{emailAddress}/passwordupdated");
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Authorization", userAccessToken);
-            var response = client.SendAsync(request).Result;
-            if (response.IsSuccessStatusCode)
-                return true;
-            return false;
+            try
+            {
+                var response = client.SendAsync(request).Result;
+                if (response.IsSuccessStatusCode)
+                    return true;
+                return false;
+            }
+            catch
+            {
+                _logger.Info($"Could not notify Identity Service of Password Update for user {emailAddress}.");
+                return false;
+            }
+            
+        }
+
+        private Boolean ForceOktaPasswordReset(string emailAddress, string newPassword, string accessToken)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{emailAddress}/password");
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Authorization", accessToken);
+            var body = new
+            {
+                NewPassword = newPassword
+            };
+            request.Content = new StringContent(JsonConvert.SerializeObject(body));
+            try
+            {
+                var response = client.SendAsync(request).Result;
+                if (response.IsSuccessStatusCode)
+                    return true;
+                return false;
+            }
+            catch
+            {
+                _logger.Info($"Could not update password for user {emailAddress} in Okta.");
+                return false;
+            }
         }
 
     }
