@@ -29,10 +29,11 @@ namespace crds_angular.Services
         private readonly IUserRepository _userRepository;
         private readonly IAuthenticationRepository _authenticationRepository;
         private readonly string _identityServiceUrl;
+        private readonly IContactRepository _contactRepository;
         protected virtual HttpClient client { get { return _client; } }
         private static readonly HttpClient _client = new HttpClient();
 
-        public LoginService(IAuthenticationRepository authenticationRepository, IConfigurationWrapper configurationWrapper, IContactRepository contactService, IEmailCommunication emailCommunication, IUserRepository userRepository)
+        public LoginService(IAuthenticationRepository authenticationRepository, IConfigurationWrapper configurationWrapper, IContactRepository contactService, IEmailCommunication emailCommunication, IUserRepository userRepository, IContactRepository contactRepository)
         {
             _configurationWrapper = configurationWrapper;
             _contactService = contactService;
@@ -40,6 +41,7 @@ namespace crds_angular.Services
             _userRepository = userRepository;
             _authenticationRepository = authenticationRepository;
             _identityServiceUrl = _configurationWrapper.GetEnvironmentVarAsString("IDENTITY_SERVICE_URL");
+            _contactRepository = contactRepository;
         }
 
         public bool PasswordResetRequest(string username, bool isMobile)
@@ -115,7 +117,17 @@ namespace crds_angular.Services
             userUpdateValues["PasswordResetToken"] = null;
             userUpdateValues["Password"] = password;
             _userRepository.UpdateUser(userUpdateValues);
-            ForceOktaPasswordReset(user.UserEmail, password, _userRepository.HelperApiLogin());
+            var contact = _contactRepository.GetContactByUserRecordId(user.UserRecordId, _userRepository.HelperApiLogin());
+            OktaMigrationUser oktaMigrationUser = new OktaMigrationUser
+            {
+                firstName = contact.First_Name,
+                lastName = contact.Last_Name,
+                email = contact.Email_Address,
+                login = user.UserId,
+                password = password,
+                mpContactId = contact.Contact_ID.ToString()
+            };
+            CreateOrUpdateOktaAccount(oktaMigrationUser);
             NotifyIdentityofPasswordUpdate(user.UserEmail, _userRepository.HelperApiLogin());
          
             return true;
@@ -242,7 +254,8 @@ namespace crds_angular.Services
             {
                 NewPassword = newPassword
             };
-            request.Content = new StringContent(JsonConvert.SerializeObject(body));
+            var json = JsonConvert.SerializeObject(body);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
             try
             {
                 var response = client.SendAsync(request).Result;
