@@ -244,31 +244,5 @@ namespace crds_angular.Services
             }
             
         }
-
-        private Boolean ForceOktaPasswordReset(string emailAddress, string newPassword, string accessToken)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{emailAddress}/password");
-            request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("Authorization", accessToken);
-            var body = new
-            {
-                NewPassword = newPassword
-            };
-            var json = JsonConvert.SerializeObject(body);
-            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-            try
-            {
-                var response = client.SendAsync(request).Result;
-                if (response.IsSuccessStatusCode)
-                    return true;
-                return false;
-            }
-            catch
-            {
-                _logger.Info($"Could not update password for user {emailAddress} in Okta.");
-                return false;
-            }
-        }
-
     }
 }
