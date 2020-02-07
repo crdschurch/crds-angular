@@ -130,7 +130,7 @@ namespace crds_angular.Services
                 mpContactId = contact.Contact_ID.ToString()
             };
             CreateOrUpdateOktaAccount(oktaMigrationUser);
-            NotifyIdentityofPasswordUpdate(user.UserEmail, _userRepository.HelperApiLogin());
+            NotifyIdentityofPasswordUpdate(user.UserEmail);
          
             return true;
         }
