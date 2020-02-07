@@ -37,7 +37,7 @@ namespace crds_angular.test.Services
             _userRepository = new Mock<MPInterfaces.IUserRepository>();
             _contactRepository = new Mock<MPInterfaces.IContactRepository>();
             
-            _loginService = new LoginService(_authenticationRepository.Object, _configurationWrapper.Object, _contactService.Object, _emailCommunication.Object, _userRepository.Object, _contactRepository.Object);
+            _loginService = new LoginService(_authenticationRepository.Object, _configurationWrapper.Object, _contactService.Object, _emailCommunication.Object, _userRepository.Object, _contact);
         }
 
         [Test]
