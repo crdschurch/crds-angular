@@ -29,12 +29,10 @@ namespace crds_angular.Services
         private readonly IUserRepository _userRepository;
         private readonly IAuthenticationRepository _authenticationRepository;
         private readonly string _identityServiceUrl;
-        private readonly IContactRepository _contactRepository;
-        private readonly string _identityServiceSharedSecret;
         protected virtual HttpClient client { get { return _client; } }
         private static readonly HttpClient _client = new HttpClient();
 
-        public LoginService(IAuthenticationRepository authenticationRepository, IConfigurationWrapper configurationWrapper, IContactRepository contactService, IEmailCommunication emailCommunication, IUserRepository userRepository, IContactRepository contactRepository)
+        public LoginService(IAuthenticationRepository authenticationRepository, IConfigurationWrapper configurationWrapper, IContactRepository contactService, IEmailCommunication emailCommunication, IUserRepository userRepository)
         {
             _configurationWrapper = configurationWrapper;
             _contactService = contactService;
@@ -42,8 +40,6 @@ namespace crds_angular.Services
             _userRepository = userRepository;
             _authenticationRepository = authenticationRepository;
             _identityServiceUrl = _configurationWrapper.GetEnvironmentVarAsString("IDENTITY_SERVICE_URL");
-            _identityServiceSharedSecret = _configurationWrapper.GetEnvironmentVarAsString("IDENTITY_SHARED_SECRET");
-            _contactRepository = contactRepository;
         }
 
         public bool PasswordResetRequest(string username, bool isMobile)
@@ -119,17 +115,6 @@ namespace crds_angular.Services
             userUpdateValues["PasswordResetToken"] = null;
             userUpdateValues["Password"] = password;
             _userRepository.UpdateUser(userUpdateValues);
-            var contact = _contactRepository.GetContactByUserRecordId(user.UserRecordId, _userRepository.HelperApiLogin());
-            OktaMigrationUser oktaMigrationUser = new OktaMigrationUser
-            {
-                firstName = contact.First_Name,
-                lastName = contact.Last_Name,
-                email = contact.Email_Address,
-                login = user.UserId,
-                password = password,
-                mpContactId = contact.Contact_ID.ToString()
-            };
-            CreateOrUpdateOktaAccount(oktaMigrationUser);
             NotifyIdentityofPasswordUpdate(user.UserEmail, _userRepository.HelperApiLogin());
          
             return true;
@@ -227,28 +212,16 @@ namespace crds_angular.Services
             });
         }
 
-        private Boolean NotifyIdentityofPasswordUpdate(string emailAddress)
+        private Boolean NotifyIdentityofPasswordUpdate(string emailAddress, string userAccessToken)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, _identityServiceUrl + $"/api/identities/{emailAddress}/passwordreset");
+            var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{emailAddress}/passwordupdated");
             request.Headers.Add("Accept", "application/json");
-            var body = new
-            {
-                code = _identityServiceSharedSecret
-            };
-            request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
-            try
-            {
-                var response = client.SendAsync(request).Result;
-                if (response.IsSuccessStatusCode)
-                    return true;
-                return false;
-            }
-            catch
-            {
-                _logger.Info($"Could not notify Identity Service of Password Update for user {emailAddress}.");
-                return false;
-            }
-            
+            request.Headers.Add("Authorization", userAccessToken);
+            var response = client.SendAsync(request).Result;
+            if (response.IsSuccessStatusCode)
+                return true;
+            return false;
         }
+
     }
 }

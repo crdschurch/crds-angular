@@ -23,7 +23,6 @@ namespace crds_angular.test.Services
         private Mock<MPInterfaces.IContactRepository> _contactService;
         private Mock<IEmailCommunication> _emailCommunication;
         private Mock<MPInterfaces.IUserRepository> _userRepository;
-        private Mock<MPInterfaces.IContactRepository> _contactRepository;
         
 
         [SetUp]
@@ -35,9 +34,8 @@ namespace crds_angular.test.Services
             _contactService = new Mock<MPInterfaces.IContactRepository>();
             _emailCommunication = new Mock<IEmailCommunication>();
             _userRepository = new Mock<MPInterfaces.IUserRepository>();
-            _contactRepository = new Mock<MPInterfaces.IContactRepository>();
             
-            _loginService = new LoginService(_authenticationRepository.Object, _configurationWrapper.Object, _contactService.Object, _emailCommunication.Object, _userRepository.Object, _contact);
+            _loginService = new LoginService(_authenticationRepository.Object, _configurationWrapper.Object, _contactService.Object, _emailCommunication.Object, _userRepository.Object);
         }
 
         [Test]
