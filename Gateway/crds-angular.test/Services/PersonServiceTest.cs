@@ -102,7 +102,7 @@ namespace crds_angular.test.Services
             };
             _householdMembers = new List<MpHouseholdMember>();
 
-            _fixture = new IsolatedPersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object, _analyticsService.Object, _configurationWrapper.Object, _loginService.Object, _httpClientFactory.httpClient);
+            _fixture = new IsolatedPersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object, _analyticsService.Object, _configurationWrapper.Object, _loginService.O, _httpClientFactory.httpClient);
 
             //force AutoMapper to register
             AutoMapperConfig.RegisterMappings();
