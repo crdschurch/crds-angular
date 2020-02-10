@@ -48,7 +48,6 @@ namespace crds_angular.Services
         {
             int user_ID = 0;
             int contact_Id = 0;
-
             // validate the email on the server side to avoid erroneous or malicious requests
             try
             {
