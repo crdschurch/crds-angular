@@ -134,6 +134,9 @@ BEGIN
 	--unlink donor
 	UPDATE [dbo].Contacts SET Donor_Record = null WHERE Contact_ID in (SELECT contact_id FROM @auto_temp_data);
 
+	DELETE [dbo].cr_Distribution_Adjustments WHERE Donation_Distribution_ID 
+	IN (SELECT Donation_Distribution_ID FROM [dbo].Donation_Distributions WHERE Donation_ID 
+	IN (SELECT donation_id FROM @auto_temp_data WHERE donation_id IS NOT NULL));
 	DELETE FROM [dbo].Donation_Distributions WHERE Donation_ID in (SELECT donation_id FROM @auto_temp_data WHERE donation_id IS NOT NULL);
 	DELETE FROM [dbo].Donations WHERE Donation_ID in (SELECT donation_id FROM @auto_temp_data WHERE donation_id IS NOT NULL);
 
