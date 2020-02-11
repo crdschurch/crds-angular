@@ -224,15 +224,28 @@ namespace crds_angular.Services
             });
         }
 
-        private Boolean NotifyIdentityofPasswordUpdate(string emailAddress, string userAccessToken)
+        private Boolean NotifyIdentityofPasswordUpdate(string emailAddress)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{emailAddress}/passwordupdated");
+            var request = new HttpRequestMessage(HttpMethod.Post, _identityServiceUrl + $"/api/identities/{emailAddress}/passwordreset");
             request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("Authorization", userAccessToken);
-            var response = client.SendAsync(request).Result;
-            if (response.IsSuccessStatusCode)
-                return true;
-            return false;
+            var body = new
+            {
+                code = _identityServiceSharedSecret
+            };
+            request.Content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+            try
+            {
+                var response = client.SendAsync(request).Result;
+                if (response.IsSuccessStatusCode)
+                    return true;
+                return false;
+            }
+            catch
+            {
+                _logger.Info($"Could not notify Identity Service of Password Update for user {emailAddress}.");
+                return false;
+            }
+
         }
 
     }
