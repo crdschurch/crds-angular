@@ -33,7 +33,6 @@ namespace crds_angular.Services
         private readonly IAnalyticsService _analyticsService;
         private readonly IConfigurationWrapper _configurationWrapper;
         private readonly string _identityServiceUrl;
-        private readonly ILoginService _loginService;
         protected virtual HttpClient client { get { return _client; } }
         private static readonly HttpClient _client = new HttpClient();
 
@@ -45,8 +44,7 @@ namespace crds_angular.Services
             IAuthenticationRepository authenticationService,
             IAddressService addressService,
             IAnalyticsService analyticsService,
-            IConfigurationWrapper configurationWrapper,
-            ILoginService loginService)
+            IConfigurationWrapper configurationWrapper)
         {
             _contactRepository = contactService;
             _objectAttributeService = objectAttributeService;
@@ -57,7 +55,6 @@ namespace crds_angular.Services
             _addressService = addressService;
             _analyticsService = analyticsService;
             _configurationWrapper = configurationWrapper;
-            _loginService = loginService;
             _identityServiceUrl = _configurationWrapper.GetEnvironmentVarAsString("IDENTITY_SERVICE_URL");
         }
 
@@ -193,7 +190,7 @@ namespace crds_angular.Services
                     _userRepository.UpdateUser(userUpdateValues);
 
                     UpdateOktaEmailAddressIfNeeded(person, userAccessToken);
-                    UpdateOktaPasswordIfNeeded(person, userAccessToken);
+                    NotifyIdentityofPasswordUpdateIfNeeded(person, userAccessToken);
                 }
             }
             return true;
@@ -220,27 +217,6 @@ namespace crds_angular.Services
                 if (!response.IsSuccessStatusCode)
                     throw new Exception($"Could not update Okta email address for user {person.EmailAddress}");
                
-                return true;
-            }
-            return false;
-        }
-
-        private Boolean UpdateOktaPasswordIfNeeded(Person person, string userAccessToken)
-        {
-            if (person.OldPassword != person.NewPassword && !string.IsNullOrEmpty(person.NewPassword))
-            {
-                OktaMigrationUser oktaMigrationUser = new OktaMigrationUser
-                {
-                    firstName = person.FirstName,
-                    lastName = person.LastName,
-                    email = person.EmailAddress,
-                    login = person.EmailAddress,
-                    password = person.NewPassword,
-                    mpContactId = person.ContactId.ToString()
-                };
-
-                _loginService.CreateOrUpdateOktaAccount(oktaMigrationUser);
-                NotifyIdentityofPasswordUpdateIfNeeded(person, userAccessToken);
                 return true;
             }
             return false;
