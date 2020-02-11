@@ -32,6 +32,7 @@ namespace crds_angular.test.Services
         private Mock<IAddressService> _addressService;
         private Mock<IAnalyticsService> _analyticsService;
         private Mock<IConfigurationWrapper> _configurationWrapper;
+        private Mock<ILoginService> _loginService;
         private FakeHttpClientFactory _httpClientFactory;
         private MockRepository mockRepository;
         private IsolatedPersonService _fixture;
@@ -100,7 +101,7 @@ namespace crds_angular.test.Services
             };
             _householdMembers = new List<MpHouseholdMember>();
 
-            _fixture = new IsolatedPersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object, _analyticsService.Object, _configurationWrapper.Object, _httpClientFactory.httpClient);
+            _fixture = new IsolatedPersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object, _analyticsService.Object, _configurationWrapper.Object, _loginService.Object, _httpClientFactory.httpClient);
 
             //force AutoMapper to register
             AutoMapperConfig.RegisterMappings();

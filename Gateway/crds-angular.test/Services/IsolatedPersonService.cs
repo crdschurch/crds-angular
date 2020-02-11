@@ -22,7 +22,8 @@ namespace crds_angular.test.Services
             IAddressService addressService,
             IAnalyticsService analyticsService,
             IConfigurationWrapper configurationWrapper, 
-            HttpClient fakeClient) : base(contactService, objectAttributeService, apiUserService, participantService, userService, authenticationService, addressService, analyticsService, configurationWrapper)
+            ILoginService loginService,
+            HttpClient fakeClient) : base(contactService, objectAttributeService, apiUserService, participantService, userService, authenticationService, addressService, analyticsService, configurationWrapper, loginService)
         {
             client = fakeClient;
         }
