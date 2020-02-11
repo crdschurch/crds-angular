@@ -65,6 +65,7 @@ namespace crds_angular.test.Services
             _addressService = new Mock<IAddressService>();
             _analyticsService = new Mock<IAnalyticsService>();
             _configurationWrapper = new Mock<IConfigurationWrapper>();
+            _loginService = new Mock<ILoginService>();
             _httpClientFactory = new FakeHttpClientFactory(mockRepository);
             List<HttpRequestMessage> sentRequestMessages = new List<HttpRequestMessage>();
             _httpClientFactory.SetupSendAsync().ReturnsAsync(new HttpResponseMessage
