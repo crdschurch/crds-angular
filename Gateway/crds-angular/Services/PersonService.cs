@@ -17,12 +17,14 @@ using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.Repositories;
 using MPServices = MinistryPlatform.Translation.Repositories.Interfaces;
-
+using Common.Logging;
+using RestSharp;
 
 namespace crds_angular.Services
 {
     public class PersonService : MinistryPlatformBaseService, IPersonService
     {
+        private readonly ILog _logger = LogManager.GetLogger(typeof(LoginService));
         private readonly MPServices.IContactRepository _contactRepository;
         private readonly IObjectAttributeService _objectAttributeService;
         private readonly IApiUserRepository _apiUserService;
@@ -36,8 +38,8 @@ namespace crds_angular.Services
         protected virtual HttpClient client { get { return _client; } }
         private static readonly HttpClient _client = new HttpClient();
 
-        public PersonService(MPServices.IContactRepository contactService, 
-            IObjectAttributeService objectAttributeService, 
+        public PersonService(MPServices.IContactRepository contactService,
+            IObjectAttributeService objectAttributeService,
             IApiUserRepository apiUserService,
             MPServices.IParticipantRepository participantService,
             MPServices.IUserRepository userService,
@@ -58,13 +60,13 @@ namespace crds_angular.Services
             _identityServiceUrl = _configurationWrapper.GetEnvironmentVarAsString("IDENTITY_SERVICE_URL");
         }
 
-        public void SetProfile( Person person, string userAccessToken)
+        public void SetProfile(Person person, string userAccessToken)
         {
             var contactDictionary = getDictionary(person.GetContact());
             var householdDictionary = getDictionary(person.GetHousehold());
             var addressDictionary = getDictionary(person.GetAddress());
             addressDictionary.Add("State/Region", addressDictionary["State"]);
-            
+
 
             // Some front-end consumers require an Address (e.g., /profile/personal), and
             // some do not (e.g., /undivided/facilitator).  Don't attempt to create/update
@@ -76,10 +78,10 @@ namespace crds_angular.Services
             else
             {
                 //add the lat/long to the address 
-                var address = new AddressDTO(addressDictionary["Address_Line_1"].ToString(), "", addressDictionary["City"].ToString(),  addressDictionary["State"].ToString(),  addressDictionary["Postal_Code"].ToString(),null,null);
-                var coordinates = _addressService.GetGeoLocationCascading(address);
-                addressDictionary.Add("Latitude", coordinates.Latitude);
-                addressDictionary.Add("Longitude", coordinates.Longitude);
+                var address = new AddressDTO(addressDictionary["Address_Line_1"].ToString(), "", addressDictionary["City"].ToString(), addressDictionary["State"].ToString(), addressDictionary["Postal_Code"].ToString(), null, null);
+                //var coordinates = _addressService.GetGeoLocationCascading(address);
+                //addressDictionary.Add("Latitude", coordinates.Latitude);
+                //addressDictionary.Add("Longitude", coordinates.Longitude);
             }
 
             try
@@ -105,11 +107,11 @@ namespace crds_angular.Services
 
                 CaptureProfileAnalytics(person);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new Exception($"Could not complete updates : {e.Message}");
             }
-            
+
         }
 
         public void CaptureProfileAnalytics(Person person)
@@ -177,7 +179,7 @@ namespace crds_angular.Services
                 var authData = _authenticationService.AuthenticateUser(person.OldEmail, person.OldPassword);
 
                 if (authData == null)
-                {                    
+                {
                     throw new Exception("Could not authenticate user");
                 }
                 else
@@ -190,20 +192,20 @@ namespace crds_angular.Services
                     _userRepository.UpdateUser(userUpdateValues);
 
                     UpdateOktaEmailAddressIfNeeded(person, userAccessToken);
-                    NotifyIdentityofPasswordUpdateIfNeeded(person, userAccessToken);
+                    UpdateOktaPasswordIfNeeded(person, userAccessToken);
                 }
             }
             return true;
         }
 
         private HttpResponseMessage PutToIdentityService(string apiEndpoint, string userAccessToken, JObject payload)
-        {            
+        {
             var request = new HttpRequestMessage(HttpMethod.Put, _identityServiceUrl + apiEndpoint);
             request.Headers.Add("Authorization", userAccessToken);
-            request.Headers.Add("Accept", "application/json");            
-            request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");            
-            var response = client.SendAsync(request).Result; 
-            return response;            
+            request.Headers.Add("Accept", "application/json");
+            request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+            var response = client.SendAsync(request).Result;
+            return response;
         }
 
         private Boolean UpdateOktaEmailAddressIfNeeded(Person person, string userAccessToken)
@@ -213,18 +215,81 @@ namespace crds_angular.Services
                 JObject payload = new JObject();
                 payload.Add("newEmail", person.EmailAddress);
                 var response = PutToIdentityService("/api/identities/" + person.OldEmail + "/email", userAccessToken, payload);
-               
+
                 if (!response.IsSuccessStatusCode)
                     throw new Exception($"Could not update Okta email address for user {person.EmailAddress}");
-               
+
                 return true;
             }
             return false;
         }
 
+        private Boolean UpdateOktaPasswordIfNeeded(Person person, string userAccessToken)
+        {
+            if (person.OldPassword != person.NewPassword && !string.IsNullOrEmpty(person.NewPassword))
+            {
+                OktaMigrationUser oktaMigrationUser = new OktaMigrationUser
+                {
+                    firstName = person.FirstName,
+                    lastName = person.LastName,
+                    email = person.EmailAddress,
+                    login = person.EmailAddress,
+                    password = person.NewPassword,
+                    mpContactId = person.ContactId.ToString()
+                };
+
+                CreateOrUpdateOktaAccount(oktaMigrationUser);
+                NotifyIdentityofPasswordUpdateIfNeeded(person, userAccessToken);
+                return true;
+            }
+            return false;
+        }
+
+        public void CreateOrUpdateOktaAccount(OktaMigrationUser oktaMigrationUser)
+        {
+            string migrationBaseUrl = Environment.GetEnvironmentVariable("OKTA_MIGRATION_BASE_URL");
+            if (String.IsNullOrEmpty(migrationBaseUrl))
+            {
+                _logger.Error("OKTA_MIGRATION_BASE_URL environment variable is null or an empty string");
+                return;
+            }
+
+            string azureFunctionApiCode = Environment.GetEnvironmentVariable("OKTA_MIGRATION_AZURE_API_KEY");
+            if (String.IsNullOrEmpty(azureFunctionApiCode))
+            {
+                _logger.Error("OKTA_MIGRATION_AZURE_API_KEY environment variable is null or an empty string");
+                return;
+            }
+
+            var client = new RestClient(migrationBaseUrl);
+            var request = new RestRequest("api/migrate", Method.POST);
+
+            request.AddQueryParameter("code", azureFunctionApiCode);
+
+            request.AddHeader("FirstName", oktaMigrationUser.firstName);
+            request.AddHeader("LastName", oktaMigrationUser.lastName);
+            request.AddHeader("Email", oktaMigrationUser.email);
+            request.AddHeader("Login", oktaMigrationUser.login);
+            request.AddHeader("Password", oktaMigrationUser.password);
+            request.AddHeader("MpContactID", oktaMigrationUser.mpContactId);
+
+            client.ExecuteAsync(request, (response) =>
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    _logger.Info("Okta Migration Request Sent for MP Contact: " + oktaMigrationUser.mpContactId);
+                }
+                else
+                {
+                    _logger.Error("Okta Migration Request Failed for MP Contact: " + oktaMigrationUser.mpContactId);
+                    _logger.Error("Response Code: " + response.StatusCode.ToString());
+                }
+            });
+        }
+
         private Boolean NotifyIdentityofPasswordUpdateIfNeeded(Person person, string userAccessToken)
         {
-            if(person.OldPassword != person.NewPassword && !string.IsNullOrEmpty(person.NewPassword))
+            if (person.OldPassword != person.NewPassword && !string.IsNullOrEmpty(person.NewPassword))
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, _identityServiceUrl + $"/api/identities/{person.EmailAddress}/passwordupdated");
                 request.Headers.Add("Accept", "application/json");
@@ -233,7 +298,7 @@ namespace crds_angular.Services
                 if (response.IsSuccessStatusCode)
                     return true;
 
-            }           
+            }
             return false;
         }
     }
