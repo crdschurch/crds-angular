@@ -151,7 +151,6 @@ namespace crds_angular.test.Services
         public Mock<IAddressService> fakeAddressService { get; }
         public Mock<IAnalyticsService> fakeAnalyticsService { get; }
         public Mock<IConfigurationWrapper> fakeConfigurationWrapper { get; }
-        public Mock<ILoginService> fakeLoginService { get; }
         public FakeHttpClientFactory fakeHttpClientFactory { get; }
 
         public IsolatedPersonServiceFactory(MockRepository mockRepository)
@@ -165,7 +164,6 @@ namespace crds_angular.test.Services
             fakeAddressService = mockRepository.Create<IAddressService>();
             fakeAnalyticsService = mockRepository.Create<IAnalyticsService>();
             fakeConfigurationWrapper = mockRepository.Create<IConfigurationWrapper>();
-            fakeLoginService = mockRepository.Create<ILoginService>();
             fakeHttpClientFactory = new FakeHttpClientFactory(mockRepository);
         }
 
@@ -181,7 +179,6 @@ namespace crds_angular.test.Services
                 fakeAddressService.Object,
                 fakeAnalyticsService.Object,
                 fakeConfigurationWrapper.Object,
-                fakeLoginService.Object,
                 fakeHttpClientFactory.httpClient);
         }
 

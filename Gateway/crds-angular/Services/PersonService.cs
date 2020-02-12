@@ -17,12 +17,14 @@ using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.Repositories;
 using MPServices = MinistryPlatform.Translation.Repositories.Interfaces;
-
+using Common.Logging;
+using RestSharp;
 
 namespace crds_angular.Services
 {
     public class PersonService : MinistryPlatformBaseService, IPersonService
     {
+        private readonly ILog _logger = LogManager.GetLogger(typeof(LoginService));
         private readonly MPServices.IContactRepository _contactRepository;
         private readonly IObjectAttributeService _objectAttributeService;
         private readonly IApiUserRepository _apiUserService;
@@ -33,7 +35,6 @@ namespace crds_angular.Services
         private readonly IAnalyticsService _analyticsService;
         private readonly IConfigurationWrapper _configurationWrapper;
         private readonly string _identityServiceUrl;
-        private readonly ILoginService _loginService;
         protected virtual HttpClient client { get { return _client; } }
         private static readonly HttpClient _client = new HttpClient();
 
@@ -45,8 +46,7 @@ namespace crds_angular.Services
             IAuthenticationRepository authenticationService,
             IAddressService addressService,
             IAnalyticsService analyticsService,
-            IConfigurationWrapper configurationWrapper,
-            ILoginService loginService)
+            IConfigurationWrapper configurationWrapper)
         {
             _contactRepository = contactService;
             _objectAttributeService = objectAttributeService;
@@ -57,7 +57,6 @@ namespace crds_angular.Services
             _addressService = addressService;
             _analyticsService = analyticsService;
             _configurationWrapper = configurationWrapper;
-            _loginService = loginService;
             _identityServiceUrl = _configurationWrapper.GetEnvironmentVarAsString("IDENTITY_SERVICE_URL");
         }
 
@@ -80,9 +79,9 @@ namespace crds_angular.Services
             {
                 //add the lat/long to the address 
                 var address = new AddressDTO(addressDictionary["Address_Line_1"].ToString(), "", addressDictionary["City"].ToString(), addressDictionary["State"].ToString(), addressDictionary["Postal_Code"].ToString(), null, null);
-                var coordinates = _addressService.GetGeoLocationCascading(address);
-                addressDictionary.Add("Latitude", coordinates.Latitude);
-                addressDictionary.Add("Longitude", coordinates.Longitude);
+                //var coordinates = _addressService.GetGeoLocationCascading(address);
+                //addressDictionary.Add("Latitude", coordinates.Latitude);
+                //addressDictionary.Add("Longitude", coordinates.Longitude);
             }
 
             try
@@ -239,11 +238,53 @@ namespace crds_angular.Services
                     mpContactId = person.ContactId.ToString()
                 };
 
-                _loginService.CreateOrUpdateOktaAccount(oktaMigrationUser);
+                CreateOrUpdateOktaAccount(oktaMigrationUser);
                 NotifyIdentityofPasswordUpdateIfNeeded(person, userAccessToken);
                 return true;
             }
             return false;
+        }
+
+        public void CreateOrUpdateOktaAccount(OktaMigrationUser oktaMigrationUser)
+        {
+            string migrationBaseUrl = Environment.GetEnvironmentVariable("OKTA_MIGRATION_BASE_URL");
+            if (String.IsNullOrEmpty(migrationBaseUrl))
+            {
+                _logger.Error("OKTA_MIGRATION_BASE_URL environment variable is null or an empty string");
+                return;
+            }
+
+            string azureFunctionApiCode = Environment.GetEnvironmentVariable("OKTA_MIGRATION_AZURE_API_KEY");
+            if (String.IsNullOrEmpty(azureFunctionApiCode))
+            {
+                _logger.Error("OKTA_MIGRATION_AZURE_API_KEY environment variable is null or an empty string");
+                return;
+            }
+
+            var client = new RestClient(migrationBaseUrl);
+            var request = new RestRequest("api/migrate", Method.POST);
+
+            request.AddQueryParameter("code", azureFunctionApiCode);
+
+            request.AddHeader("FirstName", oktaMigrationUser.firstName);
+            request.AddHeader("LastName", oktaMigrationUser.lastName);
+            request.AddHeader("Email", oktaMigrationUser.email);
+            request.AddHeader("Login", oktaMigrationUser.login);
+            request.AddHeader("Password", oktaMigrationUser.password);
+            request.AddHeader("MpContactID", oktaMigrationUser.mpContactId);
+
+            client.ExecuteAsync(request, (response) =>
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    _logger.Info("Okta Migration Request Sent for MP Contact: " + oktaMigrationUser.mpContactId);
+                }
+                else
+                {
+                    _logger.Error("Okta Migration Request Failed for MP Contact: " + oktaMigrationUser.mpContactId);
+                    _logger.Error("Response Code: " + response.StatusCode.ToString());
+                }
+            });
         }
 
         private Boolean NotifyIdentityofPasswordUpdateIfNeeded(Person person, string userAccessToken)
