@@ -12,7 +12,7 @@ namespace crds_angular.test.Services
     class IsolatedPersonService : PersonService
     {
         protected override HttpClient client { get; }
-        
+
         public IsolatedPersonService(MPServices.IContactRepository contactService,
             IObjectAttributeService objectAttributeService,
             IApiUserRepository apiUserService,
@@ -21,8 +21,9 @@ namespace crds_angular.test.Services
             IAuthenticationRepository authenticationService,
             IAddressService addressService,
             IAnalyticsService analyticsService,
-            IConfigurationWrapper configurationWrapper, 
-            HttpClient fakeClient) : base(contactService, objectAttributeService, apiUserService, participantService, userService, authenticationService, addressService, analyticsService, configurationWrapper)
+            IConfigurationWrapper configurationWrapper,
+            ILoginService loginService,
+            HttpClient fakeClient) : base(contactService, objectAttributeService, apiUserService, participantService, userService, authenticationService, addressService, analyticsService, configurationWrapper, loginService)
         {
             client = fakeClient;
         }

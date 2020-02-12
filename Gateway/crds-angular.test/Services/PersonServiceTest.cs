@@ -32,6 +32,7 @@ namespace crds_angular.test.Services
         private Mock<IAddressService> _addressService;
         private Mock<IAnalyticsService> _analyticsService;
         private Mock<IConfigurationWrapper> _configurationWrapper;
+        private Mock<ILoginService> _loginService;
         private FakeHttpClientFactory _httpClientFactory;
         private MockRepository mockRepository;
         private IsolatedPersonService _fixture;
@@ -60,10 +61,11 @@ namespace crds_angular.test.Services
             _authenticationService = new Mock<IAuthenticationRepository>();
             _participantService = new Mock<MPInterfaces.IParticipantRepository>();
             _userService = new Mock<MPInterfaces.IUserRepository>();
-            _apiUserService = new Mock<IApiUserRepository>();            
+            _apiUserService = new Mock<IApiUserRepository>();
             _addressService = new Mock<IAddressService>();
             _analyticsService = new Mock<IAnalyticsService>();
             _configurationWrapper = new Mock<IConfigurationWrapper>();
+            _loginService = new Mock<ILoginService>();
             _httpClientFactory = new FakeHttpClientFactory(mockRepository);
             List<HttpRequestMessage> sentRequestMessages = new List<HttpRequestMessage>();
             _httpClientFactory.SetupSendAsync().ReturnsAsync(new HttpResponseMessage
@@ -100,7 +102,7 @@ namespace crds_angular.test.Services
             };
             _householdMembers = new List<MpHouseholdMember>();
 
-            _fixture = new IsolatedPersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object, _analyticsService.Object, _configurationWrapper.Object, _httpClientFactory.httpClient);
+            _fixture = new IsolatedPersonService(_contactService.Object, _objectAttributeService.Object, _apiUserService.Object, _participantService.Object, _userService.Object, _authenticationService.Object, _addressService.Object, _analyticsService.Object, _configurationWrapper.Object, _loginService.Object, _httpClientFactory.httpClient);
 
             //force AutoMapper to register
             AutoMapperConfig.RegisterMappings();
@@ -144,7 +146,7 @@ namespace crds_angular.test.Services
             _contactService.Setup(mocked => mocked.GetHouseholdFamilyMembers(7)).Returns(_householdMembers);
             _apiUserService.Setup(m => m.GetDefaultApiClientToken()).Returns("something");
             var allAttributesDto = new ObjectAllAttributesDTO();
-            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes( It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>())).Returns(allAttributesDto);
+            _objectAttributeService.Setup(mocked => mocked.GetObjectAttributes(It.IsAny<int>(), It.IsAny<MpObjectAttributeConfiguration>())).Returns(allAttributesDto);
             var person = _fixture.GetPerson(contactId);
             _contactService.VerifyAll();
 
@@ -184,7 +186,7 @@ namespace crds_angular.test.Services
             const string token = "some-string";
 
             _contactService.Setup(mocked => mocked.GetMyProfile(token)).Returns(_myContact);
-            _contactService.Setup(mocked => mocked.GetHouseholdFamilyMembers(7)).Returns(_householdMembers);           
+            _contactService.Setup(mocked => mocked.GetHouseholdFamilyMembers(7)).Returns(_householdMembers);
             var person = _fixture.GetLoggedInUserProfile(token);
 
             Assert.IsNotNull(person);

@@ -133,13 +133,13 @@ namespace crds_angular.test.Services
 
             var emailRequest = sentRequestMessages[0];
             var passwordRequest = sentRequestMessages[1];
-            
+
             Assert.AreEqual($"{fakeFullyQualifiedApiUrl}/api/identities/{currentEmail}/email", emailRequest.RequestUri.ToString());
             Assert.AreEqual($"{fakeFullyQualifiedApiUrl}/api/identities/{newEmail}/passwordupdated", passwordRequest.RequestUri.ToString());
         }
     }
 
-    
+
     class IsolatedPersonServiceFactory
     {
         public Mock<MPServices.IContactRepository> fakeContactService { get; }
@@ -151,8 +151,9 @@ namespace crds_angular.test.Services
         public Mock<IAddressService> fakeAddressService { get; }
         public Mock<IAnalyticsService> fakeAnalyticsService { get; }
         public Mock<IConfigurationWrapper> fakeConfigurationWrapper { get; }
+        public Mock<ILoginService> fakeLoginService { get; }
         public FakeHttpClientFactory fakeHttpClientFactory { get; }
-        
+
         public IsolatedPersonServiceFactory(MockRepository mockRepository)
         {
             fakeContactService = mockRepository.Create<MPServices.IContactRepository>();
@@ -164,9 +165,10 @@ namespace crds_angular.test.Services
             fakeAddressService = mockRepository.Create<IAddressService>();
             fakeAnalyticsService = mockRepository.Create<IAnalyticsService>();
             fakeConfigurationWrapper = mockRepository.Create<IConfigurationWrapper>();
+            fakeLoginService = mockRepository.Create<ILoginService>();
             fakeHttpClientFactory = new FakeHttpClientFactory(mockRepository);
         }
-        
+
         public IsolatedPersonService Build()
         {
             return new IsolatedPersonService(
@@ -179,6 +181,7 @@ namespace crds_angular.test.Services
                 fakeAddressService.Object,
                 fakeAnalyticsService.Object,
                 fakeConfigurationWrapper.Object,
+                fakeLoginService.Object,
                 fakeHttpClientFactory.httpClient);
         }
 
