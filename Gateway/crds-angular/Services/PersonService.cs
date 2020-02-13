@@ -79,9 +79,9 @@ namespace crds_angular.Services
             {
                 //add the lat/long to the address 
                 var address = new AddressDTO(addressDictionary["Address_Line_1"].ToString(), "", addressDictionary["City"].ToString(), addressDictionary["State"].ToString(), addressDictionary["Postal_Code"].ToString(), null, null);
-                //var coordinates = _addressService.GetGeoLocationCascading(address);
-                //addressDictionary.Add("Latitude", coordinates.Latitude);
-                //addressDictionary.Add("Longitude", coordinates.Longitude);
+                var coordinates = _addressService.GetGeoLocationCascading(address);
+                addressDictionary.Add("Latitude", coordinates.Latitude);
+                addressDictionary.Add("Longitude", coordinates.Longitude);
             }
 
             try
