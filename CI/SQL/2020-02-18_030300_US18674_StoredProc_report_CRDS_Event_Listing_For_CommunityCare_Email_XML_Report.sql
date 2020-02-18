@@ -474,11 +474,11 @@ SET     @Body = @Title + N'<table width=''100%'' border=''1'' cellspacing=''0'' 
 
 	-- 2/18/2020: Don't hardcode the values, get them from the respective tables
     --SET @ToContactID = 7837576 -- Hello team, don't hard code this as the  contact ID may change for Demo and prod.
-	--SET @ReplyToContact_ID = 1519180, email = updates@crossroads.net
-	--SET @CommUser_ID = 3009216 -- userID of email= updates@crossroads.net
+	--SET @ReplyToContact_ID = 1519180, where C.Last_Name = 'Communications' and C.First_Name = 'Crossroads'
+	--SET @CommUser_ID = 3009216 -- userID of displayName = Communications, Crossroads 
 	SELECT @ToContactID = C.Contact_ID FROM Contacts C WHERE (C.Last_Name = 'EventlistingReports')
-	SELECT @ReplyToContact_ID = C.Contact_ID FROM Contacts C WHERE (C.Last_Name = 'Communications' and C.First_Name = 'Crossroads')	
-	SELECT @CommUser_ID = U.User_ID FROM dp_Users U WHERE (U.Contact_ID = @ReplyToContact_ID)
+	SELECT @ReplyToContact_ID = (SELECT TOP 1 C.Contact_ID FROM Contacts C WHERE (C.Last_Name = 'Communications' and C.First_Name = 'Crossroads'))	
+	SELECT @CommUser_ID = (SELECT TOP 1 U.User_ID FROM dp_Users U WHERE (U.Contact_ID = @ReplyToContact_ID))
 		
 	SET @Subject = 'Event Listing Report for Community Care - All Sites'
 	SET @Start = GETDATE()
