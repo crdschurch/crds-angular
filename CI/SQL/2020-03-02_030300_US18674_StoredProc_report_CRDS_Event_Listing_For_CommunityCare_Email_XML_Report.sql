@@ -477,7 +477,7 @@ SET     @Body = @Title + N'<table width=''100%'' border=''1'' cellspacing=''0'' 
 
 	-- 3/2/2020: use the same id's used in our report services. 
     SET @ToContactID = 7837576 -- EventlistingReports, Helloteam, which has the same contact id in Prod, Demo and INT.
-	SET @ReplyToContact_ID = 1519180 --Crossroads, No-Reply, which has the same ID in Prod, Demo and Int.
+	SET @ReplyToContact_ID = 7662309 --Crossroads, No-Reply, which has the same ID in Prod, Demo and Int.
 	SET @Subject = 'Event Listing Report for Community Care - All Sites'
 	SET @Start = GETDATE()
 	SET @CommunicationStatus = 3 --ready to send
