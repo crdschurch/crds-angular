@@ -16,9 +16,11 @@ GO
 -- Modified Date: 2/25/2020
 -- Modified By: Shakila Rajaiah
 -- User Story: US18976 
--- Description: Add Preferred Serve Time as a column to the report. Then sort it by Serve Time, 
--- Gap and Name , so that the report will have some sort of order to it.
+-- Description: Add Preferred Serve Time as a column to the report. 
+-- Then sort it by Group/Team Name, Preferred Serve Time, Last Serve Date and Display Name
+-- so that the report will have some sort of order to it.
 -- This stored proc is used by both the MP Reports and the Email Reports.
+--	Modified 3/2/2020: Removed commented code at end of file.
 -- ===================================================================================
 ALTER PROCEDURE [dbo].[report_CRDS_InactiveServeTeamMembers]
 	@GroupId VARCHAR(MAX),
@@ -103,16 +105,11 @@ BEGIN
 		INNER JOIN Households h ON h.Household_ID = c.Household_ID) 
 	WHERE mp IS NULL 
 
+	--sort it by Group/Team Name, Preferred Serve Time, Last Serve Date and Display Name
 	SELECT pid as "Participant ID", dn as "Name", gn as "Team", gid as "Group ID", pst as "Preferred Serve Time", em as "Email", esd as "Last Serve Date",
 	 (DATEDIFF(DAY, esd, GETDATE())/30) as "Gap",  mp as "Mobile Phone" 
 	FROM @ServeData WHERE rn=1 AND (esd < DATEADD(MONTH, -(@MonthsOffset), GETDATE()) OR esd IS NULL) ORDER BY gn, pst, esd DESC, dn;
 
-	-- order by Then sort it by Serve Time, Gap and Name  
-	--SELECT pid as "Participant ID", dn as "Name", gn as "Team", gid as "Group ID", em as "Email", esd as "Last Serve Date",
-	-- (DATEDIFF(DAY, esd, GETDATE())/30) as "Gap", pst as "Preferred Serve Time", mp as "Mobile Phone" 
-	--FROM @ServeData WHERE rn=1 AND (esd < DATEADD(MONTH, -(@MonthsOffset), GETDATE()) OR esd IS NULL) ORDER BY esd DESC, gn, dn;
-
 END
 GO
-
 
