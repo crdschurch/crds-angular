@@ -46,6 +46,10 @@
           <DataField>Group ID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
+        <Field Name="Preferred_Serve_Time">
+          <DataField>Preferred Serve Time</DataField>
+          <rd:UserDefined>true</rd:UserDefined>
+        </Field>
         <Field Name="Mobile_Phone">
           <DataField>Mobile Phone</DataField>
           <rd:TypeName>System.String</rd:TypeName>
@@ -119,19 +123,22 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>2.8in</Width>
+                  <Width>2.58125in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.94167in</Width>
+                  <Width>3.10417in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.3in</Width>
+                  <Width>1.86875in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.8in</Width>
+                  <Width>2.66458in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.8in</Width>
+                  <Width>1.27917in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.3625in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -140,7 +147,7 @@
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox1">
+                        <Textbox Name="Textbox3">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -159,7 +166,7 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox1</rd:DefaultName>
+                          <rd:DefaultName>Textbox3</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>#7292cc</Color>
@@ -176,7 +183,43 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox3">
+                        <Textbox Name="Textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Preferred Serve Time</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#7292cc</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#4c68a2</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox1">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -195,7 +238,7 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox3</rd:DefaultName>
+                          <rd:DefaultName>Textbox1</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>#7292cc</Color>
@@ -358,6 +401,39 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
+                        <Textbox Name="Preferred_Serve_Time1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Preferred_Serve_Time.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Color>#4d4d4d</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Preferred_Serve_Time1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
                         <Textbox Name="Name">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
@@ -499,6 +575,7 @@
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
+                <TablixMember />
               </TablixMembers>
             </TablixColumnHierarchy>
             <TablixRowHierarchy>
@@ -515,7 +592,7 @@
             <Top>0.70277in</Top>
             <Left>0.15833in</Left>
             <Height>0.5in</Height>
-            <Width>10.64167in</Width>
+            <Width>12.86042in</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -562,7 +639,7 @@
           </Border>
         </Style>
       </Body>
-      <Width>11.40625in</Width>
+      <Width>13.01875in</Width>
       <Page>
         <PageFooter>
           <Height>0.45in</Height>
