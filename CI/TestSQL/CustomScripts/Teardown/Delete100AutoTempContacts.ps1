@@ -32,4 +32,5 @@ catch {
 }
 finally {
     $DBConnection.close()
+	exit $exitCode
 }
