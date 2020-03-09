@@ -63,6 +63,7 @@ BEGIN
 	
 	--Nullify foreign keys
 	UPDATE [dbo].Event_Participants SET Group_Participant_ID = null WHERE Group_Participant_ID = @group_participant_id;
+	UPDATE [dbo].Group_Participants SET Enrolled_By = null WHERE Enrolled_By = @group_participant_id;
 
 	DELETE [dbo].Group_Participants WHERE Group_Participant_ID = @group_participant_id;
 END

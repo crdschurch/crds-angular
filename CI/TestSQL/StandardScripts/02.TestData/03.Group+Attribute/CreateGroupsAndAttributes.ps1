@@ -40,7 +40,7 @@ function CreateGroups($DBConnection){
             AddBitParameter $command "@primary_contact_is_host" $groupRow.Is_Primary_Contact_Host
             AddBitParameter $command "@enable_waiting_list" $groupRow.Enable_Waiting_List
             AddIntParameter $command "@target_size" $groupRow.Target_Size
-            AddStringParameter $command "@description" $groupRow.Description
+            AddStringParameter $command "@description" $groupRow.R_Description
             AddStringParameter $command "@is_public" $groupRow.IsPublic
             AddStringParameter $command "@is_blog_enabled" $groupRow.IsBlogEnabled
             AddStringParameter $command "@is_web_enabled" $groupRow.IsWebEnabled

@@ -89,6 +89,8 @@ namespace crds_angular.Services
                 id = hit.Id, type = "delete"
             }).ToList();
 
+            if (deletelist.Count == 0) return null;
+
             return SendAwsDocs(deletelist);
         }
 
