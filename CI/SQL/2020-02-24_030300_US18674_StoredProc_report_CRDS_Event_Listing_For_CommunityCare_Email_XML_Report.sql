@@ -7,8 +7,6 @@ GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-
-
 -- =======================================================================================================================
 -- Author:      Shakila Rajaiah 
 -- Created Date: 12/3/2019
@@ -23,13 +21,16 @@ GO
 --	Contact First Name:  Helloteam
 --	Contact LastName:  Eventlistingreports
 --	ToContact/Email: This is based on the Contact_ID for the last name 'EventlistingReports' in the Contacts table.
---	The user has been alterted to not chage the last name of teh contact.
---	
+--	The user has been alterted to not chage the last name of the contact.
+--	Modified Date:  2/18/2020 by SRajaiah
+--	The parameters for the emails- @DomainID was removed (always 1) and @UserID is instead retrieved from the user table.
+--	Hardcoded values for  @ToContactID , @ReplyToContact_ID , @CommUser_ID are now retrieved from the tables.
+--	Modified Date:  2/21/2020 by SRajaiah
+--  Made changes to lines 481 and 482: Changed Select to select TOP 1 based on the first and last names and not their email ID. 
+--
 -- ======================================================================================================================================
 
 CREATE OR ALTER   procedure [dbo].[report_CRDS_Event_Listing_For_CommunityCare_Email_XML_Report]
-   @DomainID VARCHAR(40)
-  ,@UserID VARCHAR(40)
 
 AS
 BEGIN
@@ -43,8 +44,6 @@ DECLARE @EventTypes varchar(25)
 DECLARE @FromDate datetime
 declare @ToDate datetime
 
-
-   --set @DomainID = '0FDE7F32-37E3-4E0B-B020-622E0EBD6BF0'
    set @ShowCancelled = 0
    set @ShowNoRoomsSet = 1
    set @ListTime = 1
@@ -191,8 +190,6 @@ CREATE TABLE #ReportData
                              GROUP BY ER1.Event_ID, ER1._Approved) ER2
                 ON ER2.Event_ID = E.Event_ID
     WHERE   
-			Dom.Domain_GUID = @DomainID
-            AND 
 			E.Congregation_ID IN (select Congregation_ID from dbo.Congregations)
 			
 			AND (
@@ -253,8 +250,6 @@ CREATE TABLE #ReportData
             LEFT OUTER JOIN dbo.Congregations Cong
                 ON Cong.Congregation_ID = E.Congregation_ID
     WHERE   
-			Dom.Domain_GUID = @DomainID
-            AND 
 			E.Congregation_ID IN (select Congregation_ID from dbo.Congregations)
 			
 			AND (
@@ -480,17 +475,19 @@ SET     @Body = @Title + N'<table width=''100%'' border=''1'' cellspacing=''0'' 
 	DECLARE @NewCommMsgID int
 	DECLARE @CommUser_ID int
 
-
-	SET @ReplyToContact_ID = 1519180
-	--SET @ToContactID = 7837576 -- Hello team, don't hard code this as the  contact ID may change for Demo and prod.
-	SET @CommUser_ID = 4396541 -- update@crossroads.net
+	-- 2/18/2020: Don't hardcode the values, get them from the respective tables based on their last and first names - not their email.
+    --SET @ToContactID = 7837576 -- Hello team, don't hard code this as the  contact ID may change for Demo and prod.
+	--SET @ReplyToContact_ID = 1519180, where C.Last_Name = 'Communications' and C.First_Name = 'Crossroads'
+	SELECT @ToContactID = (SELECT TOP 1 C.Contact_ID FROM Contacts C WHERE (C.Last_Name = 'EventlistingReports'))
+	SELECT @ReplyToContact_ID = (SELECT TOP 1 C.Contact_ID FROM Contacts C WHERE (C.Last_Name = 'Communications' and C.First_Name = 'Crossroads'))	
+	SELECT @CommUser_ID = (SELECT TOP 1 U.User_ID FROM dp_Users U WHERE (U.Contact_ID = @ReplyToContact_ID)) 
+		
 	SET @Subject = 'Event Listing Report for Community Care - All Sites'
 	SET @Start = GETDATE()
 	SET @CommunicationStatus = 3 --ready to send
-	SELECT @ToContactID = C.Contact_ID FROM Contacts C WHERE (C.Last_Name = 'EventlistingReports')
 	SELECT @FromEmail = C.Email_Address FROM Contacts C WHERE (C.Contact_ID = @ReplyToContact_ID)
 	SELECT @ToEmail = C.Email_Address FROM Contacts C WHERE (C.Contact_ID = @ToContactID)
-	
+
 --Insert into the communications tables to email this message to the users 
 	INSERT INTO dp_Communications
 		(Author_User_ID, Domain_ID, [Subject], Body, [Start_Date], Communication_Status_ID, From_Contact, Reply_to_Contact, To_Contact) --, Expire_Date
