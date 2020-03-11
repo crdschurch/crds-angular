@@ -29,6 +29,9 @@ BEGIN
 	
 	--Delete foreign key entries that can't be nullified
 	DELETE [dbo].cr_Donation_Communications WHERE Donation_ID = @donation_id;
+
+	DELETE [dbo].cr_Distribution_Adjustments WHERE Donation_Distribution_ID 
+	in (SELECT Donation_Distribution_ID FROM [dbo].Donation_Distributions WHERE Donation_ID = @donation_id);
 	DELETE [dbo].Donation_Distributions WHERE Donation_ID = @donation_id;
 
 	DELETE [dbo].Donations WHERE Donation_ID = @donation_id;
