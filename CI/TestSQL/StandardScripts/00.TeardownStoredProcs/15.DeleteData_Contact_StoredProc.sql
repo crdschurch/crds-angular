@@ -62,7 +62,8 @@ BEGIN
 	DELETE [dbo].Background_Checks WHERE Contact_ID = @contact_id;		
 	DELETE [dbo].Congregations WHERE Contact_ID = @contact_id;		
 	DELETE [dbo].Contact_Attributes WHERE Contact_ID = @contact_id;		
-	DELETE [dbo].Contact_Households WHERE Contact_ID = @contact_id;		
+	DELETE [dbo].Contact_Households WHERE Contact_ID = @contact_id;
+	DELETE [dbo].Contact_Identifier_Log WHERE Contact_ID = @contact_id;
 	DELETE [dbo].Contact_Log WHERE Contact_ID = @contact_id;
 	DELETE [dbo].Counseling_Engagements WHERE Contact_ID = @contact_id;		
 	DELETE [dbo].cr_Campaign_Age_Exception WHERE Contact_ID = @contact_id;
