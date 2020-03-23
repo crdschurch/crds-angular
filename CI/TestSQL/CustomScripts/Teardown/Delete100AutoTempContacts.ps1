@@ -20,9 +20,7 @@ try {
 	$adapter = new-object System.Data.SqlClient.SqlDataAdapter
 	$adapter.SelectCommand = $command        
 	$dataset = new-object System.Data.Dataset
-	$results = $adapter.Fill($dataset)
-	
-	Write-Output "Removed contacts: $results"
+	$results = $adapter.Fill($dataset)	
 }
 catch {
 	Write-Output "Something went wrong. Running cr_QA_Delete_Temp_Auto_Users directly in the DB may give more valuable debugging info."
@@ -32,4 +30,5 @@ catch {
 }
 finally {
     $DBConnection.close()
+	exit $exitCode
 }
