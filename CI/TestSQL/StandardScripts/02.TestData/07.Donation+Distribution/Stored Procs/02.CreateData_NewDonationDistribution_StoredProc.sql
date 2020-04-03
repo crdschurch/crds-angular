@@ -58,7 +58,7 @@ BEGIN
 		SET @program_id = (SELECT TOP 1 Program_ID FROM [dbo].Programs WHERE Program_Name = @program_name ORDER BY Program_ID ASC);
 		IF @program_id is null
 		BEGIN
-			SET @error_message = 'Could not find program with name '+@program_name+' so distribution will be made to General Giving instead'+CHAR(13);
+			SET @error_message = 'Could not find program with name '+@program_name+' so distribution will be made to "Tithes & Contributions" instead'+CHAR(13);
 			SET @program_id = 3;
 		END
 	END;
