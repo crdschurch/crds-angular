@@ -26,16 +26,18 @@ namespace crds_angular.Controllers.API
         [AcceptVerbs("GET")]
         public IHttpActionResult GetInvoiceDetail(int invoiceId)
         {
-            try
-            {
-                var res = _paymentService.GetInvoiceDetail(invoiceId);
-                return Ok(res);
-            }
-            catch (Exception e)
-            {
-                var apiError = new ApiErrorDto("Unable to get invoice details", e);
-                throw new HttpResponseException(apiError.HttpResponseMessage);
-            }
+            return Authorized(authDto => {
+                try
+                {
+                    var res = _paymentService.GetInvoiceDetail(invoiceId);
+                    return Ok(res);
+                }
+                catch (Exception e)
+                {
+                    var apiError = new ApiErrorDto("Unable to get invoice details", e);
+                    throw new HttpResponseException(apiError.HttpResponseMessage);
+                }
+            });
         }
 
         [VersionedRoute(template: "invoice/{invoiceId}/payments", minimumVersion: "1.0.0")]
