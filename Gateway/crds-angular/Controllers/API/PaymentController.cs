@@ -29,6 +29,7 @@ namespace crds_angular.Controllers.API
             return Authorized(authDto => {
                 try
                 {
+                    logger.Info($"Getting invoice detail of invoice {invoiceId} for user with a contact ID of {authDto.UserInfo.Mp.ContactId}");
                     var res = _paymentService.GetInvoiceDetail(invoiceId);
                     return Ok(res);
                 }
@@ -47,6 +48,7 @@ namespace crds_angular.Controllers.API
             return Authorized( authDto => {
                 try
                 {
+                    logger.Info($"Getting payment detail of invoice {invoiceId} for user with a contact ID of {authDto.UserInfo.Mp.ContactId}");
                     var res = _paymentService.GetPaymentDetails(invoiceId);
                     return Ok(res);
                 }
