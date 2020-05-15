@@ -142,6 +142,7 @@ namespace crds_angular.Controllers.API
             {
                 try
                 {
+                    logger.Info($"Attempting to get group leader status");
                     var status = _groupLeaderService.GetGroupLeaderStatus(token.UserInfo.Mp.ContactId).Wait();
                     return Ok(new GroupLeaderStatusDTO
                     {
@@ -150,6 +151,7 @@ namespace crds_angular.Controllers.API
                 }
                 catch (Exception e)
                 {
+                    _logger.Info($"Exception happened when trying to get Group Leader info for {token.UserInfo.Mp.ContactId}");
                     var apiError = new ApiErrorDto("Getting group leader status failed: ", e);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }

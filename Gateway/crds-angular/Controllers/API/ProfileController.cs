@@ -90,8 +90,13 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public IHttpActionResult GetProfile(int contactId)
         {
+            IEnumerable<string> accessTokens;
+            Request.Headers.TryGetValues("Authorization", out accessTokens);
+            string accessToken = accessTokens == null ? string.Empty : accessTokens.FirstOrDefault();
+            _logger.Info($"Request received at Group-Leader/Leader-Status endpoint with Authorization Header {accessToken}");
             return Authorized(authDTO =>
             {
+                _logger.Info($"Authorized for contact {contactId}, somethings failing here");
                 try
                 {
                     // does the logged in user have permission to view this contact?
@@ -125,6 +130,7 @@ namespace crds_angular.Controllers.API
                 }
                 catch (Exception e)
                 {
+                    _logger.Info($"Exception happened when trying to get profile for contact {contactId}");
                     var apiError = new ApiErrorDto("Get Profile Failed", e);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
