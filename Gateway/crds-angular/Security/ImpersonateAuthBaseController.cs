@@ -156,15 +156,23 @@ namespace crds_angular.Security
          */
         public AuthDTO Authorize(string accessToken)
         {
-            ValidateAccessToken(accessToken);
+            try
+            {
+                ValidateAccessToken(accessToken);
 
-            var authServiceBaseUrl = _authUrl;
-            logger.Info($"Prepping Auth request to : {authServiceBaseUrl}");
-            ValidateBaseUrl(authServiceBaseUrl);
+                var authServiceBaseUrl = _authUrl;
+                logger.Info($"Prepping Auth request to : {authServiceBaseUrl}");
+                ValidateBaseUrl(authServiceBaseUrl);
 
-            AuthDTO auth = GetAuthorizeResponse(accessToken, authServiceBaseUrl);
+                AuthDTO auth = GetAuthorizeResponse(accessToken, authServiceBaseUrl);
 
-            return auth;
+                return auth;
+            }catch(Exception ex)
+            {
+                logger.Error($"Error Authorizing : {ex.Message}");
+                throw new AccessTokenNullOrEmptyException();
+            }
+            
         }
 
         public AuthDTO GetAuthorizeResponse(string accessToken, string baseUrl)
