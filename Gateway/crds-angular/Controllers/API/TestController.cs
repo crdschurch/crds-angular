@@ -29,6 +29,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public string IdentityHealthCheck1()
         {
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             try
             {
                 RestClient client = new RestClient();
@@ -50,6 +51,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<string> IdentityHealthCheck2()
         {
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             try
             {
                 var client = new HttpClient();
@@ -69,6 +71,7 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<string> AuthHealthCheck1()
         {
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             try
             {
                 RestClient client = new RestClient();
@@ -88,7 +91,8 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "test/authHealth2", minimumVersion: "1.0.0")]
         [HttpGet]
         public async Task<string> AuthHealthCheck2()
-        {           
+        {
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             try
             {
                 var client = new HttpClient();
