@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -28,49 +29,79 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public string IdentityHealthCheck1()
         {
-            RestClient client = new RestClient();
-            client.BaseUrl = new Uri("https://api-int.crossroads.net/identity");
-            var request = new RestRequest("api/health", Method.GET);
-            logger.Info("Sending RestClient request to Identity service health endpoint");
-            var response = client.Execute(request);
-            return $"Response Code : {response.StatusCode} - Message : {response.Content}";
+            try
+            {
+                RestClient client = new RestClient();
+                client.BaseUrl = new Uri("https://api-int.crossroads.net/identity");
+                var request = new RestRequest("api/health", Method.GET);
+                logger.Info("Sending RestClient request to Identity service health endpoint");
+                var response = client.Execute(request);
+                return $"Response Code : {response.StatusCode} - Message : {response.Content}";
+
+            }catch(Exception ex)
+            {
+                logger.Info($"Error sending request to Identity : {ex.Message}");
+                return ex.Message;
+            }
+            
 
         }
         [VersionedRoute(template: "test/identityHealth2", minimumVersion: "1.0.0")]
         [HttpGet]
         public async Task<string> IdentityHealthCheck2()
         {
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/identity/api/health");
-            logger.Info("Sending HttpClient request to Identity service health endpoint");
-            var response = await client.SendAsync(request);
-            return $"Response Code : {response.StatusCode} - Message : {response.Content}";
-
+            try
+            {
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/identity/api/health");
+                logger.Info("Sending HttpClient request to Identity service health endpoint");
+                var response = await client.SendAsync(request);
+                return $"Response Code : {response.StatusCode} - Message : {response.Content}";
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"Error sending request to Identity : {ex.Message}");
+                return ex.Message;
+            }
         }
 
         [VersionedRoute(template: "test/authHealth1", minimumVersion: "1.0.0")]
         [HttpGet]
         public async Task<string> AuthHealthCheck1()
         {
-            RestClient client = new RestClient();
-            client.BaseUrl = new Uri("https://api-int.crossroads.net/auth");
-            var request = new RestRequest("api/health/ready", Method.GET);
-            logger.Info("Sending RestClient request to Identity service health endpoint");
-            var response = client.Execute(request);
-            return $"Response Code : {response.StatusCode} - Message : {response.Content}";
-
+            try
+            {
+                RestClient client = new RestClient();
+                client.BaseUrl = new Uri("https://api-int.crossroads.net/auth");
+                var request = new RestRequest("api/health/ready", Method.GET);
+                logger.Info("Sending RestClient request to Identity service health endpoint");
+                var response = client.Execute(request);
+                return $"Response Code : {response.StatusCode} - Message : {response.Content}";
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"Error sending request to Identity : {ex.Message}");
+                return ex.Message;
+            }
         }
 
         [VersionedRoute(template: "test/authHealth2", minimumVersion: "1.0.0")]
         [HttpGet]
         public async Task<string> AuthHealthCheck2()
-        {
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/auth/api/health/ready");
-            logger.Info("Sending HttpClient request to Identity service health endpoint");
-            var response = await client.SendAsync(request);
-            return $"Response Code : {response.StatusCode} - Message : {response.Content}";
-
+        {           
+            try
+            {
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/auth/api/health/ready");
+                logger.Info("Sending HttpClient request to Identity service health endpoint");
+                var response = await client.SendAsync(request);
+                return $"Response Code : {response.StatusCode} - Message : {response.Content}";
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"Error sending request to Identity : {ex.Message}");
+                return ex.Message;
+            }
         }
 
 
