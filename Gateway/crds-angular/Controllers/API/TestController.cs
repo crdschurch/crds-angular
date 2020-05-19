@@ -104,6 +104,25 @@ namespace crds_angular.Controllers.API
             }
         }
 
+        [VersionedRoute(template: "test/google", minimumVersion: "1.0.0")]
+        [HttpGet]
+        public async Task<string> UrlHealthCheck()
+        {
+            try
+            {
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://google.com");
+                logger.Info("Sending HttpClient request to Identity service health endpoint");
+                var response = await client.SendAsync(request);
+                return $"Response Code : {response.StatusCode} - Message : {response.Content}";
+            }
+            catch (Exception ex)
+            {
+                logger.Info($"Error sending request to Identity : {ex.Message}");
+                return ex.Message;
+            }
+        }
+
 
     }
 }
