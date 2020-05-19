@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reactive;
@@ -30,41 +31,27 @@ namespace crds_angular.Controllers.API
         public string IdentityHealthCheck1()
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            try
-            {
                 RestClient client = new RestClient();
                 client.BaseUrl = new Uri("https://api-int.crossroads.net/identity");
                 var request = new RestRequest("api/health", Method.GET);
                 logger.Info("Sending RestClient request to Identity service health endpoint");
                 var response = client.Execute(request);
-                return $"Response Code : {response.StatusCode} - Message : {response.Content}";
-
-            }catch(Exception ex)
-            {
-                logger.Info($"Error sending request to Identity : {ex.Message}");
-                return ex.Message;
-            }
-            
+            return $"Response Code : {response.StatusCode} - Message : {response.Content}";
 
         }
+
         [VersionedRoute(template: "test/identityHealth2", minimumVersion: "1.0.0")]
         [HttpGet]
         public async Task<string> IdentityHealthCheck2()
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            try
-            {
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/identity/api/health");
                 logger.Info("Sending HttpClient request to Identity service health endpoint");
                 var response = await client.SendAsync(request);
-                return $"Response Code : {response.StatusCode} - Message : {response.Content}";
-            }
-            catch (Exception ex)
-            {
-                logger.Info($"Error sending request to Identity : {ex.Message}");
-                return ex.Message;
-            }
+            string error = response.Headers.GetValues("X-Error").FirstOrDefault();
+            string errorCode = response.Headers.GetValues("X-Error-Code").FirstOrDefault();
+            return $"Response Code : {response.StatusCode} - Message : {response.Content} Headers: X-Error - {error}, X-Error-Code - {errorCode} ";
         }
 
         [VersionedRoute(template: "test/authHealth1", minimumVersion: "1.0.0")]
@@ -72,20 +59,12 @@ namespace crds_angular.Controllers.API
         public async Task<string> AuthHealthCheck1()
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            try
-            {
                 RestClient client = new RestClient();
                 client.BaseUrl = new Uri("https://api-int.crossroads.net/auth");
                 var request = new RestRequest("api/health/ready", Method.GET);
                 logger.Info("Sending RestClient request to Identity service health endpoint");
                 var response = client.Execute(request);
-                return $"Response Code : {response.StatusCode} - Message : {response.Content}";
-            }
-            catch (Exception ex)
-            {
-                logger.Info($"Error sending request to Identity : {ex.Message}");
-                return ex.Message;
-            }
+            return $"Response Code : {response.StatusCode} - Message : {response.Content}";
         }
 
         [VersionedRoute(template: "test/authHealth2", minimumVersion: "1.0.0")]
@@ -93,32 +72,29 @@ namespace crds_angular.Controllers.API
         public async Task<string> AuthHealthCheck2()
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            try
-            {
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/auth/api/health/ready");
                 logger.Info("Sending HttpClient request to Identity service health endpoint");
                 var response = await client.SendAsync(request);
-                return $"Response Code : {response.StatusCode} - Message : {response.Content}";
-            }
-            catch (Exception ex)
-            {
-                logger.Info($"Error sending request to Identity : {ex.Message}");
-                return ex.Message;
-            }
+                string error = response.Headers.GetValues("X-Error").FirstOrDefault();
+                string errorCode = response.Headers.GetValues("X-Error-Code").FirstOrDefault();
+                return $"Response Code : {response.StatusCode} - Message : {response.Content} Headers: X-Error - {error}, X-Error-Code - {errorCode} ";
         }
 
         [VersionedRoute(template: "test/google", minimumVersion: "1.0.0")]
         [HttpGet]
         public async Task<string> UrlHealthCheck()
         {
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             try
             {
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://google.com");
                 logger.Info("Sending HttpClient request to Identity service health endpoint");
                 var response = await client.SendAsync(request);
-                return $"Response Code : {response.StatusCode} - Message : {response.Content}";
+                string error = response.Headers.GetValues("X-Error").FirstOrDefault();
+                string errorCode = response.Headers.GetValues("X-Error-Code").FirstOrDefault();
+                return $"Response Code : {response.StatusCode} - Message : {response.Content}.  Headers: X-Error - {error}, X-Error-Code - {errorCode} ";
             }
             catch (Exception ex)
             {
