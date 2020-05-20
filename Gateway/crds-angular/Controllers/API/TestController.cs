@@ -30,8 +30,8 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public string IdentityHealthCheck1()
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            //ServicePointManager.Expect100Continue = true;
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             RestClient client = new RestClient();
                 client.BaseUrl = new Uri("https://api-int.crossroads.net/identity");
                 var request = new RestRequest("api/health", Method.GET);
@@ -45,8 +45,8 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<string> IdentityHealthCheck2()
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            //ServicePointManager.Expect100Continue = true;
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/identity/api/health");
                 logger.Info("Sending HttpClient request to Identity service health endpoint");
@@ -61,8 +61,8 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<string> IdentityHealthCheck3()
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            //ServicePointManager.Expect100Continue = true;
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Get, "https://api.crossroads.net/identity/api/health");
             logger.Info("Sending HttpClient request to Identity service health endpoint");
@@ -77,8 +77,8 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<string> AuthHealthCheck1()
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            //ServicePointManager.Expect100Continue = true;
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             RestClient client = new RestClient();
                 client.BaseUrl = new Uri("https://api-int.crossroads.net/auth");
                 var request = new RestRequest("api/health/ready", Method.GET);
@@ -91,8 +91,8 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<string> AuthHealthCheck2()
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            //ServicePointManager.Expect100Continue = true;
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/auth/api/health/ready");
                 logger.Info("Sending HttpClient request to Identity service health endpoint");
@@ -107,8 +107,8 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<string> UrlHealthCheck()
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            //ServicePointManager.Expect100Continue = true;
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             try
             {
                 var client = new HttpClient();
