@@ -48,7 +48,7 @@ namespace crds_angular.Controllers.API
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/identity/api/health");
                 logger.Info("Sending HttpClient request to Identity service health endpoint");
-            logger.Info($"Relevant Headers - Connection:{request.Headers.Connection}, Authorization:{request.Headers.Authorization}, {request.Headers.Contains("Content-Type").ToString()}");
+            logger.Info($"Relevant Headers - Connection:{request.Headers.Connection}, Authorization:{request.Headers.Authorization}");
             var response = await client.SendAsync(request);
             string error = response.Headers.GetValues("X-Error").FirstOrDefault();
             string errorCode = response.Headers.GetValues("X-Error-Code").FirstOrDefault();
@@ -76,7 +76,7 @@ namespace crds_angular.Controllers.API
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/auth/api/health/ready");
                 logger.Info("Sending HttpClient request to Identity service health endpoint");
-            logger.Info($"Relevant Headers - Connection:{request.Headers.Connection}, Authorization:{request.Headers.Authorization}, {request.Headers.Contains("Content-Type").ToString()}");
+            logger.Info($"Relevant Headers - Connection:{request.Headers.Connection}, Authorization:{request.Headers.Authorization}");
             var response = await client.SendAsync(request);
                 string error = response.Headers.GetValues("X-Error").FirstOrDefault();
                 string errorCode = response.Headers.GetValues("X-Error-Code").FirstOrDefault();
@@ -93,7 +93,7 @@ namespace crds_angular.Controllers.API
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://google.com");
                 logger.Info("Sending HttpClient request to Identity service health endpoint");
-                logger.Info($"Relevant Headers - Connection:{request.Headers.Connection}, Authorization:{request.Headers.Authorization}, {request.Headers.Contains("Content-Type").ToString()}");
+                logger.Info($"Relevant Headers - Connection:{request.Headers.Connection}, Authorization:{request.Headers.Authorization}");
                 var response = await client.SendAsync(request);
                 string error = response.Headers.GetValues("X-Error").FirstOrDefault();
                 string errorCode = response.Headers.GetValues("X-Error-Code").FirstOrDefault();
