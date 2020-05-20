@@ -35,7 +35,7 @@ namespace crds_angular.Controllers.API
                 client.BaseUrl = new Uri("https://api-int.crossroads.net/identity");
                 var request = new RestRequest("api/health", Method.GET);
                 logger.Info("Sending RestClient request to Identity service health endpoint");
-                var response = client.Execute(request);
+            var response = client.Execute(request);
             return $"Response Code : {response.StatusCode} - Message : {response.Content}";
 
         }
@@ -48,7 +48,8 @@ namespace crds_angular.Controllers.API
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/identity/api/health");
                 logger.Info("Sending HttpClient request to Identity service health endpoint");
-                var response = await client.SendAsync(request);
+            logger.Info($"Relevant Headers - Connection:{request.Headers.Connection}, Authorization:{request.Headers.Authorization}, {request.Headers.Contains("Content-Type").ToString()}");
+            var response = await client.SendAsync(request);
             string error = response.Headers.GetValues("X-Error").FirstOrDefault();
             string errorCode = response.Headers.GetValues("X-Error-Code").FirstOrDefault();
             return $"Response Code : {response.StatusCode} - Message : {response.Content} Headers: X-Error - {error}, X-Error-Code - {errorCode} ";
@@ -63,7 +64,7 @@ namespace crds_angular.Controllers.API
                 client.BaseUrl = new Uri("https://api-int.crossroads.net/auth");
                 var request = new RestRequest("api/health/ready", Method.GET);
                 logger.Info("Sending RestClient request to Identity service health endpoint");
-                var response = client.Execute(request);
+            var response = client.Execute(request);
             return $"Response Code : {response.StatusCode} - Message : {response.Content}";
         }
 
@@ -71,11 +72,12 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<string> AuthHealthCheck2()
         {
-            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://api-int.crossroads.net/auth/api/health/ready");
                 logger.Info("Sending HttpClient request to Identity service health endpoint");
-                var response = await client.SendAsync(request);
+            logger.Info($"Relevant Headers - Connection:{request.Headers.Connection}, Authorization:{request.Headers.Authorization}, {request.Headers.Contains("Content-Type").ToString()}");
+            var response = await client.SendAsync(request);
                 string error = response.Headers.GetValues("X-Error").FirstOrDefault();
                 string errorCode = response.Headers.GetValues("X-Error-Code").FirstOrDefault();
                 return $"Response Code : {response.StatusCode} - Message : {response.Content} Headers: X-Error - {error}, X-Error-Code - {errorCode} ";
@@ -91,6 +93,7 @@ namespace crds_angular.Controllers.API
                 var client = new HttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Get, "https://google.com");
                 logger.Info("Sending HttpClient request to Identity service health endpoint");
+                logger.Info($"Relevant Headers - Connection:{request.Headers.Connection}, Authorization:{request.Headers.Authorization}, {request.Headers.Contains("Content-Type").ToString()}");
                 var response = await client.SendAsync(request);
                 string error = response.Headers.GetValues("X-Error").FirstOrDefault();
                 string errorCode = response.Headers.GetValues("X-Error-Code").FirstOrDefault();
