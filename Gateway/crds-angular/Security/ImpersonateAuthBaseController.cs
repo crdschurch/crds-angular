@@ -7,13 +7,9 @@ using System.Reflection;
 using crds_angular.Services.Interfaces;
 using crds_angular.Util;
 using Crossroads.Web.Common.Security;
-using System.Net.Http.Headers;
 using Crossroads.Web.Auth.Exceptions;
 using Crossroads.Web.Auth.Models;
 using Crossroads.Web.Auth.Services;
-using RestSharp;
-using System.Net;
-using Newtonsoft.Json;
 
 namespace crds_angular.Security
 {
