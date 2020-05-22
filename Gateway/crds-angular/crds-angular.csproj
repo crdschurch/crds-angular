@@ -438,7 +438,6 @@
     <Compile Include="Controllers\API\RoomController.cs" />
     <Compile Include="Controllers\API\StaffContactController.cs" />
     <Compile Include="Controllers\API\DonorStatementController.cs" />
-    <Compile Include="Controllers\API\TestController.cs" />
     <Compile Include="Controllers\API\TextCommunicationController.cs" />
     <Compile Include="Exceptions\ChildcareDatesMissingException.cs" />
     <Compile Include="Exceptions\ContactEmailExistsException.cs" />
@@ -909,7 +908,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\FormBuilder\" />
-    <Folder Include="Views\Test\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

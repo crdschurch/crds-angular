@@ -96,7 +96,6 @@ namespace crds_angular.Controllers.API
             _logger.Info($"Request received at Group-Leader/Leader-Status endpoint with Authorization Header {accessToken}");
             return Authorized(authDTO =>
             {
-                _logger.Info($"Authorized for contact {contactId}, somethings failing here");
                 try
                 {
                     // does the logged in user have permission to view this contact?

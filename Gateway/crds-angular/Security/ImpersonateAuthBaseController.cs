@@ -7,14 +7,9 @@ using System.Reflection;
 using crds_angular.Services.Interfaces;
 using crds_angular.Util;
 using Crossroads.Web.Common.Security;
-using System.Net.Http.Headers;
 using Crossroads.Web.Auth.Exceptions;
 using Crossroads.Web.Auth.Models;
 using Crossroads.Web.Auth.Services;
-using Crossroads.Web.Common.Configuration;
-using RestSharp;
-using System.Net;
-using Newtonsoft.Json;
 
 namespace crds_angular.Security
 {
@@ -25,10 +20,6 @@ namespace crds_angular.Security
         private readonly IAuthTokenExpiryService _authTokenExpiryService;
         private readonly IUserImpersonationService _userImpersonationService;
         protected readonly IAuthenticationRepository AuthenticationRepository;
-
-        //Added for Auth test
-        private static RestClient client = new RestClient();
-        private static string _authUrl = Environment.GetEnvironmentVariable("AUTH_SERVICE_BASE_URL");
 
         public ImpersonateAuthBaseController(IAuthTokenExpiryService authTokenExpiryService,
             IUserImpersonationService userImpersonationService,
@@ -76,7 +67,7 @@ namespace crds_angular.Security
 
             if (shouldGetNewAccessToken) // Check if request is an mp token with an mp refresh token, if so we may need to refresh
             {
-                logger.Info($"Refreshing access token above with ");
+                logger.Info($"Refreshing access token");
                 var authData = AuthenticationRepository.RefreshToken(refreshToken);
                 if (authData != null)
                 {
@@ -89,9 +80,7 @@ namespace crds_angular.Security
             try
             {
                 logger.Info($"Requesting AuthService to verify access token : {accessToken}");
-                //DOING AUTHENTICATION IN THIS CLASS BELOW TO TEST
-                //auth = AuthService.Authorize(accessToken);
-                auth = Authorize(accessToken);
+                auth = AuthService.Authorize(accessToken);
             }
             catch (AccessTokenNullOrEmptyException ex)
             {
@@ -148,80 +137,6 @@ namespace crds_angular.Security
             else // Okta for now but could be another provider in the future
             {
                 return actionWhenAuthorized(auth);
-            }
-        }
-
-        /*
-         * Adding auth code in order to debug gateway
-         */
-        public AuthDTO Authorize(string accessToken)
-        {
-            try
-            {
-                ValidateAccessToken(accessToken);
-
-                var authServiceBaseUrl = _authUrl;
-                logger.Info($"Prepping Auth request to : {authServiceBaseUrl}");
-                ValidateBaseUrl(authServiceBaseUrl);
-
-                AuthDTO auth = GetAuthorizeResponse(accessToken, authServiceBaseUrl);
-
-                return auth;
-            }catch(Exception ex)
-            {
-                logger.Error($"Error Authorizing : {ex.Message}");
-                throw new AccessTokenNullOrEmptyException();
-            }
-            
-        }
-
-        public AuthDTO GetAuthorizeResponse(string accessToken, string baseUrl)
-        {
-#if FULLFRAMEWORK
-            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-#endif
-            client.BaseUrl = new Uri(baseUrl);
-            var request = new RestRequest("api/authorize", Method.GET);
-            request.AddHeader("Authorization", accessToken);
-            logger.Info($"Sending auth request...");
-            IRestResponse response = client.Execute(request);
-            logger.Info($"Auth Response : {response.StatusCode} - {response.Content}");
-            string responseString = response.Content;
-
-            AuthDTO auth = BuildAuthFromResponse(response, responseString);
-
-            return auth;
-        }
-
-        public static AuthDTO BuildAuthFromResponse(IRestResponse response, string responseString)
-        {
-            AuthDTO auth = new AuthDTO();
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                auth = JsonConvert.DeserializeObject<AuthDTO>(responseString);
-            }
-            else
-            {
-                throw new RemoteAuthException(responseString);
-            }
-
-            return auth;
-        }
-
-        public static void ValidateAccessToken(string accessToken)
-        {
-            if (String.IsNullOrEmpty(accessToken))
-            {
-                throw new AccessTokenNullOrEmptyException();
-            }
-        }
-
-        public static void ValidateBaseUrl(string baseUrl)
-        {
-            if (baseUrl == null)
-            {
-                throw new AuthServiceUrlUndefinedException();
             }
         }
     }
