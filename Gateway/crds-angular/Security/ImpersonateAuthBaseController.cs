@@ -7,7 +7,6 @@ using System.Reflection;
 using crds_angular.Services.Interfaces;
 using crds_angular.Util;
 using Crossroads.Web.Common.Security;
-using System.Net.Http.Headers;
 using Crossroads.Web.Auth.Exceptions;
 using Crossroads.Web.Auth.Models;
 using Crossroads.Web.Auth.Services;
@@ -40,6 +39,7 @@ namespace crds_angular.Security
         /// <returns>An IHttpActionResult from the "doIt" expression, or UnauthorizedResult if the user is not authenticated.</returns>
         protected IHttpActionResult Authorized(Func<AuthDTO, IHttpActionResult> doIt)
         {
+            logger.Info($"Attempting authorization check...");
             return (Authorized(doIt, () => { return (Unauthorized()); }));
         }
 
@@ -67,6 +67,7 @@ namespace crds_angular.Security
 
             if (shouldGetNewAccessToken) // Check if request is an mp token with an mp refresh token, if so we may need to refresh
             {
+                logger.Info($"Refreshing access token");
                 var authData = AuthenticationRepository.RefreshToken(refreshToken);
                 if (authData != null)
                 {
@@ -78,6 +79,7 @@ namespace crds_angular.Security
             AuthDTO auth;
             try
             {
+                logger.Info($"Requesting AuthService to verify access token : {accessToken}");
                 auth = AuthService.Authorize(accessToken);
             }
             catch (AccessTokenNullOrEmptyException ex)
@@ -95,11 +97,11 @@ namespace crds_angular.Security
                 logger.Debug(ex.Message);
                 return actionWhenNotAuthorized();
             }
-
+            logger.Info($"Looking to get ImpersonateUserId's");
             IEnumerable<string> impersonateUserIds;
             Request.Headers.TryGetValues("ImpersonateUserId", out impersonateUserIds);
             bool impersonate = (impersonateUserIds != null) && impersonateUserIds.Any();
-
+            logger.Info("Checking if we need to get new refresh token");
             //If its an mp token we need to perform the token refresh logic:
             if (auth.Authentication.Provider == "mp")
             {
