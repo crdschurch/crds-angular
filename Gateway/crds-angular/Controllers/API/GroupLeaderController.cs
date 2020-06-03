@@ -10,14 +10,17 @@ using System.Web.Http.Description;
 using crds_angular.Exceptions.Models;
 using crds_angular.Models.Crossroads.GroupLeader;
 using crds_angular.Security;
+using crds_angular.Services;
 using crds_angular.Services.Interfaces;
 using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
+using log4net;
 
 namespace crds_angular.Controllers.API
 {
     public class GroupLeaderController : ImpersonateAuthBaseController
     {
+        private readonly ILog _logger = LogManager.GetLogger(typeof(LoginService));
         private readonly IAuthTokenExpiryService _authTokenExpiryService;
         private readonly IGroupLeaderService _groupLeaderService;
 
@@ -131,10 +134,15 @@ namespace crds_angular.Controllers.API
         [HttpGet]
         public async Task<IHttpActionResult> GetLeaderStatus()
         {
+            IEnumerable<string> accessTokens;
+            Request.Headers.TryGetValues("Authorization", out accessTokens);
+            string accessToken = accessTokens == null ? string.Empty : accessTokens.FirstOrDefault();
+            _logger.Info($"Request received at Group-Leader/Leader-Status endpoint with Authorization Header {accessToken}");
             return Authorized(token =>
             {
                 try
                 {
+                    logger.Info($"Attempting to get group leader status");
                     var status = _groupLeaderService.GetGroupLeaderStatus(token.UserInfo.Mp.ContactId).Wait();
                     return Ok(new GroupLeaderStatusDTO
                     {
@@ -143,6 +151,7 @@ namespace crds_angular.Controllers.API
                 }
                 catch (Exception e)
                 {
+                    _logger.Info($"Exception happened when trying to get Group Leader info for {token.UserInfo.Mp.ContactId}");
                     var apiError = new ApiErrorDto("Getting group leader status failed: ", e);
                     throw new HttpResponseException(apiError.HttpResponseMessage);
                 }
