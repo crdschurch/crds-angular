@@ -184,7 +184,7 @@ namespace MinistryPlatform.Translation.Repositories
 
         public int GetUserIdByUsername(string email)
         {
-            var records = _ministryPlatformService.GetRecordsDict(Convert.ToInt32(ConfigurationManager.AppSettings["Users"]), ApiLogin(), ("," + email));
+            var records = _ministryPlatformService.GetRecordsDict(Convert.ToInt32(ConfigurationManager.AppSettings["Users"]), ApiLogin(), (email));
             if (records.Count != 1)
             {
                 throw new ApplicationException("User email did not return exactly one user record");
