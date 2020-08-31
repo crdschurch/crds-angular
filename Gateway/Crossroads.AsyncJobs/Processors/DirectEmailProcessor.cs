@@ -34,6 +34,7 @@ namespace Crossroads.AsyncJobs.Processors
 
             if (messageSent)
             {
+                _logger.Info("Direct email queue processor, initiated");
                 var recordsUpdated = _emailCommunication.UpdateDirectEmailMessagesToSent(communicationId, communication.CommunicationMessageId);
                 if (!recordsUpdated)
                 {

@@ -11,6 +11,7 @@ using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;
+using Common.Logging;
 
 namespace Crossroads.AsyncJobs.Processors
 {
@@ -19,6 +20,7 @@ namespace Crossroads.AsyncJobs.Processors
         private readonly IServeService _serveService;
         private readonly IConfigurationWrapper _configurationWrapper;
         private readonly IAuthenticationRepository _authenticationService;
+        private ILog _logger = LogManager.GetLogger(typeof(SignupToServeProcessor));
 
         public SignupToServeProcessor(
             IServeService serveService,
@@ -34,7 +36,8 @@ namespace Crossroads.AsyncJobs.Processors
 
         public void Execute(JobDetails<SaveRsvpDto> details)
         {
-            WithApiLogin<List<int>>(token => _serveService.SaveServeRsvp(token, details.Data));            
+            WithApiLogin<List<int>>(token => _serveService.SaveServeRsvp(token, details.Data));
+            _logger.Info("Sign Up to Serve queue initiated");
         }
     }
 }
