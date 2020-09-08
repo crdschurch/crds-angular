@@ -22,7 +22,7 @@ namespace Crossroads.AsyncJobs.Processors
 
             string jobName = scheduledJob.JobType.Name + ":" + Guid.NewGuid() + "@" + scheduledJob.StartDateTime;
 
-            _logger.Debug("Scheduling Job: " + jobName);
+            _logger.Info("Scheduling Job: " + jobName + " Scheduled Job queue initiated");
 
             IJobDetail job = new JobDetailImpl(jobName, scheduledJob.JobType);
 

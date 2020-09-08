@@ -36,7 +36,7 @@ namespace Crossroads.AsyncJobs.Processors
             var batch = details.Data;
             try
             {
-                _logger.Debug(string.Format("Received check scanner batch {0} at {1} (queued at {2})", batch.Name, details.RetrievedDateTime, details.EnqueuedDateTime));
+                _logger.Info(string.Format("Received check scanner batch {0} at {1} (queued at {2})", batch.Name, details.RetrievedDateTime, details.EnqueuedDateTime));
                 var result = _checkScannerService.CreateDonationsForBatch(batch);
                 result.MinistryPlatformContactId = batch.MinistryPlatformContactId;
                 result.MinistryPlatformUserId = batch.MinistryPlatformUserId;
