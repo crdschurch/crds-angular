@@ -25,7 +25,7 @@ namespace Crossroads.AsyncJobs.Processors
 
             try
             {
-                _logger.Debug(string.Format("Received event {0} at {1} (queued at {2})", stripeEvent.Type, details.RetrievedDateTime, details.EnqueuedDateTime));
+                _logger.Info(string.Format("Received event {0} at {1} (queued at {2})", stripeEvent.Type, details.RetrievedDateTime, details.EnqueuedDateTime));
                 _stripeEventService.ProcessStripeEvent(stripeEvent);
             }
             catch (Exception e)
