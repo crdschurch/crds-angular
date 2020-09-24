@@ -504,7 +504,6 @@
     <Compile Include="Models\Crossroads\CommunicationDTO.cs" />
     <Compile Include="Models\Crossroads\Congregation.cs" />
     <Compile Include="Models\Crossroads\DonorStatementDTO.cs" />
-    <Compile Include="Controllers\API\SubscriptionsController.cs" />
     <Compile Include="Models\Crossroads\Childcare\ChildcareRsvpDto.cs" />
     <Compile Include="Models\Crossroads\Events\EventRoomDto.cs" />
     <Compile Include="Models\Crossroads\Events\EventRoomEquipmentDto.cs" />
@@ -547,7 +546,6 @@
     <Compile Include="Models\Crossroads\Stewardship\PledgeDto.cs" />
     <Compile Include="Models\Crossroads\Stewardship\StripeCard.cs" />
     <Compile Include="Models\Crossroads\Stewardship\StripeList.cs" />
-    <Compile Include="Models\Crossroads\Subscription\OptInRequest.cs" />
     <Compile Include="Models\Crossroads\Subscription\OptInResponse.cs" />
     <Compile Include="Models\Crossroads\Invitation.cs" />
     <Compile Include="Models\Crossroads\TextCommunicationDTO.cs" />
