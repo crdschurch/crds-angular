@@ -393,7 +393,6 @@
     <Compile Include="Services\ObjectAttributeServiceTest.cs" />
     <Compile Include="Services\TwilioServiceTest.cs" />
     <Compile Include="Services\UserImpersonationServiceTest.cs" />
-    <Compile Include="Services\VolunteerApplicationServiceTest.cs" />
     <Compile Include="Services\WaiverServiceTest.cs" />
     <Compile Include="TestHelpers.cs" />
   </ItemGroup>
