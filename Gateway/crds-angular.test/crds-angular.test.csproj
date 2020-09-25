@@ -388,7 +388,6 @@
     <Compile Include="Services\StaffContactServiceTest.cs" />
     <Compile Include="Services\StripeEventServiceTest.cs" />
     <Compile Include="Services\StripeServiceTest.cs" />
-    <Compile Include="Services\SubscriptionServiceTest.cs" />
     <Compile Include="Services\TaskServiceTest.cs" />
     <Compile Include="Services\TripServiceTest.cs" />
     <Compile Include="Services\ObjectAttributeServiceTest.cs" />
