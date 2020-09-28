@@ -686,7 +686,6 @@
     <Compile Include="Controllers\API\OpportunityController.cs" />
     <Compile Include="Controllers\API\ProfileController.cs" />
     <Compile Include="Controllers\API\ContactAttributeController.cs" />
-    <Compile Include="Controllers\API\VolunteerApplicationController.cs" />
     <Compile Include="Controllers\API\MinistryPlatformToolsController.cs" />
     <Compile Include="DataAccess\EzScanCheckScannerDao.cs" />
     <Compile Include="DataAccess\Interfaces\ICheckScannerDao.cs" />
@@ -820,7 +819,6 @@
     <Compile Include="Services\Interfaces\IStripeEventService.cs" />
     <Compile Include="Services\Interfaces\ITripService.cs" />
     <Compile Include="Services\Interfaces\IUserImpersonationService.cs" />
-    <Compile Include="Services\Interfaces\IVolunteerApplicationService.cs" />
     <Compile Include="Services\MinistryPlatformBaseService.cs" />
     <Compile Include="Services\PersonService.cs" />
     <Compile Include="Services\ProgramService.cs" />
@@ -829,7 +827,6 @@
     <Compile Include="Services\StripePaymentProcessorService .cs" />
     <Compile Include="Services\TripService.cs" />
     <Compile Include="Services\UserImpersonationService.cs" />
-    <Compile Include="Services\VolunteerApplicationService.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Util\CSV.cs" />
     <Compile Include="Util\DateTimeWrapper.cs" />
