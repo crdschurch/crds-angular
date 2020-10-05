@@ -668,7 +668,6 @@
     <Compile Include="Controllers\API\ProgramController.cs" />
     <Compile Include="Controllers\API\ServeController.cs" />
     <Compile Include="Controllers\API\StripeEventController.cs" />
-    <Compile Include="Controllers\API\TripApplicationController.cs" />
     <Compile Include="Controllers\API\TripController.cs" />
     <Compile Include="Controllers\API\AttributeTypeController.cs" />
     <Compile Include="Filters\UnhandledExceptionFilter.cs" />
