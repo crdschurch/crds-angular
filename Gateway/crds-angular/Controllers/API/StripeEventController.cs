@@ -71,7 +71,7 @@ namespace crds_angular.Controllers.API
             {
                 if (_asynchronous)
                 {
-                    _logger.Debug("Enqueueing Stripe event " + stripeEvent.Type + " because AsynchronousProcessingMode was true");
+                    _logger.Info("Enqueueing Stripe event " + stripeEvent.Type + " because AsynchronousProcessingMode was true");
                     var message = _messageFactory.CreateMessage(stripeEvent);
                     _eventQueue.Send(message, MessageQueueTransactionType.None);
                     response = new StripeEventResponseDTO
@@ -81,7 +81,7 @@ namespace crds_angular.Controllers.API
                 }
                 else
                 {
-                    _logger.Debug("Processing Stripe event " + stripeEvent.Type + " because AsynchronousProcessingMode was false");
+                    _logger.Info("Processing Stripe event " + stripeEvent.Type + " because AsynchronousProcessingMode was false");
                     response = _stripeEventService.ProcessStripeEvent(stripeEvent);
                 }
 

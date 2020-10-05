@@ -445,6 +445,7 @@ namespace crds_angular.Services
         public StripeEventResponseDTO ProcessStripeEvent(StripeEvent stripeEvent)
         {
             StripeEventResponseDTO response = null;
+            _logger.Info($"Processing Stripe Event of type : {stripeEvent.Type}");
             try
             {
                 switch (stripeEvent.Type)
