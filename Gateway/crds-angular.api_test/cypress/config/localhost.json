@@ -1,0 +1,7 @@
+{
+  "baseUrl": "http://localhost:49380",
+  "video": false,
+  "env":{
+    "vaultEnv": "int"
+  }
+}

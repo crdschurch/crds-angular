@@ -1,0 +1,11 @@
+{
+  "rulesDirectory": [
+    "tslint-no-unused-expression-chai"
+  ],
+  "rules": {
+    "no-trailing-whitespace": true,
+    "semicolon": true,
+    "no-unused-expression": true,
+    "no-unused-expression-chai": true
+  }
+}

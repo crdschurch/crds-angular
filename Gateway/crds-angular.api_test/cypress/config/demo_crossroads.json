@@ -1,0 +1,8 @@
+{
+  "projectId": "s1jczs",
+  "baseUrl": "https://gatewaydemo.crossroads.net/gateway",
+  "video": false,
+  "env":{
+    "vaultEnv": "demo"
+  }
+}
