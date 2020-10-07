@@ -328,7 +328,6 @@
     <Compile Include="controllers\ServeControllerTest.cs" />
     <Compile Include="controllers\ProgramControllerTest.cs" />
     <Compile Include="controllers\StripeEventControllerTest.cs" />
-    <Compile Include="controllers\TextCommunicationControllerTest.cs" />
     <Compile Include="controllers\TripControllerTest.cs" />
     <Compile Include="controllers\WaiverControllerTest.cs" />
     <Compile Include="DataAccess\EzScanCheckScannerDaoTest.cs" />
@@ -346,7 +345,6 @@
     <Compile Include="Models\Crossroads\GoVolunteer\OrganizationTest.cs" />
     <Compile Include="Models\Json\RestHttpActionResultTest.cs" />
     <Compile Include="Models\Person.cs" />
-    <Compile Include="Processors\SendTextMessageJobTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\MPAuthTest.cs" />
     <Compile Include="Services\AccountServiceTest.cs" />
@@ -389,7 +387,6 @@
     <Compile Include="Services\TaskServiceTest.cs" />
     <Compile Include="Services\TripServiceTest.cs" />
     <Compile Include="Services\ObjectAttributeServiceTest.cs" />
-    <Compile Include="Services\TwilioServiceTest.cs" />
     <Compile Include="Services\UserImpersonationServiceTest.cs" />
     <Compile Include="Services\WaiverServiceTest.cs" />
     <Compile Include="TestHelpers.cs" />
