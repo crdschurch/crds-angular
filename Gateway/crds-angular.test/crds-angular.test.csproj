@@ -320,7 +320,6 @@
     <Compile Include="controllers\AccountControllerTest.cs" />
     <Compile Include="controllers\EventParticipantControllerTest.cs" />
     <Compile Include="controllers\FinderControllerTest.cs" />
-    <Compile Include="controllers\GoVolunteerControllerTest.cs" />
     <Compile Include="controllers\ImageControllerTest.cs" />
     <Compile Include="controllers\LocationControllerTest.cs" />
     <Compile Include="controllers\LoginControllerTest.cs" />
@@ -367,7 +366,6 @@
     <Compile Include="Services\GoogleMapsAddressGeocodingServiceTest.cs" />
     <Compile Include="Services\GoogleMapsDistanceMatrixAddressProximityServiceTest.cs" />
     <Compile Include="Services\GoSkillsServiceTest.cs" />
-    <Compile Include="Services\GoVolunteerServiceTest.cs" />
     <Compile Include="Services\GroupLeaderServiceTest.cs" />
     <Compile Include="Services\GroupSearchServiceTest.cs" />
     <Compile Include="Services\InvitationServiceTest.cs" />
