@@ -429,7 +429,6 @@
     <Compile Include="Controllers\API\EventParticipantController.cs" />
     <Compile Include="Controllers\API\EventToolController.cs" />
     <Compile Include="Controllers\API\FormBuilderController.cs" />
-    <Compile Include="Controllers\API\GoVolunteerController.cs" />
     <Compile Include="Controllers\API\GroupLeaderController.cs" />
     <Compile Include="Controllers\API\GroupToolController.cs" />
     <Compile Include="Controllers\API\LocationController.cs" />
@@ -438,7 +437,6 @@
     <Compile Include="Controllers\API\RoomController.cs" />
     <Compile Include="Controllers\API\StaffContactController.cs" />
     <Compile Include="Controllers\API\DonorStatementController.cs" />
-    <Compile Include="Controllers\API\TextCommunicationController.cs" />
     <Compile Include="Exceptions\ChildcareDatesMissingException.cs" />
     <Compile Include="Exceptions\ContactEmailExistsException.cs" />
     <Compile Include="Exceptions\ContactNotFoundException.cs" />
@@ -548,7 +546,6 @@
     <Compile Include="Models\Crossroads\Stewardship\StripeList.cs" />
     <Compile Include="Models\Crossroads\Subscription\OptInResponse.cs" />
     <Compile Include="Models\Crossroads\Invitation.cs" />
-    <Compile Include="Models\Crossroads\TextCommunicationDTO.cs" />
     <Compile Include="Models\Crossroads\Trip\TripParticipantPledgeDto.cs" />
     <Compile Include="Models\Finder\GroupParticipantRemovalDto.cs" />
     <Compile Include="Models\Finder\PinTypes.cs" />
@@ -562,7 +559,6 @@
     <Compile Include="Models\Map\MapCoordinates.cs" />
     <Compile Include="Models\Map\MapLocation.cs" />
     <Compile Include="Models\Map\MapPin.cs" />
-    <Compile Include="Processors\SendTextMessageJob.cs" />
     <Compile Include="Security\ImpersonateAuthBaseController.cs" />
     <Compile Include="Services\AddressService.cs" />
     <Compile Include="Services\Analytics\AnalyticsAstronomer.cs" />
@@ -588,7 +584,6 @@
     <Compile Include="Services\GoogleMapsDistanceMatrixAddressProximityService.cs" />
     <Compile Include="Services\GroupConnectorService.cs" />
     <Compile Include="Services\GatewayLookupService.cs" />
-    <Compile Include="Services\GoVolunteerService.cs" />
     <Compile Include="Services\GoSkillsService.cs" />
     <Compile Include="Services\GroupLeaderService.cs" />
     <Compile Include="Services\GroupSearchService.cs" />
@@ -613,13 +608,11 @@
     <Compile Include="Services\Interfaces\ILocationService.cs" />
     <Compile Include="Services\Interfaces\ILookupService.cs" />
     <Compile Include="Services\Interfaces\IPaymentService.cs" />
-    <Compile Include="Services\Interfaces\ITextCommunicationService.cs" />
     <Compile Include="Services\Interfaces\IWaiverService.cs" />
     <Compile Include="Services\InvitationService.cs" />
     <Compile Include="Services\Interfaces\IAddressService.cs" />
     <Compile Include="Services\Interfaces\ICongregationService.cs" />
     <Compile Include="Services\Interfaces\IEquipmentService.cs" />
-    <Compile Include="Services\Interfaces\IGoVolunteerService.cs" />
     <Compile Include="Services\Interfaces\IGoSkillsService.cs" />
     <Compile Include="Services\Interfaces\IGroupConnectorService.cs" />
     <Compile Include="Services\Interfaces\IGroupSearchService.cs" />
@@ -653,7 +646,6 @@
     <Compile Include="Services\Interfaces\ISubscriptionsService.cs" />
     <Compile Include="Services\TaskService.cs" />
     <Compile Include="Services\GroupToolService.cs" />
-    <Compile Include="Services\TwilioService.cs" />
     <Compile Include="Services\WaiverService.cs" />
     <Compile Include="Util\MailchimpListHandler.cs" />
     <Compile Include="Util\HttpAuthResult.cs" />
@@ -668,7 +660,6 @@
     <Compile Include="Controllers\API\ProgramController.cs" />
     <Compile Include="Controllers\API\ServeController.cs" />
     <Compile Include="Controllers\API\StripeEventController.cs" />
-    <Compile Include="Controllers\API\TripApplicationController.cs" />
     <Compile Include="Controllers\API\TripController.cs" />
     <Compile Include="Controllers\API\AttributeTypeController.cs" />
     <Compile Include="Filters\UnhandledExceptionFilter.cs" />

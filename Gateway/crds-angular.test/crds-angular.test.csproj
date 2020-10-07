@@ -320,7 +320,6 @@
     <Compile Include="controllers\AccountControllerTest.cs" />
     <Compile Include="controllers\EventParticipantControllerTest.cs" />
     <Compile Include="controllers\FinderControllerTest.cs" />
-    <Compile Include="controllers\GoVolunteerControllerTest.cs" />
     <Compile Include="controllers\ImageControllerTest.cs" />
     <Compile Include="controllers\LocationControllerTest.cs" />
     <Compile Include="controllers\LoginControllerTest.cs" />
@@ -329,7 +328,6 @@
     <Compile Include="controllers\ServeControllerTest.cs" />
     <Compile Include="controllers\ProgramControllerTest.cs" />
     <Compile Include="controllers\StripeEventControllerTest.cs" />
-    <Compile Include="controllers\TextCommunicationControllerTest.cs" />
     <Compile Include="controllers\TripControllerTest.cs" />
     <Compile Include="controllers\WaiverControllerTest.cs" />
     <Compile Include="DataAccess\EzScanCheckScannerDaoTest.cs" />
@@ -347,7 +345,6 @@
     <Compile Include="Models\Crossroads\GoVolunteer\OrganizationTest.cs" />
     <Compile Include="Models\Json\RestHttpActionResultTest.cs" />
     <Compile Include="Models\Person.cs" />
-    <Compile Include="Processors\SendTextMessageJobTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\MPAuthTest.cs" />
     <Compile Include="Services\AccountServiceTest.cs" />
@@ -367,7 +364,6 @@
     <Compile Include="Services\GoogleMapsAddressGeocodingServiceTest.cs" />
     <Compile Include="Services\GoogleMapsDistanceMatrixAddressProximityServiceTest.cs" />
     <Compile Include="Services\GoSkillsServiceTest.cs" />
-    <Compile Include="Services\GoVolunteerServiceTest.cs" />
     <Compile Include="Services\GroupLeaderServiceTest.cs" />
     <Compile Include="Services\GroupSearchServiceTest.cs" />
     <Compile Include="Services\InvitationServiceTest.cs" />
@@ -391,7 +387,6 @@
     <Compile Include="Services\TaskServiceTest.cs" />
     <Compile Include="Services\TripServiceTest.cs" />
     <Compile Include="Services\ObjectAttributeServiceTest.cs" />
-    <Compile Include="Services\TwilioServiceTest.cs" />
     <Compile Include="Services\UserImpersonationServiceTest.cs" />
     <Compile Include="Services\WaiverServiceTest.cs" />
     <Compile Include="TestHelpers.cs" />
