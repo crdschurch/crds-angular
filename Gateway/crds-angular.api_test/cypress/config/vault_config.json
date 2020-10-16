@@ -1,8 +1,8 @@
 {
   "sources": [
     {
-      "secret": "Crossroads.Automation",
-      "keys": ["BEN_KENOBI_PW"]
+      "secret": "crds-angular.api_test",
+      "keys": ["BEN_KENOBI_PW", "TEST_GATEKEEPER_PW", "TEST_GATEKEEPERJR_PW"]
     }
   ]
 }
