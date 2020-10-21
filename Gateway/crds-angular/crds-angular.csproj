@@ -434,7 +434,6 @@
     <Compile Include="Controllers\API\LocationController.cs" />
     <Compile Include="Controllers\API\ParticipantController.cs" />
     <Compile Include="Controllers\API\PaymentController.cs" />
-    <Compile Include="Controllers\API\RoomController.cs" />
     <Compile Include="Controllers\API\StaffContactController.cs" />
     <Compile Include="Controllers\API\DonorStatementController.cs" />
     <Compile Include="Exceptions\ChildcareDatesMissingException.cs" />
