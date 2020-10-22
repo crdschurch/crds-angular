@@ -674,7 +674,6 @@
     <Compile Include="Controllers\API\UserController.cs" />
     <Compile Include="Controllers\API\LoginController.cs" />
     <Compile Include="Controllers\API\LookupController.cs" />
-    <Compile Include="Controllers\API\OpportunityController.cs" />
     <Compile Include="Controllers\API\ProfileController.cs" />
     <Compile Include="Controllers\API\ContactAttributeController.cs" />
     <Compile Include="Controllers\API\MinistryPlatformToolsController.cs" />
