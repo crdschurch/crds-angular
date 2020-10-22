@@ -428,7 +428,6 @@
     <Compile Include="Controllers\API\FinderController.cs" />
     <Compile Include="Controllers\API\EventParticipantController.cs" />
     <Compile Include="Controllers\API\EventToolController.cs" />
-    <Compile Include="Controllers\API\FormBuilderController.cs" />
     <Compile Include="Controllers\API\GroupLeaderController.cs" />
     <Compile Include="Controllers\API\GroupToolController.cs" />
     <Compile Include="Controllers\API\LocationController.cs" />
@@ -586,7 +585,6 @@
     <Compile Include="Services\GoSkillsService.cs" />
     <Compile Include="Services\GroupLeaderService.cs" />
     <Compile Include="Services\GroupSearchService.cs" />
-    <Compile Include="Services\FormBuilderService.cs" />
     <Compile Include="Services\ImageService.cs" />
     <Compile Include="Services\Interfaces\GroupAttributeDTO.cs" />
     <Compile Include="Services\Interfaces\IAuthTokenExpiryService.cs" />
@@ -616,7 +614,6 @@
     <Compile Include="Services\Interfaces\IGroupConnectorService.cs" />
     <Compile Include="Services\Interfaces\IGroupSearchService.cs" />
     <Compile Include="Services\Interfaces\IGatewayLookupService.cs" />
-    <Compile Include="Services\Interfaces\IFormBuilerService.cs" />
     <Compile Include="Services\Interfaces\IGroupToolService.cs" />
     <Compile Include="Services\Interfaces\IOrganizationService.cs" />
     <Compile Include="Services\Interfaces\IRoomService.cs" />
