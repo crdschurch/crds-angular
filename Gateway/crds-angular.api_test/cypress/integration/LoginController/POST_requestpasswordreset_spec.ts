@@ -1,5 +1,5 @@
-import { TestCase, TestConfig, unzipTests } from "cypress/shared/test_scenario_factory";
-import { Ben, KeeperJr, Load } from "cypress/shared/users";
+import { TestCase, TestConfig, unzipTests } from "shared/test_scenario_factory";
+import { Ben, KeeperJr, Load } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 
 // Data Setup

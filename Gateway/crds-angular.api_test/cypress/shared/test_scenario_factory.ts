@@ -61,8 +61,7 @@ function unzip(config: TestConfig): TestCase[]{
 
 export function unzipTests(zippedTests: TestConfig | TestConfig[]): TestCase[] {
   if(Array.isArray(zippedTests)){
-    return zippedTests.map((config) => (unzip(config)))
-    .reduce((accumulator, value) => accumulator.concat(value), []); //TODO use .flat
+    return zippedTests.map((config) => (unzip(config))).flat();
   }
   else {
     return unzip(zippedTests);

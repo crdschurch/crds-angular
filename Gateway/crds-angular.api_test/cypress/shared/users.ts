@@ -42,5 +42,5 @@ export const KeeperJr: TestUser = {
  */
 export const Load: TestUser = {
   email: "mpcrds+LoadTest_98@gmail.com",
-  password: null
+  password: undefined
 };

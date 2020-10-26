@@ -1,4 +1,6 @@
-import { ResultBody } from "cypress/shared/test_scenario_factory";
+import { ResultBody } from "shared/test_scenario_factory";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require('chai-json-schema-ajv')
   .create({
     verbose: true
