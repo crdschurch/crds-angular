@@ -23,8 +23,3 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
-
-//TODO add Typescript definition for this
-Cypress.Commands.add("toJSON", { prevSubject: true}, (subject) => {
-  return typeof subject === 'string' ? JSON.parse(subject) : subject;
-});
