@@ -216,4 +216,7 @@ Gateway/Crossroads.AsyncJobs/Unity.config
 /CI/SQL/20171023_150300_US10195-calculate-srfp-sp.sql
 /Gateway/*.DotSettings
 
+# Ignore Cypress generated files
+**/cypress/screenshots
+**/cypress/videos
 loadenv.ps1
