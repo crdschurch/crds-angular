@@ -21,6 +21,7 @@ export interface TestSetup {
   description: string;
   body?: any;
   header?: any;
+  dataSetup?(): void;
 }
 
 export interface TestResult {

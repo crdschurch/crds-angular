@@ -18,10 +18,11 @@ export const Ben: TestUser = {
 /**
  * Gate is a test user in non-prod environments.
  * They cannot be authenticated through Okta in Demo.
+ * Their password in MP may be different than in Okta
  */
 export const Gatekeeper: TestUser = {
   email: "mpcrds+auto+gatekeeper@testmail.com",
-  password: Cypress.env("TEST_GATEKEEPER_PW")
+  password: undefined//Cypress.env("TEST_GATEKEEPER_PW") //TODO is this safe?
 };
 
 
@@ -37,7 +38,7 @@ export const KeeperJr: TestUser = {
 
 
 /**
- * Load has a MP Contact record only in all environments.
+ * Load only has an MP Contact record, but they are in each environment.
  * They cannot be authenticated.
  */
 export const Load: TestUser = {
