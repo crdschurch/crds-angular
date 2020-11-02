@@ -427,7 +427,6 @@
     <Compile Include="Controllers\API\CongregationController.cs" />
     <Compile Include="Controllers\API\FinderController.cs" />
     <Compile Include="Controllers\API\EventParticipantController.cs" />
-    <Compile Include="Controllers\API\EventToolController.cs" />
     <Compile Include="Controllers\API\GroupLeaderController.cs" />
     <Compile Include="Controllers\API\GroupToolController.cs" />
     <Compile Include="Controllers\API\LocationController.cs" />
