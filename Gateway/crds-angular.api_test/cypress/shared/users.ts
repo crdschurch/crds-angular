@@ -22,7 +22,7 @@ export const Ben: TestUser = {
  */
 export const Gatekeeper: TestUser = {
   email: "mpcrds+auto+gatekeeper@testmail.com",
-  password: undefined//Cypress.env("TEST_GATEKEEPER_PW") //TODO is this safe?
+  password: Cypress.env("TEST_GATEKEEPER_PW") //This may be inaccurate
 };
 
 

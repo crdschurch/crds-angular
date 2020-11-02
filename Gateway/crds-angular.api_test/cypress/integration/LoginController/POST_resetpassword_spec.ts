@@ -85,7 +85,6 @@ describe('POST /api/resetpassword', () => {
     });
 });
 
-
 describe('POST /api/v1.0.0/reset-password', () => {
   unzipTests(testConfig)
     .forEach((t: TestCase) => {
