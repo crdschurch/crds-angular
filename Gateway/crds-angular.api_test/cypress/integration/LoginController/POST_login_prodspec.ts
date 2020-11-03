@@ -1,5 +1,5 @@
-import { TestConfig, TestCase, unzipTests } from "cypress/shared/test_scenario_factory";
-import { Ben } from "cypress/shared/users";
+import { TestConfig, TestCase, unzipTests } from "shared/test_scenario_factory";
+import { Ben } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 import { mpLoginBasicAuthContract, mpLoginSchemaProperties } from "./schemas/loginResponse";
 

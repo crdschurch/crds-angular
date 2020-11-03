@@ -108,6 +108,11 @@ namespace crds_angular.Services
 
         public bool ResetPassword(string password, string token)
         {
+            if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(token))
+            {
+                throw new ArgumentNullException();
+            }
+
             var user = _userRepository.GetUserByResetToken(token);
 
             Dictionary<string, object> userUpdateValues = new Dictionary<string, object>();
