@@ -652,7 +652,6 @@
     <Compile Include="Controllers\API\EventController.cs" />
     <Compile Include="Controllers\API\GroupController.cs" />
     <Compile Include="Controllers\API\CheckScannerController.cs" />
-    <Compile Include="Controllers\API\ProgramController.cs" />
     <Compile Include="Controllers\API\ServeController.cs" />
     <Compile Include="Controllers\API\StripeEventController.cs" />
     <Compile Include="Controllers\API\TripController.cs" />
@@ -797,7 +796,6 @@
     <Compile Include="Services\Interfaces\IDonorService.cs" />
     <Compile Include="Services\Interfaces\IEmailCommunication.cs" />
     <Compile Include="Services\Interfaces\IGroupService.cs" />
-    <Compile Include="Services\Interfaces\IProgramService.cs" />
     <Compile Include="Services\Interfaces\IServeService.cs" />
     <Compile Include="Services\Interfaces\IPersonService.cs" />
     <Compile Include="Services\Interfaces\IPaymentProcessorService.cs" />
@@ -806,7 +804,6 @@
     <Compile Include="Services\Interfaces\IUserImpersonationService.cs" />
     <Compile Include="Services\MinistryPlatformBaseService.cs" />
     <Compile Include="Services\PersonService.cs" />
-    <Compile Include="Services\ProgramService.cs" />
     <Compile Include="Services\ServeService.cs" />
     <Compile Include="Services\StripeEventService.cs" />
     <Compile Include="Services\StripePaymentProcessorService .cs" />
