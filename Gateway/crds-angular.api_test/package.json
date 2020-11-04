@@ -6,6 +6,7 @@
   "scripts": {
     "test": "npx cypress run --config-file ./cypress/config/int_crossroads.json",
     "test_ui": "npx cypress open --config-file ./cypress/config/int_crossroads.json",
+    "test_e2e_ui": "npx cypress open --config-file ./cypress/config/e2e_int.json",
     "lint": "npx tslint --fix -p ./tslint.json"
   },
   "author": "Sarah Henney",
@@ -15,10 +16,14 @@
     "chai-json-schema-ajv": "^5.1.0",
     "crds-cypress-config": "^1.0.1",
     "cypress": "^5.3.0",
-    "typescript": "^4.0.3"
+    "generate-password": "^1.5.1",
+    "typescript": "^4.0.3",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
-    "tslint": "^5.20.1",
+    "@typescript-eslint/eslint-plugin": "^4.4.1",
+    "@typescript-eslint/parser": "^4.4.1",
+    "eslint": "^7.11.0",
     "tslint-no-unused-expression-chai": "^0.1.4",
     "tslint-plugin-cypress": "^1.0.4"
   }

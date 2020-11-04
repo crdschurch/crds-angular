@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "target": "es5",
-    "lib": ["es5", "dom"],
-    "types": ["cypress", "node"]
+    "baseUrl": "./cypress/",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "target": "es2019",
+    "types": ["cypress", "node"],
+    "strict": true
   },
   "include": [
-    "**/*.ts"
+    "cypress/**/*.ts"
   ]
 }

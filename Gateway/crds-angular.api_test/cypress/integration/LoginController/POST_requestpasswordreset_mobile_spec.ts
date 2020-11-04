@@ -1,11 +1,29 @@
-import { TestCase, TestConfig, unzipTests } from "cypress/shared/test_scenario_factory";
-import { Ben } from "cypress/shared/users";
+import { getUUID } from "shared/data_generator";
+import { setPasswordResetToken } from "shared/mp_api";
+import { TestCase, TestConfig, unzipTests } from "shared/test_scenario_factory";
+import { Ben } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 
 // Data Setup
 const testConfig: TestConfig[] = [
   {
-    setup: { description: "Valid Request", body: { email: Ben.email } },
+    setup: [
+      {
+        description: "Valid Request",
+        body: { email: Ben.email },
+        dataSetup: function () {
+          //Remove any existing token
+          setPasswordResetToken(Ben.email, "")
+        }
+      },
+      {
+        description: "User Has Pending Password Reset Request",
+        body: { email: Ben.email },
+        dataSetup: function () {
+          setPasswordResetToken(Ben.email, getUUID())
+        }
+      }
+    ],
     result: { status: 200 }
   },
   {
@@ -64,6 +82,8 @@ describe('POST /api/requestpasswordreset/mobile', () => {
   unzipTests(testConfig)
     .forEach((t: TestCase) => {
       it(t.title, () => {
+        if (t.setup.dataSetup) t.setup.dataSetup();
+
         const mpRequestPasswordReset: Partial<Cypress.RequestOptions> = {
           url: "/api/requestpasswordreset/mobile",
           method: "POST",
