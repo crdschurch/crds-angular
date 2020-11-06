@@ -34,7 +34,6 @@ const testConfig: TestConfig[] = [
   }
 ];
 
-//Looks like this only supports MP auth
 describe('GET /api/authenticated', () => {
   unzipTests(testConfig)
   .forEach((t: Test) => {

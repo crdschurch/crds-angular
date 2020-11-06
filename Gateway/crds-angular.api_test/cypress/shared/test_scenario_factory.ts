@@ -48,9 +48,13 @@ interface PropertyCompare {
  */
 export interface Test {
   title: string;
-  data: Record<string, any>; //Use this to share data between f'ns
-  setup(): Cypress.Chainable<any>;//TODO changed from setup.setupData
-  buildRequest(request?: Partial<Cypress.RequestOptions>): Partial<Cypress.RequestOptions>;//TODO changed from setup.setupData
+  /**
+   * Use this to share data between the setup and buildRequest functions.
+   * data.header and data.body will be used to build the request
+   */
+  data: Record<string, any>;
+  setup(): Cypress.Chainable<any>;
+  buildRequest(request?: Partial<Cypress.RequestOptions>): Partial<Cypress.RequestOptions>;
   result: TestResult
 }
 
