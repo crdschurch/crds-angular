@@ -1,12 +1,15 @@
-import { TestConfig, TestCase, unzipTests } from "shared/test_scenario_factory";
 import { Ben } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 import { mpLoginBasicAuthContract, mpLoginSchemaProperties } from "./schemas/loginResponse";
+import { unzipTests, Test, TestConfig } from "shared/test_scenario_factory";
 
 // Data Setup
 const testConfig: TestConfig[] = [
   {
-    setup: { description: "Valid User", body: { username: Ben.email, password: Ben.password } },
+    setup: {
+      description: "Valid User",
+      data: { body: { username: Ben.email, password: Ben.password } },
+    },
     result: {
       status: 200,
       body: {
@@ -17,13 +20,13 @@ const testConfig: TestConfig[] = [
   },
   {
     setup: [
-      { description: "Incorrect Password", body: { username: Ben.email, password: "bad" } },
-      { description: "Missing Password", body: { username: Ben.email } },
-      { description: "Missing Username", body: { password: Ben.password } },
-      { description: "User Doesn't Exist", body: { username: "fakeUser@fakemail.wxyz", password: Ben.password } },
-      { description: "Body Undefined", body: undefined },
-      { description: "Body Null", body: null },
-      { description: "Body Empty String", body: "" }
+      { description: "Incorrect Password", data: { body: { username: Ben.email, password: "bad" } } },
+      { description: "Missing Password", data: { body: { username: Ben.email } } },
+      { description: "Missing Username", data: { body: { password: Ben.password } } },
+      { description: "User Doesn't Exist", data: { body: { username: "fakeUser@fakemail.wxyz", password: Ben.password } } },
+      { description: "Body Undefined", data: { body: undefined } },
+      { description: "Body Null", data: { body: null } },
+      { description: "Body Empty String", data: { body: "" } },
     ],
     result: {
       status: 400,
@@ -38,20 +41,17 @@ const testConfig: TestConfig[] = [
 // Run Tests
 describe('POST /api/login', () => {
   unzipTests(testConfig)
-    .forEach((t: TestCase) => {
+    .forEach((t: Test) => {
       it(t.title, () => {
-        //Arrange
-        const mpLoginRequest = {
+        const mpLoginRequest: Partial<Cypress.RequestOptions> = {
           url: "/api/login",
           method: "POST",
-          body: t.setup.body,
-          headers: t.setup.header,
           failOnStatusCode: false
         };
 
-        //Act & Assert
-        cy.request(mpLoginRequest)
-          .verifyStatus(t.result.status)
+        t.setup() //Arrange
+          .then(() => cy.request(t.buildRequest(mpLoginRequest))) //Act
+          .verifyStatus(t.result.status) //Assert
           .itsBody(t.result.body)
           .verifySchema(t.result.body)
           .verifyProperties(t.result.body);

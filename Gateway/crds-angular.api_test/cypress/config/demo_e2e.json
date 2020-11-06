@@ -1,0 +1,8 @@
+{
+  "baseUrl": "https://gatewaydemo.crossroads.net/gateway",
+  "video": false,
+  "integrationFolder": "cypress/e2e",
+  "env": {
+    "vaultEnv": "demo"
+  }
+}

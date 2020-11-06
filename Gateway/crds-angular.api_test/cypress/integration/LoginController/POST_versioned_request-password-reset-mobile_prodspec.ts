@@ -1,4 +1,4 @@
-import { TestCase, TestConfig, unzipTests } from "shared/test_scenario_factory";
+import { Test, TestConfig, unzipTests } from "shared/test_scenario_factory";
 import { Ben } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 /**
@@ -10,7 +10,7 @@ import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 // Data Setup
 const testConfig: TestConfig[] = [
   {
-    setup: { description: "Valid Request", body: { email: Ben.email } },
+    setup: { description: "Valid Request", data: { body: { email: Ben.email } } },
     result: { status: 200 }
   },
   {
@@ -34,24 +34,20 @@ const testConfig: TestConfig[] = [
 // Run Tests
 describe('POST /api/v1.0.0/request-password-reset-mobile', () => {
   unzipTests(testConfig)
-    .forEach((t: TestCase) => {
+    .forEach((t: Test) => {
       it(t.title, () => {
-        const mpRequestPasswordReset: Partial<Cypress.RequestOptions> = {
+        const requestPWResetMobile: Partial<Cypress.RequestOptions> = {
           url: "/api/v1.0.0/request-password-reset-mobile",
           method: "POST",
-          body: t.setup.body,
-          headers: t.setup.header,
           failOnStatusCode: false
         };
 
-        //Act & Assert
-        cy.request(mpRequestPasswordReset)
-          .verifyStatus(t.result.status)
+        t.setup() //Arrange
+          .then(() => cy.request(t.buildRequest(requestPWResetMobile))) //Act
+          .verifyStatus(t.result.status) //Assert
           .itsBody(t.result.body)
-          .verifySchema(t.result.body?.schemas)
-          .verifyProperties(t.result.body?.properties);
+          .verifySchema(t.result.body)
+          .verifyProperties(t.result.body);
       });
     });
 });
-
-
