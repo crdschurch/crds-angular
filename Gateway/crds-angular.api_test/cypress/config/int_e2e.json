@@ -1,4 +1,5 @@
 {
+  "projectId": "ot9w76",
   "baseUrl": "https://gatewayint.crossroads.net/gateway",
   "video": false,
   "integrationFolder": "cypress/e2e",

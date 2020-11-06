@@ -25,11 +25,9 @@ function getNewToken(): Cypress.Chainable<string> {
  */
 function getToken(): Cypress.Chainable<string> {
   if(storedToken === undefined){
-    console.debug('fetching new mp token');
     return getNewToken().then(token => storedToken = token)
   }
   
-  console.debug('fetching stored mp token');
   return cy.wrap(storedToken);
 }
 

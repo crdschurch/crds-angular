@@ -1,14 +1,7 @@
-//is get - what is being sent and how?
-// is authorization token - where get? Pretty sure it's the AuthDTO token used in Identity. 
-// It's user authentication - not client authentication
-
 import { getToken as getMPToken} from "shared/authorization/mp_user_auth";
-import { getToken as getOktaToken} from "shared/authorization/okta_user_auth";
 import { Test, TestConfig, unzipTests } from "shared/test_scenario_factory";
 import { Ben } from "shared/users";
 import { mpAuthenticatedBasicAuthContract, mpAuthenticatedSchemaProperties, errorHasOccurredProperties, errorHasOccurredContract } from './schemas/authenticatedResponse';
-
-//TODO would login set cookies? (e2e - okta and mp)
 
 //Test Data
 const testConfig: TestConfig[] = [
@@ -43,16 +36,7 @@ const testConfig: TestConfig[] = [
       },
       {
         description: "Missing Authorization header"
-      },
-      {
-        description: "Okta Authorization token",
-        setup: function () {
-          return getOktaToken(Ben.email, Ben.password as string)
-            .then((token) => {
-              this.data.header = { Authorization: token }
-            });
-        }
-      }  
+      }
     ],
     result: {
       status: 401,
