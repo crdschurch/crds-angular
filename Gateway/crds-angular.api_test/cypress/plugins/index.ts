@@ -12,7 +12,7 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
-const loadConfig = require('crds-cypress-config');
+import { loadConfigFromVault } from 'crds-cypress-config';
 
 function setTestFilesConfig(config){
   const cypressDefaultTestFiles = "**/*.*";
@@ -27,5 +27,8 @@ module.exports = (on, config) => {
   // Set our own default for testFile extension unless configured in config file
   setTestFilesConfig(config);
 
-  return loadConfig.loadConfigFromVault(config);
+  // return loadConfig.loadConfigFromVault(config);
+  return loadConfigFromVault(config);
 }
+
+//TODO keep configuring eslint - see if 2 custom tslinter extensions are compatible

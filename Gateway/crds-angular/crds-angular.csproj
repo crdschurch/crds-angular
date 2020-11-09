@@ -427,13 +427,11 @@
     <Compile Include="Controllers\API\CongregationController.cs" />
     <Compile Include="Controllers\API\FinderController.cs" />
     <Compile Include="Controllers\API\EventParticipantController.cs" />
-    <Compile Include="Controllers\API\EventToolController.cs" />
     <Compile Include="Controllers\API\GroupLeaderController.cs" />
     <Compile Include="Controllers\API\GroupToolController.cs" />
     <Compile Include="Controllers\API\LocationController.cs" />
     <Compile Include="Controllers\API\ParticipantController.cs" />
     <Compile Include="Controllers\API\PaymentController.cs" />
-    <Compile Include="Controllers\API\StaffContactController.cs" />
     <Compile Include="Controllers\API\DonorStatementController.cs" />
     <Compile Include="Exceptions\ChildcareDatesMissingException.cs" />
     <Compile Include="Exceptions\ContactEmailExistsException.cs" />
@@ -623,10 +621,8 @@
     <Compile Include="Services\OrganizationService.cs" />
     <Compile Include="Services\PaymentService.cs" />
     <Compile Include="Services\RoomService.cs" />
-    <Compile Include="Services\StaffContactService.cs" />
     <Compile Include="Services\EventService.cs" />
     <Compile Include="Services\Interfaces\IBulkEmailSyncService.cs" />
-    <Compile Include="Services\Interfaces\IContactService.cs" />
     <Compile Include="Services\Interfaces\IEventService.cs" />
     <Compile Include="Models\Json\PasswordResetRequest.cs" />
     <Compile Include="Services\DonorStatementService.cs" />
@@ -647,13 +643,11 @@
     <Compile Include="Util\HttpAuthResult.cs" />
     <Compile Include="Util\FileResult.cs" />
     <Compile Include="Controllers\API\ImageController.cs" />
-    <Compile Include="Controllers\API\EmailCommunicationController.cs" />
     <Compile Include="Controllers\API\DonationController.cs" />
     <Compile Include="Controllers\API\DonorController.cs" />
     <Compile Include="Controllers\API\EventController.cs" />
     <Compile Include="Controllers\API\GroupController.cs" />
     <Compile Include="Controllers\API\CheckScannerController.cs" />
-    <Compile Include="Controllers\API\ProgramController.cs" />
     <Compile Include="Controllers\API\ServeController.cs" />
     <Compile Include="Controllers\API\StripeEventController.cs" />
     <Compile Include="Controllers\API\TripController.cs" />
@@ -798,7 +792,6 @@
     <Compile Include="Services\Interfaces\IDonorService.cs" />
     <Compile Include="Services\Interfaces\IEmailCommunication.cs" />
     <Compile Include="Services\Interfaces\IGroupService.cs" />
-    <Compile Include="Services\Interfaces\IProgramService.cs" />
     <Compile Include="Services\Interfaces\IServeService.cs" />
     <Compile Include="Services\Interfaces\IPersonService.cs" />
     <Compile Include="Services\Interfaces\IPaymentProcessorService.cs" />
@@ -807,7 +800,6 @@
     <Compile Include="Services\Interfaces\IUserImpersonationService.cs" />
     <Compile Include="Services\MinistryPlatformBaseService.cs" />
     <Compile Include="Services\PersonService.cs" />
-    <Compile Include="Services\ProgramService.cs" />
     <Compile Include="Services\ServeService.cs" />
     <Compile Include="Services\StripeEventService.cs" />
     <Compile Include="Services\StripePaymentProcessorService .cs" />
