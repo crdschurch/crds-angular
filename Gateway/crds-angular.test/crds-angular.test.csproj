@@ -326,6 +326,7 @@
     <Compile Include="controllers\LookupControllerTest.cs" />
     <Compile Include="controllers\MPAuthTestExtensions.cs" />
     <Compile Include="controllers\ServeControllerTest.cs" />
+    <Compile Include="controllers\ProgramControllerTest.cs" />
     <Compile Include="controllers\StripeEventControllerTest.cs" />
     <Compile Include="controllers\TripControllerTest.cs" />
     <Compile Include="controllers\WaiverControllerTest.cs" />
@@ -376,6 +377,7 @@
     <Compile Include="Services\PaymentServiceTest.cs" />
     <Compile Include="Services\PersonServiceIdentityIntegrationTest.cs" />
     <Compile Include="Services\PersonServiceTest.cs" />
+    <Compile Include="Services\ProgramServiceTest.cs" />
     <Compile Include="Services\EventServiceTest.cs" />
     <Compile Include="Services\RoomServiceTest.cs" />
     <Compile Include="Services\ServeServiceTest.cs" />

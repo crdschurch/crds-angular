@@ -50,6 +50,53 @@ namespace MinistryPlatform.Translation.Test.Services
             _fixture = new ProgramRepository(_ministryPlatformService.Object, _authService.Object, _configWrapper.Object, _ministryPlatformRest.Object, _apiUserService.Object);
         }
 
+        [Test]
+        public void TestGetOnlineGivingPrograms()
+        {
+            var getPageViewRecordsResponse = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>()
+                {
+                    {"Program_Name", "Test Program Name"},
+                    {"Program_ID", 20},
+                    {"Communication_ID", "1234"},
+                    {"Program_Type_ID", 4},
+                    {"Allow_Recurring_Giving", false}
+                },
+                new Dictionary<string, object>()
+                {
+                    {"Program_Name", "Test Fund Name"},
+                    {"Program_ID", 22},
+                    {"Communication_ID", "1234"},
+                    {"Program_Type_ID", 4},
+                    {"Allow_Recurring_Giving", false}
+                }
+            };
+
+            _ministryPlatformService.Setup(
+                mocked => mocked.GetPageViewRecords(OnlineGivingProgramsPageViewId, It.IsAny<string>(), ",,,1", "", 0)).Returns(getPageViewRecordsResponse);
+
+            var programs = _fixture.GetOnlineGivingPrograms(1);
+
+            _ministryPlatformService.VerifyAll();
+            Assert.IsNotNull(programs);
+
+            Assert.AreEqual("Test Program Name", programs[0].Name);
+            Assert.AreEqual(22, programs[1].ProgramId);
+        }
+
+        [Test]
+        public void TestGetOnlineGivingProgramsNullResponse()
+        {
+            _ministryPlatformService.Setup(
+                mocked => mocked.GetPageViewRecords(OnlineGivingProgramsPageViewId, It.IsAny<string>(), ",,,1", "", 0)).Returns((List<Dictionary<string, object>>) null);
+
+            var programs = _fixture.GetOnlineGivingPrograms(1);
+
+            _ministryPlatformService.VerifyAll();
+            Assert.IsNotNull(programs);
+            Assert.AreEqual(0, programs.Count);
+        }
 
         [Test]
         public void TestGetProgram()
