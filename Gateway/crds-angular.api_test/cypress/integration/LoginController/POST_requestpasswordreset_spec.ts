@@ -1,6 +1,6 @@
 import { getUUID } from "shared/data_generator";
 import { setPasswordResetToken } from "shared/mp_api";
-import { TestCase, TestConfig, unzipTests } from "shared/test_scenario_factory";
+import { Test, TestConfig, unzipTests } from "shared/test_scenario_factory";
 import { Ben, KeeperJr, Load } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 
@@ -10,17 +10,17 @@ const testConfig: TestConfig[] = [
     setup: [
       {
         description: "Valid Request",
-        body: { email: Ben.email },
-        dataSetup: function () {
+        data: { body: { email: Ben.email } },
+        setup: function () {
           //Remove any existing token
-          setPasswordResetToken(Ben.email, "")
+          return setPasswordResetToken(Ben.email, "")
         }
       },
       {
         description: "User Has Pending Password Reset Request",
-        body: { email: Ben.email },
-        dataSetup: function () {
-          setPasswordResetToken(Ben.email, getUUID())
+        data: { body: { email: Ben.email } },
+        setup: function () {
+          return setPasswordResetToken(Ben.email, getUUID())
         }
       }
     ],
@@ -28,9 +28,18 @@ const testConfig: TestConfig[] = [
   },
   {
     setup: [
-      { description: "Person Doesn't Exist", body: { email: "this_email_should_not_exist@fake_emails.io" } },
-      { description: "Person has Contact Record but no User Record", body: { email: Load.email } },
-      { description: "Invalid Email", body: { email: "{" } },
+      {
+        description: "Person Doesn't Exist",
+        data: { body: { email: "this_email_should_not_exist@fake_emails.io" } }
+      },
+      {
+        description: "Person has Contact Record but no User Record",
+        data: { body: { email: Load.email } }
+      },
+      {
+        description: "Invalid Email",
+        data: { body: { email: "{" } }
+      },
     ],
     result: { status: 200 }, //Not technically a bug but misleading to user
     preferredResult: {
@@ -42,14 +51,16 @@ const testConfig: TestConfig[] = [
     }
   },
   {
-    setup: [
-      { description: "Email is Subset of Another Email (bug)", body: { email: KeeperJr.email } }
-    ],
+    setup:
+    {
+      description: "Email is Subset of Another Email (bug)",
+      data: { body: { email: KeeperJr.email } }
+    },
     result: { status: 200 },
     preferredResult: { status: 200 } //Should still have valid output, but won't error on server side
   },
   {
-    setup: { description: "Email is Undefined", body: {} },
+    setup: { description: "Email is Undefined", data: { body: {} } },
     result: { status: 200 }, //Not technically a bug but misleading to user
     preferredResult: {
       status: 400,
@@ -80,24 +91,20 @@ const testConfig: TestConfig[] = [
 // Run Tests
 describe('POST /api/requestpasswordreset', () => {
   unzipTests(testConfig)
-    .forEach((t: TestCase) => {
+    .forEach((t: Test) => {
       it(t.title, () => {
-        if (t.setup.dataSetup) t.setup.dataSetup();
-
-        const mpRequestPasswordReset: Partial<Cypress.RequestOptions> = {
+        const requestPasswordReset: Partial<Cypress.RequestOptions> = {
           url: "/api/requestpasswordreset",
           method: "POST",
-          body: t.setup.body,
-          headers: t.setup.header,
           failOnStatusCode: false
         };
 
-        //Act & Assert
-        cy.request(mpRequestPasswordReset)
-          .verifyStatus(t.result.status)
+        t.setup() //Arrange
+          .then(() => cy.request(t.buildRequest(requestPasswordReset))) //Act
+          .verifyStatus(t.result.status) //Assert
           .itsBody(t.result.body)
-          .verifySchema(t.result.body?.schemas)
-          .verifyProperties(t.result.body?.properties);
+          .verifySchema(t.result.body)
+          .verifyProperties(t.result.body);
       });
     });
 });

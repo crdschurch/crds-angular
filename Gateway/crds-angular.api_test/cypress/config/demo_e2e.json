@@ -1,9 +1,9 @@
 {
   "projectId": "ot9w76",
-  "baseUrl": "https://gatewayint.crossroads.net/gateway",
+  "baseUrl": "https://gatewaydemo.crossroads.net/gateway",
   "video": false,
   "integrationFolder": "cypress/e2e",
   "env": {
-    "vaultEnv": "int"
+    "vaultEnv": "demo"
   }
 }
