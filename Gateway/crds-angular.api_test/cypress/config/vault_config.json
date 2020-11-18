@@ -1,19 +1,9 @@
 {
   "sources": [
     {
-      "secret": "crds-angular.api_test",
-      "keys": [
-        "BEN_KENOBI_PW",
-        "TEST_GATEKEEPER_PW",
-        "TEST_GATEKEEPERJR_PW"
-      ]
-    },
-    {
       "secret": "common",
       "keys": [
-        "MP_REST_API_ENDPOINT",
-        "CRDS_MP_COMMON_CLIENT_ID",
-        "CRDS_MP_COMMON_CLIENT_SECRET"
+        "MP_REST_API_ENDPOINT"
       ]
     },
     {
@@ -25,7 +15,12 @@
     {
       "secret": "Crossroads.Automation",
       "keys": [
-        "OKTA_TOKEN_AUTH"
+        "OKTA_TOKEN_AUTH",
+        "BEN_KENOBI_PW",
+        "TEST_GATEKEEPER_PW",
+        "TEST_GATEKEEPERJR_PW",
+        "CRDS_MP_TESTAUTOMATION_CLIENT_ID",
+        "CRDS_MP_TESTAUTOMATION_CLIENT_SECRET"
       ]
     }
   ]

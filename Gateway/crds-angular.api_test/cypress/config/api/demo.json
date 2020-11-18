@@ -1,6 +1,7 @@
 {
   "projectId": "s1jczs",
   "baseUrl": "https://gatewaydemo.crossroads.net/gateway",
+  "integrationFolder": "cypress/api_tests",
   "env": {
     "vaultEnv": "demo"
   }

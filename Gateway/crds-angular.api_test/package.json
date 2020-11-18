@@ -4,8 +4,8 @@
   "description": "API tests for Gateway API",
   "main": "index.js",
   "scripts": {
-    "test": "npx cypress run --config-file ./cypress/config/int_crossroads.json",
-    "test_ui": "npx cypress open --config-file ./cypress/config/int_crossroads.json",
+    "test": "npx cypress run --config-file ./cypress/config/api/int.json",
+    "test_ui": "npx cypress open --config-file ./cypress/config/api/int.json",
     "test_e2e_ui": "npx cypress open --config-file ./cypress/config/e2e/int.json",
     "lint": "npx tslint --fix -p ./tslint.json"
   },

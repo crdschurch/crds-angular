@@ -10,4 +10,4 @@ RUN npm ci --production && npx cypress verify
 
 # Same default as $npm run test
 ENTRYPOINT [ "npx", "cypress", "run" ]
-CMD [ "--config-file", "/cypress/config/int_crossroads.json" ]
+CMD [ "--config-file", "/cypress/config/api/int.json" ]
