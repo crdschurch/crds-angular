@@ -1,13 +1,15 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "chai-friendly"],
   "extends": [
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:cypress/recommended"
   ],
   "env": {
     "node": true,
-    "amd": true
+    "amd": true,
+    "cypress/globals": true
   }
 }

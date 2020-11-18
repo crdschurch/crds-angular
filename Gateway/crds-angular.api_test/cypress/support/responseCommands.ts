@@ -30,14 +30,14 @@ Cypress.Commands.add("itsBody", { prevSubject: true }, (subject: Cypress.Chainab
 
 
 /** Chains of response.body */
-Cypress.Commands.add("verifySchema", { prevSubject: true }, (subject: Cypress.Chainable<any>, expectedBody: ResultBody) => {
+Cypress.Commands.add("verifySchema", { prevSubject: true }, (subject: Cypress.Chainable<unknown>, expectedBody: ResultBody) => {
   if (expectedBody?.schemas) {
     expectedBody.schemas.forEach((schema) => expect(subject).to.have.jsonSchema(schema));
   }
   return subject;
 });
 
-Cypress.Commands.add("verifyProperties", { prevSubject: true }, (subject: Cypress.Chainable<any>, expectedBody: ResultBody) => {
+Cypress.Commands.add("verifyProperties", { prevSubject: true }, (subject: Cypress.Chainable<unknown>, expectedBody: ResultBody) => {
   if (expectedBody?.properties) {
     expectedBody.properties.forEach((prop) => {
       if (prop.exactMatch === false) {

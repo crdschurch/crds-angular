@@ -18,7 +18,7 @@ import { loadConfigFromVault } from 'crds-cypress-config';
  * Configure custom extension for test files unless one is provided elsewhere (config file, command line argument, etc.)
  * @param config Cypress config
  */
-function setTestFilesConfig(config){
+function setTestFilesConfig(config: Cypress.PluginConfigOptions){
   const cypressDefaultTestFiles = "**/*.*";
   config.testFiles = config.testFiles === cypressDefaultTestFiles ? "**/*spec.ts" : config.testFiles;
   console.log(`Loading testFiles matching ${config.testFiles}`); //Sanity check

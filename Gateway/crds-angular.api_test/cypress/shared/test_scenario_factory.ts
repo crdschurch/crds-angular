@@ -14,11 +14,11 @@ export interface TestConfig {
 interface TestSetup {
   /** Description of the test scenario */
   description: string;
-  /** Store any information needed in the request here. 
-   * The properties "header" and "body" will be used directly in the request. */
+  /** Store any information needed in the request here. The properties "header" and "body" will be used directly in the request. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: Record<string, any>;
   /** Seed the database, generate/fetch test data to store in the data property, etc. here. Must return a chainable. */
-  setup?(): Cypress.Chainable<any>;
+  setup?(): Cypress.Chainable<unknown>;
 }
 
 interface TestResult {
@@ -29,50 +29,44 @@ interface TestResult {
 }
 
 export interface ResultBody {
-  schemas?: any[];
+  schemas?: unknown[];
   properties?: PropertyCompare[];
 }
 
 interface PropertyCompare {
   name: string;
   value: string;
-  /**
-   * If false, compares with 'includes'; defaults to exact match
-   */
+  /** If false, compares with 'includes'; defaults to exact match */
   exactMatch?: boolean;
 }
 
-/**
- * Standardized schema for naming, setting up data and creating request to run in a 
- * standard Test
- */
+/** Standardized schema for naming, setting up data, and creating request to run in a standard Test */
 export interface Test {
   title: string;
   /**
    * Use this to share data between the setup and buildRequest functions.
    * data.header and data.body will be used to build the request
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: Record<string, any>;
-  setup(): Cypress.Chainable<any>;
+  setup(): Cypress.Chainable<unknown>;
   buildRequest(request?: Partial<Cypress.RequestOptions>): Partial<Cypress.RequestOptions>;
   result: TestResult
 }
 
 function buildTest(setupConfig: TestSetup, resultConfig: TestResult): Test {
   const title = `Given ${setupConfig.description}; Expect status ${resultConfig.status}${resultConfig.body?.schemas ? ", valid schema":""}${resultConfig.body?.properties ? ", correct property values":""}`;
-  function buildRequest(request?: Partial<Cypress.RequestOptions>): Partial<Cypress.RequestOptions> {
-    const fullRequest = { ...request,
-      headers: this.data.header,
-      body: this.data.body
-    }
-    return fullRequest;
-  }
 
   const test: Test = {
     title,
     data: setupConfig.data || {},
     setup: setupConfig.setup || function() {return cy.wrap({});},
-    buildRequest,
+    buildRequest: function(request?: Partial<Cypress.RequestOptions>): Partial<Cypress.RequestOptions> {
+      return { ...request,
+        headers: this.data.header,
+        body: this.data.body
+      }
+    },
     result: resultConfig
   }
   return test;

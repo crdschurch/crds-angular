@@ -16,13 +16,13 @@ const testConfig: TestConfig[] = [
           }
         },
         setup: function () {
-          return setPasswordResetToken(Gatekeeper.email, this.data.body.token)
+          return setPasswordResetToken(Gatekeeper.email, this.data?.body.token)
         }
       },
       {
         //TODO should set password first to guarantee this scenario
         description: "New Password is Current Password",
-        data: { 
+        data: {
           body: {
             password: KeeperJr.password,
             token: getUUID()
@@ -52,7 +52,7 @@ const testConfig: TestConfig[] = [
       {
         description: "Reset Token Value is Substring of Existing Reset Request",
         data: {
-         body: {
+          body: {
             password: getTestPassword(),
             token: getUUID()
           }
@@ -75,7 +75,7 @@ const testConfig: TestConfig[] = [
       {
         description: "Request is Missing Password",
         data: {
-          body: {token: getUUID()}
+          body: { token: getUUID() }
         },
         setup: function () {
           return setPasswordResetToken(Gatekeeper.email, this.data.body.token)
