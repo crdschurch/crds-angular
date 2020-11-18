@@ -1,6 +1,5 @@
 {
   "baseUrl": "https://gatewayint.crossroads.net/gateway",
-  "video": false,
   "env": {
     "vaultEnv": "int"
   }

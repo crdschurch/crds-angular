@@ -2,8 +2,7 @@
   "projectId": "s1jczs",
   "baseUrl": "https://gateway.crossroads.net/gateway",
   "testFiles": "**/*prodspec.ts",
-  "video": false,
-  "env":{
+  "env": {
     "vaultEnv": "prod"
   }
 }

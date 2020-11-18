@@ -1,4 +1,4 @@
-FROM cypress/included:5.3.0
+FROM cypress/included:5.6.0
 WORKDIR /api_tests
 
 # Copy configs

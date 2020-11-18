@@ -14,16 +14,20 @@
 
 import { loadConfigFromVault } from 'crds-cypress-config';
 
+/**
+ * Configure custom extension for test files unless one is provided elsewhere (config file, command line argument, etc.)
+ * @param config Cypress config
+ */
 function setTestFilesConfig(config){
   const cypressDefaultTestFiles = "**/*.*";
   config.testFiles = config.testFiles === cypressDefaultTestFiles ? "**/*spec.ts" : config.testFiles;
   console.log(`Loading testFiles matching ${config.testFiles}`); //Sanity check
 }
 
-/**
- * @type {Cypress.PluginConfig}
- */
-module.exports = (on, config) => {
+module.exports = (on: Cypress.PluginEvents, config: Cypress.PluginConfigOptions): Cypress.PluginConfig => {
+  // Don't record video since this is an API only suite
+  config.video = false;
+
   // Set our own default for testFile extension unless configured in config file
   setTestFilesConfig(config);
 

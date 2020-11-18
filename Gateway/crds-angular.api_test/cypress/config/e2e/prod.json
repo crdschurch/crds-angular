@@ -2,8 +2,7 @@
   "projectId": "ot9w76",
   "baseUrl": "https://gateway.crossroads.net/gateway",
   "testFiles": "**/*prodspec.ts",
-  "video": false,
-  "integrationFolder": "cypress/e2e",
+  "integrationFolder": "cypress/e2e_tests",
   "env": {
     "vaultEnv": "prod"
   }

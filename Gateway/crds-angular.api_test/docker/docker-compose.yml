@@ -13,7 +13,7 @@ services:
       - CYPRESS_RECORD_KEY=$CYPRESS_RECORD_KEY #Report to Cypress Dashboard. Required when the --record and --tag flag are used.
     working_dir: /api_tests
     # Use this command to report results to the Cypress Dashboard. Only recommended if running in CI pipeline.
-    command: ["--config-file", "/cypress/config/$CYPRESS_CONFIG_FILE", "--record", "--tag", "$CRDS_ENV"]
+    # command: ["--config-file", "/cypress/config/$CYPRESS_CONFIG_FILE", "--record", "--tag", "$CRDS_ENV"]
 
     # Use this command when running locally
-    # command: ["--config-file", "/cypress/config/$CYPRESS_CONFIG_FILE"]  
+    command: ["--config-file", "/cypress/config/$CYPRESS_CONFIG_FILE"]  
