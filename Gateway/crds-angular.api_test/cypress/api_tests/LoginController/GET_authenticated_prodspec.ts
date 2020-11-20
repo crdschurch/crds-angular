@@ -1,10 +1,10 @@
 import { getToken as getMPToken} from "shared/authorization/mp_user_auth";
-import { Test, TestConfig, unzipTests } from "shared/test_scenario_factory";
+import { unzipTests } from "shared/test_scenario_factory";
 import { Ben } from "shared/users";
 import { mpAuthenticatedBasicAuthContract, mpAuthenticatedSchemaProperties, errorHasOccurredProperties, errorHasOccurredContract } from './schemas/authenticatedResponse';
 
 //Test Data
-const testConfig: TestConfig[] = [
+const testConfig: TestFactory.TestConfig[] = [
   {
     setup: [
       {
@@ -67,7 +67,7 @@ const testConfig: TestConfig[] = [
 
 describe('GET /api/authenticated', () => {
   unzipTests(testConfig)
-  .forEach((t: Test) => {
+  .forEach((t: TestFactory.Test) => {
     it(t.title, () => {
       const authenticatedRequest: Partial<Cypress.RequestOptions> = {
         url: "/api/authenticated",
@@ -87,7 +87,7 @@ describe('GET /api/authenticated', () => {
 
 describe('GET /api/v1.0.0/authenticated', () => {
   unzipTests(testConfig)
-  .forEach((t: Test) => {
+  .forEach((t: TestFactory.Test) => {
     it(t.title, () => {
       const authenticatedRequest: Partial<Cypress.RequestOptions> = {
         url: "/api/v1.0.0/authenticated",

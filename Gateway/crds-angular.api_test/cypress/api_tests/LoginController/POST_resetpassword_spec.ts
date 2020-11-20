@@ -1,10 +1,10 @@
 import { setPasswordResetToken } from "shared/mp_api";
-import { Test, TestConfig, unzipTests } from "shared/test_scenario_factory";
+import { unzipTests } from "shared/test_scenario_factory";
 import { Gatekeeper, KeeperJr } from 'shared/users';
 import { getTestPassword, getUUID } from "shared/data_generator";
 
 // Data Setup
-const testConfig: TestConfig[] = [
+const testConfig:TestFactory.TestConfig[] = [
   {
     setup: [
       {
@@ -89,7 +89,7 @@ const testConfig: TestConfig[] = [
 // Run Tests
 describe('POST /api/resetpassword', () => {
   unzipTests(testConfig)
-    .forEach((t: Test) => {
+    .forEach((t: TestFactory.Test) => {
       it(t.title, () => {
         const mpResetPassword: Partial<Cypress.RequestOptions> = {
           url: "/api/resetpassword",
@@ -109,7 +109,7 @@ describe('POST /api/resetpassword', () => {
 
 describe('POST /api/v1.0.0/reset-password', () => {
   unzipTests(testConfig)
-    .forEach((t: Test) => {
+    .forEach((t: TestFactory.Test) => {
       it(t.title, () => {
         const mpResetPassword: Partial<Cypress.RequestOptions> = {
           url: "/api/v1.0.0/reset-password",

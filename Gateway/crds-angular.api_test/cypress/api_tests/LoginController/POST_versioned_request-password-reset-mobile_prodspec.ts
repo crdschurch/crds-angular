@@ -1,4 +1,4 @@
-import { Test, TestConfig, unzipTests } from "shared/test_scenario_factory";
+import { unzipTests } from "shared/test_scenario_factory";
 import { Ben } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 /**
@@ -8,7 +8,7 @@ import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 */
 
 // Data Setup
-const testConfig: TestConfig[] = [
+const testConfig:TestFactory.TestConfig[] = [
   {
     setup: { description: "Valid Request", data: { body: { email: Ben.email } } },
     result: { status: 200 }
@@ -34,7 +34,7 @@ const testConfig: TestConfig[] = [
 // Run Tests
 describe('POST /api/v1.0.0/request-password-reset-mobile', () => {
   unzipTests(testConfig)
-    .forEach((t: Test) => {
+    .forEach((t: TestFactory.Test) => {
       it(t.title, () => {
         const requestPWResetMobile: Partial<Cypress.RequestOptions> = {
           url: "/api/v1.0.0/request-password-reset-mobile",

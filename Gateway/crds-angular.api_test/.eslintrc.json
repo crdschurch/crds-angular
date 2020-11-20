@@ -11,5 +11,8 @@
     "node": true,
     "amd": true,
     "cypress/globals": true
+  },
+  "rules": {
+    "@typescript-eslint/triple-slash-reference": 0
   }
 }

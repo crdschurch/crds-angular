@@ -24,6 +24,9 @@ function setTestFilesConfig(config: Cypress.PluginConfigOptions){
   console.log(`Loading testFiles matching ${config.testFiles}`); //Sanity check
 }
 
+/**
+ * @type {Cypress.PluginConfig}
+ */
 module.exports = (on: Cypress.PluginEvents, config: Cypress.PluginConfigOptions): Cypress.PluginConfig => {
   // Don't record video since this is an API only suite
   config.video = false;
@@ -34,5 +37,3 @@ module.exports = (on: Cypress.PluginEvents, config: Cypress.PluginConfigOptions)
   // return loadConfig.loadConfigFromVault(config);
   return loadConfigFromVault(config);
 }
-
-//TODO keep configuring eslint - see if 2 custom tslinter extensions are compatible

@@ -1,20 +1,16 @@
-import { ResultBody } from "shared/test_scenario_factory";
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require('chai-json-schema-ajv')
   .create({
     verbose: true
   }));
 
-//TODO add/fix Typescript definition for all these
 Cypress.Commands.add("verifyStatus", { prevSubject: true }, (subject: Cypress.Chainable<Cypress.Response>, status: number) => {
   expect(subject).to.have.property('status', status);
   return subject;
 });
 
 
-//TODO it would be good if we could type the output as something we could require for "verifySchema" and "verifyProperties"
-Cypress.Commands.add("itsBody", { prevSubject: true }, (subject: Cypress.Chainable<Cypress.Response>, expectedBody: ResultBody) => {
+Cypress.Commands.add("itsBody", { prevSubject: true }, (subject: Cypress.Response, expectedBody: TestFactory.ResultBody) => {
   if (!expectedBody) {
     expect(subject).to.not.have.property('body');
     return undefined;
@@ -30,14 +26,14 @@ Cypress.Commands.add("itsBody", { prevSubject: true }, (subject: Cypress.Chainab
 
 
 /** Chains of response.body */
-Cypress.Commands.add("verifySchema", { prevSubject: true }, (subject: Cypress.Chainable<unknown>, expectedBody: ResultBody) => {
+Cypress.Commands.add("verifySchema", { prevSubject: true }, (subject: Cypress.Chainable<unknown>, expectedBody: TestFactory.ResultBody) => {
   if (expectedBody?.schemas) {
     expectedBody.schemas.forEach((schema) => expect(subject).to.have.jsonSchema(schema));
   }
   return subject;
 });
 
-Cypress.Commands.add("verifyProperties", { prevSubject: true }, (subject: Cypress.Chainable<unknown>, expectedBody: ResultBody) => {
+Cypress.Commands.add("verifyProperties", { prevSubject: true }, (subject: Cypress.Chainable<unknown>, expectedBody: TestFactory.ResultBody) => {
   if (expectedBody?.properties) {
     expectedBody.properties.forEach((prop) => {
       if (prop.exactMatch === false) {
