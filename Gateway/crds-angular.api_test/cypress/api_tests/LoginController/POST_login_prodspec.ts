@@ -1,7 +1,7 @@
 import { Ben } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 import { mpLoginBasicAuthContract, mpLoginSchemaProperties } from "./schemas/loginResponse";
-import { unzipTests } from "../../shared/test_scenario_factory";
+import { unzipTests } from "shared/test_scenario_factory";
 
 // Data Setup
 const testConfig:TestFactory.TestConfig[] = [
