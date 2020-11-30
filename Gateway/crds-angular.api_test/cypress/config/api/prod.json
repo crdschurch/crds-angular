@@ -2,8 +2,8 @@
   "projectId": "s1jczs",
   "baseUrl": "https://gateway.crossroads.net/gateway",
   "testFiles": "**/*prodspec.ts",
-  "video": false,
-  "env":{
+  "integrationFolder": "cypress/api_tests",
+  "env": {
     "vaultEnv": "prod"
   }
 }

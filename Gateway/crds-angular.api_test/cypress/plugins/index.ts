@@ -14,7 +14,11 @@
 
 import { loadConfigFromVault } from 'crds-cypress-config';
 
-function setTestFilesConfig(config){
+/**
+ * Configure custom extension for test files unless one is provided elsewhere (config file, command line argument, etc.)
+ * @param config Cypress config
+ */
+function setTestFilesConfig(config: Cypress.PluginConfigOptions){
   const cypressDefaultTestFiles = "**/*.*";
   config.testFiles = config.testFiles === cypressDefaultTestFiles ? "**/*spec.ts" : config.testFiles;
   console.log(`Loading testFiles matching ${config.testFiles}`); //Sanity check
@@ -23,12 +27,13 @@ function setTestFilesConfig(config){
 /**
  * @type {Cypress.PluginConfig}
  */
-module.exports = (on, config) => {
+module.exports = (on: Cypress.PluginEvents, config: Cypress.PluginConfigOptions): Cypress.PluginConfig => {
+  // Don't record video since this is an API only suite
+  config.video = false;
+
   // Set our own default for testFile extension unless configured in config file
   setTestFilesConfig(config);
 
   // return loadConfig.loadConfigFromVault(config);
   return loadConfigFromVault(config);
 }
-
-//TODO keep configuring eslint - see if 2 custom tslinter extensions are compatible

@@ -1,0 +1,7 @@
+{
+  "baseUrl": "http://localhost:49380",
+  "integrationFolder": "cypress/api_tests",
+  "env":{
+    "vaultEnv": "int"
+  }
+}

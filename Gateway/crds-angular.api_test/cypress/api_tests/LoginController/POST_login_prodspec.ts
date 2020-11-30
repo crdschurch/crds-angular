@@ -1,10 +1,10 @@
 import { Ben } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 import { mpLoginBasicAuthContract, mpLoginSchemaProperties } from "./schemas/loginResponse";
-import { unzipTests, Test, TestConfig } from "shared/test_scenario_factory";
+import { unzipTests } from "shared/test_scenario_factory";
 
 // Data Setup
-const testConfig: TestConfig[] = [
+const testConfig:TestFactory.TestConfig[] = [
   {
     setup: {
       description: "Valid User",
@@ -41,7 +41,7 @@ const testConfig: TestConfig[] = [
 // Run Tests
 describe('POST /api/login', () => {
   unzipTests(testConfig)
-    .forEach((t: Test) => {
+    .forEach((t: TestFactory.Test) => {
       it(t.title, () => {
         const mpLoginRequest: Partial<Cypress.RequestOptions> = {
           url: "/api/login",
