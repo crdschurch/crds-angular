@@ -1,6 +1,6 @@
 {
   "baseUrl": "http://localhost:49380",
-  "video": false,
+  "integrationFolder": "cypress/e2e_tests",
   "env":{
     "vaultEnv": "int"
   }

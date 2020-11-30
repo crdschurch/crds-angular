@@ -10,8 +10,8 @@ function getNewToken(): Cypress.Chainable<string> {
     method: "POST",
     form: true,
     body: {
-      client_id: Cypress.env('CRDS_MP_COMMON_CLIENT_ID'),
-      client_secret: Cypress.env('CRDS_MP_COMMON_CLIENT_SECRET'),
+      client_id: Cypress.env('CRDS_MP_TESTAUTOMATION_CLIENT_ID'),
+      client_secret: Cypress.env('CRDS_MP_TESTAUTOMATION_CLIENT_SECRET'),
       grant_type: 'client_credentials',
       scope: 'http://www.thinkministry.com/dataplatform/scopes/all'
     }

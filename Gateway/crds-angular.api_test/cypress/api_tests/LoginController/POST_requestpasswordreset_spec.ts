@@ -1,11 +1,11 @@
 import { getUUID } from "shared/data_generator";
 import { setPasswordResetToken } from "shared/mp_api";
-import { Test, TestConfig, unzipTests } from "shared/test_scenario_factory";
+import { unzipTests } from "shared/test_scenario_factory";
 import { Ben, KeeperJr, Load } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 
 // Data Setup
-const testConfig: TestConfig[] = [
+const testConfig:TestFactory.TestConfig[] = [
   {
     setup: [
       {
@@ -91,7 +91,7 @@ const testConfig: TestConfig[] = [
 // Run Tests
 describe('POST /api/requestpasswordreset', () => {
   unzipTests(testConfig)
-    .forEach((t: Test) => {
+    .forEach((t: TestFactory.Test) => {
       it(t.title, () => {
         const requestPasswordReset: Partial<Cypress.RequestOptions> = {
           url: "/api/requestpasswordreset",

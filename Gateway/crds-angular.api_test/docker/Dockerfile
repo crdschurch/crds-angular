@@ -1,4 +1,4 @@
-FROM cypress/included:5.3.0
+FROM cypress/included:5.6.0
 WORKDIR /api_tests
 
 # Copy configs
@@ -10,4 +10,4 @@ RUN npm ci --production && npx cypress verify
 
 # Same default as $npm run test
 ENTRYPOINT [ "npx", "cypress", "run" ]
-CMD [ "--config-file", "/cypress/config/int_crossroads.json" ]
+CMD [ "--config-file", "/cypress/config/api/int.json" ]

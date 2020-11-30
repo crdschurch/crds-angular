@@ -217,6 +217,7 @@ Gateway/Crossroads.AsyncJobs/Unity.config
 /Gateway/*.DotSettings
 
 # Ignore Cypress generated files
+**/cypress/integration/examples
 **/cypress/screenshots
 **/cypress/videos
 loadenv.ps1

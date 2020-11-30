@@ -1,10 +1,10 @@
 import { setPasswordResetToken } from "shared/mp_api";
-import { Test, TestConfig, unzipTests } from "shared/test_scenario_factory";
+import { unzipTests } from "shared/test_scenario_factory";
 import { Gatekeeper, KeeperJr } from 'shared/users';
 import { getTestPassword, getUUID } from "shared/data_generator";
 
 // Data Setup
-const testConfig: TestConfig[] = [
+const testConfig:TestFactory.TestConfig[] = [
   {
     setup: [
       {
@@ -16,13 +16,13 @@ const testConfig: TestConfig[] = [
           }
         },
         setup: function () {
-          return setPasswordResetToken(Gatekeeper.email, this.data.body.token)
+          return setPasswordResetToken(Gatekeeper.email, this.data?.body.token)
         }
       },
       {
         //TODO should set password first to guarantee this scenario
         description: "New Password is Current Password",
-        data: { 
+        data: {
           body: {
             password: KeeperJr.password,
             token: getUUID()
@@ -52,7 +52,7 @@ const testConfig: TestConfig[] = [
       {
         description: "Reset Token Value is Substring of Existing Reset Request",
         data: {
-         body: {
+          body: {
             password: getTestPassword(),
             token: getUUID()
           }
@@ -75,7 +75,7 @@ const testConfig: TestConfig[] = [
       {
         description: "Request is Missing Password",
         data: {
-          body: {token: getUUID()}
+          body: { token: getUUID() }
         },
         setup: function () {
           return setPasswordResetToken(Gatekeeper.email, this.data.body.token)
@@ -89,7 +89,7 @@ const testConfig: TestConfig[] = [
 // Run Tests
 describe('POST /api/resetpassword', () => {
   unzipTests(testConfig)
-    .forEach((t: Test) => {
+    .forEach((t: TestFactory.Test) => {
       it(t.title, () => {
         const mpResetPassword: Partial<Cypress.RequestOptions> = {
           url: "/api/resetpassword",
@@ -109,7 +109,7 @@ describe('POST /api/resetpassword', () => {
 
 describe('POST /api/v1.0.0/reset-password', () => {
   unzipTests(testConfig)
-    .forEach((t: Test) => {
+    .forEach((t: TestFactory.Test) => {
       it(t.title, () => {
         const mpResetPassword: Partial<Cypress.RequestOptions> = {
           url: "/api/v1.0.0/reset-password",
