@@ -1,14 +1,15 @@
-import { Test, TestConfig, unzipTests } from "shared/test_scenario_factory";
+import { unzipTests } from "shared/test_scenario_factory";
 import { Ben } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
+
 /**
- * This endpoint is an alternate name for the POST /api/requestpasswordreset/mobile endpoint.
+ * This endpoint is an alternate name for the POST /api/requestpasswordreset endpoint.
  * Tests here are lighter tests runnable in Prod - More robust tests are run in the
- * POST /api/requestpasswordreset/mobile test file.
+ * POST /api/requestpasswordreset test file.
 */
 
 // Data Setup
-const testConfig: TestConfig[] = [
+const testConfig:TestFactory.TestConfig[] = [
   {
     setup: { description: "Valid Request", data: { body: { email: Ben.email } } },
     result: { status: 200 }
@@ -32,18 +33,18 @@ const testConfig: TestConfig[] = [
 ];
 
 // Run Tests
-describe('POST /api/v1.0.0/request-password-reset-mobile', () => {
+describe('POST /api/v1.0.0/request-password-reset', () => {
   unzipTests(testConfig)
-    .forEach((t: Test) => {
+    .forEach((t: TestFactory.Test) => {
       it(t.title, () => {
-        const requestPWResetMobile: Partial<Cypress.RequestOptions> = {
-          url: "/api/v1.0.0/request-password-reset-mobile",
+        const requestPasswordReset: Partial<Cypress.RequestOptions> = {
+          url: "/api/v1.0.0/request-password-reset",
           method: "POST",
           failOnStatusCode: false
         };
 
         t.setup() //Arrange
-          .then(() => cy.request(t.buildRequest(requestPWResetMobile))) //Act
+          .then(() => cy.request(t.buildRequest(requestPasswordReset))) //Act
           .verifyStatus(t.result.status) //Assert
           .itsBody(t.result.body)
           .verifySchema(t.result.body)
@@ -51,3 +52,5 @@ describe('POST /api/v1.0.0/request-password-reset-mobile', () => {
       });
     });
 });
+
+

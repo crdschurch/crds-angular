@@ -9,8 +9,8 @@ export function getToken(email: string, password: string): Cypress.Chainable<str
     method: "POST",
     form: true,
     body: {
-      client_id: Cypress.env('CRDS_MP_COMMON_CLIENT_ID'),
-      client_secret: Cypress.env('CRDS_MP_COMMON_CLIENT_SECRET'),
+      client_id: Cypress.env('CRDS_MP_TESTAUTOMATION_CLIENT_ID'),
+      client_secret: Cypress.env('CRDS_MP_TESTAUTOMATION_CLIENT_SECRET'),
       username: email,
       password,
       grant_type: 'password',

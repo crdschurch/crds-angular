@@ -13,9 +13,10 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-// Import commands.js using ES2015 syntax:
-import './commands';
-import './responseCommands';
+// Import custom types automatically into all files
+/// <reference path="../shared/test_scenario_factory.d.ts" />
+/// <reference path="responseCommands.d.ts" />
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+// Import custom commands automatically into all files
+import './responseCommands';
+import './commands';
