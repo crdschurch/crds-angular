@@ -425,6 +425,7 @@
     <Compile Include="Controllers\API\CampController.cs" />
     <Compile Include="Controllers\API\ChildcareController.cs" />
     <Compile Include="Controllers\API\CongregationController.cs" />
+    <Compile Include="Controllers\API\EmailCommunicationController.cs" />
     <Compile Include="Controllers\API\FinderController.cs" />
     <Compile Include="Controllers\API\EventParticipantController.cs" />
     <Compile Include="Controllers\API\GroupLeaderController.cs" />
