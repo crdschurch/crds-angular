@@ -311,7 +311,6 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="controllers\AddressControllerTest.cs" />
     <Compile Include="controllers\CampaignControllerTest.cs" />
     <Compile Include="controllers\CheckScannerControllerTest.cs" />
     <Compile Include="controllers\DonationControllerTest.cs" />
