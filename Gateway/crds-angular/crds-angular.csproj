@@ -643,6 +643,7 @@
     <Compile Include="Util\HttpAuthResult.cs" />
     <Compile Include="Util\FileResult.cs" />
     <Compile Include="Controllers\API\ImageController.cs" />
+    <Compile Include="Controllers\API\EmailCommunicationController.cs" />
     <Compile Include="Controllers\API\DonationController.cs" />
     <Compile Include="Controllers\API\DonorController.cs" />
     <Compile Include="Controllers\API\EventController.cs" />
