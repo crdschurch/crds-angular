@@ -97,7 +97,7 @@ namespace MinistryPlatform.Translation.Repositories
         public MpUser GetUserByResetToken(string resetToken)
         {
             var searchString = string.Format(",,,,,\"{0}\"", resetToken);
-            return (GetUser(searchString));
+            return GetUser(searchString);
         }
 
         private MpUser GetUser(string searchString)
