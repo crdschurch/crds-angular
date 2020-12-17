@@ -1,25 +1,7 @@
 import { unzipTests } from "shared/test_scenario_factory";
 import { Ben, Sue } from 'shared/users';
-import { getToken as getMPToken} from "shared/authorization/mp_user_auth";
-import { getToken as getOktaToken } from "shared/authorization/okta_user_auth";
-
-function AddMPAuthHeader(email: string, password: string) {
-  return function() {
-    return getMPToken(email, password) 
-    .then((token) => {
-      this.data.header = { Authorization: token }
-    });
-  }  
-}
-
-function AddOktaAuthHeader(email: string, password: string) {
-  return function () {
-    return getOktaToken(email, password as string)
-      .then((token) => {
-        this.data.header = { Authorization: token }
-      });
-  }
-}
+import { authorize as authorizeWithMP} from "shared/authorization/mp_user_auth";
+import { authorize as authorizeWithOkta } from "shared/authorization/okta_user_auth";
 
 // Data Setup
 const testConfig:TestFactory.TestConfig[] = [
@@ -33,7 +15,9 @@ const testConfig:TestFactory.TestConfig[] = [
             password: Ben.password
           }
         },
-        setup: AddMPAuthHeader(Ben.email, Ben.password as string)
+        setup: function() {
+          return authorizeWithMP(Ben.email, Ben.password as string, this.data);
+        } 
       },
       {
         description: "Valid Request using Okta Auth",
@@ -43,7 +27,9 @@ const testConfig:TestFactory.TestConfig[] = [
             password: Ben.password
           }
         },
-        setup: AddOktaAuthHeader(Ben.email, Ben.password as string)
+        setup: function () {
+          return authorizeWithOkta(Ben.email, Ben.password as string, this.data)
+        }
       },
       {
         description: "Request authorized by a different user",
@@ -53,7 +39,9 @@ const testConfig:TestFactory.TestConfig[] = [
             password: Ben.password
           }
         },
-        setup: AddOktaAuthHeader(Sue.email, Sue.password as string)
+        setup: function () {
+          return authorizeWithOkta(Sue.email, Sue.password as string, this.data)
+        }
       },
     ],
     result: { 
@@ -70,7 +58,9 @@ const testConfig:TestFactory.TestConfig[] = [
             password: "NotAPassword"
           }
         },
-        setup: AddOktaAuthHeader(Ben.email, Ben.password as string)
+        setup: function () {
+          return authorizeWithOkta(Ben.email, Ben.password as string, this.data)
+        }
       },
       {
         description: "Incorrect email",
@@ -80,7 +70,9 @@ const testConfig:TestFactory.TestConfig[] = [
             password: Ben.password
           }
         },
-        setup: AddOktaAuthHeader(Ben.email, Ben.password as string)
+        setup: function () {
+          return authorizeWithOkta(Ben.email, Ben.password as string, this.data)
+        }
       },
       {
         description: "Request missing authorization",
@@ -123,14 +115,14 @@ describe('POST /api/v1.0.0/verify-credentials', () => {
   unzipTests(testConfig)
     .forEach((t: TestFactory.Test) => {
       it(t.title, () => {
-        const mpVerifyResetToken: Partial<Cypress.RequestOptions> = {
+        const mpVerifyCredentials: Partial<Cypress.RequestOptions> = {
           url: `/api/v1.0.0/verify-credentials`,
           method: "POST",
           failOnStatusCode: false
         };
 
         t.setup() //Arrange
-          .then(() => cy.request(t.buildRequest(mpVerifyResetToken))) //Act
+          .then(() => cy.request(t.buildRequest(mpVerifyCredentials))) //Act
           .verifyStatus(t.result.status) //Assert
           .itsBody(t.result.body)
           .verifySchema(t.result.body)

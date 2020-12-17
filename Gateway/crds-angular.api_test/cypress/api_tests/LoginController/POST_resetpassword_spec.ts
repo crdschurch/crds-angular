@@ -16,7 +16,7 @@ const testConfig:TestFactory.TestConfig[] = [
           }
         },
         setup: function () {
-          return setPasswordResetToken(Gatekeeper.email, this.data?.body.token)
+          return setPasswordResetToken(Gatekeeper.email, this.data.body?.token)
         }
       },
       {
@@ -29,7 +29,7 @@ const testConfig:TestFactory.TestConfig[] = [
           }
         },
         setup: function () {
-          return setPasswordResetToken(KeeperJr.email, this.data.body.token)
+          return setPasswordResetToken(KeeperJr.email, this.data.body?.token)
         }
       }
     ],
@@ -58,7 +58,7 @@ const testConfig:TestFactory.TestConfig[] = [
           }
         },
         setup: function () {
-          return setPasswordResetToken(Gatekeeper.email, `${this.data.body.token}9`)
+          return setPasswordResetToken(Gatekeeper.email, `${this.data.body?.token}9`)
         }
       },
       {
@@ -78,7 +78,7 @@ const testConfig:TestFactory.TestConfig[] = [
           body: { token: getUUID() }
         },
         setup: function () {
-          return setPasswordResetToken(Gatekeeper.email, this.data.body.token)
+          return setPasswordResetToken(Gatekeeper.email, this.data.body?.token)
         }
       }
     ],
