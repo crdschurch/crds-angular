@@ -7,7 +7,7 @@ function buildTest(setupConfig: TestFactory.TestSetup, resultConfig: TestFactory
     setup: setupConfig.setup || function() {return cy.wrap({});},
     buildRequest: function(request?: Partial<Cypress.RequestOptions>): Partial<Cypress.RequestOptions> {
       return { ...request,
-        headers: this.data.header,
+        headers: this.data.headers,
         body: this.data.body
       }
     },
