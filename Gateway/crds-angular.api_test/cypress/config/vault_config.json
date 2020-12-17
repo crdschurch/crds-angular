@@ -17,6 +17,7 @@
       "keys": [
         "OKTA_TOKEN_AUTH",
         "BEN_KENOBI_PW",
+        "TEST_USER_PW",
         "TEST_GATEKEEPER_PW",
         "TEST_GATEKEEPERJR_PW",
         "CRDS_MP_TESTAUTOMATION_CLIENT_ID",
