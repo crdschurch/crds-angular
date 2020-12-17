@@ -661,7 +661,6 @@
     <Compile Include="Models\Crossroads\Stewardship\StripeInvoice.cs" />
     <Compile Include="Models\Crossroads\Stewardship\RecurringGiftDto.cs" />
     <Compile Include="Models\Crossroads\Stewardship\UpdateDonorDTO.cs" />
-    <Compile Include="Controllers\API\RoleController.cs" />
     <Compile Include="Controllers\API\UserController.cs" />
     <Compile Include="Controllers\API\LoginController.cs" />
     <Compile Include="Controllers\API\LookupController.cs" />
