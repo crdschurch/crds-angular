@@ -32,12 +32,13 @@ declare namespace TestFactory {
   interface ResultBody {
     schemas?: unknown[];
     properties?: PropertyCompare[];
+    contentType?: string;
   }
 
   interface PropertyCompare {
     name: string;
-    value: string;
-    /** If false, compares with 'includes'; defaults to exact match */
+    value: any;
+    /** If false, value must be a string and will 'includes' to compare; defaults to comparing with eq */
     exactMatch?: boolean;
   }
 

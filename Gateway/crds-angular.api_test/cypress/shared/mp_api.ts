@@ -20,7 +20,12 @@ export function getMPUser(email: string): Cypress.Chainable<MPUser> {
 
   return authorize(userIdRequest) 
   .then(cy.request)
-  .its('body').then(body => body[0]);
+  .its('body')
+  .then(body => {
+    const userData = body[0];
+    assert(userData, userData ? '' : `User ${email} could not be found in MP`);
+    return userData;
+  });
 }
 
 // Returns user after update

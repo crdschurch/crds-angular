@@ -1,3 +1,5 @@
+import { ResponseTypes } from "shared/enums";
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 chai.use(require('chai-json-schema-ajv')
   .create({
@@ -15,15 +17,23 @@ Cypress.Commands.add("itsBody", { prevSubject: true }, (subject: Cypress.Respons
     expect(subject).to.not.have.property('body');
     return undefined;
   }
-  else {
-    expect(subject).to.have.property('body');
-    const body = typeof subject.body === 'string' && subject.body.length > 0
-      ? JSON.parse(subject.body)
-      : subject.body;
-    return body;
+
+  expect(subject).to.have.property('body');
+  switch (expectedBody.contentType) {
+    case undefined: //parse as Json
+    case ResponseTypes.json: {
+      const body = typeof subject.body === 'string' && subject.body.length > 0
+        ? JSON.parse(subject.body)
+        : subject.body;
+      return body;
+    }
+    case ResponseTypes.text:
+      return subject.body;
+    default:
+      console.warn(`Parsing a response with given content type "${expectedBody.contentType}" is not yet supported. Returning unparsed body.`);
+      return subject.body;
   }
 });
-
 
 /** Chains of response.body */
 Cypress.Commands.add("verifySchema", { prevSubject: true }, (subject: Cypress.Chainable<unknown>, expectedBody: TestFactory.ResultBody) => {
@@ -33,6 +43,8 @@ Cypress.Commands.add("verifySchema", { prevSubject: true }, (subject: Cypress.Ch
   return subject;
 });
 
+//Warning! This assumes subject is formatted as JSON. Support for plain-text comparison should be added
+// once there is a test case that needs it.
 Cypress.Commands.add("verifyProperties", { prevSubject: true }, (subject: Cypress.Chainable<unknown>, expectedBody: TestFactory.ResultBody) => {
   if (expectedBody?.properties) {
     expectedBody.properties.forEach((prop) => {
