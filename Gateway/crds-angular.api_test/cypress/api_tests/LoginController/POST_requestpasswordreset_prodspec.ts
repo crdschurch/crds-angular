@@ -1,6 +1,7 @@
 import { unzipTests } from "shared/test_scenario_factory";
 import { Ben } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
+import { emptyStringResponseProperties } from "./schemas/emptyStringResponse";
 
 /**
  * This endpoint is an alternate name for the POST /api/requestpasswordreset endpoint.
@@ -19,7 +20,7 @@ const testConfig:TestFactory.TestConfig[] = [
     result: {
       status: 500,
       body: {
-        schemas: [{ type: "string", maxLength: 0 }]
+        schemas: [emptyStringResponseProperties]
       }
     }, //Not technically a bug but error could be more descriptive
     preferredResult: {

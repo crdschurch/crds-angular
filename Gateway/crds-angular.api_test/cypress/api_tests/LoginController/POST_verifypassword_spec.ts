@@ -3,16 +3,19 @@ import { Ben, Sue } from 'shared/users';
 import { authorize as authorizeWithMP } from "shared/authorization/mp_user_auth";
 import { authorize as authorizeWithOkta } from "shared/authorization/okta_user_auth";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
+import { ResponseTypes } from "shared/enums";
+import { emptyStringResponseProperties } from "./schemas/emptyStringResponse";
 
 // Data Setup
 const testConfig: TestFactory.TestConfig[] = [
   {
     setup: [
       {
-        description: "Valid Request", //TODO why isn't this working? try running locally?
+        description: "Valid Request",
         data: {
-          body: {
-            password: Ben.password
+          body: JSON.stringify(Ben.password),
+          headers:{
+            'Content-Type': 'application/json'
           }
         },
         setup: function () {
@@ -21,7 +24,11 @@ const testConfig: TestFactory.TestConfig[] = [
       },
     ],
     result: {
-      status: 200
+      status: 200,
+      body:{
+        contentType: ResponseTypes.text,
+        schemas: [emptyStringResponseProperties]
+      }
     }
   },
   {
@@ -29,8 +36,9 @@ const testConfig: TestFactory.TestConfig[] = [
           {
         description: "Invalid user password",
         data: {
-          body: {
-            password: "NotMyAPassword"
+          body: JSON.stringify("NotMyAPassword"),
+          headers:{
+            'Content-Type': 'application/json'
           }
         },
         setup: function () {
@@ -40,8 +48,9 @@ const testConfig: TestFactory.TestConfig[] = [
       {
         description: "Request authorized by a different user",
         data: {
-          body: {
-            password: Ben.password
+          body: JSON.stringify(Ben.password),
+          headers:{
+            'Content-Type': 'application/json'
           }
         },
         setup: function () {
@@ -51,14 +60,19 @@ const testConfig: TestFactory.TestConfig[] = [
       {
         description: "Request missing authorization",
         data: {
-          body: {
-            password: Ben.password
+          body: JSON.stringify(Ben.password),
+          headers: {
+            'Content-Type': 'application/json'
           }
         }
       }],
     result:
     {
-      status: 401
+      status: 401,
+      body:{
+        contentType: ResponseTypes.text,
+        schemas: [emptyStringResponseProperties]
+      }
     }
   },
   {
@@ -66,8 +80,9 @@ const testConfig: TestFactory.TestConfig[] = [
       {
         description: "Request authorized using Okta Auth",
         data: {
-          body: {
-            password: Ben.password
+          body: JSON.stringify(Ben.password),
+          headers:{
+            'Content-Type': 'application/json'
           }
         },
         setup: function () {
@@ -109,22 +124,22 @@ describe('POST /api/verifypassword', () => {
     });
 });
 
-// describe('POST /api/v1.0.0/verify-password', () => {
-//   unzipTests(testConfig)
-//     .forEach((t: TestFactory.Test) => {
-//       it(t.title, () => {
-//         const mpVerifyPassword: Partial<Cypress.RequestOptions> = {
-//           url: `/api/v1.0.0/verify-password`,
-//           method: "POST",
-//           failOnStatusCode: false
-//         };
+describe('POST /api/v1.0.0/verify-password', () => {
+  unzipTests(testConfig)
+    .forEach((t: TestFactory.Test) => {
+      it(t.title, () => {
+        const mpVerifyPassword: Partial<Cypress.RequestOptions> = {
+          url: `/api/v1.0.0/verify-password`,
+          method: "POST",
+          failOnStatusCode: false
+        };
 
-//         t.setup() //Arrange
-//           .then(() => cy.request(t.buildRequest(mpVerifyPassword))) //Act
-//           .verifyStatus(t.result.status) //Assert
-//           .itsBody(t.result.body)
-//           .verifySchema(t.result.body)
-//           .verifyProperties(t.result.body);
-//       });
-//     });
-// });
+        t.setup() //Arrange
+          .then(() => cy.request(t.buildRequest(mpVerifyPassword))) //Act
+          .verifyStatus(t.result.status) //Assert
+          .itsBody(t.result.body)
+          .verifySchema(t.result.body)
+          .verifyProperties(t.result.body);
+      });
+    });
+});

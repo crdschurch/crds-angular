@@ -2,6 +2,7 @@ import { authorize as authorizeWithMP} from "shared/authorization/mp_user_auth";
 import { unzipTests } from "shared/test_scenario_factory";
 import { Ben } from "shared/users";
 import { mpAuthenticatedBasicAuthContract, mpAuthenticatedSchemaProperties, errorHasOccurredProperties, errorHasOccurredContract } from './schemas/authenticatedResponse';
+import { emptyStringResponseProperties } from "./schemas/emptyStringResponse";
 
 //Test Data
 const testConfig: TestFactory.TestConfig[] = [
@@ -40,7 +41,7 @@ const testConfig: TestFactory.TestConfig[] = [
     result: {
       status: 401,
       body: {
-        schemas: [{ type: "string", maxLength: 0 }]
+        schemas: [emptyStringResponseProperties]
       }
     }
   },
