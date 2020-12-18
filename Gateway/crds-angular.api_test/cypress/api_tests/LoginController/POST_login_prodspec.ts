@@ -58,3 +58,23 @@ describe('POST /api/login', () => {
       });
     });
 });
+
+describe('POST /api/v1.0.0/login', () => {
+  unzipTests(testConfig)
+    .forEach((t: TestFactory.Test) => {
+      it(t.title, () => {
+        const mpLoginRequest: Partial<Cypress.RequestOptions> = {
+          url: "/api/v1.0.0/login",
+          method: "POST",
+          failOnStatusCode: false
+        };
+
+        t.setup() //Arrange
+          .then(() => cy.request(t.buildRequest(mpLoginRequest))) //Act
+          .verifyStatus(t.result.status) //Assert
+          .itsBody(t.result.body)
+          .verifySchema(t.result.body)
+          .verifyProperties(t.result.body);
+      });
+    });
+});
