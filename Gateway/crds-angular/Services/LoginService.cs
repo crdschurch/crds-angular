@@ -165,12 +165,7 @@ namespace crds_angular.Services
         {
             var user = _userRepository.GetUserByResetToken(token);
 
-            if (user != null)
-            {
-                return true;
-            }
-
-            return false;
+            return user != null;
         }
 
         public bool IsValidPassword(string token, string password)

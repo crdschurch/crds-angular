@@ -86,8 +86,10 @@ namespace crds_angular.Controllers.API
         {
             try
             {
-                ResetTokenStatus status = new ResetTokenStatus();
-                status.TokenValid = _loginService.VerifyResetToken(token);
+                ResetTokenStatus status = new ResetTokenStatus
+                {
+                    TokenValid = _loginService.VerifyResetToken(token)
+                };
                 return Ok(status);
             }
             catch (Exception ex)

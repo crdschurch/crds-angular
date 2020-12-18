@@ -3,7 +3,9 @@ import { unzipTests } from "shared/test_scenario_factory";
 import { Ben } from "shared/users";
 import { mpAuthenticatedBasicAuthContract, mpAuthenticatedSchemaProperties } from "./schemas/authenticatedResponse";
 
-/** Test users cannot be authenticated in Okta Prod at this time. */
+/** Test users cannot be authenticated in Okta Prod at this time, but
+ * post-cutover, this test should be updated and made runnable in Prod.
+*/
 
 //Test Data
 const testConfig: TestFactory.TestConfig[] = [
