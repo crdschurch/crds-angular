@@ -25,7 +25,6 @@ const testConfig:TestFactory.TestConfig[] = [
       { description: "Missing Username", data: { body: { password: Ben.password } } },
       { description: "User Doesn't Exist", data: { body: { username: "fakeUser@fakemail.wxyz", password: Ben.password } } },
       { description: "Body Undefined", data: { body: undefined } },
-      { description: "Body Null", data: { body: null } },
       { description: "Body Empty String", data: { body: "" } },
     ],
     result: {

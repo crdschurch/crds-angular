@@ -1,4 +1,4 @@
-import { getToken as getOktaToken } from "shared/authorization/okta_user_auth";
+import { authorize as authorizeWithOkta } from "shared/authorization/okta_user_auth";
 import { unzipTests } from "shared/test_scenario_factory";
 import { Ben } from "shared/users";
 import { mpAuthenticatedBasicAuthContract, mpAuthenticatedSchemaProperties } from "./schemas/authenticatedResponse";
@@ -13,11 +13,9 @@ const testConfig: TestFactory.TestConfig[] = [
     setup: [
       {
         description: "Okta Authorization token",
+        data: {},
         setup: function () {
-          return getOktaToken(Ben.email, Ben.password as string)
-            .then((token) => {
-              this.data.header = { Authorization: token }
-            });
+          return authorizeWithOkta(Ben.email, Ben.password as string, this.data);
         }
       }
     ],

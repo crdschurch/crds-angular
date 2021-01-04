@@ -14,6 +14,16 @@ export const Ben: TestUser = {
   password: Cypress.env("BEN_KENOBI_PW")
 };
 
+/**
+ * Sue is a test user with the same MP contact ID in every environment.
+ * It is safe to authenticate with either MP or Okta, and will be safe post-cutover.
+ * DO NOT change her email, password or anything that may prevent her from logging in,
+ *   even temporarily.
+ */
+export const Sue: TestUser = {
+  email: "mpcrds+auto+suesmith@gmail.com",
+  password: Cypress.env("TEST_USER_PW")
+};
 
 /**
  * Gate is a test user in non-prod environments.
