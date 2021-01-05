@@ -1,6 +1,7 @@
 {
   "baseUrl": "http://localhost:49380",
   "integrationFolder": "cypress/api_tests",
+  "responseTimeout": 60000,
   "env":{
     "vaultEnv": "int"
   }
