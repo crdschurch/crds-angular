@@ -1,6 +1,7 @@
 export interface TestUser {
   email: string;
   password?: string;
+  firstName?: string;
 }
 
 /**
@@ -11,7 +12,8 @@ export interface TestUser {
  */
 export const Ben: TestUser = {
   email: "mpcrds+auto+2@gmail.com",
-  password: Cypress.env("BEN_KENOBI_PW")
+  password: Cypress.env("BEN_KENOBI_PW"),
+  firstName: 'Ben'
 };
 
 /**
@@ -22,7 +24,8 @@ export const Ben: TestUser = {
  */
 export const Sue: TestUser = {
   email: "mpcrds+auto+suesmith@gmail.com",
-  password: Cypress.env("TEST_USER_PW")
+  password: Cypress.env("TEST_USER_PW"), 
+  firstName: 'Sue'
 };
 
 /**
