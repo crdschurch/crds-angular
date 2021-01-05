@@ -34,6 +34,5 @@ module.exports = (on: Cypress.PluginEvents, config: Cypress.PluginConfigOptions)
   // Set our own default for testFile extension unless configured in config file
   setTestFilesConfig(config);
 
-  // return loadConfig.loadConfigFromVault(config);
   return loadConfigFromVault(config);
 }

@@ -1,5 +1,6 @@
 /**
- * Gets an MP Authorization token for a user
+ * Gets an MP Authorization token for a user.
+ * This should match the request used by AuthenticateUser in Crossroads.Web.Common.Security
  * @param email User's email
  * @param password User's password
  */
@@ -14,7 +15,7 @@ export function getToken(email: string, password: string): Cypress.Chainable<str
       username: email,
       password,
       grant_type: 'password',
-      scope: 'http://www.thinkministry.com/dataplatform/scopes/all'
+      scope: 'http://www.thinkministry.com/dataplatform/scopes/all openid' //matches Resource Owner (no refresh) scope
     }
   };
 
