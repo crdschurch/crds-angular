@@ -8,7 +8,8 @@ function buildTest(setupConfig: TestFactory.TestSetup, resultConfig: TestFactory
     buildRequest: function(request?: Partial<Cypress.RequestOptions>): Partial<Cypress.RequestOptions> {
       return { ...request,
         headers: this.data.headers,
-        body: this.data.body
+        body: this.data.body,
+        qs: this.data.qs
       }
     },
     result: resultConfig
