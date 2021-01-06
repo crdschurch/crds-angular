@@ -2,6 +2,7 @@ import { authorize as authorizeWithOkta } from "shared/authorization/okta_user_a
 import { unzipTests } from "shared/test_scenario_factory";
 import { Ben } from "shared/users";
 import { mpAuthenticatedBasicAuthContract, mpAuthenticatedSchemaProperties } from "./schemas/authenticatedResponse";
+import { emptyStringResponseProperties } from "./schemas/emptyStringResponse";
 
 /** Test users cannot be authenticated in Okta Prod at this time, but
  * post-cutover, this test should be updated and made runnable in Prod.
@@ -22,7 +23,7 @@ const testConfig: TestFactory.TestConfig[] = [
     result: {
       status: 401,
       body: {
-        schemas: [{ type: "string", maxLength: 0 }]
+        schemas: [emptyStringResponseProperties]
       }
     },
     preferredResult: {
