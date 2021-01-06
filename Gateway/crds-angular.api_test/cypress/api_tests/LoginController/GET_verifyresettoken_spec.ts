@@ -15,7 +15,7 @@ const testConfig:TestFactory.TestConfig[] = [
           token: getUUID()
         },
         setup: function () {
-          return setPasswordResetToken(Gatekeeper.email, this.data?.token)
+          return setPasswordResetToken(Gatekeeper.email, this.data.token)
         }
       }
     ],

@@ -77,7 +77,7 @@ const testConfig:TestFactory.TestConfig[] = [
     }
   },
   {
-    setup: { description: "Missing Body" },
+    setup: { description: "Missing Body", data: {} },
     result: {
       status: 500,
       body: {

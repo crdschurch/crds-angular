@@ -15,12 +15,15 @@ declare namespace TestFactory {
   interface TestSetup {
     /** Description of the test scenario */
     description: string;
-    /** Store any information needed in the request here. The properties "header" and "body" will be used directly in the request. */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data?: Record<string, any>;
+    /** Store any information needed in the request here. The Cypress.RequestOptions "headers" and "body" will be used directly in the request. */
+    data: TestData;
     /** Seed the database, generate/fetch test data to store in the data property, etc. here. Must return a chainable. */
     setup?(): Cypress.Chainable<unknown>;
   }
+
+  /** Data can contain any part of a Cypress.RequestOptions and anything else */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  interface TestData extends Partial<Cypress.RequestOptions>, Record<string, any>{ }
 
   interface TestResult {
     /** HTTP status code expected */
@@ -48,8 +51,7 @@ declare namespace TestFactory {
      * Use this to share data between the setup and buildRequest functions.
      * data.header and data.body will be used to build the request
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: Record<string, any>;
+    data: TestData;
     setup(): Cypress.Chainable<unknown>;
     buildRequest(request?: Partial<Cypress.RequestOptions>): Partial<Cypress.RequestOptions>;
     result: TestResult
