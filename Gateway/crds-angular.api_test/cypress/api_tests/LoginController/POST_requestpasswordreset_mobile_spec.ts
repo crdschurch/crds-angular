@@ -3,6 +3,7 @@ import { setPasswordResetToken } from "shared/mp_api";
 import { Ben } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 import { unzipTests } from "shared/test_scenario_factory";
+import { emptyStringResponseProperties } from "./schemas/emptyStringResponse";
 
 // Data Setup
 const testConfig:TestFactory.TestConfig[] = [
@@ -81,7 +82,7 @@ const testConfig:TestFactory.TestConfig[] = [
     result: {
       status: 500,
       body: {
-        schemas: [{ type: "string", maxLength: 0 }]
+        schemas: [emptyStringResponseProperties]
       }
     }, //Not technically a bug but error could be more descriptive
     preferredResult: {
