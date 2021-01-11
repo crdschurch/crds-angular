@@ -1,79 +1,78 @@
 import { Ben } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 import { mpLoginBasicAuthContract, mpLoginSchemaProperties } from "./schemas/loginResponse";
-import { unzipTests } from "shared/test_scenario_factory";
+import { runTest, unzipScenarios } from "shared/CAT/cypress_api_tests";
 
 // Data Setup
-const testConfig:TestFactory.TestConfig[] = [
-  {
-    setup: {
+const sharedRequest = {
+  urls: ["/api/login", "/api/v1.0.0/login"],
+  options: {
+    method: "POST",
+    failOnStatusCode: false
+  }
+}
+const successScenarios: CAT.CompactTestScenario = {
+  sharedRequest,
+  scenarios: [
+    {
       description: "Valid User",
-      data: { body: { username: Ben.email, password: Ben.password } },
-    },
-    result: {
-      status: 200,
-      body: {
+      request: { body: { username: Ben.email, password: Ben.password } },
+      response: {
+        status: 200,
         schemas: [mpLoginSchemaProperties, mpLoginBasicAuthContract],
         properties: [{ name: "userEmail", value: Ben.email }]
       }
     }
+  ]
+}
+
+const badRequestScenarios: CAT.CompactTestScenario = {
+  sharedRequest,
+  sharedResponse: {
+    schemas: [badRequestProperties, badRequestContract],
+    properties: [{ name: "message", value: "Login Failed" }]
   },
-  {
-    setup: [
-      { description: "Incorrect Password", data: { body: { username: Ben.email, password: "bad" } } },
-      { description: "Missing Password", data: { body: { username: Ben.email } } },
-      { description: "Missing Username", data: { body: { password: Ben.password } } },
-      { description: "User Doesn't Exist", data: { body: { username: "fakeUser@fakemail.wxyz", password: Ben.password } } },
-      { description: "Body Undefined", data: { body: undefined } },
-      { description: "Body Empty String", data: { body: "" } },
-    ],
-    result: {
-      status: 400,
-      body: {
-        schemas: [badRequestProperties, badRequestContract],
-        properties: [{ name: "message", value: "Login Failed" }]
+  scenarios: [
+    {
+      description: "Incorrect Password",
+      request: { body: { username: Ben.email, password: "bad" } },
+      response: { status: 400 }
+    },
+    {
+      description: "Missing Password",
+      request: { body: { username: Ben.email } },
+      response: { status: 400 }
+    },
+    {
+      description: "Missing Username",
+      request: { body: { password: Ben.password } },
+      response: { status: 400 }
+    },
+    {
+      description: "User Doesn't Exist",
+      request: { body: { username: "fakeUser@fakemail.wxyz", password: Ben.password } },
+      response: { status: 400 }
+    },
+    {
+      description: "Body Undefined",
+      request: { body: undefined },
+      response: { 
+        status: 400, 
+        parseAsJSON: true 
       }
-    }
-  }
-];
+    },
+    {
+      description: "Body Empty String",
+      request: { body: "" },
+      response: { 
+        status: 400, 
+        parseAsJSON: true 
+      }
+    },
+  ]
+}
 
-// Run Tests
-describe('POST /api/login', () => {
-  unzipTests(testConfig)
-    .forEach((t: TestFactory.Test) => {
-      it(t.title, () => {
-        const mpLoginRequest: Partial<Cypress.RequestOptions> = {
-          url: "/api/login",
-          method: "POST",
-          failOnStatusCode: false
-        };
-
-        t.setup() //Arrange
-          .then(() => cy.request(t.buildRequest(mpLoginRequest))) //Act
-          .verifyStatus(t.result.status) //Assert
-          .itsBody(t.result.body)
-          .verifySchema(t.result.body)
-          .verifyProperties(t.result.body);
-      });
-    });
-});
-
-describe('POST /api/v1.0.0/login', () => {
-  unzipTests(testConfig)
-    .forEach((t: TestFactory.Test) => {
-      it(t.title, () => {
-        const mpLoginRequest: Partial<Cypress.RequestOptions> = {
-          url: "/api/v1.0.0/login",
-          method: "POST",
-          failOnStatusCode: false
-        };
-
-        t.setup() //Arrange
-          .then(() => cy.request(t.buildRequest(mpLoginRequest))) //Act
-          .verifyStatus(t.result.status) //Assert
-          .itsBody(t.result.body)
-          .verifySchema(t.result.body)
-          .verifyProperties(t.result.body);
-      });
-    });
+describe("/Login/Post()", () => {
+  unzipScenarios(successScenarios).forEach(runTest);
+  unzipScenarios(badRequestScenarios).forEach(runTest);
 });

@@ -1,5 +1,5 @@
 // Access to MP through their API
-import { authorize } from "./authorization/mp_client_auth";
+import { addAuthorizationHeader } from "./authorization/mp_client_auth";
 
 //The properties returned depend on the filter
 export interface MPUser {
@@ -18,7 +18,7 @@ export function getMPUser(email: string): Cypress.Chainable<MPUser> {
     }
   };
 
-  return authorize(userIdRequest) 
+  return addAuthorizationHeader(userIdRequest) 
   .then(cy.request)
   .its('body')
   .then(body => {
@@ -39,7 +39,7 @@ export function setPasswordResetToken(email: string, resetToken: string): Cypres
       body: [{User_ID: mpUser.User_ID, PasswordResetToken: resetToken}]
     };
 
-    return authorize(updateResetTokenRequest)
+    return addAuthorizationHeader(updateResetTokenRequest)
     .then(cy.request)
     .its('body').then(body => body[0])
   });  
