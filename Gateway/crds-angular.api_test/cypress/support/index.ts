@@ -14,9 +14,7 @@
 // ***********************************************************
 
 // Import custom types automatically into all files
-/// <reference path="../shared/test_scenario_factory.d.ts" />
-/// <reference path="responseCommands.d.ts" />
+/// <reference path="../shared/CAT/cypress_api_tests.d.ts" />
 
 // Import custom commands automatically into all files
-import './responseCommands';
 import './commands';

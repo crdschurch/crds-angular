@@ -269,7 +269,6 @@ namespace crds_angular.Controllers.API
 
     }
 
-    //TODO move this to a better location (is used by UserController too - where else?)
     public class LoginReturn
     {
         public LoginReturn(){}

@@ -26,13 +26,12 @@ export function getToken(email: string, password: string): Cypress.Chainable<str
  * Adds MP Authorization token header authorized by the given user to Cypress request 
  * @param request 
  */
-export function authorize(email: string, password: string, request: Partial<Cypress.RequestOptions>): Cypress.Chainable<Partial<Cypress.RequestOptions>>{
+export function addAuthorizationHeader(email: string, password: string, request: Partial<Cypress.RequestOptions>): Cypress.Chainable<string>{
   return getToken(email, password)
   .then(token => {
     request.headers = {
       ...request.headers,
       Authorization: token
     }
-    return request;
   });
 }

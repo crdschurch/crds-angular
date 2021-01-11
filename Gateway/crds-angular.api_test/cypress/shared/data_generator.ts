@@ -13,3 +13,7 @@ export function getTestPassword(): string {
   });
   return pw;
 }
+
+export function getTempTesterEmail(): string {
+  return `mpcrds+auto+temp+${getUUID()}@gmail.com`;
+}
