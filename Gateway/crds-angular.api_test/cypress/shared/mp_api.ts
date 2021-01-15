@@ -18,29 +18,27 @@ export function getMPUser(email: string): Cypress.Chainable<MPUser> {
     }
   };
 
-  return addAuthorizationHeader(userIdRequest) 
-  .then(cy.request)
-  .its('body')
-  .then(body => {
-    const userData = body[0];
-    assert(userData, userData ? '' : `User ${email} could not be found in MP`);
-    return userData;
-  });
+  return addAuthorizationHeader(userIdRequest)
+    .then(cy.request)
+    .its('body')
+    .then(body => {
+      const userData = body[0];
+      assert(userData, userData ? '' : `User ${email} could not be found in MP`);
+      return userData;
+    });
 }
 
-// Returns user after update
-export function setPasswordResetToken(email: string, resetToken: string): Cypress.Chainable<MPUser>{
+export function setPasswordResetToken(email: string, resetToken: string): Cypress.Chainable<Cypress.Response> {
   console.debug(`reset token is set to ${resetToken}`);
   return getMPUser(email)
-  .then(mpUser => {
-    const updateResetTokenRequest: Partial<Cypress.RequestOptions> = {
-      url: `${Cypress.env('MP_REST_API_ENDPOINT')}/tables/dp_Users`,
-      method: "PUT",
-      body: [{User_ID: mpUser.User_ID, PasswordResetToken: resetToken}]
-    };
+    .then(mpUser => {
+      const updateResetTokenRequest: Partial<Cypress.RequestOptions> = {
+        url: `${Cypress.env('MP_REST_API_ENDPOINT')}/tables/dp_Users`,
+        method: "PUT",
+        body: [{ User_ID: mpUser.User_ID, PasswordResetToken: resetToken }]
+      };
 
-    return addAuthorizationHeader(updateResetTokenRequest)
-    .then(cy.request)
-    .its('body').then(body => body[0])
-  });  
+      return addAuthorizationHeader(updateResetTokenRequest)
+        .then(cy.request);
+    });
 }
