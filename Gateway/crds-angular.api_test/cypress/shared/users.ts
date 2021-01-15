@@ -34,6 +34,7 @@ export const Sue: TestUser = {
  * Their password in MP may be different than in Okta
  */
 export const Gatekeeper: TestUser = {
+  firstName: "Gate",
   email: "mpcrds+auto+gatekeeper@testmail.com",
   password: Cypress.env("TEST_GATEKEEPER_PW") //This may be inaccurate
 };

@@ -60,7 +60,7 @@ namespace crds_angular.Controllers.API
                 var apiError = new ApiErrorDto(DUPLICATE_USER_MESSAGE, e);
                 throw new HttpResponseException(apiError.HttpResponseMessage);
             }
-            catch (ContactEmailExistsException contactException)
+            catch (ContactEmailExistsException contactException) //TODO why is this not used?
             {
                 var apiError = new ApiErrorDto(string.Format("{0}", contactException.ContactId()), contactException, HttpStatusCode.Conflict);
                 throw new HttpResponseException(apiError.HttpResponseMessage);                
