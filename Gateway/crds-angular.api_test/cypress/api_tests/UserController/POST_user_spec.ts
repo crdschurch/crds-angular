@@ -6,12 +6,6 @@ import { badRequestProperties, badRequestContract } from "./schemas/badRequestSc
 import { createUserSchemaProperties, createUserContract, duplicateUserRegistrationPageContract } from "./schemas/createUserSchemas";
 import { genericServerErrorContract } from "./schemas/serverErrorSchemas";
 
-//TODO fixup Gateway source: (iff these tests behave as expected running locally)
-// ContactEmailExistsException is never thrown - 
-//   1.move Login enum if possible, 
-//   2. smarter/safer queries for unique users. There might be lots of different code doing this - POST uses Transactions but GET might use something else
-//TODO try to fix the source - why is it doing this? /r/n?
-
 /**
  * Generates an email and assigns it the request body. Assigns to response property check if indicated.
  * @param scenario 
@@ -250,42 +244,72 @@ const serverErrorScenarios: CAT.CompactTestScenario = {
   ]
 }
 
-/*
-// I think this is caused because an unhandled exception is thrown when searching for the contact record
-//  by email - pretty sure it uses a %email% search so finds more than it should. If multiple records are found
-//  an error is thrown which is not handled by the controller. The account is created though.
-// To reproduce, the email must be unique but a subset of another email, so will be a bit tricky to setup
-// IMO this will be a non-issue once we move to Okta (confirm this) but maybe add a note to the code?
-const emailUniqueButSubsetOfContactEmail: CAT.TestScenario = {
-  description: "email is subset of existing email",
-  request: {
-    url: sharedRequest.urls[0],
-    method: sharedRequest.options.method,
-    failOnStatusCode: sharedRequest.options.failOnStatusCode,
-    body: {
-      firstname: "experimental",
-      lastname: "Test",
-      email: "gatekeeper@testmail.com", //TODO this needs to be dynamically assigned - create a user then change email extension
-      password: Placeholders.assignedInSetup
+//Note that this bug does not exist when registering a user through Okta.
+const bug_emailUniqueButSubsetOfContactEmailScenario: CAT.CompactTestScenario = {
+  sharedRequest,
+  scenarios: [
+  {
+      description: "email is subset of existing email",
+      request: {
+        body: {
+          firstname: "Subset email",
+          lastname: "Test",
+          email: Placeholders.assignedInSetup,
+          password: Placeholders.assignedInSetup
+        }
+      },
+      setup() {
+        // Register a test user so we have an email to subset
+        const supersetEmail = getTempTesterEmail();
+        const registerSuperset = {
+          url: "/api/user",
+          method: "POST",
+          body: {
+            firstname: "Super",
+            lastname: "Email",
+            email: supersetEmail,
+            password: getTestPassword()
+          }
+        }
+
+        return cy.request(registerSuperset)
+        .then(() => {
+          const subsetEmail = supersetEmail.slice(0, supersetEmail.length-1);
+          (this.request.body as { email: string }).email = subsetEmail;
+
+          createAndSetPassword(this, false);
+          return this;
+        })
+      },
+      response: {
+        //Note that THE USER WAS CREATED! but the step to retrieve their contact ID incorrectly 
+        //  found two users (test uer and the superset user registered in setup) so failed, 
+        //  triggering a 500 response
+        status: 500,
+        schemas: [genericServerErrorContract],
+        properties: [{ name: "Message", value: "An error has occurred." }]
+      },
+      preferredResponse: {
+        status: 200,
+        properties: [
+          {
+            name: "email",
+            value: Placeholders.assignedInSetup
+          },
+          {
+            name: "password",
+            value: Placeholders.assignedInSetup
+          }
+        ]
+      }
     }
-  },
-  setup(){
-    const password = getTestPassword();
-    (this.request.body as {password: string}).password = password;
-    return cy.wrap(this)
-  },
-  response: {
-    status: 500
-  },
-  preferredResponse: {
-    status: 200
-  }
+  ]
 };
-*/
 
 //Run Tests
 describe('/User/Post()', () => {
   unzipScenarios(successScenarios).forEach(runTest)
   unzipScenarios(badRequestScenarios).forEach(runTest)
   unzipScenarios(serverErrorScenarios).forEach(runTest)
+  unzipScenarios(bug_emailUniqueButSubsetOfContactEmailScenario).forEach(runTest)
 });
