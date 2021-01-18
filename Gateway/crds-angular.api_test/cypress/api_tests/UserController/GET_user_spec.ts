@@ -5,7 +5,7 @@ import { addAuthorizationHeader as authorizeWithMP } from "shared/authorization/
 import { addAuthorizationHeader as authorizeWithOkta } from "shared/authorization/okta_user_auth";
 import { runTest, unzipScenarios } from "shared/CAT/cypress_api_tests";
 import { Placeholders } from "shared/enums";
-import { Ben, Sue } from "shared/users";
+import { Ben, KeeperJr, Sue } from "shared/users";
 
 // Data Setup
 const successScenarios: CAT.CompactTestScenario = {
@@ -235,6 +235,24 @@ const badRequestScenarios: CAT.CompactTestScenario = {
       },
       preferredResponse: {
           properties: [{ name: "message", value: "User not found" }]
+      }
+    },
+    {
+      description: "Request for a user whose email is a subset of another user's email (bug)",
+      request: {
+        qs: {
+          username: KeeperJr.email
+        },
+      },
+      setup(){
+        return authorizeWithMP(KeeperJr.email, KeeperJr.password as string, this.request)
+          .then(() => this);
+      },
+      response: {
+        status: 400
+      },
+      preferredResponse: {
+        status: 200
       }
     },
     {
