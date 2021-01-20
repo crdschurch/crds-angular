@@ -17,10 +17,5 @@ namespace crds_angular.Exceptions
         {
             return contactId;
         }
-
-        public string Email()
-        {
-            return email;
-        }
     }
 }

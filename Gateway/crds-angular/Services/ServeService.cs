@@ -932,19 +932,5 @@ namespace crds_angular.Services
             }
             return null;
         }
-
-        //public for testing
-        public ServeRsvp GetRsvp(int opportunityId, int eventId, TeamMember member)
-        {
-            if (member.Responses == null)
-            {
-                return null;
-            }
-            var r =
-                member.Responses.Where(t => t.Opportunity_ID == opportunityId && t.Event_ID == eventId)
-                    .Select(t => t.Response_Result_ID)
-                    .ToList();
-            return r.Count <= 0 ? null : new ServeRsvp {Attending = (r[0] == 1), RoleId = opportunityId};
-        }
     }
 }

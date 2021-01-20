@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http.Controllers;
 using crds_angular.Controllers.API;
-using crds_angular.Models.Crossroads;
-using crds_angular.Models.Finder;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
@@ -67,41 +64,6 @@ namespace crds_angular.test.controllers
         {
             Assert.IsNotNull(_fixture);
         }
-    
-        private static List<PinDto> GetListOfPinDto()
-        {
-            var list = new List<PinDto>();
-
-            var addr1 = new AddressDTO
-            {
-                Latitude = 30.1,
-                Longitude = -80.1
-            };
-            var pin1 = new PinDto
-            {
-                Contact_ID = 1,
-                FirstName = "pinhead",
-                LastName = "One",
-                Address = addr1
-            };
-
-            var addr2 = new AddressDTO
-            {
-                Latitude = 30.2,
-                Longitude = -80.2
-            };
-            var pin2 = new PinDto
-            {
-                Contact_ID = 2,
-                FirstName = "pinhead",
-                LastName = "Two",
-                Address = addr2
-            };
-            list.Add(pin1);
-            list.Add(pin2);
-            return list;
-        }
-
     }
 }
 

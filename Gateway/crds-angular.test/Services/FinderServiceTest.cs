@@ -422,58 +422,6 @@ namespace crds_angular.test.Services
             Assert.IsInstanceOf<List<PinDto>>(pins);
         }
 
-        public void ShouldUseFilterStringInConnectMode()
-        {
-            const string address = "123 Main Street, Walton, KY";
-            var originCoords = new GeoCoordinate()
-            {
-                Latitude = 39.2844738,
-                Longitude = -84.319614
-            };
-
-            var searchresults = new SearchResponse
-            {
-                Hits = new Hits
-                {
-                    Found = 1,
-                    Start = 0,
-                    Hit = new List<Hit>()
-                }
-            };
-            var hit = new Hit();
-            var fields = new Dictionary<string, List<string>>
-            {
-                {"city", new List<string>() {"Union"}},
-                {"zip", new List<string>() {"41091"}},
-                {"firstname", new List<string>() {"Robert"}},
-                {"lastname", new List<string>() {"Smith"}},
-                {"latlong", new List<string>() {"38.94526,-84.661275"}}
-            };
-            hit.Fields = fields;
-            searchresults.Hits.Hit.Add(hit);
-            const string expectedSearchString = "(or pintype:2 pintype:1)";
-
-            _awsCloudsearchService.Setup(
-                    mocked => mocked.SearchConnectAwsCloudsearch(expectedSearchString, "_all_fields", It.IsAny<int>(), It.IsAny<GeoCoordinate>(), It.IsAny<AwsBoundingBox>()))
-                .Returns(searchresults);
-
-            _mpFinderRepository.Setup(mocked => mocked.GetPinsInRadius(originCoords)).Returns(new List<SpPinDto>());
-            _addressGeocodingService.Setup(mocked => mocked.GetGeoCoordinates(address)).Returns(originCoords);
-            _addressProximityService.Setup(mocked => mocked.GetProximity(address, new List<AddressDTO>(), originCoords)).Returns(new List<decimal?>());
-            _addressProximityService.Setup(mocked => mocked.GetProximity(address, new List<string>(), originCoords)).Returns(new List<decimal?>());
-
-
-            var boundingBox = new AwsBoundingBox
-            {
-                UpperLeftCoordinates = new GeoCoordinates(61.21, -149.9),
-                BottomRightCoordinates = new GeoCoordinates(21.52, -77.78)
-            };
-
-            var pins = _fixture.GetPinsInBoundingBox(originCoords, address, boundingBox, "CONNECT", 0, "(or pintype:2 pintype:1)");
-
-            Assert.IsInstanceOf<List<PinDto>>(pins);
-        }
-
         [Test]
         public void 
             ShouldReturnAListOfGroupPinsWhenSearching()
@@ -530,27 +478,6 @@ namespace crds_angular.test.Services
             var pins = _fixture.GetPinsInBoundingBox(originCoords, userKeywordSearchString, boundingBox, "SMALL_GROUPS", 0, filterSearchString);
 
             Assert.IsInstanceOf<List<PinDto>>(pins);
-        }
-
-        public void ShouldRandomizeThePosition()
-        {
-            const double originalLatitude = 59.6378639;
-            const double originalLongitude = -151.5068732;
-
-            var address = new AddressDTO
-            {
-                AddressID = 222,
-                AddressLine1 = "1393 Bay Avenue",
-                City = "Homer",
-                State = "AK",
-                PostalCode = "99603",
-                Latitude = originalLatitude,
-                Longitude = originalLongitude
-            };
-
-            var result = _fixture.RandomizeLatLong(address);
-            Assert.AreNotEqual(result.Longitude, originalLongitude);
-            Assert.AreNotEqual(result.Latitude, originalLatitude);
         }
 
         [Test]
@@ -706,12 +633,6 @@ namespace crds_angular.test.Services
             Assert.AreEqual(result[0].IconUrl, _smallGroupIconUrl);
         }
 
-        private static void AddCoords(PinDto pin)
-        {
-            pin.Address.Latitude = 37;
-            pin.Address.Longitude = -85;
-        }
-
         [Test]
         public void ShouldSayHi()
         {
@@ -810,11 +731,6 @@ namespace crds_angular.test.Services
             _mpContactRepository.Setup(x => x.GetContactId(It.IsAny<string>())).Returns(3);
             _fixture.InviteToGroup(123, gatheringId, person, "SMALL_GROUP");
             _invitationService.VerifyAll();
-        }
-
-        private FinderPinDto convertPinDtoToFinderPinDto(PinDto pinDto)
-        {
-            return Mapper.Map<FinderPinDto>(pinDto);
         }
 
         private PinDto GetAPin(int designator = 1)

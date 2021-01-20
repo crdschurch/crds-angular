@@ -390,11 +390,9 @@
     <Compile Include="Exceptions\DuplicateChildcareEventsException.cs" />
     <Compile Include="Exceptions\DuplicateUserException.cs" />
     <Compile Include="Exceptions\EventMissingException.cs" />
-    <Compile Include="Exceptions\GatheringException.cs" />
     <Compile Include="Exceptions\GroupParticipantRemovalException.cs" />
     <Compile Include="Exceptions\InvalidAddressException.cs" />
     <Compile Include="Exceptions\InvoiceNotFoundException.cs" />
-    <Compile Include="Exceptions\MoreThanOneRecordException.cs" />
     <Compile Include="Exceptions\NotHeadOfHouseholdException.cs" />
     <Compile Include="Exceptions\PaymentTypeNotFoundException.cs" />
     <Compile Include="Exceptions\TripFullException.cs" />
@@ -404,7 +402,6 @@
     <Compile Include="Models\Crossroads\LocationProximityDTO.cs" />
     <Compile Include="Models\Crossroads\Waivers\ContactInvitation.cs" />
     <Compile Include="Models\Crossroads\Waivers\WaiverDTO.cs" />
-    <Compile Include="Models\Crossroads\GoVolunteer\DashboardDatum.cs" />
     <Compile Include="Models\AwsCloudsearch\AwsBoundingBox.cs" />
     <Compile Include="Models\AwsCloudsearch\AwsCloudsearchDto.cs" />
     <Compile Include="Models\AwsCloudsearch\AwsConnectDto.cs" />
@@ -502,9 +499,7 @@
     <Compile Include="Models\Json\ResetTokenStatus.cs" />
     <Compile Include="Models\MailChimp\BulkEmailSubscriberOptDTO.cs" />
     <Compile Include="Models\Crossroads\RsvpMember.cs" />
-    <Compile Include="Models\Map\MapAddress.cs" />
     <Compile Include="Models\Map\MapCoordinates.cs" />
-    <Compile Include="Models\Map\MapLocation.cs" />
     <Compile Include="Models\Map\MapPin.cs" />
     <Compile Include="Security\ImpersonateAuthBaseController.cs" />
     <Compile Include="Services\AddressService.cs" />
@@ -535,7 +530,6 @@
     <Compile Include="Services\GroupLeaderService.cs" />
     <Compile Include="Services\GroupSearchService.cs" />
     <Compile Include="Services\ImageService.cs" />
-    <Compile Include="Services\Interfaces\GroupAttributeDTO.cs" />
     <Compile Include="Services\Interfaces\IAuthTokenExpiryService.cs" />
     <Compile Include="Services\Interfaces\IConfigurationService.cs" />
     <Compile Include="Services\Interfaces\ICorkboardService.cs" />
@@ -636,23 +630,19 @@
     <Compile Include="Models\Crossroads\Opportunity\OpportunityResponseDto.cs" />
     <Compile Include="Models\Crossroads\ParticipantSignup.cs" />
     <Compile Include="Models\Crossroads\AccountInfo.cs" />
-    <Compile Include="Models\Crossroads\CookieInfo.cs" />
     <Compile Include="Models\Crossroads\ProgramDTO.cs" />
-    <Compile Include="Models\Crossroads\ServeOccurance.cs" />
     <Compile Include="Models\Crossroads\Serve\Capacity.cs" />
     <Compile Include="Models\Crossroads\Serve\FamilyMember.cs" />
     <Compile Include="Models\Crossroads\Serve\QualifiedServerDto.cs" />
     <Compile Include="Models\Crossroads\Serve\SaveRsvpDto.cs" />
     <Compile Include="Models\Crossroads\Serve\ServeRsvp.cs" />
     <Compile Include="Models\Crossroads\Serve\UpdatedEvents.cs" />
-    <Compile Include="Models\Crossroads\GroupOpportunity.cs" />
     <Compile Include="Models\Crossroads\Serve\EventType.cs" />
     <Compile Include="Models\Crossroads\Serve\ServeRole.cs" />
     <Compile Include="Models\Crossroads\Serve\ServingDay.cs" />
     <Compile Include="Models\Crossroads\Serve\ServingTeam.cs" />
     <Compile Include="Models\Crossroads\Serve\ServingTime.cs" />
     <Compile Include="Models\Crossroads\Serve\TeamMember.cs" />
-    <Compile Include="Models\Crossroads\ServingRSVP.cs" />
     <Compile Include="Models\Crossroads\Stewardship\CheckAccount.cs" />
     <Compile Include="Models\Crossroads\Stewardship\CheckScannerBatch.cs" />
     <Compile Include="Models\Crossroads\Stewardship\CheckScannerCheck.cs" />
@@ -707,12 +697,9 @@
     <Compile Include="Models\Crossroads\VolunteerApplication\AdultApplicationDto.cs" />
     <Compile Include="Models\Crossroads\VolunteerApplication\ChildDto.cs" />
     <Compile Include="Models\Crossroads\VolunteerApplication\CustomField.cs" />
-    <Compile Include="Models\Crossroads\VolunteerApplication\Gender.cs" />
-    <Compile Include="Models\Crossroads\VolunteerApplication\MaritalStatus.cs" />
     <Compile Include="Models\Crossroads\VolunteerApplication\StudentApplicationDto.cs" />
     <Compile Include="Models\Crossroads\VolunteerApplication\VolunteerApplicationDto.cs" />
     <Compile Include="Models\Json\AccountInfoSerializer.cs" />
-    <Compile Include="Models\Json\Communication.cs" />
     <Compile Include="Models\Json\NewPassword.cs" />
     <Compile Include="Models\Json\RestHttpActionResult.cs" />
     <Compile Include="Models\Json\StripeDateTimeConverter.cs" />
@@ -725,7 +712,6 @@
     <Compile Include="Models\Crossroads\Profile\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\MPAuth.cs" />
-    <Compile Include="Security\CustomAuthorize.cs" />
     <Compile Include="Services\AccountService.cs" />
     <Compile Include="Models\Crossroads\Attribute\ObjectAllAttributesDTO.cs" />
     <Compile Include="Services\AttributeService.cs" />
@@ -764,7 +750,6 @@
     <Compile Include="Util\DateTimeWrapper.cs" />
     <Compile Include="Util\Interfaces\IDateTime.cs" />
     <Compile Include="Util\Interfaces\IEmailListHandler.cs" />
-    <Compile Include="Util\HtmlHelper.cs" />
     <Compile Include="Controllers\API\WaiverController.cs" />
   </ItemGroup>
   <ItemGroup>

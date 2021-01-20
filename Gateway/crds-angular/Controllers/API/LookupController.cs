@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Http.Results;
@@ -242,17 +241,6 @@ namespace crds_angular.Controllers.API
                 return BadRequest();
             }
             return authorizedWithCookie;
-        }
-
-        protected static dynamic DecodeJson(string json)
-        {
-            var obj = System.Web.Helpers.Json.Decode(json);
-            if (obj.GetType() != typeof(DynamicJsonArray))
-            {
-                return null;
-            }
-            dynamic[] array = obj;
-            return array;
         }
     }
 }

@@ -223,64 +223,6 @@ namespace crds_angular.test.Services
                 ParticipantsExpected = 8
             };
         }
-
-        private EventToolDto GetEventToolTestObjectWithRooms()
-        {
-            return new EventToolDto()
-            {
-                CongregationId = 1,
-                ContactId = 1234,
-                Description = "This is a description",
-                DonationBatchTool = false,
-                StartDateTime = new DateTime(2016, 12, 16, 10, 0, 0),
-                EndDateTime = new DateTime(2016, 12, 16, 11, 0, 0),
-                EventTypeId = 78,
-                MeetingInstructions = "These are instructions",
-                MinutesSetup = 0,
-                MinutesTeardown = 0,
-                ProgramId = 102,
-                ReminderDaysId = 2,
-                SendReminder = false,
-                Title = "Test Event",
-                ParticipantsExpected = 8,
-                Rooms = new List<EventRoomDto>()
-                {
-                    new EventRoomDto()
-                    {
-                        Name = "Room1",
-                        LayoutId = 1,
-                        RoomId = 1, 
-                        Cancelled = false,
-                        RoomReservationId = 1,
-                        Equipment = new List<EventRoomEquipmentDto>()
-                        {
-                            new EventRoomEquipmentDto()
-                            {
-                                Cancelled = false,
-                                EquipmentId = 1, 
-                                EquipmentReservationId = 1,
-                                QuantityRequested = 10
-                            }, 
-                            new EventRoomEquipmentDto()
-                            {
-                                Cancelled = false,
-                                EquipmentId = 2,
-                                EquipmentReservationId = 2,
-                                QuantityRequested = 42
-                            }
-                        }
-                    },
-                    new EventRoomDto()
-                    {
-                        Name = "Room2",
-                        LayoutId = 1,
-                        RoomId = 2,
-                        Cancelled = false,
-                        RoomReservationId = 2
-                    }
-                }
-            };
-        }
     }
 
 }

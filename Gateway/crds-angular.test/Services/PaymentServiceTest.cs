@@ -732,16 +732,6 @@ namespace crds_angular.test.Services
             };
         }
 
-        private static MpMyContact fakeMyContact(int contactId, string emailAddress)
-        {
-            // all I really care about is contactId and emailAddress
-            return new MpMyContact()
-            {
-                Contact_ID = contactId,
-                Email_Address = emailAddress
-            };
-        }
-
         private static MpProduct fakeProduct(int productId)
         {
             return new MpProduct()

@@ -1571,24 +1571,7 @@ namespace crds_angular.test.Services
                 Household_ID = 23               
             };
         }
-        //private CampReservationDTO MockCampReservationDTO()
-        //{
-        //    return new CampReservationDTO
-        //    {
-        //        ContactId = 0,
-        //        FirstName = "Jon",
-        //        LastName = "Horner",
-        //        MiddleName = "",
-        //        BirthDate = new DateTime(2006, 04, 03) + "",
-        //        Gender = 1,
-        //        PreferredName = "Jon",
-        //        SchoolAttending = "Mason",
-        //        CurrentGrade = 3,
-        //        SchoolAttendingNext = "Mason",
-        //        CrossroadsSite = 3,
-        //        RoomMate = ""
-        //    };
-        //}
+
         private List<CampEmergencyContactDTO> MockCampEmergencyContactDTO()
         {
             return new List<CampEmergencyContactDTO>
@@ -1611,24 +1594,6 @@ namespace crds_angular.test.Services
                     Relationship = "friend",
                     PrimaryEmergencyContact = false
                 }
-            };
-        }
-        private CampReservationDTO MockCampReservationDTOwithContactId()
-        {
-            return new CampReservationDTO
-            {
-                ContactId = 12345,
-                FirstName = "Jon",
-                LastName = "Horner",
-                MiddleName = "",
-                BirthDate = new DateTime(2006, 04, 03) + "",
-                Gender = 1,
-                PreferredName = "Jon",
-                SchoolAttending = "Mason",
-                CurrentGrade = 3,
-                SchoolAttendingNext = "Mason",
-                CrossroadsSite = 3,
-                RoomMate = ""
             };
         }
     }

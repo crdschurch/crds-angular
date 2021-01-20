@@ -575,25 +575,6 @@ namespace crds_angular.test.Services
                              });
         }
 
-      
-
-       
-       private static MpCommunication ReferenceCommunication(int templateId, Dictionary<string, object> mergeData, MpMyContact toContact)
-        {
-            var from = new MpContact {ContactId = 122222, EmailAddress = "groups@crossroads.net"};
-            return new MpCommunication
-            {
-                AuthorUserId = 1,
-                DomainId = 1,
-                EmailBody = "<h1> hello </h1>",
-                FromContact = from,
-                ReplyToContact = from,
-                TemplateId = templateId,
-                EmailSubject = "whateva",
-                MergeData = mergeData,
-                ToContacts = new List<MpContact>() {new MpContact {EmailAddress = toContact.Email_Address, ContactId = toContact.Contact_ID} }
-            };
-        }
 
         private static MpCommunication SMCommunication(int templateId, Dictionary<string, object> mergeData, string emailAddr, int contactId)
         {
@@ -609,36 +590,6 @@ namespace crds_angular.test.Services
                 EmailSubject = "whateva",
                 MergeData = mergeData,
                 ToContacts = new List<MpContact>() { new MpContact { EmailAddress = emailAddr, ContactId = contactId } }
-            };
-        }
-
-        private static MpCommunication NoReferenceCommunication(int templateId, Dictionary<string, object> mergeData, MpMyContact toContact)
-        {
-            var from = new MpContact() {ContactId = 122222, EmailAddress = "groups@crossroads.net"};
-            return new MpCommunication
-            {
-                AuthorUserId = 1,
-                DomainId = 1,
-                EmailBody = "<h1> hello </h1>",
-                FromContact = from,
-                ReplyToContact = from,
-                TemplateId = templateId,
-                EmailSubject = "Interview Needed",
-                MergeData = mergeData,
-                ToContacts = new List<MpContact> { new MpContact { EmailAddress = toContact.Email_Address, ContactId = toContact.Contact_ID} }
-            };
-        }
-
-        private static MpMessageTemplate ReferenceTemplate()
-        {
-            return new MpMessageTemplate
-            {
-                Body = "<h1> hello </h1>",
-                FromContactId = 122222,
-                FromEmailAddress = "groups@crossroads.net",
-                ReplyToContactId = 1222222,
-                ReplyToEmailAddress = "groups@crossroads.net",
-                Subject = "whateva"
             };
         }
 

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
@@ -24,19 +23,5 @@ namespace crds_angular.Models.Crossroads.GoVolunteer
         [JsonProperty(PropertyName = "mobile")]
         [RegularExpression(@"^\d{3}-\d{3}-\d{4}$")]
         public string MobilePhone { get; set; }
-
-        public Dictionary<string, object> GetDictionary()
-        {
-            var dictionary = new Dictionary<string, object>
-            {
-                {"Contact_ID", ContactId},
-                {"Date_Of_Birth", DateOfBirth},
-                {"Email_Address", EmailAddress},
-                {"Nickname", FirstName},
-                {"Last_Name", LastName},
-                {"Mobile_Phone", MobilePhone}
-            };
-            return dictionary;
-        }
     }
 }

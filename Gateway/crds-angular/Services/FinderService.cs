@@ -15,29 +15,15 @@ using log4net;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Finder;
 using MinistryPlatform.Translation.Repositories.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Device.Location;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 
 namespace crds_angular.Services
 {
-
-    public class RemoteAddress
-    {
-        public string Ip { get; set; }
-        public string region_code { get; set; }
-        public string city { get; set; }
-        public string zip_code { get; set; }
-        public double latitude { get; set; }
-        public double longitude { get; set; }
-    }
-
     public class FinderService : MinistryPlatformBaseService, IFinderService
     {
         private readonly IAddressGeocodingService _addressGeocodingService;
@@ -429,24 +415,6 @@ namespace crds_angular.Services
             return _groupService.GetGroupParticipantsWithoutAttributes(groupId);
         }
 
-        private void GatheringValidityCheck(int contactId, AddressDTO address)
-        {
-            //get the list of anywhere groups
-
-            var groups = _groupRepository.GetGroupsByGroupType(_anywhereGroupType);
-
-            //get groups that this user is the primary contact for at this address
-            var matchingGroupsCount = groups
-                .Where(x => x.PrimaryContact == contactId.ToString())
-                .Where(x => x.Address.Address_Line_1 == address.AddressLine1)
-                .Where(x => x.Address.City == address.City).Count(x => x.Address.State == address.State);
-
-            if (matchingGroupsCount > 0)
-            {
-                throw new GatheringException(contactId);
-            }
-        }
-
         public void TryAGroup(int contactId, int groupId)
         {
             var group = _groupService.GetGroupDetails(groupId);
@@ -465,24 +433,6 @@ namespace crds_angular.Services
             _groupToolService.SubmitInquiry(contactId, groupId, false);
             RecordCommunication(connection);
             SendTryAGroupEmailToLeader(contactId, group);
-        }
-
-        public AddressDTO GetAddressForIp(string ip)
-        {
-            var address = new AddressDTO();
-            var request = WebRequest.Create("http://freegeoip.net/json/" + ip);
-            using (var response = request.GetResponse())
-            using (var stream = new StreamReader(response.GetResponseStream()))
-            {
-                var responseString = stream.ReadToEnd();
-                var s = JsonConvert.DeserializeObject<RemoteAddress>(responseString);
-                address.City = s.city;
-                address.State = s.region_code;
-                address.PostalCode = s.zip_code;
-                address.Latitude = s.latitude;
-                address.Longitude = s.longitude;
-            }
-            return address;
         }
 
         public int GetParticipantIdFromContact(int contactId)
@@ -663,18 +613,6 @@ namespace crds_angular.Services
                     }
                 }
             }
-        }
-
-        private bool isMyPin(PinDto pin, int contactId)
-        {
-            var isMyPin = pin.Contact_ID == contactId && contactId != 0;
-            return isMyPin;
-        }
-
-        private string isMyPinAsString(PinDto pin, int contactId)
-        {
-            string isMyPinString = isMyPin(pin, contactId).ToString().ToLower();
-            return isMyPinString;
         }
 
         private string GetPinTitle(PinDto pin, int contactId = 0)

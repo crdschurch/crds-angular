@@ -228,20 +228,6 @@ namespace crds_angular.Services
             }
         }
 
-        private void SaveAttributeAsync(int objectId, MpObjectAttribute attribute, string token, MpObjectAttributeConfiguration configuration)
-        {
-            if (attribute.ObjectAttributeId == 0)
-            {
-                // These are new so add them
-                _mpObjectAttributeService.CreateAttribute(token, objectId, attribute, configuration);
-            }
-            else
-            {
-                // These are existing so update them
-                _mpObjectAttributeService.UpdateAttribute(token, attribute, configuration);
-            }
-        }
-
         private List<MpObjectAttribute> TranslateMultiToMPAttributes(Dictionary<int, ObjectAttributeTypeDTO> objectAttributeTypes)
         {
             var results = new List<MpObjectAttribute>();

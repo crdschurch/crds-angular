@@ -323,13 +323,7 @@ namespace crds_angular.Services
                 }
            return childcareEvents;
         }
-
-
-        private List<MpChildcareRequestDate> GetChildcareRequestDatesForRequest(int childcareRequestId)
-        {
-            return new List<MpChildcareRequestDate>();
-        }
-
+        
         private int GetApprovalEmailTemplate(int requestStatusId)
         {
             if (requestStatusId == 1)

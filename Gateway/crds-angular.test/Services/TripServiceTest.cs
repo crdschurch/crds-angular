@@ -804,22 +804,6 @@ namespace crds_angular.test.Services
             };
         }
 
-        private TripCampaignDto mockTripCampaignDto(int campaignId = 4)
-        {
-            return new TripCampaignDto
-            {
-                Id = campaignId,
-                Name = "Name",
-                FormId = 1,
-                Nickname = "Nickname",
-                YoungestAgeAllowed = 17,
-                RegistrationEnd = DateTime.Now,
-                RegistrationStart = DateTime.Now,
-                RegistrationDeposit = "300",
-                IsFull = false
-            };
-        }
-
         private List<MpPledge> mockPledges(MpPledgeCampaign campaign)
         {
             return new List<MpPledge>

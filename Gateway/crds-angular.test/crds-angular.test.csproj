@@ -220,13 +220,9 @@
     <Compile Include="controllers\ImageControllerTest.cs" />
     <Compile Include="controllers\LocationControllerTest.cs" />
     <Compile Include="controllers\LoginControllerTest.cs" />
-    <Compile Include="controllers\LookupControllerTest.cs" />
-    <Compile Include="controllers\MPAuthTestExtensions.cs" />
     <Compile Include="controllers\ServeControllerTest.cs" />
     <Compile Include="controllers\ProgramControllerTest.cs" />
     <Compile Include="controllers\StripeEventControllerTest.cs" />
-    <Compile Include="controllers\TripControllerTest.cs" />
-    <Compile Include="controllers\WaiverControllerTest.cs" />
     <Compile Include="DataAccess\EzScanCheckScannerDaoTest.cs" />
     <Compile Include="Exceptions\GroupParticipantRemovalExceptionTest.cs" />
     <Compile Include="Models\Crossroads\AuthHelpers.cs" />
