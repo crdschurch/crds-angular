@@ -36,7 +36,7 @@ function getToken(): Cypress.Chainable<string> {
  * Adds MP Bearer token authorized by CRDS.Common client app to Cypress request 
  * @param request 
  */
-export function authorize(request: Partial<Cypress.RequestOptions>): Cypress.Chainable<Partial<Cypress.RequestOptions>>{
+export function addAuthorizationHeader(request: Partial<Cypress.RequestOptions>): Cypress.Chainable<Partial<Cypress.RequestOptions>>{
   return getToken()
   .then(token => {
     request.auth = {bearer: token};
