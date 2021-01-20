@@ -1,5 +1,4 @@
-﻿using System;
-using crds_angular.Models.Crossroads.Profile;
+﻿using crds_angular.Models.Crossroads.Profile;
 using Moq;
 using NUnit.Framework;
 using MPServices = MinistryPlatform.Translation.Repositories.Interfaces;
@@ -12,7 +11,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using Moq.Language.Flow;
-using Newtonsoft.Json.Linq;
 
 namespace crds_angular.test.Services
 {

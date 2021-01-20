@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Groups;
-using crds_angular.Models.Crossroads.Opportunity;
 using crds_angular.Models.Crossroads.Serve;
 using MinistryPlatform.Translation.Models;
 

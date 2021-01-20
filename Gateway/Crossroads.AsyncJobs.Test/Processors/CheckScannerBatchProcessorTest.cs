@@ -4,8 +4,6 @@ using crds_angular.Models.Crossroads.Stewardship;
 using crds_angular.Services.Interfaces;
 using Crossroads.AsyncJobs.Models;
 using Crossroads.AsyncJobs.Processors;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Moq;
 using NUnit.Framework;

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using crds_angular.Models.Crossroads.Events;
 using crds_angular.Services;
-using crds_angular.Services.Interfaces;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;

@@ -1,8 +1,6 @@
 ﻿using crds_angular.Models.Crossroads;
 using System.Collections.Generic;
-using System.Device.Location;
 using crds_angular.Models.Crossroads.Groups;
-using crds_angular.Models.Finder;
 using MinistryPlatform.Translation.Models;
 
 namespace crds_angular.Services.Interfaces

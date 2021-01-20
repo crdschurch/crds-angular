@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MinistryPlatform.Translation.Enum
+﻿namespace MinistryPlatform.Translation.Enum
 {
     public sealed class NumericDayOfWeek
     {

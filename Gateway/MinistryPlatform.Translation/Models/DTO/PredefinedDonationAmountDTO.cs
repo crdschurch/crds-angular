@@ -1,8 +1,5 @@
-﻿using System.Runtime.Serialization;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.MinistryPlatform;
+﻿using Crossroads.Web.Common.MinistryPlatform;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace MinistryPlatform.Translation.Models.DTO
 {

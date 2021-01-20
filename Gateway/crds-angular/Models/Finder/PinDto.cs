@@ -1,5 +1,4 @@
 ﻿using crds_angular.Models.Crossroads;
-using crds_angular.Models.Crossroads.Groups;
 using Newtonsoft.Json;
 
 namespace crds_angular.Models.Finder

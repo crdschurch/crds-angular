@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Core;
 using crds_angular.Exceptions;
 using crds_angular.Services.Interfaces;
 using Crossroads.Utilities.Services;

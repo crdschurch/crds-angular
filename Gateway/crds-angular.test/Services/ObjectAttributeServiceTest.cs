@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using crds_angular.Models.Crossroads.Attribute;
-using crds_angular.Models.Crossroads.Profile;
-using crds_angular.Services;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
-using MinistryPlatform.Translation.Repositories;
 using GateWayInterfaces = crds_angular.Services.Interfaces;
 using Moq;
 using NUnit.Framework;
-using Rhino.Mocks;
 using MPInterfaces = MinistryPlatform.Translation.Repositories.Interfaces;
 using ObjectAttributeService = crds_angular.Services.ObjectAttributeService;
 

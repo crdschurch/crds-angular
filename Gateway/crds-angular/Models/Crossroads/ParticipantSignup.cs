@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using crds_angular.Models.Crossroads.Attribute;
 using Newtonsoft.Json;
 

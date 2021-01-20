@@ -23,7 +23,6 @@ using MPServices = MinistryPlatform.Translation.Repositories.Interfaces;
 using IGroupRepository = MinistryPlatform.Translation.Repositories.Interfaces.IGroupRepository;
 using Participant = MinistryPlatform.Translation.Models.MpParticipant;
 using crds_angular.Util.Interfaces;
-using Amazon.CloudSearchDomain.Model;
 
 namespace crds_angular.test.Services
 {

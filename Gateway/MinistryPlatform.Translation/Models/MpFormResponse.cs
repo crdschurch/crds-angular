@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.MinistryPlatform;
 using Newtonsoft.Json;
 

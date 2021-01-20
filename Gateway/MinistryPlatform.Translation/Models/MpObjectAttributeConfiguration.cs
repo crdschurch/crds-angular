@@ -1,5 +1,3 @@
-using System;
-
 namespace MinistryPlatform.Translation.Models
 {
     public class MpObjectAttributeConfiguration

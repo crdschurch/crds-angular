@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.ModelConfiguration.Conventions;
-using System.Linq;
-using System.Web;
-using Microsoft.Ajax.Utilities;
-using MinistryPlatform.Translation.PlatformService;
 using Segment;
 using Segment.Model;
 

@@ -1,7 +1,4 @@
-﻿using crds_angular.Models.Crossroads;
-using Newtonsoft.Json;
-
-namespace crds_angular.Models.Finder
+﻿namespace crds_angular.Models.Finder
 {
     public class ConnectCommunicationDto
     {

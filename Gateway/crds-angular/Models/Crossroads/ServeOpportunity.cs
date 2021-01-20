@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 
 namespace crds_angular.Models.Crossroads

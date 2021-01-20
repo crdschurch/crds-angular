@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Messaging;
-using System.Web;
-using System.Web.Helpers;
 using System.Web.Http;
 using System.Web.Http.Description;
 using crds_angular.Exceptions.Models;
@@ -12,10 +10,8 @@ using crds_angular.Models.Crossroads.Opportunity;
 using crds_angular.Models.Crossroads.Serve;
 using crds_angular.Security;
 using crds_angular.Services.Interfaces;
-using Crossroads.Utilities.Interfaces;
 using Crossroads.Utilities.Messaging.Interfaces;
 using Crossroads.ApiVersioning;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
 

@@ -1,9 +1,7 @@
 ﻿using crds_angular.Exceptions;
 using crds_angular.Models.Crossroads;
 using crds_angular.Services;
-using Crossroads.Utilities.Services;
 using GoogleMapsAPI.NET.API.Client;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using NUnit.Framework;
 

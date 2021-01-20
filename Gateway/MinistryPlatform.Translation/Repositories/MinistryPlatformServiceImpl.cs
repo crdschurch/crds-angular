@@ -1,5 +1,8 @@
-﻿using MinistryPlatform.Translation.Helpers;
+﻿using Crossroads.Utilities.Services;
+using Crossroads.Web.Common.Configuration;
+using MinistryPlatform.Translation.Helpers;
 using MinistryPlatform.Translation.PlatformService;
+using MinistryPlatform.Translation.Repositories.Interfaces;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -9,11 +12,6 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Threading.Tasks;
 using System.Web.Security;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Utilities.Services;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.Configuration;
-using MinistryPlatform.Translation.Repositories.Interfaces;
 using Task = System.Threading.Tasks.Task;
 
 namespace MinistryPlatform.Translation.Repositories

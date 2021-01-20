@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models.Rules;
-using MinistryPlatform.Translation.Repositories.Interfaces;
 using MinistryPlatform.Translation.Repositories.Interfaces.Rules;
 using MinistryPlatform.Translation.Repositories.Rules;
 using Moq;

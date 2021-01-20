@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using Crossroads.Utilities.Interfaces;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
-using MinistryPlatform.Translation.Repositories.Interfaces;
 using RoleDTO = MinistryPlatform.Translation.Models.DTO.MpRoleDto;
 using Crossroads.Web.Common.MinistryPlatform;
 

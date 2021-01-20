@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Utilities.Services;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.Security;
-using MinistryPlatform.Translation.PlatformService;
-using MinistryPlatform.Translation.Repositories;
-using MinistryPlatform.Translation.Repositories.Interfaces;
-using Moq;
-using NUnit.Framework;
-
-namespace MinistryPlatform.Translation.Test
+﻿namespace MinistryPlatform.Translation.Test
 {
     //[TestFixture]
     //[Category("IntegrationTests")]

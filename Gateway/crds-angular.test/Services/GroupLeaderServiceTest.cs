@@ -5,7 +5,6 @@ using System.Threading;
 using crds_angular.Models.Crossroads.GroupLeader;
 using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Services;
-using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models;

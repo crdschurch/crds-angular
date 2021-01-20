@@ -1,15 +1,12 @@
 ﻿using System.Collections.Generic;
-using Crossroads.Utilities.Interfaces;
 using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
 using FsCheck;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
 using Crossroads.Web.Common.MinistryPlatform;
-using MinistryPlatform.Translation.Models;
 
 namespace MinistryPlatform.Translation.Test.Services
 {

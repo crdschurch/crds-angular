@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using crds_angular.DataAccess.Interfaces;
 using crds_angular.Models.Crossroads.Stewardship;
-using Crossroads.Utilities.Interfaces;
 
 namespace crds_angular.DataAccess
 {

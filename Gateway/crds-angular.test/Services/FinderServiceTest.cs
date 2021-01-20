@@ -21,7 +21,6 @@ using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Services.Analytics;
 using Crossroads.Web.Common.Security;
 using MvcContrib.TestHelper;
-using Crossroads.Web.Auth.Models;
 using crds_angular.Models.Crossroads.Attribute;
 
 namespace crds_angular.test.Services

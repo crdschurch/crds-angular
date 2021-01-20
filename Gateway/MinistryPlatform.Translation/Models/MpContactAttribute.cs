@@ -1,5 +1,4 @@
-﻿using Crossroads.Web.Common;
-using Crossroads.Web.Common.MinistryPlatform;
+﻿using Crossroads.Web.Common.MinistryPlatform;
 
 namespace MinistryPlatform.Translation.Models
 {

@@ -4,8 +4,6 @@ using crds_angular.Exceptions;
 using crds_angular.Models.Crossroads;
 using crds_angular.Services;
 using crds_angular.Services.Interfaces;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;

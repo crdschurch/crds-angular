@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using crds_angular.Models.Crossroads.Attribute;
 using crds_angular.Models.Crossroads.Events;
-using crds_angular.Models.Crossroads.Profile;
 using Newtonsoft.Json;
 
 namespace crds_angular.Models.Crossroads.Groups

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using crds_angular.Services.Interfaces;
-using Crossroads.ClientApiKeys;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using RestSharp;

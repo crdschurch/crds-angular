@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Configuration;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
-using MinistryPlatform.Translation.Repositories.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;
 
 namespace MinistryPlatform.Translation.Repositories

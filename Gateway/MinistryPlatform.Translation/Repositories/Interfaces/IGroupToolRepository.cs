@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using MinistryPlatform.Translation.Models;
-using MinistryPlatform.Translation.Models.DTO;
 
 namespace MinistryPlatform.Translation.Repositories.Interfaces
 {

@@ -1,13 +1,9 @@
-using System.Collections.Specialized;
 using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using System.Configuration;
 using System.Linq;
 using System.Web.Http;
 using Crossroads.AsyncJobs.App_Start;
-using Quartz;
-using Quartz.Impl;
-using Quartz.Unity;
 using Crossroads.Web.Common.Configuration;
 using Unity.WebApi;
 

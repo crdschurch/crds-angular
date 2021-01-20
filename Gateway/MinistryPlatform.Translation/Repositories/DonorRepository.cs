@@ -4,10 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Crossroads.Utilities;
 using Crossroads.Utilities.Interfaces;
 using log4net;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -17,7 +15,6 @@ using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.PlatformService;
 using MinistryPlatform.Translation.Repositories.Interfaces;
-using Newtonsoft.Json.Linq;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 using Constants = Crossroads.Utilities.Constants;
 

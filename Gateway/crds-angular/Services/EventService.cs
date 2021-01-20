@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoMapper;
 using crds_angular.Models.Crossroads.Events;
-using crds_angular.Models.Crossroads.Groups;
 using Crossroads.Utilities.FunctionalHelpers;
 using Crossroads.Utilities.Interfaces;
 using Crossroads.Utilities.Services;

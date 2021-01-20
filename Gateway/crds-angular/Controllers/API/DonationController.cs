@@ -16,11 +16,9 @@ using Microsoft.Ajax.Utilities;
 using MinistryPlatform.Translation.Models;
 using MPInterfaces = MinistryPlatform.Translation.Repositories.Interfaces;
 using Crossroads.ApiVersioning;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Security;
 using Newtonsoft.Json;
 using crds_angular.Services.Analytics;
-using Crossroads.Web.Auth.Models;
 
 namespace crds_angular.Controllers.API
 {

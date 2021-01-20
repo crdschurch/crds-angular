@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Amazon.CloudSearchDomain.Model;
-using AutoMapper;
 using crds_angular.App_Start;
 using crds_angular.Exceptions;
 using crds_angular.Models.Crossroads;
@@ -15,10 +14,8 @@ using Crossroads.Utilities.Interfaces;
 using Crossroads.Utilities.Models;
 using Crossroads.Web.Common.Configuration;
 using MinistryPlatform.Translation.Models;
-using MinistryPlatform.Translation.Models.DTO;
 using Moq;
 using NUnit.Framework;
-using Rhino.Mocks;
 using MPServices = MinistryPlatform.Translation.Repositories.Interfaces;
 
 namespace crds_angular.test.Services

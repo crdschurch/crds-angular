@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Reflection.Emit;
 using MinistryPlatform.Translation.Models;
 
 namespace crds_angular.test.Models.Crossroads.Events

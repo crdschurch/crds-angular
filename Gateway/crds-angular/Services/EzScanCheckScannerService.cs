@@ -4,7 +4,6 @@ using AutoMapper;
 using crds_angular.DataAccess.Interfaces;
 using crds_angular.Models.Crossroads.Stewardship;
 using crds_angular.Services.Interfaces;
-using Crossroads.Utilities;
 using log4net;
 using MPServices = MinistryPlatform.Translation.Repositories.Interfaces;
 using Crossroads.Utilities.Extensions;

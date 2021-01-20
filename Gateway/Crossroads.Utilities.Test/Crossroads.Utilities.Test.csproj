@@ -64,14 +64,6 @@
       <HintPath>..\packages\FsCheck.2.2.4\lib\net45\FsCheck.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FsCheck.NUnit, Version=2.2.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FsCheck.NUnit.2.2.4\lib\net45\FsCheck.NUnit.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FsCheck.NUnit.Addin, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FsCheck.NUnit.2.2.4\lib\net45\FsCheck.NUnit.Addin.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\FSharp.Core.3.1.2.5\lib\net40\FSharp.Core.dll</HintPath>
       <Private>True</Private>
@@ -164,8 +156,6 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Unity.WebApi, Version=5.2.3.0, Culture=neutral, PublicKeyToken=43da31bc42a85347, processorArchitecture=MSIL">
@@ -190,10 +180,6 @@
     <ProjectReference Include="..\Crossroads.Utilities\Crossroads.Utilities.csproj">
       <Project>{61238a82-d410-4330-bd25-889239fc7873}</Project>
       <Name>Crossroads.Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MinistryPlatform.Translation\MinistryPlatform.Translation.csproj">
-      <Project>{CC650D93-731C-4613-B358-FB4C76237455}</Project>
-      <Name>MinistryPlatform.Translation</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

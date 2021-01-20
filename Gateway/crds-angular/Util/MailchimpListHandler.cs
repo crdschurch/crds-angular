@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using RestSharp;
-using Crossroads.Utilities.Interfaces;
 using System.Net;
 using Crossroads.Utilities.Serializers;
 using MPInterfaces = MinistryPlatform.Translation.Repositories.Interfaces;
@@ -14,7 +12,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using crds_angular.Models.Crossroads.Subscription;
 using crds_angular.Models.MailChimp;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 
 namespace crds_angular.Util

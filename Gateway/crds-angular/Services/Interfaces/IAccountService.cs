@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using crds_angular.Models.Crossroads;
+﻿using crds_angular.Models.Crossroads;
 
 namespace crds_angular.Services.Interfaces
 {

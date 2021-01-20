@@ -4,7 +4,6 @@ using System.Linq;
 using MPInterfaces = MinistryPlatform.Translation.Repositories.Interfaces;
 using crds_angular.Models.Crossroads.GoVolunteer;
 using crds_angular.Services.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.MinistryPlatform;
 
 namespace crds_angular.Services

@@ -17,7 +17,6 @@ using NUnit.Framework;
 using MinistryPlatform.Translation.Models.MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Payments;
 using MinistryPlatform.Translation.Models.Product;
-using Crossroads.Web.Common.Security;
 using Crossroads.Web.Auth.Models;
 using crds_angular.test.Models.Crossroads;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using AutoMapper.Internal;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models.DTO;
 using Newtonsoft.Json.Linq;

@@ -1,14 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Device.Location;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Web.Http;
 using System.Web.Http.Controllers;
-using System.Web.Http.Results;
 using crds_angular.Controllers.API;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Finder;
-using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;

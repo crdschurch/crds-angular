@@ -1,10 +1,8 @@
 ﻿using System.Net;
-using MinistryPlatform.Translation.Extensions;
 using Moq;
 using NUnit.Framework;
 using RestSharp;
 using System;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Extensions;
 
 namespace MinistryPlatform.Translation.Test.Extensions

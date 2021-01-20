@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using crds_angular.Models.Crossroads.GroupLeader;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;

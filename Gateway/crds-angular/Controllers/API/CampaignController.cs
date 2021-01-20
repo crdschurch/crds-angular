@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using crds_angular.Exceptions;
 using crds_angular.Exceptions.Models;
 using crds_angular.Services.Interfaces;
 using Crossroads.ApiVersioning;

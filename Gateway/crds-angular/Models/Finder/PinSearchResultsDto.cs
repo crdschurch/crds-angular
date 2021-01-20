@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using crds_angular.Models.Crossroads;
-using crds_angular.Models.Crossroads.Groups;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace crds_angular.Models.Finder

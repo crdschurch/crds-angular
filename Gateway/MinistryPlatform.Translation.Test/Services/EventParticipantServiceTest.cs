@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Crossroads.Utilities;
 using Crossroads.Utilities.FunctionalHelpers;
-using Crossroads.Utilities.Interfaces;
 using FsCheck;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;

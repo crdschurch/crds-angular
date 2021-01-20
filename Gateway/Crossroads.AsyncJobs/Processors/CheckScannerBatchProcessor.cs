@@ -5,10 +5,7 @@ using Crossroads.AsyncJobs.Models;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using crds_angular.Models.Crossroads;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Newtonsoft.Json;
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Microsoft.SqlServer.Server;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 

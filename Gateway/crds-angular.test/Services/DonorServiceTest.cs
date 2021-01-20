@@ -7,9 +7,7 @@ using crds_angular.Models.Crossroads.Stewardship;
 using crds_angular.Services;
 using crds_angular.Services.Interfaces;
 using Crossroads.Utilities.Extensions;
-using Crossroads.Utilities.Interfaces;
 using Crossroads.Utilities.Services;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -18,7 +16,6 @@ using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using Moq;
 using NUnit.Framework;
-using RestSharp.Extensions;
 using IDonorRepository = MinistryPlatform.Translation.Repositories.Interfaces.IDonorRepository;
 
 namespace crds_angular.test.Services

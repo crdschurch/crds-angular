@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using crds_angular.Models;
 using crds_angular.Models.Crossroads.Childcare;
-using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Models.Crossroads.Serve;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Childcare;

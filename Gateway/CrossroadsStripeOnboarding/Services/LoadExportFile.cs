@@ -4,7 +4,6 @@ using System.IO;
 using CrossroadsStripeOnboarding.Models;
 using CrossroadsStripeOnboarding.Models.Json;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace CrossroadsStripeOnboarding.Services
 {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Crossroads.Utilities.FunctionalHelpers;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Payments;

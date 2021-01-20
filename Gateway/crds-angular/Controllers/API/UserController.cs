@@ -7,7 +7,6 @@ using crds_angular.Models.Crossroads;
 using crds_angular.Services.Interfaces;
 using crds_angular.Exceptions.Models;
 using crds_angular.Security;
-using crds_angular.Services.Analytics;
 using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;

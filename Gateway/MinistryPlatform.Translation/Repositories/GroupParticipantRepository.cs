@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Crossroads.Utilities.Extensions;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Extensions;

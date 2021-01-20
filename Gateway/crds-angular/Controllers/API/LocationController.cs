@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using crds_angular.Exceptions.Models;
@@ -11,10 +8,7 @@ using crds_angular.Models.Crossroads.GoVolunteer;
 using crds_angular.Security;
 using crds_angular.Services.Interfaces;
 using Crossroads.ApiVersioning;
-using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
-using MinistryPlatform.Translation.Models;
 
 namespace crds_angular.Controllers.API
 {

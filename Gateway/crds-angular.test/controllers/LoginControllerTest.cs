@@ -9,7 +9,6 @@ using crds_angular.Models.Json;
 using Moq;
 using NUnit.Framework;
 using ILoginService = crds_angular.Services.Interfaces.ILoginService;
-using IPersonService = crds_angular.Services.Interfaces.IPersonService;
 using MinistryPlatform.Translation.Repositories.Interfaces;
 using crds_angular.Services.Interfaces;
 using Crossroads.ClientApiKeys;

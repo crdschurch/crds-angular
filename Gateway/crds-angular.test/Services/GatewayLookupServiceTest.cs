@@ -3,7 +3,6 @@ using System.Linq;
 using crds_angular.Models.Crossroads.Lookups;
 using crds_angular.Services;
 using FsCheck;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models.Lookups;
 using MinistryPlatform.Translation.Repositories.Interfaces;

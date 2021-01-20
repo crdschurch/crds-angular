@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using crds_angular.Services;
+﻿using System.Threading.Tasks;
 using crds_angular.Services.Interfaces;
-using Segment.Model;
 
 namespace crds_angular.Services.Analytics
 {

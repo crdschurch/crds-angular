@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Web.Http;
+﻿using System.Web.Http;
 
 namespace Crossroads.AsyncJobs.Application
 {

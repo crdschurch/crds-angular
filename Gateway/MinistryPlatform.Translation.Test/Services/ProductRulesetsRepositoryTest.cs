@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using MinistryPlatform.Translation.Models.Rules;
-using MinistryPlatform.Translation.Repositories.Interfaces;
 using MinistryPlatform.Translation.Repositories.Interfaces.Rules;
 using MinistryPlatform.Translation.Repositories.Rules;
 using MinistryPlatform.Translation.Test.Helpers;
 using Moq;
 using NUnit.Framework;
-using FactoryGirl.NET;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.MinistryPlatform;
 
 namespace MinistryPlatform.Translation.Test.Services

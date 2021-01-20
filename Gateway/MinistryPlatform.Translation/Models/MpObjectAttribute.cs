@@ -1,7 +1,6 @@
 using System;
 using Crossroads.Web.Common.MinistryPlatform;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace MinistryPlatform.Translation.Models
 {

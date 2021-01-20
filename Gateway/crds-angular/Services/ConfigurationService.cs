@@ -1,7 +1,5 @@
-﻿using System;
-using crds_angular.Services.Interfaces;
+﻿using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.MinistryPlatform;
 
 namespace crds_angular.Services
 {

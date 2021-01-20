@@ -5,7 +5,6 @@ using crds_angular.App_Start;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Attribute;
 using crds_angular.Models.Crossroads.Profile;
-using crds_angular.Services;
 using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;

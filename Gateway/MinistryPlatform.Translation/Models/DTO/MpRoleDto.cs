@@ -1,7 +1,4 @@
-﻿using Crossroads.Web.Common.MinistryPlatform;
-using Newtonsoft.Json;
-
-namespace MinistryPlatform.Translation.Models.DTO
+﻿namespace MinistryPlatform.Translation.Models.DTO
 {
     public class MpRoleDto
     {

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Attribute;
 using crds_angular.Services.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
 using MPInterfaces = MinistryPlatform.Translation.Repositories.Interfaces;

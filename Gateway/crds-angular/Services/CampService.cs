@@ -4,7 +4,6 @@ using System.Linq;
 using crds_angular.Exceptions;
 using crds_angular.Models.Crossroads.Camp;
 using crds_angular.Models.Crossroads.Groups;
-using crds_angular.Models.Crossroads.Payment;
 using crds_angular.Services.Interfaces;
 using Crossroads.Utilities.FunctionalHelpers;
 using log4net;

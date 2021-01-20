@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Web.Http;
-using crds_angular.Exceptions;
 using crds_angular.Exceptions.Models;
 using crds_angular.Models.Json;
 using crds_angular.Security;

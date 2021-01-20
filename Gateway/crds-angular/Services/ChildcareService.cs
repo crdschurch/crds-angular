@@ -6,8 +6,6 @@ using crds_angular.Exceptions;
 using crds_angular.Models;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Childcare;
-using crds_angular.Models.Crossroads.Groups;
-using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Models.Crossroads.Serve;
 using crds_angular.Services.Interfaces;
 using crds_angular.Util.Interfaces;

@@ -5,7 +5,6 @@ using crds_angular.Models.AwsCloudsearch;
 using crds_angular.Models.Finder;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Groups;
-using System.Threading.Tasks;
 
 namespace crds_angular.Services.Interfaces
 {

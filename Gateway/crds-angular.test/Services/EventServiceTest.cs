@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoMapper;
 using crds_angular.App_Start;
 using crds_angular.Models.Crossroads.Events;
-using crds_angular.Models.Crossroads.Groups;
 using crds_angular.Services;
 using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using MinistryPlatform.Translation.Models;
@@ -19,8 +16,6 @@ using Moq;
 using MvcContrib.TestHelper.Ui;
 using NUnit.Framework;
 using MinistryPlatform.Translation.Models.EventReservations;
-using NUnit.Framework.Constraints;
-using Rhino.Mocks;
 
 namespace crds_angular.test.Services
 {

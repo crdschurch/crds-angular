@@ -7,8 +7,6 @@ using System.Reflection;
 using crds_angular.Services.Interfaces;
 using crds_angular.Util;
 using Crossroads.Web.Common.Security;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Net.Http.Headers;
 
 namespace crds_angular.Security

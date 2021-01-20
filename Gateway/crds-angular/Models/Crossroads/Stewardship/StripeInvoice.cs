@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using crds_angular.Models.Json;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace crds_angular.Models.Crossroads.Stewardship
 {
