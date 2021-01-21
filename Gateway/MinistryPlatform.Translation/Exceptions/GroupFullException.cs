@@ -6,7 +6,7 @@ namespace MinistryPlatform.Translation.Exceptions
     public class GroupFullException : Exception
     {
         private MpGroup group;
-        public MpGroup GroupDetails { get { return (group); } }
+
         public GroupFullException(MpGroup group)
             : base("Group is full: " + group.Participants.Count + " > " + group.TargetSize)
         {

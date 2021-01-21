@@ -141,19 +141,6 @@ namespace MinistryPlatform.Translation.Test.Services
             };
         }
 
-        private List<Dictionary<string, object>> MockEventParticipantsByEventIdAndParticipantId()
-        {
-            return new List<Dictionary<string, object>>
-            {
-                new Dictionary<string, object>
-                {
-                    {"Event_Participant_ID", 8634},
-                    {"Event_ID", 93},
-                    {"Participant_ID", 134}
-                }
-            };
-        }
-
         [Test]
         public void GetEvent()
         {

@@ -46,18 +46,6 @@ namespace Crossroads.Utilities.Services
         }
 
         /// <summary>
-        /// Builds the specified element and adds the 
-        /// child element inside. 
-        /// ex. new HtmlElement('td', new HtmlELement("p")) represents <td><p></p></td>
-        /// </summary>
-        /// <param name="el">The element name </param>
-        /// <param name="child">The child htmlelement to put inside the element</param>
-        public HtmlElement(String el, HtmlElement child) : this(el)
-        {
-            this.childrenElements = new List<HtmlElement>() { child };
-        }
-
-        /// <summary>
         /// Builds the element and adds a list of children elements
         /// </summary>
         /// <param name="el">The element</param>
@@ -103,18 +91,6 @@ namespace Crossroads.Utilities.Services
             this.elementText = text;
         }
 
-        /// <summary>
-        /// Builds the element with a list of children elements and a list of attributes
-        /// </summary>
-        /// <param name="el">The element</param>
-        /// <param name="children">A list of children elements</param>
-        /// <param name="attributes">A list of attributes</param>
-        public HtmlElement(String el, List<HtmlElement> children, Dictionary<String, String> attributes)
-            : this(el, attributes)
-        {
-            this.childrenElements = children;
-        }
-        
         /// <summary>
         /// Append an element to this one
         /// </summary>

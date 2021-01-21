@@ -298,7 +298,6 @@
     <Compile Include="Models\MpGroupSearchAttributes.cs" />
     <Compile Include="Models\MpGroupSearchResult.cs" />
     <Compile Include="Models\MpGroupServingParticipant.cs" />
-    <Compile Include="Models\MpGroupServingResponses.cs" />
     <Compile Include="Models\MpGroupSignupRelationships.cs" />
     <Compile Include="Models\MpHousehold.cs" />
     <Compile Include="Models\MpHouseholdMember.cs" />
@@ -375,7 +374,6 @@
     <Compile Include="Repositories\ObjectAttributeRepository.cs" />
     <Compile Include="Repositories\ContactRelationshipRepository.cs" />
     <Compile Include="Repositories\ContactRepository.cs" />
-    <Compile Include="Repositories\CreatePageRecordRepository.cs" />
     <Compile Include="Repositories\DestinationRepository.cs" />
     <Compile Include="Repositories\DonationRepository.cs" />
     <Compile Include="Repositories\DonorRepository.cs" />

@@ -540,12 +540,6 @@ namespace MinistryPlatform.Translation.Test.Services
             const string columnList = "Product_ID_Table.[Product_ID],Ruleset_ID_Table.[Ruleset_ID],cr_Product_Ruleset.[Start_Date],cr_Product_Ruleset.[End_Date]";
             var res = _fixture.UsingAuthenticationToken(_authToken).Search<MPProductRuleSet>(searchString, columnList);
             Assert.IsNotEmpty(res);
-        } 
-        
-        public void findCongregation()
-        {
-            var searchString = $"Congregations.[Congregation_Name]='Oakley'";
-            var result = _fixture.UsingAuthenticationToken(_authToken).Search<MpCongregation>(searchString);
         }
 
         [Test]

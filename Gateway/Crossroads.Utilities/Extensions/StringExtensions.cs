@@ -1,15 +1,7 @@
-﻿using System;
-
-namespace Crossroads.Utilities.Extensions
+﻿namespace Crossroads.Utilities.Extensions
 {
     public static class StringExtensions
     {
-        public static string Left(this string str, int length)
-        {
-            str = str ?? string.Empty;
-            return str.Substring(0, Math.Min(length, str.Length));
-        }
-
         public static string Right(this string str, int length)
         {
             str = str ?? string.Empty;

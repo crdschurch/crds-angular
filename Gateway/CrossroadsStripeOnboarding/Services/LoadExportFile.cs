@@ -9,7 +9,6 @@ namespace CrossroadsStripeOnboarding.Services
 {
     public class LoadExportFile
     {
-        private static readonly Random Random = new Random();
         public static KeyValuePair<Messages, StripeJsonExport> ReadFile(string file)
         {
             var msg = ValidateIsFile(file);

@@ -11,11 +11,6 @@ namespace MinistryPlatform.Translation.Repositories.Rules
     {
         private readonly MPRegistrationRule _registrationRule;
 
-        RegistrationRule(MPRegistrationRule registrationRule)
-        {
-            _registrationRule = registrationRule;
-        }
-
         public RegistrationRule(DateTime startDate, DateTime? endDate, int maxRegistrants)
         {
             _registrationRule = new MPRegistrationRule

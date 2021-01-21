@@ -288,17 +288,6 @@ namespace MinistryPlatform.Translation.Repositories
             return formResponse?.FormResponseId ?? 0;
         }
 
-        private int GetFormResponseIdForFormContactAndPledgeCampaign(int formId, int contactId, int pledgeCampaignId)
-        {
-            var apiToken = ApiLogin();
-            var searchString = $"Contact_ID='{contactId}' AND Form_ID='{formId}' AND Pledge_Campaign_ID='{pledgeCampaignId}'";
-            const string selectColumns = "Form_Response_ID";
-
-            var formResponse = _ministryPlatformRestRepository.UsingAuthenticationToken(apiToken).Search<MpFormResponse>(searchString, selectColumns, null, true).FirstOrDefault();
-
-            return formResponse?.FormResponseId ?? 0;
-        }
-
         private int GetFormResponseAnswerIdForFormFeildFormResponse(int formResponseId, int formFieldId)
         {
             var apiToken = ApiLogin();

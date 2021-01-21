@@ -22,22 +22,5 @@ namespace Crossroads.Utilities.Services
             var enumMemberAttribute = ((EnumMemberAttribute[])enumType.GetField(name).GetCustomAttributes(typeof(EnumMemberAttribute), true)).Single();
             return enumMemberAttribute.Value;
         }
-
-        /// <summary>
-        /// Convert a string representation of an enum to the Enum member.  This looks for an EnumMember attribute matching the given string.
-        /// </summary>
-        /// <typeparam name="T">The Enum Type to convert</typeparam>
-        /// <param name="str">The string Value on the EnumMember attribute</param>
-        /// <returns>The enum value from the given string representation, or the Enum's default value if not found</returns>
-        public static T ToEnum<T>(string str)
-        {
-            var enumType = typeof(T);
-            foreach (var name in Enum.GetNames(enumType))
-            {
-                var enumMemberAttribute = ((EnumMemberAttribute[])enumType.GetField(name).GetCustomAttributes(typeof(EnumMemberAttribute), true)).Single();
-                if (enumMemberAttribute.Value == str) return (T)Enum.Parse(enumType, name);
-            }
-            return default(T);
-        }
     }
 }

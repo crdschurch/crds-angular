@@ -39,21 +39,6 @@ namespace MinistryPlatform.Translation.Test.Helpers
             }
         }
 
-        public static void MPRuleset()
-        {
-            if (!FactoryGirl.NET.FactoryGirl.DefinedFactories.Contains(typeof(MPRuleSet)))
-            {
-                FactoryGirl.NET.FactoryGirl.Define<MPRuleSet>(() => new MPRuleSet
-                {
-                    Id = 23,
-                    Description = "Some profound description",
-                    EndDate = DateTime.Now.AddDays(5),
-                    Name = "Some Awesome Name",
-                    StartDate = DateTime.Now.AddDays(-30)
-                });
-            }
-        }
-
         public static void EventParticipant()
         {
             if (!FactoryGirl.NET.FactoryGirl.DefinedFactories.Contains(typeof(MpEventParticipant)))
