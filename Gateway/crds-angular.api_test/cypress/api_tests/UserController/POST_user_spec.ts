@@ -126,8 +126,12 @@ const successScenarios: CAT.CompactTestScenario = {
         }
       },
       setup() {
-        // Register a test user so we have an email to be a substring of
-        const superEmail = getTempTesterEmail();
+        createAndSetEmail(this);
+        createAndSetPassword(this);
+
+        // Register a test user with a longer email
+        const testEmail = (this.request.body as { email: string }).email;
+        const superEmail = testEmail + "m"; //".comm"
         const registerSuperEmail = {
           url: "/api/user",
           method: "POST",
@@ -139,16 +143,7 @@ const successScenarios: CAT.CompactTestScenario = {
           }
         }
 
-        return cy.request(registerSuperEmail)
-        .then(() => {
-          //TODO optimize this - use createAndSetEmail, then create the super email from the gnerated one
-          const subsetEmail = superEmail.slice(0, superEmail.length-1);
-          (this.request.body as { email: string }).email = subsetEmail;
-          (this.response.properties?.find(r => r.name === "email") as CAT.PropertyCompare).value = subsetEmail;
-
-          createAndSetPassword(this);
-          return this;
-        })
+        return cy.request(registerSuperEmail).then(() => this)
       },
       response: {
         status: 200
@@ -283,75 +278,9 @@ const serverErrorScenarios: CAT.CompactTestScenario = {
   ]
 }
 
-//Note that this bug does not exist when registering a user through Okta.
-// const bug_emailUniqueButSubsetOfContactEmailScenario: CAT.CompactTestScenario = {
-//   sharedRequest,
-//   scenarios: [
-//   {
-//       description: "email is subset of existing email",
-//       request: {
-//         body: {
-//           firstname: "Subset email",
-//           lastname: "Test",
-//           email: Placeholders.assignedInSetup,
-//           password: Placeholders.assignedInSetup
-//         }
-//       },
-//       setup() {
-//         // Register a test user so we have an email to subset
-//         const supersetEmail = getTempTesterEmail();
-//         const registerSuperset = {
-//           url: "/api/user",
-//           method: "POST",
-//           body: {
-//             firstname: "Super",
-//             lastname: "Email",
-//             email: supersetEmail,
-//             password: getTestPassword()
-//           }
-//         }
-
-//         return cy.request(registerSuperset)
-//         .then(() => {
-//           const subsetEmail = supersetEmail.slice(0, supersetEmail.length-1);
-//           (this.request.body as { email: string }).email = subsetEmail;
-
-//           createAndSetPassword(this, false);
-//           return this;
-//         })
-//       },
-//       response: {
-//         //Note that THE USER WAS CREATED! but the step to retrieve their contact ID incorrectly 
-//         //  found two users (test uer and the superset user registered in setup) so failed, 
-//         //  triggering a 500 response
-//         status: 500,
-//         schemas: [genericServerErrorContract],
-//         properties: [{ name: "Message", value: "An error has occurred." }]
-//       },
-//       preferredResponse: {
-//         status: 200,
-//         properties: [
-//           {
-//             name: "email",
-//             value: Placeholders.assignedInSetup
-//           },
-//           {
-//             name: "password",
-//             value: Placeholders.assignedInSetup
-//           }
-//         ]
-//       }
-//     }
-//   ]
-// };
-
 //Run Tests
 describe('/User/Post()', () => {
   unzipScenarios(successScenarios).forEach(runTest)
-  // unzipScenarios(badRequestScenarios).forEach(runTest)
-  // unzipScenarios(serverErrorScenarios).forEach(runTest)
-  // unzipScenarios(bug_emailUniqueButSubsetOfContactEmailScenario).forEach(runTest)
+  unzipScenarios(badRequestScenarios).forEach(runTest)
+  unzipScenarios(serverErrorScenarios).forEach(runTest)
 });
-
-//TODO need to fix Gateway for GetUserIdByUsername and update those tests
-//TODO search through Gateway for other potential problems with emails
