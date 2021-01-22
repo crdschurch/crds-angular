@@ -187,8 +187,17 @@ namespace MinistryPlatform.Translation.Repositories
             var records = _ministryPlatformService.GetRecordsDict(_configurationWrapper.GetConfigIntValue("Contacts"), ApiLogin(), (email));
             if (records.Count > 1)
             {
-                throw new Exception("User email did not return exactly one user record");
+                // Given "email" may be a substring of the Email_Address of the records returned (ex. "tester@gmail.com" and "cool_tester@gmail.com")
+                // Filter again to include only exact email matches
+                var exactEmailMatch = records.FindAll(r => r.ToString("Email_Address").Equals(email));
+                if (exactEmailMatch.Count > 1)
+                {
+                    throw new Exception("User email did not return exactly one user record");
+                }
+
+                records = exactEmailMatch;
             }
+
             if (records.Count < 1)
             {
                 return 0;
