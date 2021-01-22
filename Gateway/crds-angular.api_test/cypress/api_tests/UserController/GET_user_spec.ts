@@ -1,11 +1,11 @@
-import { getUserSchemaProperties, getUserAuthContract } from "./schemas/getUserResponses";
-import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
+import { getUserSchemaProperties, getUserAuthContract } from "./schemas/getUserSchemas";
+import { badRequestContract, badRequestProperties } from "./schemas/badRequestSchemas";
 import { addAuthorizationHeader as authorizeWithMPClient } from "shared/authorization/mp_client_auth";
 import { addAuthorizationHeader as authorizeWithMP } from "shared/authorization/mp_user_auth";
 import { addAuthorizationHeader as authorizeWithOkta } from "shared/authorization/okta_user_auth";
 import { runTest, unzipScenarios } from "shared/CAT/cypress_api_tests";
 import { Placeholders } from "shared/enums";
-import { Ben, Sue } from "shared/users";
+import { Ben, KeeperJr, Sue } from "shared/users";
 
 // Data Setup
 const successScenarios: CAT.CompactTestScenario = {
@@ -36,7 +36,7 @@ const successScenarios: CAT.CompactTestScenario = {
         return authorizeWithOkta(Ben.email, Ben.password as string, this.request)
           .then((token) => {
             // Add Authorization token in response check
-            (this.response.properties?.find((p: CAT.PropertyCompare) => p.name === 'userToken') as CAT.PropertyCompare) //Make Typescript happy <3
+            (this.response.properties?.find(p => p.name === 'userToken') as CAT.PropertyCompare) //Make Typescript happy <3
               .value = token;
 
             return this;
@@ -67,7 +67,7 @@ const successScenarios: CAT.CompactTestScenario = {
         return authorizeWithMP(Ben.email, Ben.password as string, this.request)
           .then((token) => {
             // Add Authorization token in response check
-            (this.response.properties?.find((p: CAT.PropertyCompare) => p.name === 'userToken') as CAT.PropertyCompare) //Make Typescript happy <3
+            (this.response.properties?.find(p => p.name === 'userToken') as CAT.PropertyCompare) //Make Typescript happy <3
               .value = token;
 
             return this;
@@ -103,7 +103,7 @@ const successScenarios: CAT.CompactTestScenario = {
         return authorizeWithOkta(Ben.email, Ben.password as string, this.request)
           .then((token) => {
             // Add Authorization token in response check
-            (this.response.properties?.find((p: CAT.PropertyCompare) => p.name === 'userToken') as CAT.PropertyCompare) //Make Typescript happy <3
+            (this.response.properties?.find(p => p.name === 'userToken') as CAT.PropertyCompare) //Make Typescript happy <3
               .value = token;
 
             return this;
@@ -235,6 +235,24 @@ const badRequestScenarios: CAT.CompactTestScenario = {
       },
       preferredResponse: {
           properties: [{ name: "message", value: "User not found" }]
+      }
+    },
+    {
+      description: "Request for a user whose email is a subset of another user's email (bug)",
+      request: {
+        qs: {
+          username: KeeperJr.email
+        },
+      },
+      setup(){
+        return authorizeWithMP(KeeperJr.email, KeeperJr.password as string, this.request)
+          .then(() => this);
+      },
+      response: {
+        status: 400
+      },
+      preferredResponse: {
+        status: 200
       }
     },
     {
