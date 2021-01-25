@@ -1,18 +1,17 @@
-﻿using System;
-using System.Net;
-using System.Web.Http;
-using System.Web.Http.Description;
-using crds_angular.Exceptions;
-using crds_angular.Models.Crossroads;
-using crds_angular.Services.Interfaces;
+﻿using crds_angular.Exceptions;
 using crds_angular.Exceptions.Models;
+using crds_angular.Models.Crossroads;
 using crds_angular.Security;
-using crds_angular.Services.Analytics;
+using crds_angular.Services.Interfaces;
 using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using System;
 using System.Linq;
+using System.Net;
+using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace crds_angular.Controllers.API
 {
@@ -49,10 +48,10 @@ namespace crds_angular.Controllers.API
             try
             {
                 var userRecord = _accountService.RegisterPerson(user, householdSourceId);
-                var contact_Id = _contactRepository.GetContactIdByEmail(user.email);
-                userRecord.contactId = contact_Id;
+                var contactId = _contactRepository.GetContactIdByEmail(user.email);
+                userRecord.contactId = contactId;
 
-                _analyticsService.Track(contact_Id.ToString(), "SignedUp");
+                _analyticsService.Track(contactId.ToString(), "SignedUp");
                 return Ok(userRecord);
             }
             catch (DuplicateUserException e)
@@ -107,5 +106,4 @@ namespace crds_angular.Controllers.API
             });
         }
     }
-    
 }

@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Http;
-using System.Web.Http.Description;
-using crds_angular.Exceptions.Models;
+﻿using crds_angular.Exceptions.Models;
+using crds_angular.Models.Crossroads;
 using crds_angular.Models.Json;
 using crds_angular.Security;
-using crds_angular.Services;
-using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
-using MinistryPlatform.Translation.Models.DTO;
 using Crossroads.ApiVersioning;
 using Crossroads.ClientApiKeys;
 using Crossroads.Web.Common.Security;
-using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
-
+using System;
+using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace crds_angular.Controllers.API
 {
@@ -54,11 +49,11 @@ namespace crds_angular.Controllers.API
             {
                 var isMobile = false;
                 _loginService.PasswordResetRequest(request.Email, isMobile);
-                return this.Ok();
+                return Ok();
             }
             catch (Exception ex)
             {
-                return this.InternalServerError();
+                return InternalServerError();
             }
         }
 
@@ -71,11 +66,11 @@ namespace crds_angular.Controllers.API
             {
                 var isMobile = true;
                 _loginService.PasswordResetRequest(request.Email, isMobile);
-                return this.Ok();
+                return Ok();
             }
             catch (Exception ex)
             {
-                return this.InternalServerError();
+                return InternalServerError();
             }
         }
 
@@ -94,7 +89,7 @@ namespace crds_angular.Controllers.API
             }
             catch (Exception ex)
             {
-                return this.InternalServerError();
+                return InternalServerError();
             }
         }
 
@@ -105,12 +100,12 @@ namespace crds_angular.Controllers.API
         {
             try
             {
-                var userEmail = _loginService.ResetPassword(request.Password, request.Token);
+                _loginService.ResetPassword(request.Password, request.Token);
                 return Ok();
             }
             catch (Exception ex)
             {
-                return this.InternalServerError();
+                return InternalServerError();
             }
         }
 
@@ -127,19 +122,28 @@ namespace crds_angular.Controllers.API
                     var contact = _contactRepository.GetMyProfile(token);
                     if (contact == null)
                     {
-                        return this.Unauthorized();
+                        return Unauthorized();
                     }
 
                     var apiToken = _userService.HelperApiLogin();
                     var user = _userService.GetByContactId(contact.Contact_ID, apiToken);
                     var roles = _userService.GetUserRolesRest(user.UserRecordId, apiToken);
 
-                    var loginReturn = new LoginReturn(token, contact.Contact_ID, contact.First_Name, contact.Email_Address, contact.Mobile_Phone, roles, user.CanImpersonate);
-                    return this.Ok(loginReturn);
+                    var loginReturn = new LoginReturn
+                    {
+                        userId = contact.Contact_ID,
+                        userToken = token,
+                        username = contact.First_Name,
+                        userEmail = contact.Email_Address,
+                        userPhone = contact.Mobile_Phone,
+                        roles = roles,
+                        canImpersonate = user.CanImpersonate
+                    };
+                    return Ok(loginReturn);
                 }
                 catch (Exception)
                 {
-                    return this.Unauthorized();
+                    return Unauthorized();
                 }
             });
         }
@@ -149,7 +153,7 @@ namespace crds_angular.Controllers.API
         [ResponseType(typeof (LoginReturn))]
         // TODO - Once Ez-Scan has been updated to send a client API key (US7764), remove the IgnoreClientApiKey attribute
         [IgnoreClientApiKey]
-        public IHttpActionResult Post([FromBody] Credentials cred)
+        public IHttpActionResult Post([FromBody] LoginCredentials cred)
         {
             try
             {
@@ -161,45 +165,45 @@ namespace crds_angular.Controllers.API
 
                 if (token == "")
                 {
-                    return this.Unauthorized();
+                    return Unauthorized();
                 }
 
                 var apiToken = _userService.HelperApiLogin();
                 var user = _userService.GetByUserName(cred.username,apiToken); //235 ms _userService.GetByAuthenticationToken(token) was 1.5 seconds 
                 var userRoles = _userService.GetUserRolesRest(user.UserRecordId, apiToken);
-                var c = _contactRepository.GetContactByUserRecordId(user.UserRecordId, apiToken);//use a rest call and use the id directly
-                var r = new LoginReturn
+                var contact = _contactRepository.GetContactByUserRecordId(user.UserRecordId, apiToken);//use a rest call and use the id directly
+                var loginReturn = new LoginReturn
                 {
                     userToken = token,
                     userTokenExp = exp,
                     refreshToken = refreshToken,
-                    userId = c.Contact_ID,
-                    username = c.First_Name,
-                    userEmail = c.Email_Address,
+                    userId = contact.Contact_ID,
+                    username = contact.First_Name,
+                    userEmail = contact.Email_Address,
                     roles = userRoles,
-                    age = c.Age,
-                    userPhone = c.Mobile_Phone,
+                    age = contact.Age,
+                    userPhone = contact.Mobile_Phone,
                     canImpersonate = user.CanImpersonate 
                 };
 
 
                 _loginService.ClearResetToken(user.UserRecordId); //no need to lookup the userid if we already have it
-                _contactRepository.UpdateContactToActive(c.Contact_ID); //205
-                _analyticsService.Track(c.Contact_ID.ToString(), "SignedIn");
+                _contactRepository.UpdateContactToActive(contact.Contact_ID);
+                _analyticsService.Track(contact.Contact_ID.ToString(), "SignedIn");
 
                 //Kick off a call to the migration service to create or update an account in Okta on the user's behalf
                 OktaMigrationUser oktaMigrationUser = new OktaMigrationUser
                 {
-                    firstName = c.First_Name,
-                    lastName = c.Last_Name,
-                    email = c.Email_Address,
+                    firstName = contact.First_Name,
+                    lastName = contact.Last_Name,
+                    email = contact.Email_Address,
                     login = cred.username,
                     password = cred.password,
-                    mpContactId = c.Contact_ID.ToString()
+                    mpContactId = contact.Contact_ID.ToString()
                 };
                 _loginService.CreateOrUpdateOktaAccount(oktaMigrationUser);
 
-                return this.Ok(r);
+                return Ok(loginReturn);
             }
             catch (Exception e)
             {
@@ -211,7 +215,7 @@ namespace crds_angular.Controllers.API
         [VersionedRoute(template: "verify-credentials", minimumVersion: "1.0.0")]
         [Route("verifycredentials")]
         [HttpPost]
-        public IHttpActionResult VerifyCredentials([FromBody] Credentials cred)
+        public IHttpActionResult VerifyCredentials([FromBody] LoginCredentials cred)
         {
             return Authorized(token =>
             {
@@ -222,12 +226,10 @@ namespace crds_angular.Controllers.API
                     // if the username or password is wrong, auth data will be null
                     if (authData == null)
                     {
-                        return this.Unauthorized();
+                        return Unauthorized();
                     }
-                    else
-                    {
-                        return this.Ok();
-                    }
+
+                    return Ok();
                 }
                 catch (Exception e)
                 {
@@ -255,9 +257,9 @@ namespace crds_angular.Controllers.API
                 try
                 {
                     if (!_loginService.IsValidPassword(token, password))
-                        return this.Unauthorized();
+                        return Unauthorized();
 
-                    return this.Ok();
+                    return Ok();
                 }
                 catch (Exception e)
                 {
@@ -266,37 +268,5 @@ namespace crds_angular.Controllers.API
                 }
             });
         }
-
     }
-
-    public class LoginReturn
-    {
-        public LoginReturn(){}
-        public LoginReturn(string userToken, int userId, string username, string userEmail, string userPhone, List<MpRoleDto> roles, Boolean canImpersonate){
-            this.userId = userId;
-            this.userToken = userToken;
-            this.username = username;
-            this.userEmail = userEmail;
-            this.userPhone = userPhone;
-            this.roles = roles;
-            this.canImpersonate = canImpersonate;
-        }
-        public string userToken { get; set; }
-        public string userTokenExp { get; set; }
-        public string refreshToken { get; set; }
-        public int userId { get; set; }
-        public string username { get; set; }
-        public string userEmail { get; set;  }
-        public List<MpRoleDto> roles { get; set; }
-        public Boolean canImpersonate { get; set; }
-        public int age { get; set; }
-        public string userPhone { get; set; }
-    }
-
-    public class Credentials
-    {
-        public string username { get; set; }
-        public string password { get; set; }
-    }
-
 }
