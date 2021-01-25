@@ -419,7 +419,6 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\API\AccountController.cs" />
     <Compile Include="Controllers\API\CampaignController.cs" />
     <Compile Include="Controllers\API\CampController.cs" />
     <Compile Include="Controllers\API\ChildcareController.cs" />
@@ -774,7 +773,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\MPAuth.cs" />
     <Compile Include="Security\CustomAuthorize.cs" />
-    <Compile Include="Services\AccountService.cs" />
     <Compile Include="Models\Crossroads\Attribute\ObjectAllAttributesDTO.cs" />
     <Compile Include="Services\AttributeService.cs" />
     <Compile Include="Services\ObjectAttributeService.cs" />
