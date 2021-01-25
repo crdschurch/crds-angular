@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Crossroads.Utilities.Interfaces;
-using Crossroads.Web.Common;
-using Crossroads.Web.Common.Configuration;
+﻿using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Translation.Extensions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.DTO;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -185,6 +182,13 @@ namespace MinistryPlatform.Translation.Repositories
         public int GetUserIdByUsername(string email)
         {
             var records = _ministryPlatformService.GetRecordsDict(Convert.ToInt32(ConfigurationManager.AppSettings["Users"]), ApiLogin(), (email));
+             if (records.Count > 1)
+            {
+                // Given "email" may be a substring of the User_Name of the records returned (ex. "tester@gmail.com" and "cool_tester@gmail.com")
+                // Filter again to include only exact email matches
+                records = records.FindAll(r => r.ToString("User_Name").Equals(email));
+            }
+
             if (records.Count != 1)
             {
                 throw new ApplicationException("User email did not return exactly one user record");
