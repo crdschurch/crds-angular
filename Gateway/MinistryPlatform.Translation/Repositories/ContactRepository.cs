@@ -1,19 +1,18 @@
-﻿using System;
+﻿using Crossroads.Web.Auth.Models;
+using Crossroads.Web.Common.Configuration;
+using Crossroads.Web.Common.MinistryPlatform;
+using Crossroads.Web.Common.Security;
+using log4net;
+using MinistryPlatform.Translation.Extensions;
+using MinistryPlatform.Translation.Models;
+using MinistryPlatform.Translation.Models.MinistryPlatform.Translation.Models;
+using MinistryPlatform.Translation.Repositories.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
-using log4net;
-using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.MinistryPlatform;
-using Crossroads.Web.Common.Security;
-using MinistryPlatform.Translation.Extensions;
-using MinistryPlatform.Translation.Models;
-using MinistryPlatform.Translation.Models.MinistryPlatform.Translation.Models;
-using MinistryPlatform.Translation.Repositories.Interfaces;
-using Crossroads.Web.Auth.Models;
 
 namespace MinistryPlatform.Translation.Repositories
 {
@@ -187,8 +186,15 @@ namespace MinistryPlatform.Translation.Repositories
             var records = _ministryPlatformService.GetRecordsDict(_configurationWrapper.GetConfigIntValue("Contacts"), ApiLogin(), (email));
             if (records.Count > 1)
             {
-                throw new Exception("User email did not return exactly one user record");
+                // Given "email" may be a substring of the Email_Address of the records returned (ex. "tester@gmail.com" and "cool_tester@gmail.com")
+                // Filter again to include only exact email matches
+                records = records.FindAll(r => r.ToString("Email_Address").Equals(email));
+                if (records.Count > 1)
+                {
+                    throw new Exception("User email did not return exactly one user record");
+                }
             }
+
             if (records.Count < 1)
             {
                 return 0;
