@@ -3,6 +3,7 @@
   "baseUrl": "https://gateway.crossroads.net/gateway",
   "testFiles": "**/*prodspec.ts",
   "integrationFolder": "cypress/api_tests",
+  "responseTimeout": 60000,
   "env": {
     "vaultEnv": "prod"
   }

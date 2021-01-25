@@ -449,6 +449,8 @@
     <Compile Include="Models\Crossroads\Events\Campaign\PledgeCampaignSummaryDto.cs" />
     <Compile Include="Models\Crossroads\LocationDTO.cs" />
     <Compile Include="Models\Crossroads\LocationProximityDTO.cs" />
+    <Compile Include="Models\Crossroads\LoginCredentials.cs" />
+    <Compile Include="Models\Crossroads\LoginReturn.cs" />
     <Compile Include="Models\Crossroads\Waivers\ContactInvitation.cs" />
     <Compile Include="Models\Crossroads\Waivers\WaiverDTO.cs" />
     <Compile Include="Models\Crossroads\GoVolunteer\DashboardDatum.cs" />

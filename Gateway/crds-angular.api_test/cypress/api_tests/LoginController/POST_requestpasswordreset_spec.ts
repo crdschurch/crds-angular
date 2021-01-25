@@ -1,111 +1,130 @@
+import { runTest, unzipScenarios } from "shared/CAT/cypress_api_tests";
 import { getUUID } from "shared/data_generator";
 import { setPasswordResetToken } from "shared/mp_api";
-import { unzipTests } from "shared/test_scenario_factory";
 import { Ben, KeeperJr, Load } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
-import { emptyStringResponseProperties } from "./schemas/emptyStringResponse";
 
 // Data Setup
-const testConfig:TestFactory.TestConfig[] = [
-  {
-    setup: [
-      {
-        description: "Valid Request",
-        data: { body: { email: Ben.email } },
-        setup: function () {
-          //Remove any existing token
-          return setPasswordResetToken(Ben.email, "")
-        }
+const sharedRequest = {
+  urls: ["/api/requestpasswordreset", "/api/v1.0.0/request-password-reset"],
+  options: { 
+    method: "POST",
+    failOnStatusCode: false
+  }
+}
+const successScenarios: CAT.CompactTestScenario = {
+  sharedRequest,
+  scenarios: [
+    {
+      description: "Valid Request",
+      request: {
+        body: { email: Ben.email }
       },
-      {
-        description: "User Has Pending Password Reset Request",
-        data: { body: { email: Ben.email } },
-        setup: function () {
-          return setPasswordResetToken(Ben.email, getUUID())
-        }
+      setup() {
+        //Remove any existing token
+        return setPasswordResetToken(Ben.email, "").then(() => this);
+      },
+      response: {
+        status: 200
       }
-    ],
-    result: { status: 200 }
-  },
-  {
-    setup: [
-      {
-        description: "Person Doesn't Exist",
-        data: { body: { email: "this_email_should_not_exist@fake_emails.io" } }
+    },
+    {
+      description: "User Has Pending Password Reset Request",
+      request: {
+        body: { email: Ben.email },
       },
-      {
-        description: "Person has Contact Record but no User Record",
-        data: { body: { email: Load.email } }
+        setup() {
+          return setPasswordResetToken(Ben.email, getUUID()).then(() => this)
+        },
+        response: {
+          status: 200
+        }
+    },
+    {
+      description: "Person Doesn't Exist",
+      request: { 
+        body: { 
+          email: "this_email_should_not_exist@fake_emails.io" 
+        } },
+        response: {
+          status: 200
+        },
+        preferredResponse: {
+          //Not technically a bug but misleading to user
+          status: 404,
+          schemas: [badRequestProperties, badRequestContract],
+          properties: [{ name: "message", value: "User Not Found" }]
+        }
+    },
+    {
+      description: "Person has Contact Record but no User Record",
+      request: { body: { email: Load.email } },
+      response: {
+        status: 200
       },
-      {
-        description: "Invalid Email",
-        data: { body: { email: "{" } }
-      },
-    ],
-    result: { status: 200 }, //Not technically a bug but misleading to user
-    preferredResult: {
-      status: 404,
-      body: {
+      preferredResponse: {
+        //Not technically a bug but misleading to user
+        status: 404,
         schemas: [badRequestProperties, badRequestContract],
         properties: [{ name: "message", value: "User Not Found" }]
       }
-    }
-  },
-  {
-    setup:
+    },
+    {
+      description: "Invalid Email",
+      request: { body: { email: "{" } },
+      response: {
+        status: 200
+      },
+      preferredResponse: {
+        //Not technically a bug but misleading to user
+        status: 404,
+        schemas: [badRequestProperties, badRequestContract],
+        properties: [{ name: "message", value: "User Not Found" }]
+      }
+    },
     {
       description: "Email is Subset of Another Email (bug)",
-      data: { body: { email: KeeperJr.email } }
+      request: { body: { email: KeeperJr.email } },
+      response: { status: 200 },
+      preferredResponse: { 
+        //Should still have valid output, but won't error on server side
+        status: 200 
+      }
     },
-    result: { status: 200 },
-    preferredResult: { status: 200 } //Should still have valid output, but won't error on server side
-  },
-  {
-    setup: { description: "Email is Undefined", data: { body: {} } },
-    result: { status: 200 }, //Not technically a bug but misleading to user
-    preferredResult: {
-      status: 400,
-      body: {
+    {
+      description: "Email is Undefined", 
+      request: { body: {} },
+      response: {
+        status: 200
+      },
+      preferredResponse: {
+        //Not technically a bug but misleading to user
+        status: 400,
         schemas: [badRequestProperties, badRequestContract],
         properties: [{ name: "message", value: "Missing Email" }]
       }
     }
-  },
-  {
-    setup: { description: "Missing Body", data: {} },
-    result: {
+  ]
+}
+
+const serverErrorScenarios: CAT.CompactTestScenario = {
+  sharedRequest,
+  scenarios: [{
+    description: "Missing Body",
+    request: { },
+    response: {
       status: 500,
-      body: {
-        schemas: [emptyStringResponseProperties]
-      }
-    }, //Not technically a bug but error could be more descriptive
-    preferredResult: {
+      bodyIsEmpty: true
+    },
+    preferredResponse: {
       status: 400,
-      body: {
-        schemas: [badRequestProperties, badRequestContract],
-        properties: [{ name: "message", value: "Missing Email" }]
-      }
+      schemas: [badRequestProperties, badRequestContract],
+      properties: [{ name: "message", value: "Missing Email" }]
     }
-  }
-];
+  }]
+}
 
-// Run Tests
-describe('POST /api/requestpasswordreset', () => {
-  unzipTests(testConfig)
-    .forEach((t: TestFactory.Test) => {
-      it(t.title, () => {
-        const requestPasswordReset: Partial<Cypress.RequestOptions> = {
-          url: "/api/requestpasswordreset",
-          method: "POST",
-          failOnStatusCode: false
-        };
-
-        t.setup() //Arrange
-          .then(() => cy.request(t.buildRequest(requestPasswordReset))) //Act
-          .verifyStatus(t.result.status) //Assert
-          .itsBody(t.result.body)
-          .verifySchema(t.result.body)
-          .verifyProperties(t.result.body);
-      });
-    });
-});
+describe("/Login/RequestPasswordReset()", () => {
+  unzipScenarios(successScenarios).forEach(runTest);
+  unzipScenarios(serverErrorScenarios).forEach(runTest);
+})
