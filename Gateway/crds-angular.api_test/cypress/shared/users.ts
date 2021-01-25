@@ -47,7 +47,8 @@ export const Gatekeeper: TestUser = {
  */
 export const KeeperJr: TestUser = {
   email: "auto+gatekeeper@testmail.com",
-  password: Cypress.env("TEST_GATEKEEPERJR_PW")
+  password: Cypress.env("TEST_GATEKEEPERJR_PW"),
+  firstName: "Gate"
 };
 
 

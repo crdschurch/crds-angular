@@ -1,6 +1,6 @@
 import { getUUID } from "shared/data_generator";
 import { setPasswordResetToken } from "shared/mp_api";
-import { Ben } from "shared/users";
+import { Ben, KeeperJr } from "shared/users";
 import { badRequestContract, badRequestProperties } from "./schemas/badRequest";
 import { runTest, unzipScenarios } from "shared/CAT/cypress_api_tests";
 
@@ -39,6 +39,11 @@ const successScenarios: CAT.CompactTestScenario = {
         response: {
           status: 200
         }
+    },
+    {
+      description: "Email is Substring of Another Email",
+      request: { body: { email: KeeperJr.email } },
+      response: { status: 200 },
     },
     {
       description: "Person Doesn't Exist",
@@ -80,15 +85,6 @@ const successScenarios: CAT.CompactTestScenario = {
         status: 404,
         schemas: [badRequestProperties, badRequestContract],
         properties: [{ name: "message", value: "User Not Found" }]
-      }
-    },
-    {
-      description: "Email is Subset of Another Email (bug)",
-      request: { body: { email: "lia@differential.com" } },
-      response: { status: 200 },
-      preferredResponse: { 
-        //Should still have valid output, but won't error on server side
-        status: 200 
       }
     },
     {
