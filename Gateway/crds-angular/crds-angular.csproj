@@ -776,6 +776,7 @@
     <Compile Include="Security\MPAuth.cs" />
     <Compile Include="Security\CustomAuthorize.cs" />
     <Compile Include="Models\Crossroads\Attribute\ObjectAllAttributesDTO.cs" />
+    <Compile Include="Services\AccountService.cs" />
     <Compile Include="Services\AttributeService.cs" />
     <Compile Include="Services\ObjectAttributeService.cs" />
     <Compile Include="Models\Crossroads\Attribute\ObjectSingleAttributeDTO.cs" />
