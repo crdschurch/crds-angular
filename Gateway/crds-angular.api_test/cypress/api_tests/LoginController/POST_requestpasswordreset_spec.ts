@@ -41,6 +41,14 @@ const successScenarios: CAT.CompactTestScenario = {
         }
     },
     {
+      description: "Email is Substring of Another Email",
+      request: { body: { email: KeeperJr.email } },
+      response: { status: 200 },
+      preferredResponse: { 
+        status: 200 
+      }
+    },
+    {
       description: "Person Doesn't Exist",
       request: { 
         body: { 
@@ -80,15 +88,6 @@ const successScenarios: CAT.CompactTestScenario = {
         status: 404,
         schemas: [badRequestProperties, badRequestContract],
         properties: [{ name: "message", value: "User Not Found" }]
-      }
-    },
-    {
-      description: "Email is Subset of Another Email (bug)",
-      request: { body: { email: KeeperJr.email } },
-      response: { status: 200 },
-      preferredResponse: { 
-        //Should still have valid output, but won't error on server side
-        status: 200 
       }
     },
     {

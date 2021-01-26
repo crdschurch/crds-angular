@@ -7,6 +7,11 @@ import { runTest, unzipScenarios } from "shared/CAT/cypress_api_tests";
 import { Placeholders } from "shared/enums";
 import { Ben, KeeperJr, Sue } from "shared/users";
 
+function AddAuthorizationTokenToResponseProperties(scenario: CAT.TestScenario, token: string){
+  (scenario.response.properties?.find(p => p.name === 'userToken') as CAT.PropertyCompare) //Make Typescript happy <3
+  .value = token;
+}
+
 // Data Setup
 const successScenarios: CAT.CompactTestScenario = {
   sharedRequest: {
@@ -35,10 +40,7 @@ const successScenarios: CAT.CompactTestScenario = {
       setup(){
         return authorizeWithOkta(Ben.email, Ben.password as string, this.request)
           .then((token) => {
-            // Add Authorization token in response check
-            (this.response.properties?.find(p => p.name === 'userToken') as CAT.PropertyCompare) //Make Typescript happy <3
-              .value = token;
-
+            AddAuthorizationTokenToResponseProperties(this, token);
             return this;
           });
       },
@@ -66,25 +68,22 @@ const successScenarios: CAT.CompactTestScenario = {
       setup(){
         return authorizeWithMP(Ben.email, Ben.password as string, this.request)
           .then((token) => {
-            // Add Authorization token in response check
-            (this.response.properties?.find(p => p.name === 'userToken') as CAT.PropertyCompare) //Make Typescript happy <3
-              .value = token;
-
+            AddAuthorizationTokenToResponseProperties(this, token);
             return this;
           });
       },
       response: {
         status: 200,
-          properties: [
-            {
-              name: "userEmail",
-              value: Ben.email
-            },
-            {
-              name: "username",
-              value: Ben.firstName
-            }
-          ]
+        properties: [
+          {
+            name: "userEmail",
+            value: Ben.email
+          },
+          {
+            name: "username",
+            value: Ben.firstName
+          }
+        ]
       },
     },
     {
@@ -102,10 +101,7 @@ const successScenarios: CAT.CompactTestScenario = {
       setup(){
         return authorizeWithOkta(Ben.email, Ben.password as string, this.request)
           .then((token) => {
-            // Add Authorization token in response check
-            (this.response.properties?.find(p => p.name === 'userToken') as CAT.PropertyCompare) //Make Typescript happy <3
-              .value = token;
-
+            AddAuthorizationTokenToResponseProperties(this, token);
             return this;
           });
       },
@@ -122,6 +118,62 @@ const successScenarios: CAT.CompactTestScenario = {
             }
           ]
       },
+    },
+    {
+      description: "Request for a user whose email is a substring of another user's email",
+      request: {
+        qs: {
+          username: KeeperJr.email
+        },
+      },
+      setup(){
+        return authorizeWithMP(KeeperJr.email, KeeperJr.password as string, this.request)
+          .then((token) => {
+            AddAuthorizationTokenToResponseProperties(this, token);
+            return this;
+          });
+      },
+      response: {
+        status: 200,
+        properties: [
+          {
+            name: "userEmail",
+            value: KeeperJr.email
+          },
+          {
+            name: "username",
+            value: KeeperJr.firstName
+          }
+        ]
+      }
+    },
+    {
+      description: "Request for a user whose 'username' is unique but whose 'email' is not",
+      request: {
+        qs: {
+          username: "no-reply@crossroads.net"
+        },
+      },
+      setup(){
+        return authorizeWithMP(Ben.email, Ben.password as string, this.request)
+          .then((token) => {
+            AddAuthorizationTokenToResponseProperties(this, token);
+            return this;
+          });
+      },
+      response: {
+        status: 200,
+        properties: [
+          {
+            name: "userEmail",
+            value: "no-reply@crossroads.net"
+          },
+          {
+            name: "username",
+            value: "Contact"
+          }
+        ]
+      }
     },
   ]
 };
@@ -220,7 +272,7 @@ const badRequestScenarios: CAT.CompactTestScenario = {
     {
       //This probably isn't a security issue, and MP's api probably protects against SQL injection,
       //  but we should catch inputs with problematic syntax before they ever hit the database
-      description: "Request for a user using SQL search returns multiple users",
+      description: "Request for a user using SQL search characters",
       request: {
         qs: {
           username: "%@contractor.crossroads.net"
@@ -235,55 +287,6 @@ const badRequestScenarios: CAT.CompactTestScenario = {
       },
       preferredResponse: {
           properties: [{ name: "message", value: "User not found" }]
-      }
-    },
-    {
-      description: "Request for a user whose email is a subset of another user's email (bug)",
-      request: {
-        qs: {
-          username: KeeperJr.email
-        },
-      },
-      setup(){
-        return authorizeWithMP(KeeperJr.email, KeeperJr.password as string, this.request)
-          .then(() => this);
-      },
-      response: {
-        status: 400
-      },
-      preferredResponse: {
-        status: 200
-      }
-    },
-    {
-      //This error scenario could be avoided if Gateway searched by the "username" column, which
-      // is guaranteed unique.
-      description: "Request for a user whose 'username' is unique but whose 'email' is not",
-      request: {
-        qs: {
-          username: "no-reply@crossroads.net"
-        },
-      },
-      setup(){
-        return authorizeWithMP(Ben.email, Ben.password as string, this.request)
-          .then(() => this);
-      },
-      response: {
-        status: 400
-      },
-      preferredResponse: {
-        status: 200,
-          schemas: [getUserSchemaProperties, getUserAuthContract],
-          properties: [
-            {
-              name: "userEmail",
-              value: "no-reply@crossroads.net"
-            },
-            {
-              name: "username",
-              value: "Contact"
-            }
-          ]
       }
     },
   ],
