@@ -316,7 +316,6 @@
     <Compile Include="controllers\DonationControllerTest.cs" />
     <Compile Include="controllers\DonorControllerTest.cs" />
     <Compile Include="controllers\EventLocationControllerTest.cs" />
-    <Compile Include="controllers\AccountControllerTest.cs" />
     <Compile Include="controllers\EventParticipantControllerTest.cs" />
     <Compile Include="controllers\FinderControllerTest.cs" />
     <Compile Include="controllers\ImageControllerTest.cs" />
@@ -346,7 +345,6 @@
     <Compile Include="Models\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\MPAuthTest.cs" />
-    <Compile Include="Services\AccountServiceTest.cs" />
     <Compile Include="Services\AddressServiceTest.cs" />
     <Compile Include="Services\AttributeServiceTest.cs" />
     <Compile Include="Services\CampRulesTest.cs" />
