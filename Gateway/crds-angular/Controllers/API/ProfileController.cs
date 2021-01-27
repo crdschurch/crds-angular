@@ -67,7 +67,7 @@ namespace crds_angular.Controllers.API
             {
                 var impersonateUserId = impersonateDonorId == null ? string.Empty : _donorService.GetContactDonorForDonorId(impersonateDonorId.Value).Email;
                 try
-                {
+                {//TODO impersonation literally does nothing - the authorized user information is always returned. Is this intended???
                     var person = (impersonateDonorId != null)
                         ? _impersonationService.WithImpersonation(authDTO, impersonateUserId, () => _personService.GetPerson(authDTO.UserInfo.Mp.ContactId))
                         : _personService.GetPerson(authDTO.UserInfo.Mp.ContactId);
@@ -79,7 +79,7 @@ namespace crds_angular.Controllers.API
                 }
                 catch (UserImpersonationException e)
                 {
-                    return (e.GetRestHttpActionResult());
+                    return (e.GetRestHttpActionResult()); //TODO is this helper needed? can be used elsewhere?
                 }
             });
         }

@@ -15,6 +15,7 @@
 
 // Import custom types automatically into all files
 /// <reference path="../shared/CAT/cypress_api_tests.d.ts" />
+/// <reference path="../shared/mp_models.d.ts" />
 
 // Import custom commands automatically into all files
 import './commands';
