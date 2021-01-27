@@ -1,24 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Web.Http;
-using System.Web.Http.Description;
 using crds_angular.Exceptions;
 using crds_angular.Exceptions.Models;
 using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Models.Crossroads.Serve;
 using crds_angular.Security;
 using crds_angular.Services.Interfaces;
-using log4net;
-using MinistryPlatform.Translation.Repositories.Interfaces;
-using IPersonService = crds_angular.Services.Interfaces.IPersonService;
-using IDonorService = crds_angular.Services.Interfaces.IDonorService;
 using Crossroads.ApiVersioning;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
+using log4net;
+using MinistryPlatform.Translation.Repositories.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Web.Http;
+using System.Web.Http.Description;
+using IDonorService = crds_angular.Services.Interfaces.IDonorService;
+using IPersonService = crds_angular.Services.Interfaces.IPersonService;
 
 namespace crds_angular.Controllers.API
 {
@@ -29,21 +29,21 @@ namespace crds_angular.Controllers.API
         private readonly IServeService _serveService;
         private readonly IDonorService _donorService;
         private readonly IUserImpersonationService _impersonationService;
-        private readonly IAuthenticationRepository _authenticationService ;
+        private readonly IAuthenticationRepository _authenticationService;
         private readonly IUserRepository _userService;
         private readonly IContactRelationshipRepository _contactRelationshipService;
         private readonly List<int> _allowedAdminGetProfileRoles;
 
-        public ProfileController(IAuthTokenExpiryService authTokenExpiryService, 
-                                 IPersonService personService, 
-                                 IServeService serveService, 
-                                 IUserImpersonationService impersonationService, 
-                                 IDonorService donorService, 
-                                 IAuthenticationRepository authenticationService, 
-                                 IUserRepository userService, 
-                                 IContactRelationshipRepository contactRelationshipService, 
-                                 IConfigurationWrapper config, 
-                                 IUserImpersonationService userImpersonationService) 
+        public ProfileController(IAuthTokenExpiryService authTokenExpiryService,
+                                 IPersonService personService,
+                                 IServeService serveService,
+                                 IUserImpersonationService impersonationService,
+                                 IDonorService donorService,
+                                 IAuthenticationRepository authenticationService,
+                                 IUserRepository userService,
+                                 IContactRelationshipRepository contactRelationshipService,
+                                 IConfigurationWrapper config,
+                                 IUserImpersonationService userImpersonationService)
             : base(authTokenExpiryService, userImpersonationService, authenticationService)
         {
             _personService = personService;
@@ -57,30 +57,44 @@ namespace crds_angular.Controllers.API
         }
 
         [RequiresAuthorization]
-        [ResponseType(typeof (Person))]
+        [ResponseType(typeof(Person))]
         [VersionedRoute(template: "profile", minimumVersion: "1.0.0")]
         [Route("profile")]
         [HttpGet]
-        public IHttpActionResult GetProfile([FromUri(Name = "impersonateDonorId")]int? impersonateDonorId = null)
+        public IHttpActionResult GetProfile([FromUri(Name = "impersonateDonorId")] int? impersonateDonorId = null)
         {
             return Authorized(authDTO =>
             {
-                var impersonateUserId = impersonateDonorId == null ? string.Empty : _donorService.GetContactDonorForDonorId(impersonateDonorId.Value).Email;
-                try
-                {//TODO impersonation literally does nothing - the authorized user information is always returned. Is this intended???
-                    var person = (impersonateDonorId != null)
-                        ? _impersonationService.WithImpersonation(authDTO, impersonateUserId, () => _personService.GetPerson(authDTO.UserInfo.Mp.ContactId))
-                        : _personService.GetPerson(authDTO.UserInfo.Mp.ContactId);
-                    if (person == null)
-                    {
-                        return Unauthorized();
-                    }
-                    return Ok(person);
-                }
-                catch (UserImpersonationException e)
+                if (impersonateDonorId.HasValue)
                 {
-                    return (e.GetRestHttpActionResult()); //TODO is this helper needed? can be used elsewhere?
+                    try
+                    {
+                        var impersonatePersonEmail = _donorService.GetContactDonorForDonorId(impersonateDonorId.Value).Email;
+
+                        //TODO Impersonation literally does nothing - the authorized user information is always returned. Is this intended?
+                        var impersonatedPerson = _impersonationService.WithImpersonation(authDTO, impersonatePersonEmail,
+                            () => _personService.GetPerson(authDTO.UserInfo.Mp.ContactId));
+                        if (impersonatedPerson != null)
+                        {
+                            return Ok(impersonatedPerson);
+                        }
+                    }
+                    catch (UserImpersonationException e)
+                    {
+
+                        return (e.GetRestHttpActionResult());
+                    }
                 }
+                else
+                {
+                    var person = _personService.GetPerson(authDTO.UserInfo.Mp.ContactId);
+                    if (person != null)
+                    {
+                        return Ok(person);
+                    }
+                }
+
+                return Unauthorized();
             });
         }
 
@@ -135,7 +149,7 @@ namespace crds_angular.Controllers.API
                 }
             });
         }
-        
+
         [ResponseType(typeof(Person))]
         [VersionedRoute(template: "profile/{contactId}/admin", minimumVersion: "1.0.0")]
         [Route("profile/{contactId}/admin")]

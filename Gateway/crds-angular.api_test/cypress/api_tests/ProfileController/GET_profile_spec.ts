@@ -1,23 +1,22 @@
-
 import { addAuthorizationHeader as authorizeWithMP } from "shared/authorization/mp_user_auth";
 import { addAuthorizationHeader as authorizeWithOkta } from "shared/authorization/okta_user_auth";
 import { runTest, unzipScenarios } from "shared/CAT/cypress_api_tests";
 import { Placeholders } from "shared/enums";
 import { getContactRecord, setCanImpersonateValue } from "shared/mp_api";
-import { Gatekeeper, KeeperJr } from "shared/users";
+import { KeeperJr, Sue } from "shared/users";
 import { errorResponseContract, errorResponseProperties } from "./schemas/errorResponseSchemas";
 import { getProfileContract, getProfilePropertiesSchema } from "./schemas/getProfileSchema";
 
 // We're going to set impersonation rights before we run any tests
-const Impersonator = Gatekeeper;
-const NotImpersonator = KeeperJr;
+const Impersonator = KeeperJr;
+const NotImpersonator = Sue;
 
 function setResponsePropertyValue(response: CAT.TestResponse, propName: string, propValue: string) {
   (response.properties?.find(r => r.name === propName) as CAT.PropertyCompare).value = propValue;
 }
 
 const sharedRequest = {
-  urls: ['/api/profile'],
+  urls: ['/api/profile', '/api/v1.0.0/profile'],
   options: {
     method: 'GET',
     failOnStatusCode: false
@@ -87,9 +86,6 @@ const successScenarios: CAT.CompactTestScenario = {
     {
       description: "User with impersonation privileges and with empty donor id query parameter",
       request: {
-        url: '/api/profile',
-        method: 'GET',
-        failOnStatusCode: false,
         qs: {
           impersonateDonorId: ""
         }
@@ -139,7 +135,7 @@ const forbiddenScenarios: CAT.CompactTestScenario = {
       description: "User without impersonation privileges and with invalid donor Id",
       request: {
         qs: {
-          impersonateDonorId: 1111111
+          impersonateDonorId: 111
         }
       },
       setup() {
@@ -160,7 +156,7 @@ const conflictScenarios: CAT.CompactTestScenario = {
       description: "User with impersonation privileges but with invalid donor id",
       request: {
         qs: {
-          impersonateDonorId: 1111111
+          impersonateDonorId: 111
         }
       },
       setup() {
@@ -170,7 +166,7 @@ const conflictScenarios: CAT.CompactTestScenario = {
       response: {
         status: 409,
         schemas: [errorResponseProperties, errorResponseContract],
-        properties: [{ name: "message", value: "Could not locate user '' to impersonate." }]
+        properties: [{ name: "message", value: "Could not locate user to impersonate." }]
       }
     }
   ]
@@ -211,9 +207,13 @@ const unauthorizedScenarios: CAT.CompactTestScenario = {
 }
 
 describe('/profile/GetProfile()', () => {
-  before(() => {
+  before(() => {    
     setCanImpersonateValue(Impersonator.email, true);
     setCanImpersonateValue(NotImpersonator.email, false);
+  });
+
+  after(() => {
+    setCanImpersonateValue(Impersonator.email, false);
   });
 
   unzipScenarios(successScenarios).forEach(runTest);
