@@ -419,7 +419,6 @@
     <Compile Include="Repositories\Interfaces\IPrivateInviteRepository.cs" />
     <Compile Include="Repositories\Interfaces\IProgramRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRoomRepository.cs" />
-    <Compile Include="Repositories\Interfaces\ISelectionRepository.cs" />
     <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
     <Compile Include="Repositories\Interfaces\IResponseRepository.cs" />
     <Compile Include="Repositories\LookupRepository.cs" />
@@ -438,7 +437,6 @@
     <Compile Include="Repositories\Rules\ProductRulesetsRepository.cs" />
     <Compile Include="Repositories\Rules\RegistrationRule.cs" />
     <Compile Include="Repositories\Rules\RulesetRepository.cs" />
-    <Compile Include="Repositories\SelectionRepository.cs" />
     <Compile Include="Repositories\SkillsRepository.cs" />
     <Compile Include="Repositories\TaskRepository.cs" />
     <Compile Include="Repositories\TripRepository.cs" />

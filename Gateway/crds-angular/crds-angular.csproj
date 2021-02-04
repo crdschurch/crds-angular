@@ -667,7 +667,6 @@
     <Compile Include="Controllers\API\LookupController.cs" />
     <Compile Include="Controllers\API\ProfileController.cs" />
     <Compile Include="Controllers\API\ContactAttributeController.cs" />
-    <Compile Include="Controllers\API\MinistryPlatformToolsController.cs" />
     <Compile Include="DataAccess\EzScanCheckScannerDao.cs" />
     <Compile Include="DataAccess\Interfaces\ICheckScannerDao.cs" />
     <Compile Include="Exceptions\Models\ApiErrorDto.cs" />
