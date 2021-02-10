@@ -61,11 +61,32 @@ export const Load: TestUser = {
   password: undefined
 };
 
-/**
- * Luke is a test user in non-prod environments.
- * They can only be authenticated through Okta.
- */
-export const Luke: TestUser = {
-  email: "mpcrds+auto+child1@gmail.com",
-  password: Cypress.env("TEST_USER_PW")
+//These users are members of the same household
+//  and have relationship attributes
+// They can only be authenticated through Okta.
+export const SkywalkerFamily = {
+  /**
+   * Parent Of Luke & Leia
+   */
+  Padme: {
+    email: "mpcrds+auto+wife@gmail.com",
+    password: Cypress.env("TEST_USER_PW")
+  },
+  /**
+   * Child Of Padme
+   * Sibling Of Leia
+   */
+  Luke: {
+    email: "mpcrds+auto+child1@gmail.com",
+    password: Cypress.env("TEST_USER_PW"),
+    firstName: "Luke"    
+  },
+  /**
+   * Child Of Padme
+   * Sibling Of Luke
+   */
+  Leia: {
+    email: "mpcrds+auto+child2@gmail.com",
+    password: Cypress.env("TEST_USER_PW")
+  },
 }

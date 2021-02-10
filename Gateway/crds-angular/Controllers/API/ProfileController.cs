@@ -219,6 +219,11 @@ namespace crds_angular.Controllers.API
         [Route("profile")]
         public IHttpActionResult Post([FromBody] Person person)
         {
+            // I do not think this ModelState.IsValid check catches anything since the Person model does not have any DataAnnotations.
+            // This model is used elsewhere so adding annotations to handle this endpoint's requirements is risky and might break other
+            //  scenarios. However, if we were to add annotations to the Person model, ContactId and HouseholdId should be made Required
+            //  with a value > 0.
+            // https://docs.microsoft.com/en-us/aspnet/web-api/overview/formats-and-model-binding/model-validation-in-aspnet-web-api
             if (ModelState.IsValid)
             {
                 return Authorized(t =>
@@ -230,9 +235,9 @@ namespace crds_angular.Controllers.API
                     {
                         try
                         {
-                            var userAccessToken = this.Request.Headers.Authorization.ToString();
+                            var userAccessToken = Request.Headers.Authorization.ToString();
                             _personService.SetProfile(person, userAccessToken);
-                            return this.Ok();
+                            return Ok();
                         }
                         catch (Exception ex)
                         {
@@ -241,10 +246,7 @@ namespace crds_angular.Controllers.API
                             throw new HttpResponseException(apiError.HttpResponseMessage);
                         }
                     }
-                    else
-                    {
-                        return this.Unauthorized();
-                    }
+                    return Unauthorized();
                 });
             }
             var errors = ModelState.Values.SelectMany(val => val.Errors).Aggregate("", (current, err) => current + err.Exception.Message);
