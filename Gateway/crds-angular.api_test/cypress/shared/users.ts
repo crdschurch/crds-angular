@@ -60,3 +60,12 @@ export const Load: TestUser = {
   email: "mpcrds+LoadTest_98@gmail.com",
   password: undefined
 };
+
+/**
+ * Luke is a test user in non-prod environments.
+ * They can only be authenticated through Okta.
+ */
+export const Luke: TestUser = {
+  email: "mpcrds+auto+child1@gmail.com",
+  password: Cypress.env("TEST_USER_PW")
+}
