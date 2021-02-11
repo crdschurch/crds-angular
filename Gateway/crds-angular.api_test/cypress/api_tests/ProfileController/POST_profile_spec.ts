@@ -12,11 +12,10 @@ import { exceptionResponseContract, exceptionResponseProperties } from "./schema
  * that this endpoint can set will be REMOVED from their Contact record, including their email.
  */
 
+ /** Helper functions */
 let lukeContactId: number;
 let lukeHouseholdId: number;
-function getLukeProfile(): Cypress.Chainable<any>{
-  console.log(`does exist lukeContactId? _${lukeContactId}_`)
-
+function getLukeProfile(): Cypress.Chainable<any> {
   const lukeProfile = (contactId: number, householdId: number) => {
     return {
       contactId,
@@ -44,22 +43,22 @@ function getLukeProfile(): Cypress.Chainable<any>{
   }
 
   // Use ids if they've been fetched already
-  if(lukeContactId && lukeHouseholdId){
+  if (lukeContactId && lukeHouseholdId) {
     return cy.wrap(lukeProfile(lukeContactId, lukeHouseholdId))
   }
 
   //Record IDs will change after a DB refresh, so fetch them dynamically
   return getContactRecord(SkywalkerFamily.Luke.email)
-  .then((contact) => {
-    lukeContactId = contact.Contact_ID;
-    lukeHouseholdId = contact.Household_ID;
-    return lukeProfile(lukeContactId, lukeHouseholdId);
-  });
+    .then((contact) => {
+      lukeContactId = contact.Contact_ID;
+      lukeHouseholdId = contact.Household_ID;
+      return lukeProfile(lukeContactId, lukeHouseholdId);
+    });
 }
 
-
+/** Test Configurations */
 const sharedRequest: CAT.SharedRequest = {
-  urls: ['/api/profile'],
+  urls: ['/api/profile', '/api/v1.0.0/profile'],
   options: {
     method: 'POST',
     failOnStatusCode: false
@@ -76,9 +75,9 @@ const successScenarios: CAT.CompactTestScenario = {
       },
       setup() {
         return getLukeProfile()
-        .then((lukeProfile) => this.request.body = lukeProfile)
-        .then(() => authorizeWithOkta(SkywalkerFamily.Luke.email, SkywalkerFamily.Luke.password as string, this.request))
-        .then(() => this)
+          .then((lukeProfile) => this.request.body = lukeProfile)
+          .then(() => authorizeWithOkta(SkywalkerFamily.Luke.email, SkywalkerFamily.Luke.password as string, this.request))
+          .then(() => this)
       },
       response: {
         status: 200
@@ -91,9 +90,9 @@ const successScenarios: CAT.CompactTestScenario = {
       },
       setup() {
         return getLukeProfile()
-        .then((lukeProfile) => this.request.body = lukeProfile)
-        .then(() => authorizeWithOkta(SkywalkerFamily.Padme.email, SkywalkerFamily.Padme.password as string, this.request))
-        .then(() => this);
+          .then((lukeProfile) => this.request.body = lukeProfile)
+          .then(() => authorizeWithOkta(SkywalkerFamily.Padme.email, SkywalkerFamily.Padme.password as string, this.request))
+          .then(() => this);
       },
       response: {
         status: 200
@@ -112,19 +111,25 @@ const badRequestScenarios: CAT.CompactTestScenario = {
       },
       setup() {
         return getLukeProfile()
-        .then((lukeProfile) => {
-          lukeProfile.householdId = undefined; 
-          this.request.body = lukeProfile
-        })
-        .then(() => authorizeWithOkta(SkywalkerFamily.Luke.email, SkywalkerFamily.Luke.password as string, this.request))
-        .then(() => this);
+          .then((lukeProfile) => {
+            lukeProfile.householdId = undefined;
+            this.request.body = lukeProfile
+          })
+          .then(() => authorizeWithOkta(SkywalkerFamily.Luke.email, SkywalkerFamily.Luke.password as string, this.request))
+          .then(() => this);
       },
       response: {
         status: 400,
         schemas: [errorResponseProperties, errorResponseContract],
-        properties: [ //TODO support comparing properties - add callback comparator (name+value = equals, name+comparator callback = comparator, name+value+comparator = use comparator and warn)
-          { name: "message", value: "Profile update Failed" },
-          // { name: "errors", value: "dbo.Households", }
+        properties: [
+          { name: "message", exactValue: "Profile update Failed" },
+          {
+            name: "errors",
+            satisfies(propertyValue: any) {
+              return Array.isArray(propertyValue) &&
+                (propertyValue as Array<string>).find(v => v.includes("dbo.Households") && v.includes("Household_ID"));
+            }
+          }
         ]
       }
     }
@@ -141,8 +146,8 @@ const unauthorizedScenarios: CAT.CompactTestScenario = {
       },
       setup() {
         return getLukeProfile()
-        .then((lukeProfile) => this.request.body = lukeProfile)
-        .then(() => this)
+          .then((lukeProfile) => this.request.body = lukeProfile)
+          .then(() => this)
       },
       response: {
         status: 401
@@ -166,7 +171,7 @@ const unauthorizedScenarios: CAT.CompactTestScenario = {
         properties: [
           {
             name: "message",
-            value: "Save Profile Data Invalid"
+            exactValue: "Save Profile Data Invalid"
           }
         ]
       }
@@ -206,7 +211,7 @@ const unauthorizedScenarios: CAT.CompactTestScenario = {
         properties: [
           {
             name: "message",
-            value: "Save Profile Data Invalid"
+            exactValue: "Save Profile Data Invalid"
           }
         ]
       }
@@ -218,9 +223,9 @@ const unauthorizedScenarios: CAT.CompactTestScenario = {
       },
       setup() {
         return getLukeProfile()
-        .then((lukeProfile) => this.request.body = lukeProfile)
-        .then(() => authorizeWithOkta(SkywalkerFamily.Leia.email, SkywalkerFamily.Leia.password as string, this.request))
-        .then(() => this)
+          .then((lukeProfile) => this.request.body = lukeProfile)
+          .then(() => authorizeWithOkta(SkywalkerFamily.Leia.email, SkywalkerFamily.Leia.password as string, this.request))
+          .then(() => this)
       },
       response: {
         status: 401
@@ -233,9 +238,9 @@ const unauthorizedScenarios: CAT.CompactTestScenario = {
       },
       setup() {
         return getLukeProfile()
-        .then((lukeProfile) => this.request.body = lukeProfile)
-        .then(() => authorizeWithOkta(KeeperJr.email, KeeperJr.password as string, this.request))
-        .then(() => this);
+          .then((lukeProfile) => this.request.body = lukeProfile)
+          .then(() => authorizeWithOkta(KeeperJr.email, KeeperJr.password as string, this.request))
+          .then(() => this);
       },
       response: {
         status: 401
@@ -249,7 +254,7 @@ const serverErrorScenarios: CAT.CompactTestScenario = {
   scenarios: [
     {
       description: "Request missing body",
-      request: { },
+      request: {},
       setup() {
         return authorizeWithOkta(SkywalkerFamily.Padme.email, SkywalkerFamily.Padme.password as string, this.request)
           .then(() => this);

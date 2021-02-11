@@ -12,7 +12,7 @@ const Impersonator = KeeperJr;
 const NotImpersonator = Sue;
 
 function setResponsePropertyValue(response: CAT.TestResponse, propName: string, propValue: string) {
-  (response.properties?.find(r => r.name === propName) as CAT.PropertyCompare).value = propValue;
+  (response.properties?.find(r => r.name === propName) as CAT.PropertyVerify).exactValue = propValue;
 }
 
 const sharedRequest = {
@@ -27,7 +27,7 @@ const successScenarios: CAT.CompactTestScenario = {
   sharedRequest,
   sharedResponse: {
     schemas: [getProfilePropertiesSchema, getProfileContract],
-    properties: [{ name: "emailAddress", value: Placeholders.assignedInSetup }]
+    properties: [{ name: "emailAddress", exactValue: Placeholders.assignedInSetup }]
   },
   scenarios: [
     {
@@ -80,7 +80,7 @@ const successScenarios: CAT.CompactTestScenario = {
         // Sooooo, I'd expect it to actually get the info of the person we're trying to impersonate...
         status: 200,
         schemas: [getProfilePropertiesSchema, getProfileContract],
-        properties: [{ name: "emailAddress", value: NotImpersonator.email }]
+        properties: [{ name: "emailAddress", exactValue: NotImpersonator.email }]
       }
     },
     {
@@ -106,7 +106,7 @@ const forbiddenScenarios: CAT.CompactTestScenario = {
   sharedRequest,
   sharedResponse: {
     schemas: [errorResponseProperties, errorResponseContract],
-    properties: [{ name: "message", value: "User is not authorized to impersonate other users." }]
+    properties: [{ name: "message", exactValue: "User is not authorized to impersonate other users." }]
   },
   scenarios: [
     {
@@ -166,7 +166,7 @@ const conflictScenarios: CAT.CompactTestScenario = {
       response: {
         status: 409,
         schemas: [errorResponseProperties, errorResponseContract],
-        properties: [{ name: "message", value: "Could not locate user to impersonate." }]
+        properties: [{ name: "message", exactValue: "Could not locate user to impersonate." }]
       }
     }
   ]
