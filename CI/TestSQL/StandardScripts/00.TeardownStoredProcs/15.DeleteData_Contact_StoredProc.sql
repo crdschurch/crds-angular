@@ -480,6 +480,8 @@ BEGIN
 	UPDATE [dbo].Care_Cases SET Contact_ID = null WHERE Contact_ID = @contact_id;
 	UPDATE [dbo].Congregations SET Childcare_Contact = null WHERE Childcare_Contact = @contact_id;
 	UPDATE [dbo].Contact_Staging SET Existing_Contact_Record = null WHERE Existing_Contact_Record = @contact_id;
+	UPDATE [dbo].Contribution_Statements SET Contact_Record = null WHERE Contact_Record = @contact_id;
+	UPDATE [dbo].Contribution_Statements SET Spouse_Record = null WHERE Spouse_Record = @contact_id;
 	UPDATE [dbo].Counseling_Engagements SET Counselor = null WHERE Counselor = @contact_id;
 	UPDATE [dbo].cr_Event_Participant_Waivers SET Signee_Contact_ID = null WHERE Signee_Contact_ID = @contact_id;
 	UPDATE [dbo].dp_Communication_Messages SET Contact_ID = null WHERE Contact_ID = @contact_id;
