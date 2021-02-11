@@ -57,6 +57,7 @@ BEGIN
 
 	--Delete foreign key entries that can't be nullified
 	DELETE [dbo].Scheduled_Donations WHERE Donor_ID = @donor_id;
+	DELETE [dbo].Contribution_Statement_Donors WHERE Donor_ID = @donor_id;
 
 	--Delete foreign key entries that can't be nullified using another stored proc
 	--Delete Responses
