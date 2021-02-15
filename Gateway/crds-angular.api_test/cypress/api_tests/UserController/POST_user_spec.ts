@@ -15,7 +15,7 @@ function createAndSetEmail(scenario: CAT.TestScenario, setResponseProperty = tru
   const email = getTempTesterEmail();
   (scenario.request.body as { email: string }).email = email;
   if (setResponseProperty) {
-    (scenario.response.properties?.find(r => r.name === "email") as CAT.PropertyCompare).value = email;
+    (scenario.response.properties?.find(r => r.name === "email") as CAT.PropertyVerify).exactValue = email;
   }
 }
 
@@ -28,7 +28,7 @@ function createAndSetPassword(scenario: CAT.TestScenario, setResponseProperty = 
   const password = getTestPassword();
   (scenario.request.body as { password: string }).password = password;
   if (setResponseProperty) {
-    (scenario.response.properties?.find(r => r.name === "password") as CAT.PropertyCompare).value = password;
+    (scenario.response.properties?.find(r => r.name === "password") as CAT.PropertyVerify).exactValue = password;
   }
 }
 
@@ -47,11 +47,11 @@ const successScenarios: CAT.CompactTestScenario = {
     properties: [
       {
         name: "email",
-        value: Placeholders.assignedInSetup
+        exactValue: Placeholders.assignedInSetup
       },
       {
         name: "password",
-        value: Placeholders.assignedInSetup
+        exactValue: Placeholders.assignedInSetup
       }
     ]
   },
@@ -160,7 +160,7 @@ const successScenarios: CAT.CompactTestScenario = {
       },
       setup() {
         createAndSetEmail(this);
-        (this.response.properties?.find(r => r.name === "password") as CAT.PropertyCompare).value = null;
+        (this.response.properties?.find(r => r.name === "password") as CAT.PropertyVerify).exactValue = null;
         return cy.wrap(this)
       },
       response: {
@@ -169,7 +169,7 @@ const successScenarios: CAT.CompactTestScenario = {
       preferredResponse: {
         status: 400,
         schemas: [badRequestProperties, badRequestContract],
-        properties: [{ name: "message", value: "Missing password" }]
+        properties: [{ name: "message", exactValue: "Missing password" }]
       }
     }
   ]
@@ -200,7 +200,7 @@ const serverErrorScenarios: CAT.CompactTestScenario = {
   sharedRequest,
   sharedResponse: {
     schemas: [genericServerErrorContract],
-    properties: [{ name: "Message", value: "An error has occurred." }]
+    properties: [{ name: "Message", exactValue: "An error has occurred." }]
   },
   scenarios: [
     {
@@ -227,7 +227,7 @@ const serverErrorScenarios: CAT.CompactTestScenario = {
       preferredResponse: {
         status: 400,
         schemas: [badRequestProperties, badRequestContract],
-        properties: [{ name: "message", value: "Invalid Household Source Id" }]
+        properties: [{ name: "message", exactValue: "Invalid Household Source Id" }]
       }
     },
     {
@@ -250,7 +250,7 @@ const serverErrorScenarios: CAT.CompactTestScenario = {
       preferredResponse: {
         status: 400,
         schemas: [badRequestProperties, badRequestContract],
-        properties: [{ name: "message", value: "Missing last name" }]
+        properties: [{ name: "message", exactValue: "Missing last name" }]
       }
     },
     {
@@ -272,7 +272,7 @@ const serverErrorScenarios: CAT.CompactTestScenario = {
       preferredResponse: {
         status: 400,
         schemas: [badRequestProperties, badRequestContract],
-        properties: [{ name: "message", value: "Missing email" }]
+        properties: [{ name: "message", exactValue: "Missing email" }]
       }
     }
   ]

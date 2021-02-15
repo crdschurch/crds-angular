@@ -8,17 +8,18 @@ declare namespace CAT {
 
   interface ResponseBody {
     schemas?: unknown[];
-    properties?: PropertyCompare[];
+    properties?: PropertyVerify[];
     bodyIsEmpty?: boolean;
     /** Force a response to be parsed if it is not done automatically */
     parseAsJSON?: boolean;
   }
 
-  interface PropertyCompare {
+  interface PropertyVerify {
     name: string;
-    value: any;
-    /** If false, value must be a string and will 'includes' to compare; defaults to comparing with eq */
-    exactMatch?: boolean;
+    /** Asserts the value matches exactly using Chai's .eq */
+    exactValue?: any;
+    /** Assert the value satisfies the function's criteria using Chai's .satisfy */
+    satisfies?(value:any): void;
   }
   
   

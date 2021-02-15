@@ -20,7 +20,7 @@ const successScenarios: CAT.CompactTestScenario = {
       response: {
         status: 200,
         schemas: [mpLoginSchemaProperties, mpLoginBasicAuthContract],
-        properties: [{ name: "userEmail", value: Ben.email }]
+        properties: [{ name: "userEmail", exactValue: Ben.email }]
       }
     }
   ]
@@ -30,7 +30,7 @@ const badRequestScenarios: CAT.CompactTestScenario = {
   sharedRequest,
   sharedResponse: {
     schemas: [badRequestProperties, badRequestContract],
-    properties: [{ name: "message", value: "Login Failed" }]
+    properties: [{ name: "message", exactValue: "Login Failed" }]
   },
   scenarios: [
     {

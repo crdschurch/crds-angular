@@ -34,7 +34,7 @@ const serverErrorScenario: CAT.TestScenario = {
     //Not technically a bug but error could be more descriptive
     status: 400,
     schemas: [badRequestProperties, badRequestContract],
-    properties: [{ name: "message", value: "Missing Email" }]
+    properties: [{ name: "message", exactValue: "Missing Email" }]
   }
 }
 

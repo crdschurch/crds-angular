@@ -12,6 +12,7 @@ declare namespace MPModels {
   interface Contact {
     Contact_ID: number,
     Email_Address: string,
-    Donor_Record: NullableNumber
+    Donor_Record: NullableNumber,
+    Household_ID: number
   }
 }

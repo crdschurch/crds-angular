@@ -85,13 +85,15 @@ function runSetup(scenario: CAT.TestScenario): Cypress.Chainable<CAT.TestScenari
   return scenario.setup ? scenario.setup() : cy.wrap(scenario);
 }
 
-function verifyProperties(properties: CAT.PropertyCompare[], body: Cypress.RequestBody){
+function verifyProperties(properties: CAT.PropertyVerify[], body: any){
   properties.forEach((prop) => {
-    if (prop.exactMatch === false) {
-      expect(body).to.have.property(prop.name).and.include(prop.value);
+    if(prop.exactValue) {
+      expect(body).to.have.property(prop.name).and.eq(prop.exactValue);
     }
-    else {
-      expect(body).to.have.property(prop.name).and.eq(prop.value);
+    
+    if(prop.satisfies){
+      console.log("using valueCompare")
+      expect(body).to.have.property(prop.name).and.satisfy(prop.satisfies)
     }
   });
 }

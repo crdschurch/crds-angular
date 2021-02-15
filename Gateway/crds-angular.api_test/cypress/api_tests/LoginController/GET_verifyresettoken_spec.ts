@@ -34,7 +34,7 @@ const successScenarios: CAT.CompactTestScenario = {
         status: 200,
         properties: [{
           name: "TokenValid",
-          value: true
+          exactValue: true
         }]
       }
     },
@@ -50,7 +50,7 @@ const successScenarios: CAT.CompactTestScenario = {
         status: 200,
         properties: [{
           name: "TokenValid",
-          value: false
+          exactValue: false
         }]
       }
     },
