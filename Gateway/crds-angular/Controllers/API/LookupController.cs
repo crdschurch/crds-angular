@@ -1,39 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Web.Helpers;
-using System.Web.Http;
-using System.Web.Http.Controllers;
-using System.Web.Http.Description;
-using System.Web.Http.Results;
-using crds_angular.Models.Json;
 using crds_angular.Security;
 using crds_angular.Services.Interfaces;
-using MinistryPlatform.Translation.Repositories;
 using Crossroads.ApiVersioning;
-using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.Security;
+using MinistryPlatform.Translation.Repositories;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace crds_angular.Controllers.API
 {
     public class LookupController : ImpersonateAuthBaseController
     {
-        private readonly IConfigurationWrapper _configurationWrapper;
         private readonly LookupRepository _lookupRepository;
-        private readonly IAuthenticationRepository _authenticationRepository;
         private readonly IUserRepository _userService;
 
-        public LookupController(IAuthTokenExpiryService authTokenExpiryService, 
-                                IConfigurationWrapper configurationWrapper, 
-                                LookupRepository lookupRepository, 
-                                IUserImpersonationService userImpersonationService, 
-                                IAuthenticationRepository authenticationRepository, 
-                                IUserRepository userService) 
+        public LookupController(IAuthTokenExpiryService authTokenExpiryService,
+            LookupRepository lookupRepository,
+            IUserImpersonationService userImpersonationService,
+            IAuthenticationRepository authenticationRepository,
+            IUserRepository userService)
             : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
-            _configurationWrapper = configurationWrapper;
             _lookupRepository = lookupRepository;
-            _authenticationRepository = authenticationRepository;
             _userService = userService;
         }
 
@@ -211,6 +201,12 @@ namespace crds_angular.Controllers.API
             });
         }
 
+        /// <summary>
+        /// Checks that a given email does not exist OR (when authorized) that contact record with email address has given contact id
+        /// </summary>
+        /// <param name="contactId"></param>
+        /// <param name="email"></param>
+        /// <returns></returns>
         [ResponseType(typeof(Dictionary<string, object>))]
         [VersionedRoute(template: "lookup/{contactId}/find", minimumVersion: "1.0.0")]
         [Route("lookup/{contactId}/find")]
@@ -234,17 +230,6 @@ namespace crds_angular.Controllers.API
                     return Ok();
                 return BadRequest();
             }, BadRequest);
-        }
-
-        protected static dynamic DecodeJson(string json)
-        {
-            var obj = System.Web.Helpers.Json.Decode(json);
-            if (obj.GetType() != typeof(DynamicJsonArray))
-            {
-                return null;
-            }
-            dynamic[] array = obj;
-            return array;
         }
     }
 }
