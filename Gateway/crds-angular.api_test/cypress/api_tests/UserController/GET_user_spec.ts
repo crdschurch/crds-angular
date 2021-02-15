@@ -8,8 +8,8 @@ import { Placeholders } from "shared/enums";
 import { Ben, KeeperJr, Sue } from "shared/users";
 
 function AddAuthorizationTokenToResponseProperties(scenario: CAT.TestScenario, token: string){
-  (scenario.response.properties?.find(p => p.name === 'userToken') as CAT.PropertyCompare) //Make Typescript happy <3
-  .value = token;
+  (scenario.response.properties?.find(p => p.name === 'userToken') as CAT.PropertyVerify) //Make Typescript happy <3
+  .exactValue = token;
 }
 
 // Data Setup
@@ -25,7 +25,7 @@ const successScenarios: CAT.CompactTestScenario = {
     properties: [
       {
         name: "userToken",
-        value: Placeholders.assignedInSetup
+        exactValue: Placeholders.assignedInSetup
       }
     ]
   },
@@ -49,11 +49,11 @@ const successScenarios: CAT.CompactTestScenario = {
           properties: [
             {
               name: "userEmail",
-              value: Ben.email
+              exactValue: Ben.email
             },
             {
               name: "username",
-              value: Ben.firstName
+              exactValue: Ben.firstName
             }
           ]
       },
@@ -77,11 +77,11 @@ const successScenarios: CAT.CompactTestScenario = {
         properties: [
           {
             name: "userEmail",
-            value: Ben.email
+            exactValue: Ben.email
           },
           {
             name: "username",
-            value: Ben.firstName
+            exactValue: Ben.firstName
           }
         ]
       },
@@ -110,11 +110,11 @@ const successScenarios: CAT.CompactTestScenario = {
           properties: [
             {
               name: "userEmail",
-              value: Sue.email
+              exactValue: Sue.email
             },
             {
               name: "username",
-              value: Sue.firstName
+              exactValue: Sue.firstName
             }
           ]
       },
@@ -138,11 +138,11 @@ const successScenarios: CAT.CompactTestScenario = {
         properties: [
           {
             name: "userEmail",
-            value: KeeperJr.email
+            exactValue: KeeperJr.email
           },
           {
             name: "username",
-            value: KeeperJr.firstName
+            exactValue: KeeperJr.firstName
           }
         ]
       }
@@ -166,11 +166,11 @@ const successScenarios: CAT.CompactTestScenario = {
         properties: [
           {
             name: "userEmail",
-            value: "no-reply@crossroads.net"
+            exactValue: "no-reply@crossroads.net"
           },
           {
             name: "username",
-            value: "Contact"
+            exactValue: "Contact"
           }
         ]
       }
@@ -245,7 +245,7 @@ const badRequestScenarios: CAT.CompactTestScenario = {
     properties: [
       {
         name: "message",
-        value: "User email did not return exactly one user record"
+        exactValue: "User email did not return exactly one user record"
       }
     ],    
     parseAsJSON: true
@@ -266,7 +266,7 @@ const badRequestScenarios: CAT.CompactTestScenario = {
         status: 400
       },
       preferredResponse: {
-        properties: [{ name: "message", value: "User not found" }]
+        properties: [{ name: "message", exactValue: "User not found" }]
       }
     },
     {
@@ -286,7 +286,7 @@ const badRequestScenarios: CAT.CompactTestScenario = {
         status: 400
       },
       preferredResponse: {
-          properties: [{ name: "message", value: "User not found" }]
+          properties: [{ name: "message", exactValue: "User not found" }]
       }
     },
   ],
@@ -310,7 +310,7 @@ const serverErrorScenario: CAT.TestScenario = {
       properties: [
         {
           name: "Message",
-          value: "An error has occurred."
+          exactValue: "An error has occurred."
         }
       ]
   }
