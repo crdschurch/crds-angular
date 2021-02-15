@@ -1,5 +1,3 @@
-//authorized vs unauthorized
-
 import { addAuthorizationHeader as authorizeWithMP } from "shared/authorization/mp_user_auth";
 import { addAuthorizationHeader as authorizeWithOkta } from "shared/authorization/okta_user_auth";
 import { runTest, unzipScenarios } from "shared/CAT/cypress_api_tests";
@@ -21,47 +19,29 @@ function getBenContactId(){
   })
 }
 
-//The url requires a person's Contact Id, not their User account id
 function setUrl(contactId: string, request: Partial<Cypress.RequestOptions>){
-  request.url = request.url?.replace('{userId}', contactId);
+  request.url = request.url?.replace('{contactId}', contactId);
 }
 
+//{contactId} is a placeholder and must be set to a value before calling
 const sharedRequest = {
-  urls: ['/api/lookup/{userId}/find'], //{userId} must be set to a value
+  urls: ['/api/lookup/{contactId}/find', 
+  '/api/v1.0.0/lookup/{contactId}/find',
+  // TODO endpoints ending in / regression test a previous version of the endpoint definition. 
+  //  These tests should be removed once no errors related to this endpoint show up in Prod.
+  '/api/lookup/{contactId}/find/', 
+  '/api/v1.0.0/lookup/{contactId}/find/'], 
   options: {
     method: 'GET',
     failOnStatusCode: false
   }
 }
 
-const testScenarios: CAT.CompactTestScenario = {
-  sharedRequest,
-  scenarios: [
-    {
-      description: "Unauthorized request where email is missing and contact Id = 0",
-      request:{},
-      setup(){
-          setUrl('0', this.request);
-          return cy.wrap(this);
-        },
-      response: {
-        status: 404,
-        schemas: [exceptionResponseProperties, exceptionResponseContract],
-        properties: [
-          {
-            name: "Message",
-            satisfies(value){
-              return value.includes("No HTTP resource was found that matches the request URI");
-            }
-          }
-        ]
-      }
-    }
-  ]
-}
-
 const successScenario: CAT.CompactTestScenario = {
   sharedRequest,
+  sharedResponse: {
+    bodyIsEmpty: true
+  },
   scenarios: [
     {
       description: "Unauthorized request where user does not exist and contact Id = 0",
@@ -75,8 +55,7 @@ const successScenario: CAT.CompactTestScenario = {
         return cy.wrap(this);
       },
       response: {
-        status: 200,
-        bodyIsEmpty: true
+        status: 200
       }
     },
     {
@@ -91,8 +70,7 @@ const successScenario: CAT.CompactTestScenario = {
         return authorizeWithMP(Ben.email, Ben.password!, this.request).then(() => this)
       },
       response: {
-        status: 200,
-        bodyIsEmpty: true
+        status: 200
       }
     },
     {
@@ -107,8 +85,7 @@ const successScenario: CAT.CompactTestScenario = {
         return authorizeWithOkta(Ben.email, Ben.password!, this.request).then(() => this)
       },
       response: {
-        status: 200,
-        bodyIsEmpty: true
+        status: 200
       }
     },
     {
@@ -127,8 +104,7 @@ const successScenario: CAT.CompactTestScenario = {
         .then(() =>  this);
       },
       response: {
-        status: 200,
-        bodyIsEmpty: true
+        status: 200
       }
     },
     {
@@ -147,8 +123,7 @@ const successScenario: CAT.CompactTestScenario = {
         .then(() =>  this);
       },
       response: {
-        status: 200,
-        bodyIsEmpty: true
+        status: 200
       }
     },
     {
@@ -167,8 +142,7 @@ const successScenario: CAT.CompactTestScenario = {
         .then(() => this);
       },
       response: {
-        status: 200,
-        bodyIsEmpty: true
+        status: 200
       }
     },
     {
@@ -187,8 +161,7 @@ const successScenario: CAT.CompactTestScenario = {
         .then(() => this);
       },
       response: {
-        status: 200,
-        bodyIsEmpty: true
+        status: 200
       }
     },
     {
@@ -206,8 +179,7 @@ const successScenario: CAT.CompactTestScenario = {
         })
       },
       response: {
-        status: 200,
-        bodyIsEmpty: true
+        status: 200
       }
     }
   ]
@@ -215,6 +187,9 @@ const successScenario: CAT.CompactTestScenario = {
 
 const badRequestScenario: CAT.CompactTestScenario = {
   sharedRequest,
+  sharedResponse: {
+    bodyIsEmpty: true
+  },
   scenarios: [
     {
       description: "Unauthorized request where user exists and contact Id = 0",
@@ -228,8 +203,7 @@ const badRequestScenario: CAT.CompactTestScenario = {
         return cy.wrap(this);
       },
       response: {
-        status: 400,
-        bodyIsEmpty: true
+        status: 400
       }
     },
     {
@@ -244,8 +218,7 @@ const badRequestScenario: CAT.CompactTestScenario = {
         return authorizeWithMP(Ben.email, Ben.password!, this.request).then(() => this)
       },
       response: {
-        status: 400,
-        bodyIsEmpty: true
+        status: 400
       }
     },
     {
@@ -260,8 +233,7 @@ const badRequestScenario: CAT.CompactTestScenario = {
         return authorizeWithOkta(Ben.email, Ben.password!, this.request).then(() => this)
       },
       response: {
-        status: 400,
-        bodyIsEmpty: true
+        status: 400
       }
     },
     {
@@ -279,8 +251,7 @@ const badRequestScenario: CAT.CompactTestScenario = {
         })
       },
       response: {
-        status: 400,
-        bodyIsEmpty: true
+        status: 400
       }
     }
   ]
@@ -288,6 +259,17 @@ const badRequestScenario: CAT.CompactTestScenario = {
 
 const notFoundScenario: CAT.CompactTestScenario = {
   sharedRequest,
+  sharedResponse: {
+    schemas: [exceptionResponseProperties, exceptionResponseContract],
+    properties: [
+      {
+        name: "Message",
+        satisfies(value){
+          return value.includes("No HTTP resource was found that matches the request URI");
+        }
+      }
+    ]
+  },
   scenarios: [
     {
       description: "Unauthorized request where email is missing but contact Id matches a real user",
@@ -302,14 +284,6 @@ const notFoundScenario: CAT.CompactTestScenario = {
       response: {
         status: 404,
         schemas: [exceptionResponseProperties, exceptionResponseContract],
-        properties: [
-          {
-            name: "Message",
-            satisfies(value){
-              return value.includes("No HTTP resource was found that matches the request URI");
-            }
-          }
-        ]
       }
     },
     {
@@ -324,16 +298,7 @@ const notFoundScenario: CAT.CompactTestScenario = {
         .then(() => this);
       },
       response: {
-        status: 404,
-        schemas: [exceptionResponseProperties, exceptionResponseContract],
-        properties: [
-          {
-            name: "Message",
-            satisfies(value){
-              return value.includes("No HTTP resource was found that matches the request URI");
-            }
-          }
-        ]
+        status: 404
       }
     },
     {
@@ -348,16 +313,7 @@ const notFoundScenario: CAT.CompactTestScenario = {
         .then(() => this);
       },
       response: {
-        status: 404,
-        schemas: [exceptionResponseProperties, exceptionResponseContract],
-        properties: [
-          {
-            name: "Message",
-            satisfies(value){
-              return value.includes("No HTTP resource was found that matches the request URI");
-            }
-          }
-        ]
+        status: 404
       }
     },
     {
@@ -368,16 +324,7 @@ const notFoundScenario: CAT.CompactTestScenario = {
         return cy.wrap(this);
       },
       response: {
-        status: 404,
-        schemas: [exceptionResponseProperties, exceptionResponseContract],
-        properties: [
-          {
-            name: "Message",
-            satisfies(value){
-              return value.includes("No HTTP resource was found that matches the request URI");
-            }
-          }
-        ]
+        status: 404
       }
     },
     {
@@ -389,16 +336,7 @@ const notFoundScenario: CAT.CompactTestScenario = {
           .then(() => this);
       },
       response: {
-        status: 404,
-        schemas: [exceptionResponseProperties, exceptionResponseContract],
-        properties: [
-          {
-            name: "Message",
-            satisfies(value){
-              return value.includes("No HTTP resource was found that matches the request URI");
-            }
-          }
-        ]
+        status: 404
       }
     },
     {
@@ -410,16 +348,7 @@ const notFoundScenario: CAT.CompactTestScenario = {
           .then(() => this);
       },
       response: {
-        status: 404,
-        schemas: [exceptionResponseProperties, exceptionResponseContract],
-        properties: [
-          {
-            name: "Message",
-            satisfies(value){
-              return value.includes("No HTTP resource was found that matches the request URI");
-            }
-          }
-        ]
+        status: 404        
       }
     }
   ]

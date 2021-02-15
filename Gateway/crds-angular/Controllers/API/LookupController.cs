@@ -212,38 +212,28 @@ namespace crds_angular.Controllers.API
         }
 
         [ResponseType(typeof(Dictionary<string, object>))]
-        [VersionedRoute(template: "lookup/{userId}/find/{email?}", minimumVersion: "1.0.0")]
-        [Route("lookup/{userId}/find/{email?}")]
+        [VersionedRoute(template: "lookup/{contactId}/find", minimumVersion: "1.0.0")]
+        [Route("lookup/{contactId}/find")]
         [HttpGet]
-        public IHttpActionResult EmailExists(int userId, string email)
+        public IHttpActionResult EmailExists(int contactId, string email)
         {
-            //the userId parameter really contains the contact id
-            //TODO let's clean this up
-            var authorizedWithCookie = Authorized(t =>
+            var matchingRecords = _lookupRepository.EmailSearch(email);
+            var recordNotFound = matchingRecords.Count == 0;
+
+            if (recordNotFound)
             {
-                var exists = _lookupRepository.EmailSearch(email);
-                if (exists.Count == 0 || _userService.GetContactIdByUserId(Convert.ToInt32(exists["dp_RecordID"])) == userId)
-                    return Ok();
-
-                return BadRequest();
-            });
-
-            if (authorizedWithCookie is UnauthorizedResult)
-            {
-                // TODO: Refactor this to use IApiUserRepository.GetDefaultApiClientToken
-                var clientId = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_ID");
-                var clientSecret = _configurationWrapper.GetEnvironmentVarAsString("CRDS_MP_COMMON_CLIENT_SECRET");
-                var authData = _authenticationRepository.AuthenticateClient(clientId, clientSecret);
-                var token = authData?.AccessToken;
-
-                var exists = _lookupRepository.EmailSearch(email);
-                if (exists.Count == 0)
-                {
-                    return Ok();
-                }
-                return BadRequest();
+                return Ok();
             }
-            return authorizedWithCookie;
+
+            return Authorized(doWhenAuthorized =>
+            {
+                var userIdFromRecord = Convert.ToInt32(matchingRecords["dp_RecordID"]);
+                var contactIdFromRecord = _userService.GetContactIdByUserId(userIdFromRecord);
+
+                if (contactIdFromRecord == contactId)
+                    return Ok();
+                return BadRequest();
+            }, BadRequest);
         }
 
         protected static dynamic DecodeJson(string json)
