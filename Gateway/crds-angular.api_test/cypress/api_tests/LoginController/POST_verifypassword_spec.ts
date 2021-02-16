@@ -102,7 +102,7 @@ const badRequestScenarios: CAT.CompactTestScenario = {
         schemas: [badRequestProperties, badRequestContract],
         properties: [{
           name: "message",
-          value: "Verify Password Failed"
+          exactValue: "Verify Password Failed"
         }],
         parseAsJSON: true
       }

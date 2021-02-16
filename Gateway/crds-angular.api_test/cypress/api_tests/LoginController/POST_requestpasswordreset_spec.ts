@@ -61,7 +61,7 @@ const successScenarios: CAT.CompactTestScenario = {
           //Not technically a bug but misleading to user
           status: 404,
           schemas: [badRequestProperties, badRequestContract],
-          properties: [{ name: "message", value: "User Not Found" }]
+          properties: [{ name: "message", exactValue: "User Not Found" }]
         }
     },
     {
@@ -74,7 +74,7 @@ const successScenarios: CAT.CompactTestScenario = {
         //Not technically a bug but misleading to user
         status: 404,
         schemas: [badRequestProperties, badRequestContract],
-        properties: [{ name: "message", value: "User Not Found" }]
+        properties: [{ name: "message", exactValue: "User Not Found" }]
       }
     },
     {
@@ -87,7 +87,7 @@ const successScenarios: CAT.CompactTestScenario = {
         //Not technically a bug but misleading to user
         status: 404,
         schemas: [badRequestProperties, badRequestContract],
-        properties: [{ name: "message", value: "User Not Found" }]
+        properties: [{ name: "message", exactValue: "User Not Found" }]
       }
     },
     {
@@ -100,7 +100,7 @@ const successScenarios: CAT.CompactTestScenario = {
         //Not technically a bug but misleading to user
         status: 400,
         schemas: [badRequestProperties, badRequestContract],
-        properties: [{ name: "message", value: "Missing Email" }]
+        properties: [{ name: "message", exactValue: "Missing Email" }]
       }
     }
   ]
@@ -118,7 +118,7 @@ const serverErrorScenarios: CAT.CompactTestScenario = {
     preferredResponse: {
       status: 400,
       schemas: [badRequestProperties, badRequestContract],
-      properties: [{ name: "message", value: "Missing Email" }]
+      properties: [{ name: "message", exactValue: "Missing Email" }]
     }
   }]
 }
