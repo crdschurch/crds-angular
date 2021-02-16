@@ -13,6 +13,7 @@ declare namespace MPModels {
     Contact_ID: number,
     Email_Address: string,
     Donor_Record: NullableNumber,
-    Household_ID: number
+    Household_ID: number,
+    User_Account: NullableNumber
   }
 }

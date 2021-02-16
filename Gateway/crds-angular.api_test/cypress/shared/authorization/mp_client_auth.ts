@@ -2,7 +2,7 @@
 let storedToken: string;
 
 /**
- * Gets an MP Authorization token for the CRDS.Common client app
+ * Gets an MP Authorization token for the CRDS.TestAutomation client app
  */
 function getNewToken(): Cypress.Chainable<string> {
   const tokenRequest: Partial<Cypress.RequestOptions> = {
@@ -21,7 +21,7 @@ function getNewToken(): Cypress.Chainable<string> {
 }
 
 /**
- * Gets an MP Authorization token for the CRDS.Common client app. Will return existing token if one has been fetched already.
+ * Gets an MP Authorization token for the CRDS.TestAutomation client app. Will return existing token if one has been fetched already.
  */
 function getToken(): Cypress.Chainable<string> {
   if(storedToken === undefined){
@@ -33,7 +33,7 @@ function getToken(): Cypress.Chainable<string> {
 
 
 /**
- * Adds MP Bearer token authorized by CRDS.Common client app to Cypress request 
+ * Adds MP Bearer token authorized by CRDS.TestAutomation client app to Cypress request 
  * @param request 
  */
 export function addAuthorizationHeader(request: Partial<Cypress.RequestOptions>): Cypress.Chainable<Partial<Cypress.RequestOptions>>{
