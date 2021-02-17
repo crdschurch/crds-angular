@@ -7,6 +7,8 @@ import { KeeperJr, SkywalkerFamily } from "shared/users";
 import { errorResponseContract, errorResponseProperties } from "./schemas/errorResponseSchemas";
 import { exceptionResponseContract, exceptionResponseProperties } from "./schemas/exceptionResponseSchemas";
 
+//TODO The Skywalker family is not setup in demo so these tests cannot run. How can we make these compatible?
+
 /**
  * WARNING! Do NOT post to the '/api/profile' endpoint and only give a valid contactId and householdId - all other properties
  * that this endpoint can set will be REMOVED from their Contact record, including their email.
