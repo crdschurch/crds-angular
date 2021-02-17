@@ -9,36 +9,19 @@ using crds_angular.Models.Finder;
 using crds_angular.Services.Analytics;
 using crds_angular.Services.Interfaces;
 using Crossroads.Web.Common.Configuration;
-using Crossroads.Web.Common.MinistryPlatform;
-using Crossroads.Web.Common.Security;
 using log4net;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Models.Finder;
 using MinistryPlatform.Translation.Repositories.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Device.Location;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using MpCommunication = MinistryPlatform.Translation.Models.MpCommunication;
 
 namespace crds_angular.Services
 {
-
-    public class RemoteAddress
-    {
-        public string Ip { get; set; }
-        public string region_code { get; set; }
-        public string city { get; set; }
-        public string zip_code { get; set; }
-        public double latitude { get; set; }
-        public double longitude { get; set; }
-    }
-
     public class FinderService : MinistryPlatformBaseService, IFinderService
     {
         private readonly IAddressGeocodingService _addressGeocodingService;
@@ -51,10 +34,8 @@ namespace crds_angular.Services
         private readonly IGroupToolService _groupToolService;
         private readonly IConfigurationWrapper _configurationWrapper;
         private readonly IGroupService _groupService;
-        private readonly IApiUserRepository _apiUserRepository;
         private readonly IInvitationService _invitationService;
         private readonly IAwsCloudsearchService _awsCloudsearchService;
-        private readonly IAuthenticationRepository _authenticationRepository;
         private readonly ICommunicationRepository _communicationRepository;
         private readonly IAccountService _accountService;
         private readonly IAnalyticsService _analyticsService;
@@ -63,10 +44,7 @@ namespace crds_angular.Services
         private readonly IAddressRepository _addressRepository;
         private readonly IFirestoreUpdateService _firestoreUpdateService;
 
-        private readonly int _approvedHost;
-        private readonly int _pendingHost;
         private readonly int _anywhereGroupType;
-        private readonly int _trialMemberRoleId;
         private readonly int _memberRoleId;
         private readonly int _groupRoleLeaderId;
         private readonly int _anywhereGatheringInvitationTypeId;
@@ -102,8 +80,7 @@ namespace crds_angular.Services
         private const int ADD_TO_MAP = 1;
         private const int REMOVE_FROM_MAP = 2;
 
-        public FinderService(
-            IAddressGeocodingService addressGeocodingService,
+        public FinderService(IAddressGeocodingService addressGeocodingService,
             IFinderRepository finderRepository,
             IContactRepository contactRepository,
             IAddressService addressService,
@@ -111,19 +88,16 @@ namespace crds_angular.Services
             IGroupRepository groupRepository,
             IGroupService groupService,
             IGroupToolService groupToolService,
-            IApiUserRepository apiUserRepository,
             IConfigurationWrapper configurationWrapper,
             IInvitationService invitationService,
             IAwsCloudsearchService awsCloudsearchService,
-            IAuthenticationRepository authenticationRepository,
             ICommunicationRepository communicationRepository,
             IAccountService accountService,
             ILookupService lookupService,
             IAnalyticsService analyticsService,
             ILocationService locationService,
             IAddressRepository addressRepository,
-            IFirestoreUpdateService firestoreUpdateService
-        )
+            IFirestoreUpdateService firestoreUpdateService)
         {
             // services
             _addressGeocodingService = addressGeocodingService;
@@ -133,8 +107,6 @@ namespace crds_angular.Services
             _participantRepository = participantRepository;
             _groupService = groupService;
             _groupRepository = groupRepository;
-            _apiUserRepository = apiUserRepository;
-            _authenticationRepository = authenticationRepository;
             _groupToolService = groupToolService;
             _configurationWrapper = configurationWrapper;
             _invitationService = invitationService;
@@ -148,10 +120,10 @@ namespace crds_angular.Services
             _firestoreUpdateService = firestoreUpdateService;
             // constants
             _anywhereCongregationId = _configurationWrapper.GetConfigIntValue("AnywhereCongregationId");
-            _approvedHost = configurationWrapper.GetConfigIntValue("ApprovedHostStatus");
-            _pendingHost = configurationWrapper.GetConfigIntValue("PendingHostStatus");
+            configurationWrapper.GetConfigIntValue("ApprovedHostStatus");
+            configurationWrapper.GetConfigIntValue("PendingHostStatus");
             _anywhereGroupType = configurationWrapper.GetConfigIntValue("AnywhereGroupTypeId");
-            _trialMemberRoleId = configurationWrapper.GetConfigIntValue("GroupsTrialMemberRoleId");
+            configurationWrapper.GetConfigIntValue("GroupsTrialMemberRoleId");
             _memberRoleId = configurationWrapper.GetConfigIntValue("Group_Role_Default_ID");
             _groupRoleLeaderId = configurationWrapper.GetConfigIntValue("GroupRoleLeader");
             _anywhereGatheringInvitationTypeId = configurationWrapper.GetConfigIntValue("AnywhereGatheringInvitationType");
@@ -430,24 +402,6 @@ namespace crds_angular.Services
             return _groupService.GetGroupParticipantsWithoutAttributes(groupId);
         }
 
-        private void GatheringValidityCheck(int contactId, AddressDTO address)
-        {
-            //get the list of anywhere groups
-
-            var groups = _groupRepository.GetGroupsByGroupType(_anywhereGroupType);
-
-            //get groups that this user is the primary contact for at this address
-            var matchingGroupsCount = groups
-                .Where(x => x.PrimaryContact == contactId.ToString())
-                .Where(x => x.Address.Address_Line_1 == address.AddressLine1)
-                .Where(x => x.Address.City == address.City).Count(x => x.Address.State == address.State);
-
-            if (matchingGroupsCount > 0)
-            {
-                throw new GatheringException(contactId);
-            }
-        }
-
         public void TryAGroup(int contactId, int groupId)
         {
             var group = _groupService.GetGroupDetails(groupId);
@@ -466,24 +420,6 @@ namespace crds_angular.Services
             _groupToolService.SubmitInquiry(contactId, groupId, false);
             RecordCommunication(connection);
             SendTryAGroupEmailToLeader(contactId, group);
-        }
-
-        public AddressDTO GetAddressForIp(string ip)
-        {
-            var address = new AddressDTO();
-            var request = WebRequest.Create("http://freegeoip.net/json/" + ip);
-            using (var response = request.GetResponse())
-            using (var stream = new StreamReader(response.GetResponseStream()))
-            {
-                var responseString = stream.ReadToEnd();
-                var s = JsonConvert.DeserializeObject<RemoteAddress>(responseString);
-                address.City = s.city;
-                address.State = s.region_code;
-                address.PostalCode = s.zip_code;
-                address.Latitude = s.latitude;
-                address.Longitude = s.longitude;
-            }
-            return address;
         }
 
         public int GetParticipantIdFromContact(int contactId)
@@ -541,7 +477,7 @@ namespace crds_angular.Services
             return pins;
         }
 
-        public void AddUserDirectlyToGroup( User userBeingAdded, int groupid, int roleId, int leaderContactId)
+        public void AddUserDirectlyToGroup(User userBeingAdded, int groupid, int roleId, int leaderContactId)
         {
 
             //check to see if user exists in MP. Exclude Guest Giver and Deceased status
@@ -666,18 +602,6 @@ namespace crds_angular.Services
             }
         }
 
-        private bool isMyPin(PinDto pin, int contactId)
-        {
-            var isMyPin = pin.Contact_ID == contactId && contactId != 0;
-            return isMyPin;
-        }
-
-        private string isMyPinAsString(PinDto pin, int contactId)
-        {
-            string isMyPinString = isMyPin(pin, contactId).ToString().ToLower();
-            return isMyPinString;
-        }
-
         private string GetPinTitle(PinDto pin, int contactId = 0)
         {
             string titleString = "";
@@ -738,7 +662,7 @@ namespace crds_angular.Services
 
         private PinDto ConvertGroupDTOToPinDTO(GroupDTO mpGroup)
         {
-           
+
             var contact = _contactRepository.GetContactById(mpGroup.ContactId);
 
             var pin = new PinDto
@@ -784,14 +708,15 @@ namespace crds_angular.Services
                 VirtualGroup = (bool)mpGroup.AvailableOnline && mpGroup.Address == null,
                 PrimaryContactFirstName = contact.First_Name != null ? contact.First_Name : null,
                 PrimaryContactLastName = contact.Last_Name != null ? contact.Last_Name : null,
-                PrimaryContactCongregation =  null,
+                PrimaryContactCongregation = null,
                 GroupAgesRangeList = GetStringListFromAttribute(mpGroup.AttributeTypes, 91),
                 GroupCategoriesList = GetStringListFromAttribute(mpGroup.AttributeTypes, 90),
                 AvailableOnline = mpGroup.AvailableOnline,
                 StartDate = mpGroup.StartDate
             };
             var subCatList = GetStringListFromAttribute(mpGroup.AttributeTypes, 92);
-            foreach (var subCat in subCatList){
+            foreach (var subCat in subCatList)
+            {
                 pin.Gathering.GroupCategoriesList.Add(subCat);
             }
             pin.Gathering.GroupCategoriesList.Remove("Theme");
@@ -806,7 +731,7 @@ namespace crds_angular.Services
             {
                 // grouptype is now equal to the value
                 var x = grouptype.Value;
-                returnString =  x.Name ;
+                returnString = x.Name;
             }
             return returnString;
         }
@@ -1100,7 +1025,7 @@ namespace crds_angular.Services
         {
             var user = _participantRepository.GetParticipant(contactId);
 
-            if(participantId == -1)
+            if (participantId == -1)
             {
                 participantId = user.ParticipantId;
             }
@@ -1772,12 +1697,12 @@ namespace crds_angular.Services
         private List<MyDTO> GetMyListForGroup(int participantId, int pintypeId)
         {
             var myDtoList = new List<MyDTO>();
-            
-            var groupsByType = _groupRepository.GetGroupsForParticipantByTypeOrID(participantId, null, new int[] { 1});
+
+            var groupsByType = _groupRepository.GetGroupsForParticipantByTypeOrID(participantId, null, new int[] { 1 });
 
             if (groupsByType == null)
             {
-                return myDtoList; 
+                return myDtoList;
             }
 
             if (groupsByType.Count == 0)
@@ -1791,14 +1716,14 @@ namespace crds_angular.Services
                     // in home groups
                     groupsByType = groupsByType.Where(c => (c.Address != null && c.Address.Address_ID != 0)).ToList();
                     break;
-               
+
                 case PinTypeConstants.PIN_ONLINEGROUP:
                     // online groups
-                    groupsByType = groupsByType.Where(c => (c.Address == null || c.Address.Address_ID ==0)).ToList();
+                    groupsByType = groupsByType.Where(c => (c.Address == null || c.Address.Address_ID == 0)).ToList();
                     break;
             }
-           
-            foreach(MpGroup g in groupsByType)
+
+            foreach (MpGroup g in groupsByType)
             {
                 myDtoList.Add(new MyDTO { InternalId = g.GroupId, PinTypeId = pintypeId });
             }
@@ -1806,4 +1731,3 @@ namespace crds_angular.Services
         }
     }
 }
-
