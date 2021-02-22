@@ -1,31 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using crds_angular.Exceptions;
 using crds_angular.Models.Crossroads;
 using crds_angular.Models.Crossroads.Attribute;
 using crds_angular.Models.Crossroads.Groups;
 using crds_angular.Models.Crossroads.Profile;
 using crds_angular.Services.Interfaces;
-using log4net;
+using crds_angular.Util.Interfaces;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Web.Common.MinistryPlatform;
+using log4net;
 using MinistryPlatform.Translation.Exceptions;
 using MinistryPlatform.Translation.Models;
 using MinistryPlatform.Translation.Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Event = crds_angular.Models.Crossroads.Events.Event;
 using IAttributeRepository = MinistryPlatform.Translation.Repositories.Interfaces.IAttributeRepository;
 using IEventRepository = MinistryPlatform.Translation.Repositories.Interfaces.IEventRepository;
 using IGroupRepository = MinistryPlatform.Translation.Repositories.Interfaces.IGroupRepository;
 using IObjectAttributeService = crds_angular.Services.Interfaces.IObjectAttributeService;
-using crds_angular.Util.Interfaces;
 
 namespace crds_angular.Services
 {
     public class GroupService : IGroupService
     {
-        private readonly ILog _logger = LogManager.GetLogger(typeof (GroupService));
+        private readonly ILog _logger = LogManager.GetLogger(typeof(GroupService));
         private readonly IAwsCloudsearchService _awsCloudsearchService;
         private readonly IGroupRepository _mpGroupRepository;
         private readonly IConfigurationWrapper _configurationWrapper;
@@ -38,15 +38,11 @@ namespace crds_angular.Services
         private readonly IObjectAttributeService _objectAttributeService;
         private readonly IApiUserRepository _apiUserService;
         private readonly IAttributeRepository _attributeRepository;
-        private readonly IEmailCommunication _emailCommunicationService;
-        private readonly IUserRepository _userRepository;
         private readonly IInvitationRepository _invitationRepository;
         private readonly IAttributeService _attributeService;
-        private readonly int  _onsiteGroupTypeId;
+        private readonly int _onsiteGroupTypeId;
         private readonly int _childcareEventTypeId;
         private readonly IDateTime _dateTimeWrapper;
-
-
 
         /// <summary>
         /// This is retrieved in the constructor from AppSettings
@@ -60,28 +56,25 @@ namespace crds_angular.Services
         private readonly int _groupAutoJourneyAttributeTypeId;
         private readonly int _groupTypeAttributeTypeId;
         private readonly int _groupAgeRangeAttributeTypeId;
-        private readonly int _groupRoleLeader;        
+        private readonly int _groupRoleLeader;
         private readonly int _domainId;
         private readonly int _removeSelfFromGroupTemplateId;
 
         public GroupService(IAwsCloudsearchService awsCloudsearchService,
-                            IGroupRepository mpGroupRepository,
-                            IConfigurationWrapper configurationWrapper,
-                            IEventRepository eventService,
-                            IContactRelationshipRepository contactRelationshipService,
-                            IServeService serveService,
-                            IParticipantRepository participantService,
-                            ICommunicationRepository communicationService,
-                            IContactRepository contactService, 
-                            IObjectAttributeService objectAttributeService, 
-                            IApiUserRepository apiUserService, 
-                            IAttributeRepository attributeRepository,
-                            IEmailCommunication emailCommunicationService,
-                            IUserRepository userRepository,
-                            IInvitationRepository invitationRepository,
-                            IAttributeService attributeService,
-                            IDateTime dateTimeWrapper)
-
+            IGroupRepository mpGroupRepository,
+            IConfigurationWrapper configurationWrapper,
+            IEventRepository eventService,
+            IContactRelationshipRepository contactRelationshipService,
+            IServeService serveService,
+            IParticipantRepository participantService,
+            ICommunicationRepository communicationService,
+            IContactRepository contactService,
+            IObjectAttributeService objectAttributeService,
+            IApiUserRepository apiUserService,
+            IAttributeRepository attributeRepository,
+            IInvitationRepository invitationRepository,
+            IAttributeService attributeService,
+            IDateTime dateTimeWrapper)
         {
             _awsCloudsearchService = awsCloudsearchService;
             _mpGroupRepository = mpGroupRepository;
@@ -95,8 +88,6 @@ namespace crds_angular.Services
             _objectAttributeService = objectAttributeService;
             _apiUserService = apiUserService;
             _attributeRepository = attributeRepository;
-            _emailCommunicationService = emailCommunicationService;
-            _userRepository = userRepository;
             _invitationRepository = invitationRepository;
             _attributeService = attributeService;
             _domainId = configurationWrapper.GetConfigIntValue("DomainId");
@@ -110,15 +101,13 @@ namespace crds_angular.Services
             _groupAutoJourneyAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupAutoJourneyAttributeTypeId");
             _groupTypeAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupTypeAttributeTypeId");
             _groupAgeRangeAttributeTypeId = configurationWrapper.GetConfigIntValue("GroupAgeRangeAttributeTypeId");
-            _groupRoleLeader = configurationWrapper.GetConfigIntValue("GroupRoleLeader");            
+            _groupRoleLeader = configurationWrapper.GetConfigIntValue("GroupRoleLeader");
             _onsiteGroupTypeId = _configurationWrapper.GetConfigIntValue("OnsiteGroupTypeId");
             _childcareEventTypeId = _configurationWrapper.GetConfigIntValue("ChildcareEventType");
-            _removeSelfFromGroupTemplateId = _configurationWrapper.GetConfigIntValue("RemoveSelfFromGroupTemplateId");            
+            _removeSelfFromGroupTemplateId = _configurationWrapper.GetConfigIntValue("RemoveSelfFromGroupTemplateId");
             _dateTimeWrapper = dateTimeWrapper;
-
         }
-
-
+        
         public GroupDTO CreateGroup(GroupDTO group)
         {
             try
@@ -143,12 +132,12 @@ namespace crds_angular.Services
 
                 group.GroupId = _mpGroupRepository.CreateGroup(mpGroup);
                 //save group attributes
-                var configuration = MpObjectAttributeConfigurationFactory.Group();            
+                var configuration = MpObjectAttributeConfigurationFactory.Group();
                 _objectAttributeService.SaveObjectAttributes(group.GroupId, group.AttributeTypes, group.SingleAttributes, configuration);
 
                 if (group.MinorAgeGroupsAdded)
                 {
-                    _mpGroupRepository.SendNewStudentMinistryGroupAlertEmail((List<MpGroupParticipant>) mpGroup.Participants, mpGroup);
+                    _mpGroupRepository.SendNewStudentMinistryGroupAlertEmail((List<MpGroupParticipant>)mpGroup.Participants, mpGroup);
                 }
 
                 _awsCloudsearchService.UploadSingleGroupToAwsFromMp(group.GroupId);
@@ -178,7 +167,7 @@ namespace crds_angular.Services
                 throw (new ApplicationException(message, e));
             }
 
-            checkSpaceRemaining(new List<ParticipantSignup> {participant}, group);
+            checkSpaceRemaining(new List<ParticipantSignup> { participant }, group);
 
             try
             {
@@ -209,7 +198,7 @@ namespace crds_angular.Services
 
         public void endDateGroupParticipant(int groupId, int groupParticipantId)
         {
-            _mpGroupRepository.endDateGroupParticipant(groupParticipantId,groupId, DateTime.Now);
+            _mpGroupRepository.endDateGroupParticipant(groupParticipantId, groupId, DateTime.Now);
         }
 
         public void addParticipantsToGroup(int groupId, List<ParticipantSignup> participants)
@@ -238,7 +227,7 @@ namespace crds_angular.Services
 
                     int groupParticipantId = _mpGroupRepository.GetParticipantGroupMemberId(Convert.ToInt32(groupId), participantId);
 
-                    if (groupParticipantId < 0) 
+                    if (groupParticipantId < 0)
                     {
                         groupParticipantId = _mpGroupRepository.AddParticipantToGroup(participantId,
                                                                                       Convert.ToInt32(groupId),
@@ -259,7 +248,7 @@ namespace crds_angular.Services
                     }
                     else
                     {
-                        _logger.Debug("User "+participantId+ " was already a member of group "+groupId);
+                        _logger.Debug("User " + participantId + " was already a member of group " + groupId);
                     }
 
                     var events = _mpGroupRepository.getAllEventsForGroup(Convert.ToInt32(groupId), _dateTimeWrapper.Today);
@@ -269,7 +258,7 @@ namespace crds_angular.Services
                         foreach (var e in events.Where(x => x.EventType != (Convert.ToString(_childcareEventTypeId))))
                         {
                             //SafeRegisterParticipant will not register again if they are already registered
-                            _eventService.SafeRegisterParticipant( e.EventId, participantId, groupId, groupParticipantId);
+                            _eventService.SafeRegisterParticipant(e.EventId, participantId, groupId, groupParticipantId);
                             _logger.Debug("Added participant " + participant + " to group event " + e.EventId);
                         }
                     }
@@ -399,7 +388,7 @@ namespace crds_angular.Services
             var invitation = _invitationRepository.GetOpenInvitation(invitationGuid);
 
             var group = Mapper.Map<MpGroup, GroupDTO>(_mpGroupRepository.GetSmallGroupDetailsById(invitation.SourceId));
-            var groups = new List<GroupDTO> {@group};
+            var groups = new List<GroupDTO> { @group };
 
             GetGroupAttributes(groups);
             GetGroupParticipants(groups);
@@ -427,7 +416,7 @@ namespace crds_angular.Services
                     c => signupRelations.Select(s => s.RelationshipId).Contains(c.Relationship_Id)).ToArray();
             }
 
-            
+
             var configuration = MpObjectAttributeConfigurationFactory.Group();
             var attributesTypes = _objectAttributeService.GetObjectAttributes(groupId, configuration);
 
@@ -465,7 +454,7 @@ namespace crds_angular.Services
                     ParticpantId = participantId,
                     ChildCareNeeded = false
                 };
-                detail.SignUpFamilyMembers = new List<SignUpFamilyMembers> {fam};
+                detail.SignUpFamilyMembers = new List<SignUpFamilyMembers> { fam };
 
                 if (familyToReturn != null)
                 {
@@ -522,7 +511,7 @@ namespace crds_angular.Services
             var configuration = MpObjectAttributeConfigurationFactory.Group();
             var mpAttributes = _attributeRepository.GetAttributes(null);
             foreach (var group in groupDetail)
-            {               
+            {
                 var attributesTypes = _objectAttributeService.GetObjectAttributes(group.GroupId, configuration, mpAttributes);
                 group.AttributeTypes = attributesTypes.MultiSelect;
                 group.SingleAttributes = attributesTypes.SingleSelect;
@@ -682,7 +671,7 @@ namespace crds_angular.Services
             var participant = GetParticipantRecord(contactId);
             var groups = GetGroupsByTypeForParticipant(participant.ParticipantId, _journeyGroupTypeId);
 
-            if (groups == null ||  groups.Count == 0)
+            if (groups == null || groups.Count == 0)
             {
                 throw new InvalidOperationException();
             }
@@ -712,7 +701,7 @@ namespace crds_angular.Services
                 EmailBody = template.Body,
                 EmailSubject = template.Subject,
                 FromContact = new MpContact { ContactId = _defaultContactEmailId, EmailAddress = fromContact.Email_Address },
-                ReplyToContact = new MpContact {ContactId = _defaultContactEmailId, EmailAddress = replyTo.Email_Address },
+                ReplyToContact = new MpContact { ContactId = _defaultContactEmailId, EmailAddress = replyTo.Email_Address },
                 ToContacts = new List<MpContact> { new MpContact { ContactId = fromContact.Contact_ID, EmailAddress = communication.emailAddress } },
                 MergeData = mergeData
             };
@@ -731,7 +720,7 @@ namespace crds_angular.Services
 
         public List<GroupParticipantDTO> GetGroupParticipants(int groupId, bool active = true)
         {
-            var groupParticipants = _mpGroupRepository.GetGroupParticipants(groupId, active);       
+            var groupParticipants = _mpGroupRepository.GetGroupParticipants(groupId, active);
             if (groupParticipants == null)
             {
                 return null;
@@ -805,7 +794,7 @@ namespace crds_angular.Services
                     {"Group_Name", group.GroupName},
                 };
 
-            int emailTemplateId = _removeSelfFromGroupTemplateId;            
+            int emailTemplateId = _removeSelfFromGroupTemplateId;
             var emailTemplate = _communicationService.GetTemplate(emailTemplateId);
 
             var fromContact = new MpContact
@@ -874,7 +863,7 @@ namespace crds_angular.Services
 
                 if (group.MinorAgeGroupsAdded)
                 {
-                    var leaders =groupParticipants.Where(p => p.GroupRoleId == _groupRoleLeader).ToList();
+                    var leaders = groupParticipants.Where(p => p.GroupRoleId == _groupRoleLeader).ToList();
                     _mpGroupRepository.SendNewStudentMinistryGroupAlertEmail(leaders, mpGroup);
                 }
 
