@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using crds_angular.Models.Crossroads.Attribute;
-using Crossroads.Utilities;
+﻿using crds_angular.Models.Crossroads.Attribute;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace crds_angular.Models.Crossroads.Groups
 {
-
     public class GroupParticipantDTO
     {
         [JsonProperty(PropertyName = "participantId")]
@@ -39,17 +37,16 @@ namespace crds_angular.Models.Crossroads.Groups
         [JsonProperty(PropertyName = "congregation")]
         public string Congregation { get; set; }
 
-        [JsonProperty(PropertyName="isApprovedLeader")]
+        [JsonProperty(PropertyName = "isApprovedLeader")]
         public bool IsApprovedSmallGroupLeader { get; set; }
 
         [JsonProperty(PropertyName = "attributeTypes")]
         public Dictionary<int, ObjectAttributeTypeDTO> AttributeTypes { get; set; }
 
-        [JsonProperty(PropertyName = "singleAttributes")]        
+        [JsonProperty(PropertyName = "singleAttributes")]
         public Dictionary<int, ObjectSingleAttributeDTO> SingleAttributes { get; set; }
 
         [JsonProperty(PropertyName = "displayName")]
         public string DisplayName { get; set; }
-
     }
 }
