@@ -6,3 +6,11 @@ export enum Placeholders {
 export enum HouseholdSource {
   communityGroup = 38
 }
+
+// MP group
+// Available in Int, Demo, Prod unless specified
+export enum Group {
+  groupWithParticipants = 198355, 
+  emptyGroup = 195326, 
+  endedGroup = 177381 
+}

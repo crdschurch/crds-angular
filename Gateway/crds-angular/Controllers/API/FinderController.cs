@@ -1,32 +1,31 @@
-﻿using System;
+﻿using crds_angular.Exceptions;
+using crds_angular.Exceptions.Models;
+using crds_angular.Models.AwsCloudsearch;
+using crds_angular.Models.Crossroads;
+using crds_angular.Models.Crossroads.Groups;
+using crds_angular.Models.Finder;
+using crds_angular.Security;
+using crds_angular.Services.Analytics;
+using crds_angular.Services.Interfaces;
+using Crossroads.ApiVersioning;
+using Crossroads.Web.Common.Security;
+using log4net;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Device.Location;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Description;
-using crds_angular.Exceptions.Models;
-using crds_angular.Models.Crossroads;
-using crds_angular.Models.Finder;
-using crds_angular.Security;
-using crds_angular.Services.Interfaces;
-using Crossroads.ApiVersioning;
-using Crossroads.Web.Common.Security;
-using System.ComponentModel.DataAnnotations;
-using System.Device.Location;
-using System.Diagnostics;
-using crds_angular.Exceptions;
-using crds_angular.Models.AwsCloudsearch;
-using crds_angular.Models.Crossroads.Groups;
-using crds_angular.Services.Analytics;
-using Crossroads.Web.Common.Configuration;
-using log4net;
 using static NewRelic.Api.Agent.NewRelic;
-using Newtonsoft.Json;
 
 namespace crds_angular.Models.Finder
 {
-  public class SayHiDTO
+    public class SayHiDTO
   {
     [JsonProperty("message")]
     public string Message { get; set; }
@@ -40,24 +39,21 @@ namespace crds_angular.Controllers.API
         private readonly IAwsCloudsearchService _awsCloudsearchService;
         private readonly IFinderService _finderService;
         private readonly IGroupToolService _groupToolService;
-        private readonly IAuthenticationRepository _authenticationRepo;
         private readonly IAnalyticsService _analyticsService;
         private readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public FinderController(IAuthTokenExpiryService authTokenExpiryService, 
-                                IFinderService finderService,
-                                IGroupToolService groupToolService,
-                                IUserImpersonationService userImpersonationService,
-                                IAuthenticationRepository authenticationRepository,
-                                IAwsCloudsearchService awsCloudsearchService,
-                                IAnalyticsService analyticsService,
-                                 IConfigurationWrapper configurationWrapper)
+        public FinderController(IAuthTokenExpiryService authTokenExpiryService,
+            IFinderService finderService,
+            IGroupToolService groupToolService,
+            IUserImpersonationService userImpersonationService,
+            IAuthenticationRepository authenticationRepository,
+            IAwsCloudsearchService awsCloudsearchService,
+            IAnalyticsService analyticsService)
             : base(authTokenExpiryService, userImpersonationService, authenticationRepository)
         {
             _finderService = finderService;
             _groupToolService = groupToolService;
             _awsCloudsearchService = awsCloudsearchService;
-            _authenticationRepo = authenticationRepository;
             _analyticsService = analyticsService;
         }
 
@@ -187,8 +183,8 @@ namespace crds_angular.Controllers.API
         {
             try
             {
-                var list = _finderService.GetParticipantsForGroup(groupId);
-                return Ok(list);
+                var groupParticipantList = _finderService.GetParticipantsForGroup(groupId);
+                return Ok(groupParticipantList);
             }
             catch (Exception ex)
             {
